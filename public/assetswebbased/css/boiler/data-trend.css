@@ -1,0 +1,158 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Ubuntu", sans-serif;
+    /* border: 1px solid; */
+}
+
+body {
+    background-color: #f2f2f2;
+}
+
+.slide {
+    height: 55rem;
+    width: 14%;
+    position: absolute;
+    background-color: black;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.slide img {
+    width: 80%;
+    margin-left: 25px;
+    border-radius: 100%;
+}
+
+.slide p {
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+    font-size: 15px;
+}
+
+ul li {
+    list-style: none;
+    border-radius: 100px;
+    padding: 10px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 20%;
+}
+
+ul li :hover {
+    background-color: #E3651D;
+}
+
+ul li a {
+    color: #fff;
+    font-weight: bold;
+    padding: 20px 0;
+    display: block;
+    text-decoration: none;
+    border-radius: 20px;
+}
+
+ul li a i {
+    width: 30%;
+    text-align: center;
+}
+
+.slide h6 {
+    color: #fff;
+    font-weight: 800;
+    text-align: center;
+    padding: 10px 0;
+    margin-top: auto;
+}
+
+.container {
+    min-width: 1440px;
+    margin-left: 13%;
+}
+
+.container .header {
+    padding: 8px;
+    border-bottom: 1px solid #e0e4e8;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.container .header h2 {
+    display: flex;
+    align-items: center;
+    margin-left: 3%;
+    font-size: 40px;
+}
+
+.container .header .user {
+    text-align: right;
+    display: flex;
+}
+
+.container .header .akun {
+    margin-right: 20px;
+    margin-top: 7px;
+}
+
+.container .header .akun p {
+    font-weight: 800;
+}
+
+.container .header img {
+    width: 50px;
+    border-radius: 50px;
+    margin-right: 10px;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    margin: 20px;
+    margin-left: 50px;
+}
+
+.dropbtn {
+    background-color: #750E21;
+    color: white;
+    padding: 15px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    width: max-content;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 10px 16px;
+    text-decoration: none;
+    display: block;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #686D76;
+}
+
+input[type=date] {
+    margin-left: 1%;
+}

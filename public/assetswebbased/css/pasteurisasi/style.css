@@ -1,0 +1,476 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Ubuntu", sans-serif;
+    /* border: 1px solid; */
+}
+
+body {
+    background-color: #f2f2f2;
+}
+
+.slide {
+    height: 70rem;
+    width: 14%;
+    position: absolute;
+    background-color: black;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.slide img {
+    width: 80%;
+    margin-left: 25px;
+    border-radius: 100%;
+}
+
+.slide p {
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+    font-size: 15px;
+}
+
+ul li {
+    list-style: none;
+    border-radius: 100px;
+    padding: 10px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 20%;
+}
+
+ul li :hover {
+    background-color: #E3651D;
+}
+
+ul li a {
+    color: #fff;
+    font-weight: bold;
+    padding: 20px 0;
+    display: block;
+    text-decoration: none;
+    border-radius: 20px;
+}
+
+ul li a i {
+    width: 30%;
+    text-align: center;
+}
+
+.slide h6 {
+    color: #fff;
+    font-weight: 800;
+    text-align: center;
+    padding: 10px 0;
+    margin-top: auto;
+}
+
+.container {
+    min-width: 1440px;
+    margin-left: 13%;
+}
+
+.container .header {
+    padding: 8px;
+    border-bottom: 1px solid #e0e4e8;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.container .header h2 {
+    display: flex;
+    align-items: center;
+    margin-left: 3%;
+    font-size: 40px;
+}
+
+.container .header .user {
+    text-align: right;
+    display: flex;
+}
+
+.container .header .akun {
+    margin-right: 20px;
+    margin-top: 7px;
+}
+
+.container .header .akun p {
+    font-weight: 800;
+}
+
+.container .header img {
+    width: 50px;
+    border-radius: 50px;
+    margin-right: 10px;
+}
+
+.container .info img {
+    width: 100%;
+    z-index: -1;
+}
+
+.data {
+    z-index: 1;
+    font-weight: bolder;
+    color: #fff;
+}
+
+.data .date {
+    margin-top: -53%;
+    font-weight: bold;
+    color: #f9d100;
+    text-shadow: 0 0 7px #f9d100;
+}
+
+.data p.pressuremixing {
+    font-size: 22px;
+}
+
+.data p.pumpmixing {
+    font-size: 20px;
+}
+
+.data p.BT1 {
+    font-size: 25px;
+}
+
+.data p.pump1 {
+    font-size: 15px;
+}
+
+.data p.VD {
+    font-size: 25px;
+}
+
+.data p.pumpVD {
+    font-size: 15px;
+}
+
+.data p.mode {
+    margin-top: -7.5%;
+    margin-left: 65%;
+    font-size: 10px;
+}
+
+.data p.BT1AM {
+    margin-top: -10.3%;
+    margin-left: 79.5%;
+    font-size: 10px;
+}
+
+.data p.VDAM {
+    margin-top: 1.2%;
+    margin-left: 38%;
+    font-size: 10px;
+}
+
+.data p.VDHH {
+    margin-top: 4.8%;
+    margin-left: 66.5%;
+    font-size: 13px;
+}
+
+.data p.VDLL {
+    margin-top: 3.3%;
+    margin-left: 66.5%;
+    font-size: 13px;
+}
+
+.data p.press-pasteur {
+    margin-top: -1.5%;
+    margin-left: 29%;
+    font-size: 14px;
+}
+
+button.input {
+    margin-top: 13%;
+    margin-left: 17%;
+    padding: 10px 20px;
+    /* Menambah padding untuk ukuran tombol yang lebih baik */
+    background-color: #4CAF50;
+    /* Warna tombol */
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    display: inline-block;
+    border: none;
+    /* Menghapus border default tombol */
+    border-radius: 5px;
+    /* Menambahkan sudut membulat */
+    font-size: 16px;
+    /* Ukuran font yang lebih besar */
+    cursor: pointer;
+    /* Mengubah kursor saat hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Menambahkan bayangan */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    /* Efek transisi */
+}
+
+button.input:hover {
+    background-color: #0e9e3f;
+    /* Warna saat hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    /* Bayangan saat hover */
+}
+
+
+/* Style untuk modal */
+.modal {
+    display: none;
+    /* Sembunyikan modal secara default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button.submit {
+    background-color: #28a745;
+    /* Hijau untuk Insert */
+    color: white;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button.submit:hover {
+    background-color: #218838;
+    /* Warna hijau lebih gelap saat hover */
+}
+
+.modal-content h2 {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+table#dataTable {
+    margin-left: 20%;
+    margin-top: 20px;
+    border: 1px solid;
+    border-collapse: collapse;
+    /* Menghilangkan jarak ganda antara border */
+    width: 10%;
+    /* Menyesuaikan lebar tabel */
+}
+
+table#dataTable th,
+table#dataTable td {
+    padding: 5px;
+    /* Memberikan padding pada sel tabel */
+    text-align: center;
+    /* Mengatur teks agar rata kiri */
+    border: 1px solid;
+    /* Memberikan border pada sel */
+}
+
+table#dataTable thead th {
+    background-color: #f2f2f2;
+    /* Memberikan warna latar belakang pada header tabel */
+    font-weight: bold;
+    /* Menebalkan teks pada header */
+}
+
+table#dataTable tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+    /* Memberikan warna latar belakang pada baris genap */
+}
+
+@media screen and (min-width: 1460px) and (max-width: 1600px) {
+    .date {
+        font-size: 23px;
+        margin-left: 68%;
+    }
+
+    .data p.pressuremixing {
+        margin-top: 24.3%;
+        margin-left: 83%;
+    }
+
+    .data p.pumpmixing {
+        margin-top: 15.8%;
+        margin-left: 62.5%;
+    }
+
+    .data p.BT1 {
+        margin-top: 17%;
+        margin-left: 91.5%;
+    }
+
+    .data p.pump1 {
+        margin-top: 12.2%;
+        margin-left: 83%;
+    }
+
+    .data p.VD {
+        margin-top: 1%;
+        margin-left: 60.1%;
+    }
+
+    .data p.pumpVD {
+        margin-top: -1.8%;
+        margin-left: 42%;
+    }
+
+    .data p.mode {
+        margin-top: -7.5%;
+        margin-left: 65%;
+    }
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1460px) {
+    .date {
+        font-size: 20px;
+        margin-left: 67%;
+    }
+
+    .data p.pressuremixing {
+        margin-top: 24.7%;
+        margin-left: 83%;
+    }
+
+    .data p.pumpmixing {
+        margin-top: 15.7%;
+        margin-left: 63%;
+        font-size: 18px;
+    }
+
+    .data p.BT1 {
+        margin-top: 17.5%;
+        margin-left: 91.5%;
+    }
+
+    .data p.pump1 {
+        margin-top: 11.8%;
+        margin-left: 83%;
+    }
+
+    .data p.VD {
+        margin-top: 1.2%;
+        margin-left: 60.1%;
+    }
+
+    .data p.pumpVD {
+        margin-top: -1.8%;
+        margin-left: 42%;
+    }
+}
+
+@media (max-width: 1199px) {
+    .date {
+        font-size: medium;
+        margin-left: 70%;
+    }
+
+    .data p.pressuremixing {
+        margin-top: 25%;
+        margin-left: 83%;
+    }
+
+    .data p.pumpmixing {
+        margin-top: 16%;
+        margin-left: 63%;
+        font-size: 18px;
+    }
+
+    .data p.BT1 {
+        margin-top: 17.7%;
+        margin-left: 91.5%;
+    }
+
+    .data p.pump1 {
+        margin-top: 12%;
+        margin-left: 83%;
+    }
+
+    .data p.VD {
+        margin-top: 1.2%;
+        margin-left: 60.4%;
+    }
+
+    .data p.pumpVD {
+        margin-top: -2%;
+        margin-left: 42%;
+    }
+
+    .data p.VDHH {
+        margin-top: 4.8%;
+    }
+
+    button.input {
+        margin-top: 25%;
+    }
+}
+
+
+@media (max-width: 750px) {
+    ul li {
+        list-style: none;
+        border-radius: 100px;
+        padding: 10px 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 20%;
+    }
+
+    ul li a {
+        font-size: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    ul li a i {
+        font-size: 20px;
+    }
+
+    button.input {
+        margin-top: 50%;
+    }
+}

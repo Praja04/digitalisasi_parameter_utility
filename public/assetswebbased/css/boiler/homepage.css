@@ -1,0 +1,117 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Ubuntu", sans-serif;
+    /* border: 1px solid; */
+}
+
+body {
+    background-color: #f2f2f2;
+}
+
+.container .header {
+    border-bottom: 1px solid #e0e4e8;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.container .header h2 {
+    display: flex;
+    align-items: center;
+    font-size: 40px;
+}
+
+.container .header .user {
+    text-align: right;
+    display: flex;
+}
+
+.container .header .akun {
+    margin-right: 20px;
+    margin-top: 7px;
+}
+
+.container .header .akun p {
+    font-weight: 800;
+}
+
+.user-logo {
+    width: 50px;
+    border-radius: 50px;
+    margin-right: 10px;
+}
+
+.logo {
+    width: 100px;
+    border-radius: 150px;
+    /* margin-left: 10px;
+    margin-bottom: -10px; */
+    margin: -10px 20px -10px 10px;
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin: 20px;
+}
+
+.card {
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    text-decoration: none;
+    text-align: center;
+    background-color: white;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+}
+
+.card p {
+    margin: 3px 0;
+    font-weight: bold;
+    color: #333;
+}
+
+@media (max-width: 730px) {
+    .container .header h2 {
+        font-size: 150%;
+    }
+}
+
+@media (max-width: 536px) {
+    .container .header h2 {
+        font-size: 100%;
+    }
+}
+
+@media (max-width: 350px) {
+    .container .header h2 {
+        font-size: 10px;
+        margin-top: 60px;
+        margin-left: -150px;
+        margin-bottom: 10px;
+    }
+    .logo {
+        width: 70px;
+        border-radius: 150px;
+        /* margin-left: 10px;
+        margin-bottom: -10px; */
+        margin: -20px 0 0 40px;
+    }
+}

@@ -1,0 +1,202 @@
+@media only screen and (min-width: 992px) {
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background-size: cover;
+        background-repeat: no-repeat;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .container {
+        background-color: #fff;
+        padding: 50px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 320px;
+        margin-top: 10rem;
+        display: flex;
+        flex-direction: column;
+        /* Tampilkan child dalam satu kolom */
+        align-items: center;
+        /* Pusatkan child secara horizontal di dalam .container */
+    }
+
+    .container h2 {
+        margin: 20px;
+    }
+
+    .container img {
+        width: auto;
+    }
+
+    .container input[type="text"],
+    .container input[type="password"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    .container input[type="submit"] {
+        width: 100%;
+        background-color: #000000;
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 3px;
+    }
+
+    .container input[type="submit"]:hover {
+        background-color: #950101;
+    }
+
+}
+
+@media only screen and (min-width: 600px) and (max-width: 992px) {
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        margin: 0;
+        /* Remove default margin to make sure the background covers the entire viewport */
+        padding: 0;
+        /* Remove default padding */
+        background-image: url(/img/background.png);
+        background-size: cover;
+        /* Ensure the image covers the entire viewport */
+        background-repeat: no-repeat;
+        background-position: center bottom;
+        /* Position the image at the bottom center */
+        min-height: 100vh;
+        /* Ensure the body takes up at least the full viewport height */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    .container {
+        background-color: #fff;
+        padding: 50px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 400px;
+        display: flex;
+        flex-direction: column;
+        /* Tampilkan child dalam satu kolom */
+        align-items: center;
+        /* Pusatkan child secara horizontal di dalam .container */
+    }
+
+    .container h2 {
+        margin: 20px;
+    }
+
+    .container img {
+        width: auto;
+    }
+
+    .container input[type="text"],
+    .container input[type="password"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    .container input[type="submit"] {
+        width: 100%;
+        background-color: #000000;
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 3px;
+    }
+
+    .container input[type="submit"]:hover {
+        background-color: #950101;
+    }
+
+}
+
+@media only screen and (max-width: 600px) {
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        margin: 0;
+        /* Remove default margin to make sure the background covers the entire viewport */
+        padding: 0;
+        /* Remove default padding */
+        background-image: url(/img/background.png);
+        background-size: cover;
+        /* Ensure the image covers the entire viewport */
+        background-repeat: no-repeat;
+        background-position: center bottom;
+        /* Position the image at the bottom center */
+        min-height: 100vh;
+        /* Ensure the body takes up at least the full viewport height */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    .container {
+        background-color: #fff;
+        padding: 50px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 400px;
+        display: flex;
+        flex-direction: column;
+        /* Tampilkan child dalam satu kolom */
+        align-items: center;
+        /* Pusatkan child secara horizontal di dalam .container */
+    }
+
+    .container h2 {
+        margin: 20px;
+    }
+
+    .container img {
+        width: auto;
+    }
+
+    .container input[type="text"],
+    .container input[type="password"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    .container input[type="submit"] {
+        width: 100%;
+        background-color: #000000;
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 3px;
+    }
+
+    .container input[type="submit"]:hover {
+        background-color: #950101;
+    }
+
+}
