@@ -3,18 +3,19 @@
 use App\Http\Controllers\DashboardController;
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Mail;
+// use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Api\SensorBoilerController;
 use App\Http\Controllers\Api\SensorDailyTankController;
 use App\Http\Controllers\Api\SensorGlucoseController;
 use App\Http\Controllers\Api\SensorOlahSariController;
 use App\Http\Controllers\Api\SensorST53Controller;
 use App\Http\Controllers\Api\SensorSTk400Controller;
+use App\Http\Controllers\Api\SensorPasteurisasi1Controller;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\CustomerController;
-use App\Models\Customer;
-use Illuminate\Container\Attributes\Auth;
+// use App\Http\Controllers\UserController;
+// use App\Http\Controllers\CustomerController;
+// use App\Models\Customer;
+// use Illuminate\Container\Attributes\Auth;
 
 Route::get('/', function () {
     return view('signin/login');
@@ -79,6 +80,8 @@ Route::prefix('glucose')->group(function () {
     Route::get('/gst4', [SensorGlucoseController::class, 'getLatestGST4']);
     Route::get('/gst5', [SensorGlucoseController::class, 'getLatestGST5']);
 });
+
+
 Route::prefix('olahsari')->group(function () {
     Route::get('/lc1', [SensorOlahsariController::class, 'getLatestLC1']);
     Route::get('/lc2', [SensorOlahsariController::class, 'getLatestLC2']);
@@ -88,3 +91,4 @@ Route::prefix('olahsari')->group(function () {
 
 Route::get('/st53/{column}', [SensorST53Controller::class, 'getLatestData']);
 Route::get('/stk400/{column}', [SensorSTK400Controller::class, 'getLatestData']);
+Route::get('/pasteurisasi1/{field}', [SensorPasteurisasi1Controller::class, 'getLatestData']);
