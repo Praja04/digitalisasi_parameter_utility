@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
     {
         User::create([
             'username' => 'user1',
-            'password' => Hash::make('password123'), // Pastikan password di-hash
+            'password' => Hash::make('12345678'), // Pastikan password di-hash
         ]);
     }
 }

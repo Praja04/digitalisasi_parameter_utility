@@ -33,9 +33,12 @@ Route::get('menu-utama', function () {
 });
 
 
-Route::get('boiler', function () {
-    return view('boiler/boiler');
+Route::prefix('boiler')->group(function () {
+    Route::view('/realtime', 'boiler.realtime');
+    Route::view('/datatren', 'boiler.datatren');
 });
+
+
 
 Route::middleware('web')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -64,6 +67,7 @@ Route::prefix('sensor')->group(function () {
     Route::get('lhguil', [SensorBoilerController::class, 'getLHGuiloutine']);
     Route::get('lhfd', [SensorBoilerController::class, 'getLHFDFan']);
     Route::get('lhtemp', [SensorBoilerController::class, 'getLHTemp']);
+    Route::get('/boiler-data', [SensorBoilerController::class, 'getBoilerData']);
 });
 
 Route::prefix('daily-tank')->group(function () {

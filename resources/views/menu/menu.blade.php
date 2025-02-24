@@ -42,7 +42,7 @@
 <div class="card-container" style="margin-top: 100px;">
     @php
     $menus = [
-    ['url' => 'boiler', 'image' => 'boiler/background.png', 'name' => 'Boiler'],
+    ['url' => 'boiler/datatren', 'image' => 'boiler/background.png', 'name' => 'Boiler'],
     ['url' => 'pasteurisasi', 'image' => 'pasteurisasi/pasteur.png', 'name' => 'Pasteurisasi Line 1'],
     ['url' => 'dissolver', 'image' => 'dissolver/dissolver.jpg', 'name' => 'Dissolver'],
     ['url' => 'olahsari', 'image' => 'olahsari/olahsari.png', 'name' => 'Olahsari'],

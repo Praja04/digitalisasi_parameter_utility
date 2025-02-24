@@ -36,4 +36,10 @@ class ReadSensors_Boiler extends Model
         'Batubara_FK',
         'Steam_FK'
     ];
+
+
+    public static function getLatestData($limit = 10)
+    {
+        return self::orderBy('waktu', 'desc')->limit($limit)->get();
+    }
 }

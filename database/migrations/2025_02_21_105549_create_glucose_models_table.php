@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-
+use Illuminate\Support\Facades\DB;
 return new class extends Migration
 {
     /**
@@ -11,9 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('glucose_models', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::create('readsensors_glucose', function (Blueprint $table) {
+            $table->id(); // Auto-increment primary key
+            $table->timestamp('waktu')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->float('GST1');
+            $table->float('GST2');
+            $table->float('GST3');
+            $table->float('GST4');
+            $table->float('GST5');
         });
     }
 
@@ -22,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('glucose_models');
+        Schema::dropIfExists('readsensors_glucose');
     }
 };

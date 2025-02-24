@@ -8,7 +8,7 @@ class Sensors_Boiler extends Model
 {
     use HasFactory;
 
-    protected $table = 'sensors';
+    protected $table = 'sensors_boiler';
     protected $primaryKey = 'id';
     public $timestamps = false;
 

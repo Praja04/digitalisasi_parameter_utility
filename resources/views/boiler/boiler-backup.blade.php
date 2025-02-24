@@ -91,43 +91,40 @@
 <script src="{{ asset('assetswebbased/js/boiler/O2.js') }}"></script>
 <script src="{{ asset('assetswebbased/js/boiler/CO2.js') }}"></script>
 <script>
-    var BASE_URL= "{{ url('sensor') }}";
+    var BASE_URL = "{{ url('sensor') }}";
 </script>
 @endsection
 @section('content')
-<div class="container">
-    
+<div class="container custom-style">
     <div class="data">
-        <div class="data">
-            <div class="info">
-                <img src="{{ asset('assetswebbased/img/boiler/tampilan.png') }}" alt="">
-            </div>
-            <div class="date">
-                <span id="day"></span> <span id="month"></span> <span id="year"></span> |
-                <span id="hour"></span>:<span id="minute"></span>:<span id="second"></span>
-            </div>
-            <p id="pvsteam" class="pvs"></p>
-            <p id="pvsteam1" class="pvs1"></p>
-            <p id="lhguil" class="lhg"></p>
-            <p id="lhstoker" class="lhs"></p>
-            <p id="temp1" class="lh"></p>
-            <p id="lhfd" class="lhf"></p>
-            <p id="value" class="water"></p>
-            <p id="rhguil" class="rhg"></p>
-            <p id="temp2" class="rh"></p>
-            <p id="rhstoker" class="rhs"></p>
-            <p id="rhfd" class="rhf"></p>
-            <p id="idfan" class="idf"></p>
-            <p id="pump1" class="pump1"></p>
-            <p id="pump2" class="pump2"></p>
-            <p id="batubara_fk" class="batubara_fk"></p>
-            <p id="steam_fk" class="steam_fk"></p>
-            <p id="batubara" class="batubara"></p>
-            <p id="steam" class="steam"></p>
-            <p id="bbsteam" class="bbsteam"></p>
-            <p id="o2" class="o2"></p>
-            <p id="co2" class="co2"></p>
+        <div class="info">
+            <img src="{{ asset('assetswebbased/img/boiler/tampilan.png') }}" alt="Boiler Display">
         </div>
-       
+        <div class="date">
+            <span id="day"></span> <span id="month"></span> <span id="year"></span> |
+            <span id="hour"></span>:<span id="minute"></span>:<span id="second"></span>
+        </div>
+        <p id="pvsteam" class="pvs"></p>
+        <p id="pvsteam1" class="pvs1"></p>
+        <p id="lhguil" class="lhg"></p>
+        <p id="lhstoker" class="lhs"></p>
+        <p id="temp1" class="lh"></p>
+        <p id="lhfd" class="lhf"></p>
+        <p id="value" class="water"></p>
+        <p id="rhguil" class="rhg"></p>
+        <p id="temp2" class="rh"></p>
+        <p id="rhstoker" class="rhs"></p>
+        <p id="rhfd" class="rhf"></p>
+        <p id="idfan" class="idf"></p>
+        <p id="pump1" class="pump1"></p>
+        <p id="pump2" class="pump2"></p>
+        <p id="batubara_fk" class="batubara_fk"></p>
+        <p id="steam_fk" class="steam_fk"></p>
+        <p id="batubara" class="batubara"></p>
+        <p id="steam" class="steam"></p>
+        <p id="bbsteam" class="bbsteam"></p>
+        <p id="o2" class="o2"></p>
+        <p id="co2" class="co2"></p>
     </div>
-    @endsection
+</div>
+@endsection

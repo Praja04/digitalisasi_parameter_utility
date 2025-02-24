@@ -14,7 +14,7 @@
                         <span></span>
                     </span>
                 </button>
-                <h5 class="d-none d-md-block" style="margin-top: 15px; margin-left:300px;">PT.Bumi Alam Segar</h5>
+                <!-- <h5 class="d-none d-md-block" style="margin-top: 15px; margin-left:300px;">PT.Bumi Alam Segar</h5> -->
             </div>
 
             <div class="d-flex align-items-center">
@@ -48,7 +48,17 @@
                     </button>
                 </div>
 
-               
+                <a href="{{ url(trim($__env->yieldContent('dynamic_url'))) }}">
+                    <div class="ms-1 header-item d-none d-sm-flex">
+                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle light-dark-mode shadow-none">
+                            <i class="mdi mdi-speedometer"></i>
+                        </button>
+                        Real-Time
+                    </div>
+                </a>
+
+
+
 
                 <div class="dropdown ms-sm-3 header-item topbar-user">
                     <button type="button" class="btn shadow-none" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

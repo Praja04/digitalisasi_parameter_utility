@@ -28,8 +28,7 @@
 
     <!-- jQuery should be included before DataTables -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="{{ asset('assets/css/utility/homepage.css') }}">
-    @yield('style')
+
 </head>
 
 <body>
@@ -86,12 +85,12 @@
     <script src="{{ asset('material/assets/js/highcharts.js') }}"></script>
     <!-- App js -->
     <script src="{{ asset('material/assets/js/app.js') }}"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <!-- <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script> -->
     <!-- Script for handling logout and DataTable -->
     <script>
         $(document).ready(function() {

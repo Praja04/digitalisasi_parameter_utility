@@ -30,13 +30,13 @@
                     <div class="collapse menu-dropdown" id="sidebarBoiler">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="dashboard-analytics.html" class="nav-link" data-key="t-analytics">
-                                    Analytics
+                                <a href="{{ url('boiler/datatren') }}" class="nav-link" data-key="t-analytics">
+                                    Analytics Data Trend
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="dashboard-crm.html" class="nav-link" data-key="t-crm">
-                                    CRM
+                                <a href="{{ url('boiler/realtime') }}" class="nav-link" data-key="t-crm">
+                                    Dashboard Realtime
                                 </a>
                             </li>
 
@@ -53,13 +53,13 @@
                     <div class="collapse menu-dropdown" id="sidebarDailytank">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="dashboard-analytics.html" class="nav-link" data-key="t-analytics">
-                                    Analytics
+                                <a href="{{ url('dailytank/datatren') }}" class="nav-link" data-key="t-analytics">
+                                    Analytics Data Trend
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="dashboard-crm.html" class="nav-link" data-key="t-crm">
-                                    CRM
+                                <a href="{{ url('dailytank/realtime') }}" class="nav-link" data-key="t-crm">
+                                    Dashboard Realtime
                                 </a>
                             </li>
 
@@ -77,13 +77,13 @@
                     <div class="collapse menu-dropdown" id="sidebarDissolver">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="dashboard-analytics.html" class="nav-link" data-key="t-analytics">
-                                    Analytics
+                                <a href="{{ url('dissolver/datatren') }}" class="nav-link" data-key="t-analytics">
+                                    Analytics Data Trend
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="dashboard-crm.html" class="nav-link" data-key="t-crm">
-                                    CRM
+                                <a href="{{ url('dissolver/realtime') }}" class="nav-link" data-key="t-crm">
+                                    Dashboard Realtime
                                 </a>
                             </li>
 
@@ -100,13 +100,13 @@
                     <div class="collapse menu-dropdown" id="sidebarGlucose">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="dashboard-analytics.html" class="nav-link" data-key="t-analytics">
-                                    Analytics
+                                <a href="{{ url('glucose/datatren') }}" class="nav-link" data-key="t-analytics">
+                                    Analytics Data Trend
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="dashboard-crm.html" class="nav-link" data-key="t-crm">
-                                    CRM
+                                <a href="{{ url('glucose/realtime') }}" class="nav-link" data-key="t-crm">
+                                    Dashboard Realtime
                                 </a>
                             </li>
 
@@ -123,13 +123,13 @@
                     <div class="collapse menu-dropdown" id="sidebarOlahsari">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="dashboard-analytics.html" class="nav-link" data-key="t-analytics">
-                                    Analytics
+                                <a href="{{ url('olahsari/datatren') }}" class="nav-link" data-key="t-analytics">
+                                    Analytics Data Trend
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="dashboard-crm.html" class="nav-link" data-key="t-crm">
-                                    CRM
+                                <a href="{{ url('olahsari/realtime') }}" class="nav-link" data-key="t-crm">
+                                    Dashboard Realtime
                                 </a>
                             </li>
 
@@ -153,13 +153,13 @@
                     <div class="collapse menu-dropdown" id="sidebarPasteur1">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="dashboard-analytics.html" class="nav-link" data-key="t-analytics">
-                                    Analytics
+                                <a href="{{ url('pasteurisasi1/datatren') }}" class="nav-link" data-key="t-analytics">
+                                    Analytics Data Trend
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="dashboard-crm.html" class="nav-link" data-key="t-crm">
-                                    CRM
+                                <a href="{{ url('pasteurisasi1/realtime') }}" class="nav-link" data-key="t-crm">
+                                    Dashboard Realtime
                                 </a>
                             </li>
 
@@ -176,13 +176,13 @@
                     <div class="collapse menu-dropdown" id="sidebarPasteur2">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="dashboard-analytics.html" class="nav-link" data-key="t-analytics">
-                                    Analytics
+                                <a href="{{ url('pasteurisasi2/datatren') }}" class="nav-link" data-key="t-analytics">
+                                    Analytics Data Trend
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="dashboard-crm.html" class="nav-link" data-key="t-crm">
-                                    CRM
+                                <a href="{{ url('pasteurisasi2/realtime') }}" class="nav-link" data-key="t-crm">
+                                    Dashboard Realtime
                                 </a>
                             </li>
 
@@ -199,13 +199,13 @@
                     <div class="collapse menu-dropdown" id="sidebarStk400">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="dashboard-analytics.html" class="nav-link" data-key="t-analytics">
-                                    Analytics
+                                <a href="{{ url('stk400/datatren') }}" class="nav-link" data-key="t-analytics">
+                                    Analytics Data Trend
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="dashboard-crm.html" class="nav-link" data-key="t-crm">
-                                    CRM
+                                <a href="{{ url('stk400/realtime') }}" class="nav-link" data-key="t-crm">
+                                    Dashboard Realtime
                                 </a>
                             </li>
 
@@ -222,13 +222,13 @@
                     <div class="collapse menu-dropdown" id="sidebarSt53">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="dashboard-analytics.html" class="nav-link" data-key="t-analytics">
-                                    Analytics
+                                <a href="{{ url('st53/datatren') }}" class="nav-link" data-key="t-analytics">
+                                    Analytics Data Trend
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="dashboard-crm.html" class="nav-link" data-key="t-crm">
-                                    CRM
+                                <a href="{{ url('st53/realtime') }}" class="nav-link" data-key="t-crm">
+                                    Dashboard Realtime
                                 </a>
                             </li>
 
