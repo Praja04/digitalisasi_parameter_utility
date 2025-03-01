@@ -7,48 +7,74 @@ use Illuminate\Http\Request;
 use App\Models\Olahsari\OlahsariModel;
 class SensorOlahsariController extends Controller
 {
-    public function getLatestLC1()
+    public function getLatestData()
     {
-        $latestData = OlahsariModel::whereDate('waktu', '>=', '2024-07-26')
-            ->orderBy('id', 'desc')
+        $latestData = OlahsariModel::orderBy('waktu', 'desc')
             ->first();
-
-        return response()->json(['lc1' => $latestData ? $latestData->LC_Mixer1 : 0]);
+    
+        return response()->json([
+            'lc1' => $latestData ? $latestData->LC_Mixer1 : 0,
+            'lc2' => $latestData ? $latestData->LC_Mixer2 : 0,
+            'temp1' => $latestData ? $latestData->TempMixer1 : 0,
+            'temp2' => $latestData ? $latestData->TempMixer2 : 0
+        ]);
     }
 
-    /**
-     * Mengambil data terbaru untuk LC_Mixer2
-     */
-    public function getLatestLC2()
+    public function getOlahsariData()
     {
-        $latestData = OlahsariModel::whereDate('waktu', '>=', '2024-07-26')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        return response()->json(['lc2' => $latestData ? $latestData->LC_Mixer2 : 0]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Data Olahsari berhasil diambil',
+            'data' => OlahsariModel::getLatestData(20)
+        ]);
     }
 
-    /**
-     * Mengambil data terbaru untuk TempMixer1
-     */
-    public function getLatestTemp1()
-    {
-        $latestData = OlahsariModel::whereDate('waktu', '>=', '2024-07-26')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        return response()->json(['temp1' => $latestData ? $latestData->TempMixer1 : 0]);
-    }
-
-    /**
-     * Mengambil data terbaru untuk TempMixer2
-     */
-    public function getLatestTemp2()
-    {
-        $latestData = OlahsariModel::whereDate('waktu', '>=', '2024-07-26')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        return response()->json(['temp2' => $latestData ? $latestData->TempMixer2 : 0]);
-    }
+     //filter
+     public function getOlahsariDataHarian(Request $request)
+     {
+         $tanggal = $request->input('tanggal');
+ 
+         $data = OlahsariModel::whereDate('waktu', $tanggal)
+             ->orderBy('waktu', 'asc')
+             ->get();
+ 
+         if ($data->isEmpty()) {
+             return response()->json([
+                 'success' => false,
+                 'message' => 'Data untuk tanggal ini tidak ditemukan',
+                 'data' => []
+             ]);
+         }
+ 
+         return response()->json([
+             'success' => true,
+             'message' => 'Data harian berhasil diambil',
+             'data' => $data
+         ]);
+     }
+ 
+     public function getOlahsariDataMingguan(Request $request)
+     {
+         $tanggalMulai = $request->input('tanggal_mulai');
+         $tanggalSelesai = $request->input('tanggal_selesai');
+ 
+         $data = OlahsariModel::whereBetween('waktu', [$tanggalMulai, $tanggalSelesai])
+             ->orderBy('waktu', 'asc')
+             ->get();
+ 
+         if ($data->isEmpty()) {
+             return response()->json([
+                 'success' => false,
+                 'message' => 'Data untuk rentang tanggal ini tidak ditemukan',
+                 'data' => []
+             ]);
+         }
+ 
+         return response()->json([
+             'success' => true,
+             'message' => 'Data mingguan berhasil diambil',
+             'data' => $data
+         ]);
+     }
+     //end filter
 }

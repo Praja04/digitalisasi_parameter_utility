@@ -8,22 +8,25 @@ use App\Models\STK400\STK400Model;
 class SensorSTK400Controller extends Controller
 {
     //
-    public function getLatestData($column)
+    public function getLatestData()
     {
-        // Pastikan hanya kolom yang diperbolehkan yang dapat diakses
-        $allowedColumns = ['Flowrate', 'Tank_Glucose'];
-
-        if (!in_array($column, $allowedColumns)) {
-            return response()->json(['error' => 'Kolom tidak valid'], 400);
-        }
-
+      
         // Ambil data terbaru berdasarkan waktu
         $latestData = STK400Model::orderBy('id', 'desc')->first();
 
-        if ($latestData) {
-            return response()->json([$column => $latestData->$column]);
-        }
+        return response()->json([
+            'Tank_Glucose'  => $latestData ? $latestData->Tank_Glucose : 0,
+            'Flowrate'  => $latestData ? $latestData->Flowrate: 0
+           
+        ]);
+    }
 
-        return response()->json([$column => 0]); // Jika tidak ada data, set default ke 0
+    public function getSTK400Data()
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Data STK400 berhasil diambil',
+            'data' => STK400Model::getLatestData(20)
+        ]);
     }
 }

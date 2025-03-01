@@ -53,12 +53,12 @@
                     <div class="collapse menu-dropdown" id="sidebarDailytank">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ url('dailytank/datatren') }}" class="nav-link" data-key="t-analytics">
+                                <a href="{{ url('daily-tank/datatren') }}" class="nav-link" data-key="t-analytics">
                                     Analytics Data Trend
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ url('dailytank/realtime') }}" class="nav-link" data-key="t-crm">
+                                <a href="{{ url('daily-tank/realtime') }}" class="nav-link" data-key="t-crm">
                                     Dashboard Realtime
                                 </a>
                             </li>
@@ -158,7 +158,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ url('pasteurisasi1/realtime') }}" class="nav-link" data-key="t-crm">
+                                <a href="{{ url('pasteurisasi1/realtime-pasteurizer') }}" class="nav-link" data-key="t-crm">
                                     Dashboard Realtime
                                 </a>
                             </li>
@@ -227,7 +227,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ url('st53/realtime') }}" class="nav-link" data-key="t-crm">
+                                <a href="{{ url('st53/realtime-tankA') }}" class="nav-link" data-key="t-crm">
                                     Dashboard Realtime
                                 </a>
                             </li>

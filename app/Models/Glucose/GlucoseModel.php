@@ -20,4 +20,9 @@ class GlucoseModel extends Model
         'GST4',
         'GST5',
     ];
+
+    public static function getLatestData($limit = 10)
+    {
+        return self::orderBy('waktu', 'desc')->limit($limit)->get();
+    }
 }

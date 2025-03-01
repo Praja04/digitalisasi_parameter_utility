@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boiler</title>
-    <link rel="stylesheet" href="../src/boiler/css/homepage.css">
+    <!-- <link rel="stylesheet" href="../src/boiler/css/homepage.css"> -->
     <style>
         @media (max-width: 750px) {
             .slide img {
@@ -77,33 +77,16 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="{{ asset('assetswebbased/css/boiler/tes.css') }}">
     <script src="{{ asset('assetswebbased/js/boiler/date.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/level_feed_water.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/lh.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/rh.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/lhguil.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/rhguil.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/lhstoker.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/rhstoker.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/lhfd.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/rhfd.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/pvsteam.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/pvsteam1.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/idfan.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/pump1.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/pump2.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/batubara_fk.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/bbsteam.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/steam_fk.js') }}"></script>
-
-    <script src="{{ asset('assetswebbased/js/boiler/O2.js') }}"></script>
-    <script src="{{ asset('assetswebbased/js/boiler/CO2.js') }}"></script>
+    <script src="{{ asset('assetswebbased/js/boiler/data.js') }}"></script>
+   
     <script>
         var BASE_URL = "{{ url('sensor') }}";
     </script>
-</head>
+    
 <!-- Sweet Alert css-->
 <link href="{{ asset('material/assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 
+</head>
 <style>
     @media (max-width: 750px) {
         .slide img {
@@ -246,7 +229,7 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-                document.body.style.zoom = "90%";
+                document.body.style.zoom = "80%";
             });
             // Ambil tahun saat ini
             document.getElementById("date").textContent = new Date().getFullYear();

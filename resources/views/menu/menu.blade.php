@@ -2,7 +2,7 @@
 @extends('layout')
 
 @section('style')
-
+<link href="{{ asset('assetswebbased/css/boiler/homepage.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 <style>
         .right {
@@ -37,6 +37,8 @@
             background-color: #ff1a1a;
         }
     </style>
+
+
 
 @section('content')
 <div class="card-container" style="margin-top: 100px;">

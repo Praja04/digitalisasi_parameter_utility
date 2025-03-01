@@ -5,62 +5,82 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DailyTank\DailyTankModel;
+
 class SensorDailyTankController extends Controller
 {
-    public function getLatestRO()
+    public function getLatestData()
     {
-        $latestData = DailyTankModel::whereDate('waktu', '>=', '2024-07-26')
-            ->orderBy('ID', 'desc')
+        $latestData = DailyTankModel::orderBy('waktu', 'desc')
             ->first();
 
-        return response()->json(['RO' => $latestData ? $latestData->DT_RO : 0]);
+        return response()->json([
+            'RO' => $latestData ? $latestData->DT_RO : 0,
+            'salt' => $latestData ? $latestData->DT_Salt : 0,
+            'sauceA' => $latestData ? $latestData->DT_SoySauceA : 0,
+            'sauceB' => $latestData ? $latestData->DT_SoySauceB : 0,
+            'sauceC' => $latestData ? $latestData->DT_SoySauceC : 0,
+        ]);
     }
 
-    /**
-     * Mengambil data terbaru untuk DT_Salt
-     */
-    public function getLatestSalt()
+
+
+    public function getDailytankData()
     {
-        $latestData = DailyTankModel::whereDate('waktu', '>=', '2024-07-26')
-            ->orderBy('ID', 'desc')
-            ->first();
-
-        return response()->json(['salt' => $latestData ? $latestData->DT_Salt : 0]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Data daily tank berhasil diambil',
+            'data' => DailyTankModel::getLatestData(20)
+        ]);
     }
 
-    /**
-     * Mengambil data terbaru untuk DT_SoySauceA
-     */
-    public function getLatestSoySauceA()
+
+    //filter
+    public function getDailyTankDataHarian(Request $request)
     {
-        $latestData = DailyTankModel::whereDate('waktu', '>=', '2024-07-26')
-            ->orderBy('ID', 'desc')
-            ->first();
+        $tanggal = $request->input('tanggal');
 
-        return response()->json(['sauceA' => $latestData ? $latestData->DT_SoySauceA : 0]);
+        $data = DailyTankModel::whereDate('waktu', $tanggal)
+            ->orderBy('waktu', 'asc')
+            ->get();
+
+        if ($data->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data untuk tanggal ini tidak ditemukan',
+                'data' => []
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data harian berhasil diambil',
+            'data' => $data
+        ]);
     }
 
-    /**
-     * Mengambil data terbaru untuk DT_SoySauceB
-     */
-    public function getLatestSoySauceB()
+    public function getDailyTankDataMingguan(Request $request)
     {
-        $latestData = DailyTankModel::whereDate('waktu', '>=', '2024-07-26')
-            ->orderBy('ID', 'desc')
-            ->first();
+        $tanggalMulai = $request->input('tanggal_mulai');
+        $tanggalSelesai = $request->input('tanggal_selesai');
 
-        return response()->json(['sauceB' => $latestData ? $latestData->DT_SoySauceB : 0]);
+        $data = DailyTankModel::whereBetween('waktu', [$tanggalMulai, $tanggalSelesai])
+            ->orderBy('waktu', 'asc')
+            ->get();
+
+        if ($data->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data untuk rentang tanggal ini tidak ditemukan',
+                'data' => []
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data mingguan berhasil diambil',
+            'data' => $data
+        ]);
     }
+    //end filter
 
-    /**
-     * Mengambil data terbaru untuk DT_SoySauceC
-     */
-    public function getLatestSoySauceC()
-    {
-        $latestData = DailyTankModel::whereDate('waktu', '>=', '2024-07-26')
-            ->orderBy('ID', 'desc')
-            ->first();
-
-        return response()->json(['sauceC' => $latestData ? $latestData->DT_SoySauceC : 0]);
-    }
 }

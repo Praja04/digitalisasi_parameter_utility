@@ -13,6 +13,8 @@
     <link rel="shortcut icon" href="{{ asset('material/assets/images/favicon.ico') }}">
 
     <!-- Layout config Js -->
+    <link href="{{ asset('material/assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+
     <script src="{{ asset('material/assets/js/layout.js') }}"></script>
     <!-- Bootstrap Css -->
     <link href="{{ asset('material/assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
@@ -22,7 +24,11 @@
     <link href="{{ asset('material/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- custom Css-->
     <link href="{{ asset('material/assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
+    <!-- Sweet Alerts js -->
+    <script src="{{ asset('material/assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 
+    <!-- Sweet alert init js-->
+    <script src="{{ asset('material/assets/js/pages/sweetalerts.init.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 </head>
@@ -103,7 +109,7 @@
     <!-- end auth page content -->
 
     <!-- footer -->
-  
+
     <!-- end Footer -->
     </div>
     <!-- end auth-page-wrapper -->
@@ -122,7 +128,7 @@
     <script src="{{ asset('material/assets/js/pages/particles.app.js') }}"></script>
     <!-- password-addon init -->
     <script src="{{ asset('material/assets/js/pages/password-addon.init.js') }}"></script>
-    <script>
+    <!-- <script>
         $(document).ready(function() {
             $('#loginForm').submit(function(e) {
                 e.preventDefault();
@@ -154,7 +160,95 @@
                 });
             });
         });
-    </script>
+    </script> -->
+
+    <script>
+    $(document).ready(function() {
+        $('#loginForm').submit(function(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: 'Memproses...',
+                text: 'Mohon tunggu sebentar',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading(); // Menampilkan animasi loading
+                }
+            });
+
+            $.ajax({
+                url: "{{ route('login') }}",
+                method: "POST",
+                data: {
+                    username: $('#username').val(),
+                    password: $('#password').val(),
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    Swal.close(); // Tutup loading
+
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Login Berhasil!',
+                            text: response.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = "{{ url('menu') }}"; // Redirect ke halaman setelah login
+                        });
+                    } else if (response.message === 'Anda sudah login.') {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Anda sudah login!',
+                            text: 'Mengalihkan ke halaman utama...',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = "{{ url('menu') }}";
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Login Gagal!',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    Swal.close(); // Tutup loading saat error
+
+                    if (xhr.status === 401) {
+                        var response = JSON.parse(xhr.responseText);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Unauthorized!',
+                            text: response.message
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Terjadi Kesalahan!',
+                            text: 'Terjadi kesalahan pada server.'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Cek jika user sudah login saat halaman dimuat
+        $.ajax({
+            url: "{{ route('login') }}",
+            method: "GET",
+            success: function(response) {
+                if (response.success === false && response.message === 'Anda sudah login.') {
+                    window.location.href = "{{ url('menu') }}";
+                }
+            }
+        });
+    });
+</script>
+
 </body>
 
 </html>

@@ -1,4 +1,5 @@
 function updateTime() {
+    console.log('a');
     const now = new Date();
 
     // Get date components

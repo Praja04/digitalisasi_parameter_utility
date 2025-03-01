@@ -18,4 +18,9 @@ class DailyTankModel extends Model
         'DT_SoySauceB',
         'DT_SoySauceC',
     ];
+
+    public static function getLatestData($limit = 10)
+    {
+        return self::orderBy('waktu', 'desc')->limit($limit)->get();
+    }
 }

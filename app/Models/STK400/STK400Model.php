@@ -19,4 +19,9 @@ class STK400Model extends Model
         'Flowrate',
     ];
 
+
+    public static function getLatestData($limit = 10)
+    {
+        return self::orderBy('waktu', 'desc')->limit($limit)->get();
+    }
 }

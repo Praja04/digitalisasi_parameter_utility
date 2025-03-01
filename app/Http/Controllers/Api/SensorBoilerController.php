@@ -6,259 +6,108 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Boiler\BbSteam_Boiler;
 use App\Models\Boiler\ReadSensors_Boiler;
+use App\Models\Boiler\Sensors_Boiler;
 use Carbon\Carbon;
 
 class SensorBoilerController extends Controller
 {
-    public function getBatubaraFk()
+    public function getSensorData()
     {
-        $tanggal = Carbon::now()->toDateString();
+        // Ambil data terbaru dari masing-masing tabel berdasarkan waktu terbaru
+        $dataReadSensors = ReadSensors_Boiler::orderByDesc('waktu')->first();
+        $dataSensors = Sensors_Boiler::orderByDesc('waktu')->first();
 
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
+        // Jika tidak ada data, set nilai default ke 0
+        $readSensorsArray = $dataReadSensors ? $dataReadSensors->toArray() : [
+            "id" => 0,
+            "waktu" => now()->toDateTimeString(),
+            "LevelFeedWater" => 0,
+            "PVSteam" => 0,
+            "FeedPressure" => 0,
+            "LHGuiloutine" => 0,
+            "RHGuiloutine" => 0,
+            "LHTemp" => 0,
+            "RHTemp" => 0,
+            "IDFan" => 0,
+            "LHFDFan" => 0,
+            "RHFDFan" => 0,
+            "LHStoker" => 0,
+            "RHStoker" => 0,
+            "WaterPump1" => 0,
+            "WaterPump2" => 0,
+            "InletWaterFlow" => 0,
+            "OutletSteamFlow" => 0,
+            "SuhuFeedTank" => 0,
+            "O2" => 0,
+            "CO2" => 0,
+            "Batubara_FK" => 0,
+            "Steam_FK" => 0
+        ];
 
-        return response()->json([
-            'batubara_fk' => $data ? $data->Batubara_FK : 0
-        ]);
+        $sensorsArray = $dataSensors ? $dataSensors->toArray() : [
+            "Batubara" => 0,
+            "Steam" => 0
+        ];
+
+        // Gabungkan kedua array
+        $response = array_merge($readSensorsArray, $sensorsArray);
+
+        return response()->json($response);
     }
 
-    public function getBbSteam()
+    public function getSensorDataa()
     {
-        $tanggal = Carbon::now()->toDateString();
+        //$tanggal = Carbon::now()->toDateString();
 
-        $data = BbSteam_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
+        // Ambil data terbaru dari masing-masing tabel berdasarkan tanggal
+        $dataReadSensors = ReadSensors_Boiler::orderByDesc('waktu')->first();
+        $dataSensors = Sensors_Boiler::orderByDesc('waktu')->first();
 
-        return response()->json([
-            'bbsteam' => $data ? $data->bb_steam : 0,
-            'batubara' => $data ? $data->AvgBatubara : 0,
-            'steam' => $data ? $data->AvgSteam : 0
-        ]);
+
+        // Mapping kolom untuk ReadSensors_Boiler
+        $readSensorsMap = [
+            'batubara_fk' => 'Batubara_FK',
+            'bbsteam' => 'Steam_FK',
+            'co2' => 'CO2',
+            'level_feed_water' => 'LevelFeedWater',
+            'idfan' => 'IDFan',
+            'steam_fk' => 'Steam_FK',
+            'rhstoker' => 'RHStoker',
+            'rhguil' => 'RHGuiloutine',
+            'rhfd' => 'RHFDFan',
+            'rh' => 'RHTemp',
+            'pvsteam1' => 'PVSteam',
+            'pvsteam' => 'PVSteam',
+            'pump2' => 'WaterPump2',
+            'pump1' => 'WaterPump1',
+            'o2' => 'O2',
+            'lhstoker' => 'LHStoker',
+            'lhguil' => 'LHGuiloutine',
+            'lhfd' => 'LHFDFan',
+            'lh' => 'LHTemp'
+        ];
+
+        // Mapping kolom untuk Sensors_Boiler
+        $sensorsMap = [
+            'batubara' => 'Batubara',
+            'steam' => 'Steam'
+        ];
+
+        $response = [];
+
+        // Ambil data dari ReadSensors_Boiler
+        foreach ($readSensorsMap as $key => $column) {
+            $response[$key] = $dataReadSensors;
+        }
+
+        // Ambil data dari Sensors_Boiler
+        foreach ($sensorsMap as $key => $column) {
+            $response[$key] = $dataSensors;
+        }
+
+        return response()->json($response);
     }
 
-    public function getCO2()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'co2' => $data ? round($data->CO2, 2) : 0
-        ]);
-    }
-
-    public function getLevelFeedWater()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'level_feed_water' => $data ? $data->LevelFeedWater : 0
-        ]);
-    }
-
-    public function getIDFan()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'idfan' => $data ? $data->IDFan : 0
-        ]);
-    }
-
-    public function getSteamFk()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'steam_fk' => $data ? $data->Steam_FK : 0
-        ]);
-    }
-
-    public function getRHStoker()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'rhstoker' => $data ? $data->RHStoker : 0
-        ]);
-    }
-
-    public function getRHGuiloutine()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'rhguil' => $data ? $data->RHGuiloutine : 0
-        ]);
-    }
-
-    public function getRHFDFan()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'rhfd' => $data ? $data->RHFDFan : 0
-        ]);
-    }
-
-
-    public function getRHTemp()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'rh' => $data ? $data->RHTemp : 0
-        ]);
-    }
-
-    public function getPVSteam1()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'pvsteam1' => $data ? $data->PVSteam : 0
-        ]);
-    }
-
-    public function getPVSteam()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'pvsteam' => $data ? $data->PVSteam : 0
-        ]);
-    }
-
-    public function getWaterPump2()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'pump2' => $data ? $data->WaterPump2 : 0
-        ]);
-    }
-
-    public function getWaterPump1()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'pump1' => $data ? $data->WaterPump1 : 0
-        ]);
-    }
-
-    public function getO2()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'o2' => $data ? $data->O2 : 0
-        ]);
-    }
-
-    public function getLHStoker()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'lhstoker' => $data ? $data->LHStoker : 0
-        ]);
-    }
-
-    public function getLHGuiloutine()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'lhguil' => $data ? $data->LHGuiloutine : 0
-        ]);
-    }
-
-    public function getLHFDFan()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'lhfd' => $data ? $data->LHFDFan : 0
-        ]);
-    }
-
-    public function getLHTemp()
-    {
-        $tanggal = Carbon::now()->toDateString();
-
-        $data = ReadSensors_Boiler::whereDate('waktu', '>=', $tanggal)
-            ->orderByDesc('id')
-            ->first();
-
-        return response()->json([
-            'lh' => $data ? $data->LHTemp : 0
-        ]);
-    }
 
 
     //data trend start
@@ -268,8 +117,87 @@ class SensorBoilerController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Data sensor boiler berhasil diambil',
-            'data' => ReadSensors_Boiler::getLatestData(10)
+            'data' => ReadSensors_Boiler::getLatestData(20)
         ]);
     }
     //data trend end
+
+
+    //filter data trend start
+    public function getFilteredBoilerData(Request $request)
+    {
+        $query = ReadSensors_Boiler::query();
+
+        // Cek apakah filter harian digunakan
+        if ($request->has('tanggal')) {
+            $tanggal = $request->input('tanggal');
+            $query->whereDate('waktu', $tanggal);
+        }
+
+        // Cek apakah filter mingguan digunakan
+        if ($request->has('tanggal_mulai') && $request->has('tanggal_selesai')) {
+            $tanggalMulai = $request->input('tanggal_mulai');
+            $tanggalSelesai = $request->input('tanggal_selesai');
+
+            $query->whereBetween('waktu', [$tanggalMulai, $tanggalSelesai]);
+        }
+
+        // Ambil data yang sudah difilter
+        $data = $query->orderBy('waktu', 'asc')->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data boiler berhasil diambil',
+            'data' => $data
+        ]);
+    }
+
+    public function getBoilerDataHarian(Request $request)
+    {
+        $tanggal = $request->input('tanggal');
+
+        $data = ReadSensors_Boiler::whereDate('waktu', $tanggal)
+            ->orderBy('waktu', 'asc')
+            ->get();
+
+        if ($data->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data untuk tanggal ini tidak ditemukan',
+                'data' => []
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data harian berhasil diambil',
+            'data' => $data
+        ]);
+    }
+
+    public function getBoilerDataMingguan(Request $request)
+    {
+        $tanggalMulai = $request->input('tanggal_mulai');
+        $tanggalSelesai = $request->input('tanggal_selesai');
+
+        $data = ReadSensors_Boiler::whereBetween('waktu', [$tanggalMulai, $tanggalSelesai])
+            ->orderBy('waktu', 'asc')
+            ->get();
+
+        if ($data->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data untuk rentang tanggal ini tidak ditemukan',
+                'data' => []
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data mingguan berhasil diambil',
+            'data' => $data
+        ]);
+    }
+    //filter data trend end
+
 }

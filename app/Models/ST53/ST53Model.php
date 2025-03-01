@@ -22,4 +22,10 @@ class ST53Model extends Model
         'MSD1', 'MSD2', 'JERIKEN'
     ];
 
+
+    public static function getLatestData($limit = 10)
+    {
+        return self::orderBy('waktu', 'desc')->limit($limit)->get();
+    }
+
 }

@@ -7,27 +7,43 @@ use Illuminate\Http\Request;
 use App\Models\ST53\ST53Model;
 class SensorST53Controller extends Controller
 {
-    public function getLatestData($column)
+    public function getLatestData()
+{
+    $latestData = ST53Model::orderBy('id', 'desc')->first();
+
+    if (!$latestData) {
+        return response()->json(['error' => 'No data found'], 404);
+    }
+
+    return response()->json([
+        'A1' => $latestData->A1 / 1000,
+        'A2' => $latestData->A2 / 1000,
+        'A3' => $latestData->A3 / 1000,
+        'A4' => $latestData->A4 / 1000,
+        'A5' => $latestData->A5 / 1000,
+        'B1' => $latestData->B1 / 1000,
+        'B2' => $latestData->B2 / 1000,
+        'B3' => $latestData->B3 / 1000,
+        'B4' => $latestData->B4 / 1000,
+        'B5' => $latestData->B5 / 1000,
+        'C1' => $latestData->C1 / 1000,
+        'C2' => $latestData->C2 / 1000,
+        'C3' => $latestData->C3 / 1000,
+        'C4' => $latestData->C4 / 1000,
+        'C5' => $latestData->C5 / 1000,
+        'D1' => $latestData->D1 / 1000,
+        'D2' => $latestData->D2 / 1000,
+        'D3' => $latestData->D3 / 1000,
+        'D4' => $latestData->D4 / 1000,
+        'D5' => $latestData->D5 / 1000,
+    ]);
+}
+    public function getST53Data()
     {
-        // Pastikan kolom yang diminta ada dalam model
-        $allowedColumns = [
-            'A1', 'A2', 'A3', 'A4', 'A5',
-            'B1', 'B2', 'B3', 'B4', 'B5',
-            'C1', 'C2', 'C3', 'C4', 'C5',
-            'D1', 'D2', 'D3', 'D4', 'D5'
-        ];
-
-        if (!in_array($column, $allowedColumns)) {
-            return response()->json(['error' => 'Kolom tidak valid'], 400);
-        }
-
-        // Ambil data terbaru berdasarkan waktu
-        $latestData = ST53Model::orderBy('id', 'desc')->first();
-
-        if ($latestData) {
-            return response()->json([$column => $latestData->$column / 1000]);
-        }
-
-        return response()->json([$column => 0]); // Default jika tidak ada data
+        return response()->json([
+            'success' => true,
+            'message' => 'Data ST53 berhasil diambil',
+            'data' => ST53Model::getLatestData(20)
+        ]);
     }
 }

@@ -7,60 +7,77 @@ use Illuminate\Http\Request;
 use App\Models\Glucose\GlucoseModel;
 class SensorGlucoseController extends Controller
 {
-    public function getLatestGST1()
+    public function getLatestData()
     {
-        $latestData = GlucoseModel::whereDate('waktu', '>=', '2024-07-26')
-            ->orderBy('id', 'desc')
+        $latestData = GlucoseModel::orderBy('waktu', 'desc')
             ->first();
 
-        return response()->json(['gst1' => $latestData ? $latestData->GST1 : 0]);
+        return response()->json([
+            'GST1'  => $latestData ? $latestData->GST1 : 0,
+            'GST2'  => $latestData ? $latestData->GST2 : 0,
+            'GST3'  => $latestData ? $latestData->GST3 : 0,
+            'GST4'  => $latestData ? $latestData->GST4 : 0,
+            'GST5'  => $latestData ? $latestData->GST5 : 0,
+        
+           
+        ]);
     }
 
-    /**
-     * Mengambil data terbaru untuk GST2
-     */
-    public function getLatestGST2()
+    public function getGlucoseData()
     {
-        $latestData = GlucoseModel::whereDate('waktu', '>=', '2024-07-26')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        return response()->json(['gst2' => $latestData ? $latestData->GST2 : 0]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Data Glucose berhasil diambil',
+            'data' => GlucoseModel::getLatestData(20)
+        ]);
     }
 
-    /**
-     * Mengambil data terbaru untuk GST3
-     */
-    public function getLatestGST3()
+    //filter
+    public function getGlucoseDataHarian(Request $request)
     {
-        $latestData = GlucoseModel::whereDate('waktu', '>=', '2024-07-26')
-            ->orderBy('id', 'desc')
-            ->first();
+        $tanggal = $request->input('tanggal');
 
-        return response()->json(['gst3' => $latestData ? $latestData->GST3 : 0]);
+        $data = GlucoseModel::whereDate('waktu', $tanggal)
+            ->orderBy('waktu', 'asc')
+            ->get();
+
+        if ($data->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data untuk tanggal ini tidak ditemukan',
+                'data' => []
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data harian berhasil diambil',
+            'data' => $data
+        ]);
     }
 
-    /**
-     * Mengambil data terbaru untuk GST4
-     */
-    public function getLatestGST4()
+    public function getGlucoseDataMingguan(Request $request)
     {
-        $latestData = GlucoseModel::whereDate('waktu', '>=', '2024-07-26')
-            ->orderBy('id', 'desc')
-            ->first();
+        $tanggalMulai = $request->input('tanggal_mulai');
+        $tanggalSelesai = $request->input('tanggal_selesai');
 
-        return response()->json(['gst4' => $latestData ? $latestData->GST4 : 0]);
+        $data = GlucoseModel::whereBetween('waktu', [$tanggalMulai, $tanggalSelesai])
+            ->orderBy('waktu', 'asc')
+            ->get();
+
+        if ($data->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data untuk rentang tanggal ini tidak ditemukan',
+                'data' => []
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data mingguan berhasil diambil',
+            'data' => $data
+        ]);
     }
-
-    /**
-     * Mengambil data terbaru untuk GST5
-     */
-    public function getLatestGST5()
-    {
-        $latestData = GlucoseModel::whereDate('waktu', '>=', '2024-07-26')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        return response()->json(['gst5' => $latestData ? $latestData->GST5 : 0]);
-    }
+    //end filter
 }

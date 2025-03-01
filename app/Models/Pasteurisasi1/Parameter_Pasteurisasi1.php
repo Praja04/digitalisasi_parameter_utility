@@ -44,4 +44,9 @@ class Parameter_Pasteurisasi1 extends Model
         'Batch',
         'Storage'
     ];
+
+    public static function getLatestData($limit = 10)
+    {
+        return self::orderBy('waktu', 'desc')->limit($limit)->get();
+    }
 }

@@ -20,6 +20,35 @@
             </div>
         </div>
 
+
+        <div class="row">
+            <div class="col-md-4">
+                <label for="filter-mode">Filter Data:</label>
+                <select id="filter-mode" class="form-control">
+                    <option value="normal">Terbaru</option>
+                    <option value="harian">Per Hari</option>
+                    <option value="mingguan">Per Minggu</option>
+                </select>
+            </div>
+            <div class="col-md-4" id="filter-tanggal-container" style="display: none;">
+                <label for="filter-tanggal">Pilih Tanggal:</label>
+                <input type="date" id="filter-tanggal" class="form-control">
+            </div>
+            <div class="col-md-4" id="filter-mingguan-container" style="display: none;">
+                <label>Pilih Rentang Tanggal:</label>
+                <div class="d-flex">
+                    <input type="date" id="tanggal-mulai" class="form-control">
+                    <span class="mx-2">sampai</span>
+                    <input type="date" id="tanggal-selesai" class="form-control">
+                </div>
+            </div>
+            <div class="col-md-4 mt-4" >
+                <button class="btn btn-primary" id="apply-filter">search</button>
+            </div>
+        </div>
+
+        <hr>
+
         <!-- 🔹 Grafik Level & Tekanan Air -->
         <div class="row">
             <div class="col-xl-12">
@@ -82,17 +111,26 @@
 <!-- 🔹 Include ApexCharts & jQuery -->
 <script src="{{ asset('material/assets/libs/apexcharts/apexcharts.min.js') }}"></script>
 
-<script>
+
+<!-- <script>
     $(document).ready(function() {
-        function getBoilerData() {
+        function getBoilerData(url, params = {}) {
             $.ajax({
-                url: "{{ url('/sensor/boiler-data') }}",
+                url: url,
                 type: "GET",
+                data: params,
                 dataType: "json",
                 success: function(response) {
-                    if (response.success) {
+                    if (response.success && response.data.length > 0) {
                         let data = response.data.reverse();
                         updateCharts(data);
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Data Tidak Ditemukan',
+                            text: 'Tidak ada data untuk tanggal yang dipilih.',
+                        });
+                        updateCharts([]); // Kosongkan grafik
                     }
                 },
                 error: function(xhr, status, error) {
@@ -102,189 +140,321 @@
         }
 
         function updateCharts(data) {
-            let waktu = data.map(item => item.waktu);
+            let waktu = data.map(item => item.waktu) || [];
+            let levelFeedWater = data.map(item => item.LevelFeedWater) || [];
+            let feedPressure = data.map(item => item.FeedPressure) || [];
+            let pvSteam = data.map(item => item.PVSteam) || [];
+            let lhTemp = data.map(item => item.LHTemp) || [];
+            let rhTemp = data.map(item => item.RHTemp) || [];
+            let suhuFeedTank = data.map(item => item.SuhuFeedTank) || [];
+            let o2 = data.map(item => item.O2) || [];
+            let co2 = data.map(item => item.CO2) || [];
+            let idFan = data.map(item => item.IDFan) || [];
+            let lhFDFan = data.map(item => item.LHFDFan) || [];
+            let rhFDFan = data.map(item => item.RHFDFan) || [];
+            let lhStoker = data.map(item => item.LHStoker) || [];
+            let rhStoker = data.map(item => item.RHStoker) || [];
+            let inletFlow = data.map(item => item.InletWaterFlow) || [];
+            let outletFlow = data.map(item => item.OutletSteamFlow) || [];
+            let batubaraFK = data.map(item => item.Batubara_FK) || [];
+            let steamFK = data.map(item => item.Steam_FK) || [];
 
-            // 📌 Data Level & Tekanan Air
-            let levelFeedWater = data.map(item => item.LevelFeedWater);
-            let feedPressure = data.map(item => item.FeedPressure);
-            let pvSteam = data.map(item => item.PVSteam);
-
-            // 📌 Data Temperatur & Gas
-            let lhTemp = data.map(item => item.LHTemp);
-            let rhTemp = data.map(item => item.RHTemp);
-            let suhuFeedTank = data.map(item => item.SuhuFeedTank);
-            let o2 = data.map(item => item.O2);
-            let co2 = data.map(item => item.CO2);
-
-            // 📌 Data Fan & Stoker
-            let idFan = data.map(item => item.IDFan);
-            let lhFDFan = data.map(item => item.LHFDFan);
-            let rhFDFan = data.map(item => item.RHFDFan);
-            let lhStoker = data.map(item => item.LHStoker);
-            let rhStoker = data.map(item => item.RHStoker);
-
-            // 📌 Data Flow & Fuel
-            let inletFlow = data.map(item => item.InletWaterFlow);
-            let outletFlow = data.map(item => item.OutletSteamFlow);
-            let batubaraFK = data.map(item => item.Batubara_FK);
-            let steamFK = data.map(item => item.Steam_FK);
-
-            // 🔹 Grafik Level & Tekanan Air
-            new ApexCharts($("#chart-water-pressure")[0], {
+            let chartOptions = (series, title, type = "line") => ({
                 chart: {
-                    type: "line",
+                    type,
                     height: 300
                 },
-                series: [{
-                        name: "Feed Water Level (%)",
-                        data: levelFeedWater
-                    },
-                    {
-                        name: "Feed Pressure (bar)",
-                        data: feedPressure
-                    },
-                    {
-                        name: "Steam Pressure (bar)",
-                        data: pvSteam
-                    }
-                ],
+                series,
                 xaxis: {
                     categories: waktu,
                     labels: {
                         show: false
-                    }, // 🔹 Menghilangkan label di sumbu X
-                 
+                    }
+                },
+                markers: {
+                    size: 5,
+                    shape: "circle"
                 },
                 yaxis: {
                     title: {
-                        text: "Tekanan & Level"
+                        text: title
                     }
                 }
-            }).render();
+            });
 
-            // 🔹 Grafik Temperatur & Gas
-            new ApexCharts($("#chart-temp-gas")[0], {
-                chart: {
-                    type: "line",
-                    height: 300
+            new ApexCharts($("#chart-water-pressure")[0], chartOptions([{
+                    name: "Feed Water Level (%)",
+                    data: levelFeedWater
                 },
-                series: [{
-                        name: "LH Temperature (°C)",
-                        data: lhTemp
-                    },
-                    {
-                        name: "RH Temperature (°C)",
-                        data: rhTemp
-                    },
-                    {
-                        name: "Feed Tank Temperature (°C)",
-                        data: suhuFeedTank
-                    },
-                    {
-                        name: "Oxygen (O2) (%)",
-                        data: o2
-                    },
-                    {
-                        name: "Carbon Dioxide (CO2) (%)",
-                        data: co2
-                    }
-                ],
-                xaxis: {
-                    categories: waktu,
-                    labels: {
-                        show: false
-                    }, // 🔹 Menghilangkan label di sumbu X
-                 
+                {
+                    name: "Feed Pressure (bar)",
+                    data: feedPressure
                 },
-                yaxis: {
-                    title: {
-                        text: "Temperatur & Gas"
-                    }
+                {
+                    name: "Steam Pressure (bar)",
+                    data: pvSteam
                 }
-            }).render();
+            ], "Tekanan & Level")).render();
 
-            // 🔹 Grafik Fan & Stoker
-            new ApexCharts($("#chart-fan-stoker")[0], {
-                chart: {
-                    type: "bar",
-                    height: 300
+            new ApexCharts($("#chart-temp-gas")[0], chartOptions([{
+                    name: "LH Temperature (°C)",
+                    data: lhTemp
                 },
-                series: [{
-                        name: "ID Fan (Hz)",
-                        data: idFan
-                    },
-                    {
-                        name: "LH FD Fan (Hz)",
-                        data: lhFDFan
-                    },
-                    {
-                        name: "RH FD Fan (Hz)",
-                        data: rhFDFan
-                    },
-                    {
-                        name: "LH Stoker (Hz)",
-                        data: lhStoker
-                    },
-                    {
-                        name: "RH Stoker (Hz)",
-                        data: rhStoker
-                    }
-                ],
-                xaxis: {
-                    categories: waktu,
-                    labels: {
-                        show: false
-                    }, // 🔹 Menghilangkan label di sumbu X
-                 
+                {
+                    name: "RH Temperature (°C)",
+                    data: rhTemp
                 },
-                yaxis: {
-                    title: {
-                        text: "Frekuensi Fan & Stoker (Hz)"
-                    }
+                {
+                    name: "Feed Tank Temperature (°C)",
+                    data: suhuFeedTank
+                },
+                {
+                    name: "Oxygen (O2) (%)",
+                    data: o2
+                },
+                {
+                    name: "Carbon Dioxide (CO2) (%)",
+                    data: co2
                 }
-            }).render();
+            ], "Temperatur & Gas")).render();
 
-            // 🔹 Grafik Flow Rate & Bahan Bakar
-            new ApexCharts($("#chart-flow-fuel")[0], {
-                chart: {
-                    type: "area",
-                    height: 300
+            new ApexCharts($("#chart-fan-stoker")[0], chartOptions([{
+                    name: "ID Fan (Hz)",
+                    data: idFan
                 },
-                series: [{
-                        name: "Inlet Water Flow (m³/h)",
-                        data: inletFlow
-                    },
-                    {
-                        name: "Outlet Steam Flow (ton/h)",
-                        data: outletFlow
-                    },
-                    {
-                        name: "Coal Consumption (kg/h)",
-                        data: batubaraFK
-                    },
-                    {
-                        name: "Steam Production (ton/h)",
-                        data: steamFK
-                    }
-                ],
-                xaxis: {
-                    categories: waktu,
-                    labels: {
-                        show: false
-                    }, // 🔹 Menghilangkan label di sumbu X
-                 
+                {
+                    name: "LH FD Fan (Hz)",
+                    data: lhFDFan
                 },
-                yaxis: {
-                    title: {
-                        text: "Flow & Fuel Usage"
-                    }
+                {
+                    name: "RH FD Fan (Hz)",
+                    data: rhFDFan
+                },
+                {
+                    name: "LH Stoker (Hz)",
+                    data: lhStoker
+                },
+                {
+                    name: "RH Stoker (Hz)",
+                    data: rhStoker
                 }
-            }).render();
+            ], "Frekuensi Fan & Stoker (Hz)", "bar")).render();
+
+            new ApexCharts($("#chart-flow-fuel")[0], chartOptions([{
+                    name: "Inlet Water Flow (m³/h)",
+                    data: inletFlow
+                },
+                {
+                    name: "Outlet Steam Flow (ton/h)",
+                    data: outletFlow
+                },
+                {
+                    name: "Coal Consumption (kg/h)",
+                    data: batubaraFK
+                },
+                {
+                    name: "Steam Production (ton/h)",
+                    data: steamFK
+                }
+            ], "Flow & Fuel Usage", "area")).render();
         }
 
-        getBoilerData();
+        $("#filter-mode").change(function() {
+            let mode = $(this).val();
+            $("#filter-tanggal-container, #filter-mingguan-container").hide();
+            if (mode === "harian") {
+                $("#filter-tanggal-container").show();
+            } else if (mode === "mingguan") {
+                $("#filter-mingguan-container").show();
+            }
+        });
+
+        $("#filter-normal").click(function() {
+            getBoilerData("/sensor/boiler/data-normal");
+        });
+
+        $("#filter-harian").click(function() {
+            let tanggal = $("#input-tanggal").val();
+            if (!tanggal) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Pilih Tanggal",
+                    text: "Silakan pilih tanggal terlebih dahulu."
+                });
+                return;
+            }
+            getBoilerData("/sensor/boiler/data-harian", {
+                tanggal: tanggal
+            });
+        });
+
+        // 🔹 Jalankan pertama kali dengan data normal
+        getBoilerData("{{ url('/sensor/boiler-data') }}");
     });
+</script> -->
+<script>
+    $(document).ready(function() {
+    let chartInstances = [];
+
+    function getBoilerData(url, params = {}) {
+        $.ajax({
+            url: url,
+            type: "GET",
+            data: params,
+            dataType: "json",
+            success: function(response) {
+                resetCharts();
+                if (response.success && response.data.length > 0) {
+                    let data = response.data.reverse();
+                    updateCharts(data);
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Data Tidak Ditemukan',
+                        text: 'Tidak ada data untuk tanggal yang dipilih.',
+                    });
+                    updateCharts([]);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching boiler data:", error);
+            }
+        });
+    }
+
+    function resetCharts() {
+        chartInstances.forEach(chart => chart.destroy());
+        chartInstances = [];
+    }
+
+    function updateCharts(data) {
+        let waktu = data.map(item => item.waktu) || [];
+        let levelFeedWater = data.map(item => item.LevelFeedWater) || [];
+        let feedPressure = data.map(item => item.FeedPressure) || [];
+        let pvSteam = data.map(item => item.PVSteam) || [];
+        let lhTemp = data.map(item => item.LHTemp) || [];
+        let rhTemp = data.map(item => item.RHTemp) || [];
+        let suhuFeedTank = data.map(item => item.SuhuFeedTank) || [];
+        let o2 = data.map(item => item.O2) || [];
+        let co2 = data.map(item => item.CO2) || [];
+        let idFan = data.map(item => item.IDFan) || [];
+        let lhFDFan = data.map(item => item.LHFDFan) || [];
+        let rhFDFan = data.map(item => item.RHFDFan) || [];
+        let lhStoker = data.map(item => item.LHStoker) || [];
+        let rhStoker = data.map(item => item.RHStoker) || [];
+        let inletFlow = data.map(item => item.InletWaterFlow) || [];
+        let outletFlow = data.map(item => item.OutletSteamFlow) || [];
+        let batubaraFK = data.map(item => item.Batubara_FK) || [];
+        let steamFK = data.map(item => item.Steam_FK) || [];
+
+        let chartOptions = (series, title, type = "line") => ({
+            chart: {
+                type,
+                height: 300
+            },
+            series,
+            xaxis: {
+                categories: waktu,
+                labels: {
+                    show: false
+                }
+            },
+            markers: {
+                size: 5,
+                shape: "circle"
+            },
+            yaxis: {
+                title: {
+                    text: title
+                }
+            }
+        });
+
+        let chart1 = new ApexCharts($("#chart-water-pressure")[0], chartOptions([
+            { name: "Feed Water Level (%)", data: levelFeedWater },
+            { name: "Feed Pressure (bar)", data: feedPressure },
+            { name: "Steam Pressure (bar)", data: pvSteam }
+        ], "Tekanan & Level"));
+        chart1.render();
+        chartInstances.push(chart1);
+
+        let chart2 = new ApexCharts($("#chart-temp-gas")[0], chartOptions([
+            { name: "LH Temperature (°C)", data: lhTemp },
+            { name: "RH Temperature (°C)", data: rhTemp },
+            { name: "Feed Tank Temperature (°C)", data: suhuFeedTank },
+            { name: "Oxygen (O2) (%)", data: o2 },
+            { name: "Carbon Dioxide (CO2) (%)", data: co2 }
+        ], "Temperatur & Gas"));
+        chart2.render();
+        chartInstances.push(chart2);
+
+        let chart3 = new ApexCharts($("#chart-fan-stoker")[0], chartOptions([
+            { name: "ID Fan (Hz)", data: idFan },
+            { name: "LH FD Fan (Hz)", data: lhFDFan },
+            { name: "RH FD Fan (Hz)", data: rhFDFan },
+            { name: "LH Stoker (Hz)", data: lhStoker },
+            { name: "RH Stoker (Hz)", data: rhStoker }
+        ], "Frekuensi Fan & Stoker (Hz)", "bar"));
+        chart3.render();
+        chartInstances.push(chart3);
+
+        let chart4 = new ApexCharts($("#chart-flow-fuel")[0], chartOptions([
+            { name: "Inlet Water Flow (m³/h)", data: inletFlow },
+            { name: "Outlet Steam Flow (ton/h)", data: outletFlow },
+            { name: "Coal Consumption (kg/h)", data: batubaraFK },
+            { name: "Steam Production (ton/h)", data: steamFK }
+        ], "Flow & Fuel Usage", "area"));
+        chart4.render();
+        chartInstances.push(chart4);
+    }
+
+    $("#filter-mode").change(function() {
+        let mode = $(this).val();
+        $("#filter-tanggal-container, #filter-mingguan-container").hide();
+        if (mode === "harian") {
+            $("#filter-tanggal-container").show();
+        } else if (mode === "mingguan") {
+            $("#filter-mingguan-container").show();
+        }
+    });
+
+    $("#apply-filter").click(function() {
+        let mode = $("#filter-mode").val();
+
+        if (mode === "normal") {
+            getBoilerData("/sensor/boiler-data");
+        } else if (mode === "harian") {
+            let tanggal = $("#filter-tanggal").val();
+            if (!tanggal) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Pilih Tanggal",
+                    text: "Silakan pilih tanggal terlebih dahulu."
+                });
+                return;
+            }
+            getBoilerData("/sensor/boiler/data-harian", { tanggal: tanggal });
+        } else if (mode === "mingguan") {
+            let tanggalMulai = $("#tanggal-mulai").val();
+            let tanggalSelesai = $("#tanggal-selesai").val();
+            if (!tanggalMulai || !tanggalSelesai) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Pilih Rentang Tanggal",
+                    text: "Silakan pilih tanggal mulai dan selesai."
+                });
+                return;
+            }
+            getBoilerData("/sensor/boiler/data-mingguan", {
+                tanggal_mulai: tanggalMulai,
+                tanggal_selesai: tanggalSelesai
+            });
+        }
+    });
+
+    // Jalankan pertama kali dengan data normal
+    getBoilerData("{{ url('/sensor/boiler-data') }}");
+});
+
 </script>
-
-
 @endsection

@@ -20,4 +20,9 @@ class OlahsariModel extends Model
         'TempMixer2',
         'LC_Mixer2',
     ];
+
+    public static function getLatestData($limit = 10)
+    {
+        return self::orderBy('waktu', 'desc')->limit($limit)->get();
+    }
 }
