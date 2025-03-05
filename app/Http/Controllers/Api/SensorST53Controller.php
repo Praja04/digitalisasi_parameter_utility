@@ -46,4 +46,53 @@ class SensorST53Controller extends Controller
             'data' => ST53Model::getLatestData(20)
         ]);
     }
+
+     //filter
+     public function getST53DataHarian(Request $request)
+     {
+         $tanggal = $request->input('tanggal');
+ 
+         $data = ST53Model::whereDate('waktu', $tanggal)
+             ->orderBy('waktu', 'asc')
+             ->get();
+ 
+         if ($data->isEmpty()) {
+             return response()->json([
+                 'success' => false,
+                 'message' => 'Data untuk tanggal ini tidak ditemukan',
+                 'data' => []
+             ]);
+         }
+ 
+         return response()->json([
+             'success' => true,
+             'message' => 'Data harian berhasil diambil',
+             'data' => $data
+         ]);
+     }
+ 
+     public function getST53DataMingguan(Request $request)
+     {
+         $tanggalMulai = $request->input('tanggal_mulai');
+         $tanggalSelesai = $request->input('tanggal_selesai');
+ 
+         $data = ST53Model::whereBetween('waktu', [$tanggalMulai, $tanggalSelesai])
+             ->orderBy('waktu', 'asc')
+             ->get();
+ 
+         if ($data->isEmpty()) {
+             return response()->json([
+                 'success' => false,
+                 'message' => 'Data untuk rentang tanggal ini tidak ditemukan',
+                 'data' => []
+             ]);
+         }
+ 
+         return response()->json([
+             'success' => true,
+             'message' => 'Data mingguan berhasil diambil',
+             'data' => $data
+         ]);
+     }
+     //end filter
 }
