@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log; 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ExampleMail;
 use Illuminate\Http\Request;
@@ -12,23 +12,12 @@ use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
-    public function index()
-    {
-        return view('users.index'); // Menampilkan halaman DataTable
-    }
-
     // Menyediakan data untuk DataTables
-    public function getUsers(Request $request)
+    public function getUsers()
     {
-        if ($request->ajax()) {
-            $data = User::select('id', 'username', 'created_at')->get();
-            return DataTables::of($data)
-                ->addColumn('action', function ($row) {
-                    return '<button class="btn btn-warning btn-sm edit" data-id="' . $row->id . '">Edit</button>
-                            <button class="btn btn-danger btn-sm delete" data-id="' . $row->id . '">Delete</button>';
-                })
-                ->make(true);
-        }
+        $users = User::select('id', 'username', 'jabatan', 'email', 'image', 'created_at', 'departemen')->get();
+
+        return response()->json($users);
     }
 
     // Menyimpan data pengguna baru
@@ -37,11 +26,25 @@ class UserController extends Controller
         $request->validate([
             'username' => 'required|unique:users',
             'password' => 'required|min:6',
+            'email' => 'required|email',
+            'jabatan' => 'required',
+            'departemen' => 'required',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
+
+        $imageName = null;
+        if ($request->hasFile('image')) {
+            $imageName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('uploads/users'), $imageName);
+        }
 
         User::create([
             'username' => $request->username,
             'password' => bcrypt($request->password),
+            'email' => $request->email,
+            'jabatan' => $request->jabatan,
+            'departemen' => $request->departemen,
+            'image' => $imageName,
         ]);
 
         return response()->json(['success' => 'User created successfully.']);
@@ -54,28 +57,50 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    
-
     // Mengupdate data pengguna
     public function update(Request $request, $id)
     {
         $request->validate([
             'username' => 'required|unique:users,username,' . $id,
+            'email' => 'required|email',
+            'jabatan' => 'required',
+            'departemen' => 'required',
+            'password' => 'nullable|min:6',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
-
+    
         $user = User::findOrFail($id);
+    
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            if ($user->image && file_exists(public_path('uploads/users/' . $user->image))) {
+                unlink(public_path('uploads/users/' . $user->image));
+            }
+            $imageName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('uploads/users'), $imageName);
+            $user->image = $imageName;
+        }
+    
+        // Update data user
         $user->update([
             'username' => $request->username,
+            'email' => $request->email,
+            'jabatan' => $request->jabatan,
+            'departemen' => $request->departemen,
             'password' => $request->password ? bcrypt($request->password) : $user->password,
         ]);
-
+    
         return response()->json(['success' => 'User updated successfully.']);
     }
 
     // Menghapus data pengguna
     public function destroy($id)
     {
-        User::findOrFail($id)->delete();
+        $user = User::findOrFail($id);
+        if ($user->image && file_exists(public_path('uploads/users/' . $user->image))) {
+            unlink(public_path('uploads/users/' . $user->image));
+        }
+        $user->delete();
         return response()->json(['success' => 'User deleted successfully.']);
     }
 
