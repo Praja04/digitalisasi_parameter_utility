@@ -17,8 +17,9 @@ class AuthController extends Controller
         // Cek apakah pengguna sudah login
         if (Auth::check()) {
             return response()->json([
-                'success' => false,
+                'success' => true,
                 'message' => 'Anda sudah login.',
+                'redirect' => $this->redirectUser(Auth::user()), // Redirect sesuai jabatan
             ]);
         }
 
@@ -62,7 +63,16 @@ class AuthController extends Controller
     }
 
 
-
+    private function redirectUser($user)
+    {
+        if ($user->jabatan === 'dept_head') {
+            return url('/eng/dept_head/dashboard');
+        } elseif (in_array($user->jabatan, ['operator', 'foreman', 'supervisor'])) {
+            return url('/operator/dashboard');
+        }
+    
+        return url('/login'); // Default jika jabatan tidak dikenali
+    }
 
 
     public function logout(Request $request)
