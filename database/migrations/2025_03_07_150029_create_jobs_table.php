@@ -13,11 +13,20 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('username')->unique();
+            $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('jabatan', ['dept_head', 'foreman', 'supervisor', 'operator'])->default('operator');
+            $table->enum('role', ['dept_head', 'supervisor', 'engineer'])->default('engineer');
             $table->timestamps();
         });
+    }
+    
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('jobs');
     }
 };

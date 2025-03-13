@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Glucose\GlucoseModel;
+
 class SensorGlucoseController extends Controller
 {
     public function getLatestData()
@@ -18,17 +19,22 @@ class SensorGlucoseController extends Controller
             'GST3'  => $latestData ? $latestData->GST3 : 0,
             'GST4'  => $latestData ? $latestData->GST4 : 0,
             'GST5'  => $latestData ? $latestData->GST5 : 0,
-        
-           
+
+
         ]);
     }
 
     public function getGlucoseData()
     {
+        $data = GlucoseModel::whereRaw('SECOND(waktu) = 0')
+            ->latest('waktu')
+            ->take(120)
+            ->get();
+
         return response()->json([
             'success' => true,
             'message' => 'Data Glucose berhasil diambil',
-            'data' => GlucoseModel::getLatestData(20)
+            'data' => $data
         ]);
     }
 
@@ -38,6 +44,7 @@ class SensorGlucoseController extends Controller
         $tanggal = $request->input('tanggal');
 
         $data = GlucoseModel::whereDate('waktu', $tanggal)
+            ->whereRaw('SECOND(waktu) = 0')
             ->orderBy('waktu', 'asc')
             ->get();
 
@@ -62,6 +69,7 @@ class SensorGlucoseController extends Controller
         $tanggalSelesai = $request->input('tanggal_selesai');
 
         $data = GlucoseModel::whereBetween('waktu', [$tanggalMulai, $tanggalSelesai])
+            ->whereRaw('SECOND(waktu) = 0')
             ->orderBy('waktu', 'asc')
             ->get();
 

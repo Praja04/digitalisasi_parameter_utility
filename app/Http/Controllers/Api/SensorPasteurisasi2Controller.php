@@ -1,19 +1,28 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pasteurisasi2\Pasteurisasi2Model;
+
 class SensorPasteurisasi2Controller extends Controller
 {
     //
     public function getPasteurisasi2Data()
     {
+        $data = Pasteurisasi2Model::whereRaw('SECOND(waktu) = 0')
+            ->latest('waktu')
+            ->take(120)
+            ->get();
+
         return response()->json([
             'success' => true,
             'message' => 'Data Pasteurisasi2 berhasil diambil',
-            'data' => Pasteurisasi2Model::getLatestData(20)
+            'data' => $data
         ]);
+
+        
     }
 
     public function getLatestData()
@@ -31,6 +40,7 @@ class SensorPasteurisasi2Controller extends Controller
         $tanggal = $request->input('tanggal');
 
         $data = Pasteurisasi2Model::whereDate('waktu', $tanggal)
+            ->whereRaw('SECOND(waktu) = 0')
             ->orderBy('waktu', 'asc')
             ->get();
 
@@ -55,6 +65,7 @@ class SensorPasteurisasi2Controller extends Controller
         $tanggalSelesai = $request->input('tanggal_selesai');
 
         $data = Pasteurisasi2Model::whereBetween('waktu', [$tanggalMulai, $tanggalSelesai])
+            ->whereRaw('SECOND(waktu) = 0')
             ->orderBy('waktu', 'asc')
             ->get();
 

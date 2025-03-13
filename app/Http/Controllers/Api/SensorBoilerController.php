@@ -11,6 +11,7 @@ use Carbon\Carbon;
 
 class SensorBoilerController extends Controller
 {
+    public function dashboardDeptHead() {}
     public function getSensorData()
     {
         // Ambil data terbaru dari masing-masing tabel berdasarkan waktu terbaru
@@ -114,12 +115,18 @@ class SensorBoilerController extends Controller
 
     public function getBoilerData()
     {
+        $data = ReadSensors_Boiler::whereRaw('SECOND(waktu) = 0')
+            ->latest('waktu')
+            ->take(120)
+            ->get();
+    
         return response()->json([
             'success' => true,
             'message' => 'Data sensor boiler berhasil diambil',
-            'data' => ReadSensors_Boiler::getLatestData(20)
+            'data' => $data
         ]);
     }
+    
     //data trend end
 
 
@@ -157,7 +164,8 @@ class SensorBoilerController extends Controller
         $tanggal = $request->input('tanggal');
 
         $data = ReadSensors_Boiler::whereDate('waktu', $tanggal)
-            ->orderBy('waktu', 'asc')
+            ->whereRaw('SECOND(waktu) = 0') // Ambil hanya data dengan detik = 00
+            ->orderBy('waktu', 'desc')
             ->get();
 
         if ($data->isEmpty()) {
@@ -181,6 +189,7 @@ class SensorBoilerController extends Controller
         $tanggalSelesai = $request->input('tanggal_selesai');
 
         $data = ReadSensors_Boiler::whereBetween('waktu', [$tanggalMulai, $tanggalSelesai])
+            ->whereRaw('SECOND(waktu) = 0')
             ->orderBy('waktu', 'asc')
             ->get();
 

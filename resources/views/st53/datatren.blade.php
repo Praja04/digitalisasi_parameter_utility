@@ -20,6 +20,34 @@
             </div>
         </div>
 
+        
+        <div class="row">
+            <div class="col-md-4">
+                <label for="filter-mode">Filter Data:</label>
+                <select id="filter-mode" class="form-control">
+                    <option value="normal">Terbaru</option>
+                    <option value="harian">Per Hari</option>
+                    <option value="mingguan">Per Minggu</option>
+                </select>
+            </div>
+            <div class="col-md-4" id="filter-tanggal-container" style="display: none;">
+                <label for="filter-tanggal">Pilih Tanggal:</label>
+                <input type="date" id="filter-tanggal" class="form-control">
+            </div>
+            <div class="col-md-4" id="filter-mingguan-container" style="display: none;">
+                <label>Pilih Rentang Tanggal:</label>
+                <div class="d-flex">
+                    <input type="date" id="tanggal-mulai" class="form-control">
+                    <span class="mx-2">sampai</span>
+                    <input type="date" id="tanggal-selesai" class="form-control">
+                </div>
+            </div>
+            <div class="col-md-4 mt-4">
+                <button class="btn btn-primary" id="apply-filter">search</button>
+            </div>
+        </div>
+
+        <hr>
       
         <div class="row">
             <div class="col-xl-12">
@@ -80,220 +108,147 @@
 <script src="{{ asset('material/assets/libs/apexcharts/apexcharts.min.js') }}"></script>
 
 <script>
-    $(document).ready(function() {
-        function getst53data() {
-            $.ajax({
-                url: "{{ url('/st53/data') }}",
-                type: "GET",
-                dataType: "json",
-                success: function(response) {
-                    if (response.success) {
-                        let data = response.data.reverse();
-                        updateCharts(data);
-                    }
+  $(document).ready(function () {
+    let charts = {};
+
+    function getST53Data(url, params = {}) {
+        $.ajax({
+            url: url,
+            type: "GET",
+            data: params,
+            dataType: "json",
+            success: function (response) {
+                resetCharts();
+                if (response.success && response.data.length > 0) {
+                    let data = response.data.reverse();
+                    updateCharts(data);
+                } else {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Data Tidak Ditemukan",
+                        text: "Tidak ada data untuk tanggal yang dipilih.",
+                    });
+                    updateCharts([]);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching ST53 data:", error);
+            }
+        });
+    }
+
+    function updateCharts(data) {
+        let waktu = data.map(item => item.waktu);
+
+        createOrUpdateChart("chart-tank-a", "Tank A", waktu, [
+            { name: "Tank A 1", data: data.map(item => parseFloat(item.A1)) },
+            { name: "Tank A 2", data: data.map(item => parseFloat(item.A2)) },
+            { name: "Tank A 3", data: data.map(item => parseFloat(item.A3)) },
+            { name: "Tank A 4", data: data.map(item => parseFloat(item.A4)) }
+        ]);
+
+        createOrUpdateChart("chart-tank-b", "Tank B", waktu, [
+            { name: "Tank B 1", data: data.map(item => parseFloat(item.B1)) },
+            { name: "Tank B 2", data: data.map(item => parseFloat(item.B2)) },
+            { name: "Tank B 3", data: data.map(item => parseFloat(item.B3)) },
+            { name: "Tank B 4", data: data.map(item => parseFloat(item.B4)) }
+        ]);
+
+        createOrUpdateChart("chart-tank-c", "Tank C", waktu, [
+            { name: "Tank C 1", data: data.map(item => parseFloat(item.C1)) },
+            { name: "Tank C 2", data: data.map(item => parseFloat(item.C2)) },
+            { name: "Tank C 3", data: data.map(item => parseFloat(item.C3)) },
+            { name: "Tank C 4", data: data.map(item => parseFloat(item.C4)) }
+        ]);
+
+        createOrUpdateChart("chart-tank-d", "Tank D", waktu, [
+            { name: "Tank D 1", data: data.map(item => parseFloat(item.D1)) },
+            { name: "Tank D 2", data: data.map(item => parseFloat(item.D2)) },
+            { name: "Tank D 3", data: data.map(item => parseFloat(item.D3)) },
+            { name: "Tank D 4", data: data.map(item => parseFloat(item.D4)) }
+        ]);
+    }
+
+    function createOrUpdateChart(id, title, categories, seriesData) {
+        if (charts[id]) {
+            charts[id].updateSeries(seriesData);
+        } else {
+            charts[id] = new ApexCharts(document.getElementById(id), {
+                chart: {
+                    type: "area",
+                    height: 300
                 },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching st53 data:", error);
+                stroke: {
+                    curve: "smooth"
+                },
+                series: seriesData,
+                xaxis: {
+                    categories: categories,
+                    labels: { show: false }
+                },
+                markers: {
+                    size: 5,
+                    shape: "circle"
+                },
+                yaxis: {
+                    title: { text: title }
                 }
             });
+            charts[id].render();
         }
+    }
 
-        function updateCharts(data) {
-            let waktu = data.map(item => item.waktu);
-
-            //  Tank A
-            let TankA1 = data.map(item => item.A1);
-            let TankA2 = data.map(item => item.A2);
-            let TankA3 = data.map(item => item.A3);
-            let TankA4 = data.map(item => item.A4);
-            //  Tank B
-            let TankB1 = data.map(item => item.B1);
-            let TankB2 = data.map(item => item.B2);
-            let TankB3 = data.map(item => item.B3);
-            let TankB4 = data.map(item => item.B4);
-            //  Tank C
-            let TankC1 = data.map(item => item.C1);
-            let TankC2 = data.map(item => item.C2);
-            let TankC3 = data.map(item => item.C3);
-            let TankC4 = data.map(item => item.C4);
-            //  Tank D
-            let TankD1 = data.map(item => item.D1);
-            let TankD2 = data.map(item => item.D2);
-            let TankD3 = data.map(item => item.D3);
-            let TankD4 = data.map(item => item.D4);
-
-           
-            // 🔹 Grafik Tank A
-            new ApexCharts($("#chart-tank-a")[0], {
-                chart: {
-                    type: "area",
-                    height: 300
-                },
-                series: [
-                    {
-                        name: "Tank A 1 ",
-                        data: TankA1
-                    },
-                    {
-                        name: "Tank A 2 ",
-                        data: TankA2
-                    },
-                    {
-                        name: "Tank A 3 ",
-                        data: TankA3
-                    },
-                    {
-                        name: "Tank A 4 ",
-                        data: TankA4
-                    },
-                ],
-                xaxis: {
-                    categories: waktu,
-                    labels: {
-                        show: false
-                    }, // 🔹 Menghilangkan label di sumbu X
-
-                }, markers: {
-                    size: 5, // Ukuran titik
-                    shape: "circle" // Bentuk titik
-                },
-                yaxis: {
-                    title: {
-                        text: "Tank A"
-                    }
-                }
-            }).render();
-
-
-            // Tank B
-            new ApexCharts($("#chart-tank-b")[0], {
-                chart: {
-                    type: "area",
-                    height: 300
-                },
-                series: [
-                    {
-                        name: "Tank B 1 ",
-                        data: TankB1
-                    },
-                    {
-                        name: "Tank B 2 ",
-                        data: TankB2
-                    },
-                    {
-                        name: "Tank B 3 ",
-                        data: TankB3
-                    },
-                    {
-                        name: "Tank B 4 ",
-                        data: TankB4
-                    },
-                ],
-                xaxis: {
-                    categories: waktu,
-                    labels: {
-                        show: false
-                    }, // 🔹 Menghilangkan label di sumbu X
-
-                }, markers: {
-                    size: 5, // Ukuran titik
-                    shape: "circle" // Bentuk titik
-                },
-                yaxis: {
-                    title: {
-                        text: "Tank B"
-                    }
-                }
-            }).render();
-
-            // Tank C
-            new ApexCharts($("#chart-tank-c")[0], {
-                chart: {
-                    type: "area",
-                    height: 300
-                },
-                series: [
-                    {
-                        name: "Tank C 1 ",
-                        data: TankC1
-                    },
-                    {
-                        name: "Tank C 2 ",
-                        data: TankC2
-                    },
-                    {
-                        name: "Tank C 3 ",
-                        data: TankC3
-                    },
-                    {
-                        name: "Tank C 4 ",
-                        data: TankC4
-                    },
-                ],
-                xaxis: {
-                    categories: waktu,
-                    labels: {
-                        show: false
-                    }, // 🔹 Menghilangkan label di sumbu X
-
-                }, markers: {
-                    size: 5, // Ukuran titik
-                    shape: "circle" // Bentuk titik
-                },
-                yaxis: {
-                    title: {
-                        text: "Tank C"
-                    }
-                }
-            }).render();
-
-
-            // Tank D
-            new ApexCharts($("#chart-tank-d")[0], {
-                chart: {
-                    type: "area",
-                    height: 300
-                },
-                series: [
-                    {
-                        name: "Tank D 1 ",
-                        data: TankD1
-                    },
-                    {
-                        name: "Tank D 2 ",
-                        data: TankD2
-                    },
-                    {
-                        name: "Tank D 3 ",
-                        data: TankD3
-                    },
-                    {
-                        name: "Tank D 4 ",
-                        data: TankD4
-                    },
-                ],
-                xaxis: {
-                    categories: waktu,
-                    labels: {
-                        show: false
-                    }, // 🔹 Menghilangkan label di sumbu X
-
-                }, markers: {
-                    size: 5, // Ukuran titik
-                    shape: "circle" // Bentuk titik
-                },
-                yaxis: {
-                    title: {
-                        text: "Tank D"
-                    }
-                }
-            }).render();
-         
-
+    function resetCharts() {
+        for (let key in charts) {
+            charts[key].destroy();
         }
+        charts = {};
+    }
 
-        getst53data();
+    $("#filter-mode").change(function () {
+        let mode = $(this).val();
+        $("#filter-tanggal-container, #filter-mingguan-container").hide();
+        if (mode === "harian") $("#filter-tanggal-container").show();
+        if (mode === "mingguan") $("#filter-mingguan-container").show();
     });
+
+    $("#apply-filter").click(function () {
+        let mode = $("#filter-mode").val();
+
+        if (mode === "normal") {
+            getST53Data("{{ url('st53/data') }}");
+        } else if (mode === "harian") {
+            let tanggal = $("#filter-tanggal").val();
+            if (!tanggal) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Pilih Tanggal",
+                    text: "Silakan pilih tanggal terlebih dahulu."
+                });
+                return;
+            }
+            getST53Data("{{ url('st53/data-harian') }}", { tanggal: tanggal });
+        } else if (mode === "mingguan") {
+            let tanggalMulai = $("#tanggal-mulai").val();
+            let tanggalSelesai = $("#tanggal-selesai").val();
+            if (!tanggalMulai || !tanggalSelesai) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Pilih Rentang Tanggal",
+                    text: "Silakan pilih tanggal mulai dan selesai."
+                });
+                return;
+            }
+            getST53Data("{{ url('st53/data-mingguan') }}", {
+                tanggal_mulai: tanggalMulai,
+                tanggal_selesai: tanggalSelesai
+            });
+        }
+    });
+
+    getST53Data("{{ url('/st53/data') }}");
+});
+
 </script>
 
 

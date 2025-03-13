@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\SensorPasteurisasi1Controller;
 use App\Http\Controllers\Api\SensorPasteurisasi2Controller;
 use App\Http\Controllers\Api\SensorDissolverController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 
 
 Route::get('/', function () {
@@ -21,6 +22,32 @@ Route::get('/', function () {
 
 Route::get('menu', function () {
     return view('menu/menu');
+});
+
+
+Route::prefix('eng')->group(function () {
+   Route::get('/dept_head/dashboard', [AuthController::class, 'dashboardEng']);
+   Route::get('/dept_head/todo', [AuthController::class, 'todoListEng']);
+});
+Route::prefix('qc')->group(function () {
+   Route::get('/dept_head/dashboard', [AuthController::class, 'dashboardQc']);
+});
+Route::prefix('prd')->group(function () {
+   Route::get('/dept_head/dashboard', [AuthController::class, 'dashboardProduksi']);
+});
+
+
+
+Route::prefix('dept_head')->group(function () {
+    Route::view('/manajemen_user', 'user.dept_head.manage_user');
+});
+
+Route::prefix('users')->as('users.')->group(function () {
+    Route::get('/data', [UserController::class, 'getUsers'])->name('get'); // API untuk DataTables
+    Route::post('/', [UserController::class, 'store'])->name('store'); // Simpan user baru
+    Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit'); // Ambil data user untuk edit
+    Route::post('/{id}', [UserController::class, 'update'])->name('update'); // Update user
+    Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy'); // Hapus user
 });
 
 Route::prefix('boiler')->group(function () {
@@ -51,6 +78,7 @@ Route::prefix('daily-tank')->group(function () {
     Route::get('/data-realtime', [SensorDailyTankController::class, 'getLatestData']);
     Route::get('/data', [SensorDailyTankController::class, 'getDailytankData']);
 });
+
 Route::prefix('glucose')->group(function () {
     Route::view('/realtime', 'glucose.realtime');
     Route::view('/datatren', 'glucose.datatren');
@@ -60,7 +88,6 @@ Route::prefix('glucose')->group(function () {
     Route::get('/data', [SensorGlucoseController::class, 'getGlucoseData']);
 });
 
-
 Route::prefix('olahsari')->group(function () {
     Route::view('/realtime', 'olahsari.realtime');
     Route::view('/datatren', 'olahsari.datatren');
@@ -69,6 +96,7 @@ Route::prefix('olahsari')->group(function () {
     Route::get('/data-realtime', [SensorOlahsariController::class, 'getLatestData']);
     Route::get('/data', [SensorOlahsariController::class, 'getOlahsariData']);
 });
+
 Route::prefix('pasteurisasi1')->group(function () {
     Route::view('/realtime-pasteurizer', 'pasteurisasi1.realtimePasteurizer');
     Route::view('/realtime-vacuum', 'pasteurisasi1.realtimeVacuum');
@@ -79,13 +107,16 @@ Route::prefix('pasteurisasi1')->group(function () {
     Route::get('/data-realtime', [SensorPasteurisasi1Controller::class, 'getLatestData']);
     Route::get('/data', [SensorPasteurisasi1Controller::class, 'getPasteurisasi1Data']);
 });
+
 Route::prefix('pasteurisasi2')->group(function () {
     Route::view('/realtime', 'pasteurisasi2.realtime');
-    Route::view('/datatren', 'pasteurisasi2.datatren');
     Route::get('/data-realtime', [SensorPasteurisasi2Controller::class, 'getLatestData']);
+    Route::get('/data-harian', [SensorPasteurisasi2Controller::class, 'getPasteurisasi2DataHarian']);
+    Route::get('/data-mingguan', [SensorPasteurisasi2Controller::class, 'getPasteurisasi2DataMingguan']);
     Route::view('/datatren', 'pasteurisasi2.datatren');
     Route::get('/data', [SensorPasteurisasi2Controller::class, 'getPasteurisasi2Data']);
 });
+
 Route::prefix('st53')->group(function () {
     Route::view('/datatren', 'st53.datatren');
     Route::view('/realtime-tankA', 'st53.realtime-tankA');
@@ -94,12 +125,16 @@ Route::prefix('st53')->group(function () {
     Route::view('/realtime-tankD', 'st53.realtime-tankD');
     Route::get('/data-realtime', [SensorST53Controller::class, 'getLatestData']);
     Route::get('/data', [SensorST53Controller::class, 'getST53Data']);
+    Route::get('/data-harian', [SensorST53Controller::class, 'getST53DataHarian']);
+    Route::get('/data-mingguan', [SensorST53Controller::class, 'getST53DataMingguan']);
 });
 Route::prefix('stk400')->group(function () {
     Route::view('/realtime', 'stk400.realtime');
     Route::view('/datatren', 'stk400.datatren');
     Route::get('/data-realtime', [SensorSTK400Controller::class, 'getLatestData']);
     Route::get('/data', [SensorSTk400Controller::class, 'getSTK400Data']);
+    Route::get('/data-harian', [SensorSTk400Controller::class, 'getSTK400DataHarian']);
+    Route::get('/data-mingguan', [SensorSTk400Controller::class, 'getSTK400DataMingguan']);
 });
 
 Route::prefix('dissolver')->group(function () {

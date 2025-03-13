@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Olahsari\OlahsariModel;
+
 class SensorOlahsariController extends Controller
 {
     public function getLatestData()
     {
         $latestData = OlahsariModel::orderBy('waktu', 'desc')
             ->first();
-    
+
         return response()->json([
             'lc1' => $latestData ? $latestData->LC_Mixer1 : 0,
             'lc2' => $latestData ? $latestData->LC_Mixer2 : 0,
@@ -22,59 +23,66 @@ class SensorOlahsariController extends Controller
 
     public function getOlahsariData()
     {
+        $data = OlahsariModel::whereRaw('SECOND(waktu) = 0')
+            ->latest('waktu')
+            ->take(120)
+            ->get();
+
         return response()->json([
             'success' => true,
             'message' => 'Data Olahsari berhasil diambil',
-            'data' => OlahsariModel::getLatestData(20)
+            'data' => $data
         ]);
     }
 
-     //filter
-     public function getOlahsariDataHarian(Request $request)
-     {
-         $tanggal = $request->input('tanggal');
- 
-         $data = OlahsariModel::whereDate('waktu', $tanggal)
-             ->orderBy('waktu', 'asc')
-             ->get();
- 
-         if ($data->isEmpty()) {
-             return response()->json([
-                 'success' => false,
-                 'message' => 'Data untuk tanggal ini tidak ditemukan',
-                 'data' => []
-             ]);
-         }
- 
-         return response()->json([
-             'success' => true,
-             'message' => 'Data harian berhasil diambil',
-             'data' => $data
-         ]);
-     }
- 
-     public function getOlahsariDataMingguan(Request $request)
-     {
-         $tanggalMulai = $request->input('tanggal_mulai');
-         $tanggalSelesai = $request->input('tanggal_selesai');
- 
-         $data = OlahsariModel::whereBetween('waktu', [$tanggalMulai, $tanggalSelesai])
-             ->orderBy('waktu', 'asc')
-             ->get();
- 
-         if ($data->isEmpty()) {
-             return response()->json([
-                 'success' => false,
-                 'message' => 'Data untuk rentang tanggal ini tidak ditemukan',
-                 'data' => []
-             ]);
-         }
- 
-         return response()->json([
-             'success' => true,
-             'message' => 'Data mingguan berhasil diambil',
-             'data' => $data
-         ]);
-     }
-     //end filter
+    //filter
+    public function getOlahsariDataHarian(Request $request)
+    {
+        $tanggal = $request->input('tanggal');
+
+        $data = OlahsariModel::whereDate('waktu', $tanggal)
+            ->whereRaw('SECOND(waktu) = 0')
+            ->orderBy('waktu', 'asc')
+            ->get();
+
+        if ($data->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data untuk tanggal ini tidak ditemukan',
+                'data' => []
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data harian berhasil diambil',
+            'data' => $data
+        ]);
+    }
+
+    public function getOlahsariDataMingguan(Request $request)
+    {
+        $tanggalMulai = $request->input('tanggal_mulai');
+        $tanggalSelesai = $request->input('tanggal_selesai');
+
+        $data = OlahsariModel::whereBetween('waktu', [$tanggalMulai, $tanggalSelesai])
+            ->whereRaw('SECOND(waktu) = 0')
+            ->orderBy('waktu', 'asc')
+            ->get();
+
+        if ($data->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data untuk rentang tanggal ini tidak ditemukan',
+                'data' => []
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data mingguan berhasil diambil',
+            'data' => $data
+        ]);
+    }
+    //end filter
 }

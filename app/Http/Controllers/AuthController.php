@@ -21,21 +21,37 @@ class AuthController extends Controller
                 'message' => 'Anda sudah login.',
             ]);
         }
+
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
         ]);
-        // Proses login
+
         $credentials = $request->only('username', 'password');
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
+
+            // Simpan informasi user ke dalam session
             Session::put('username', $user->username);
-            Cookie::queue('username', $user->username, 60); 
-            Log::info('Username saved in session: ' .Session::get('username'));
+            Session::put('jabatan', $user->jabatan);
+            Session::put('departemen', $user->departemen);
+            Cookie::queue('username', $user->username, 60);
+
+            Log::info('Username saved in session: ' . Session::get('username'));
+
+            // Redirect berdasarkan jabatan
+            if ($user->jabatan === 'dept_head') {
+                $redirectUrl = url('/eng/dept_head/dashboard');
+            } elseif (in_array($user->jabatan, ['operator', 'foreman', 'supervisor'])) {
+                $redirectUrl = url('/operator/dashboard'); // Ubah sesuai kebutuhan
+            } else {
+                $redirectUrl = url('/login'); // Default jika jabatan tidak dikenali
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Login berhasil',
-                // 'redirect' => url('dashboard'),
+                'redirect' => $redirectUrl,
             ]);
         }
 
@@ -44,6 +60,8 @@ class AuthController extends Controller
             'message' => 'Login gagal. Periksa username atau password Anda.',
         ], 401);
     }
+
+
 
 
 
@@ -66,5 +84,37 @@ class AuthController extends Controller
         ]);
     }
 
-    
+    public function dashboardQC()
+    {
+        if (Session::get('jabatan') !== 'dept_head') {
+            return redirect('/login')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        }
+        return view('user.dept_head.dashboard_qc');
+    }
+
+    public function dashboardProduksi()
+    {
+        if (Session::get('jabatan') !== 'dept_head') {
+            return redirect('/login')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        }
+        return view('user.dept_head.dashboard_produksi');
+    }
+
+    public function dashboardEng()
+    {
+        if (Session::get('jabatan') !== 'dept_head') {
+            return redirect('/login')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        }
+        return view('user.dept_head.dashboard_eng');
+    }
+
+
+    public function todoListEng()
+    {
+        if (Session::get('jabatan') !== 'dept_head') {
+            return redirect('/login')->with('error', 'Anda tidak memiliki akses ke halaman
+            ini.');
+        }
+        return view('user.dept_head.todo_list_eng');
+    }
 }

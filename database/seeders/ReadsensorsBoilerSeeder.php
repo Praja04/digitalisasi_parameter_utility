@@ -14,12 +14,12 @@ class ReadsensorsBoilerSeeder extends Seeder
      */
     public function run()
     {
-        $startTime = Carbon::now()->subMinutes(100); // Mulai dari 100 menit yang lalu
-
+        $startTime = Carbon::now()->subDay(); // Mulai dari 1 hari yang lalu
         $data = [];
-        for ($i = 0; $i < 100; $i++) {
+
+        for ($i = 0; $i < 86400; $i++) { // 86,400 detik dalam 1 hari
             $data[] = [
-                'waktu' => $startTime->addMinute()->toDateTimeString(),
+                'waktu' => $startTime->addSecond()->toDateTimeString(),
                 'LevelFeedWater' => rand(50, 100) / 10,
                 'PVSteam' => rand(20, 50) / 10,
                 'FeedPressure' => rand(30, 70) / 10,
@@ -42,8 +42,17 @@ class ReadsensorsBoilerSeeder extends Seeder
                 'Batubara_FK' => rand(10, 100),
                 'Steam_FK' => rand(10, 100)
             ];
+
+            // Insert tiap 1000 data agar tidak overload
+            if (count($data) >= 1000) {
+                DB::table('readsensors_boiler')->insert($data);
+                $data = []; // Reset array
+            }
         }
 
-        DB::table('readsensors_boiler')->insert($data);
+        // Insert sisa data
+        if (!empty($data)) {
+            DB::table('readsensors_boiler')->insert($data);
+        }
     }
 }

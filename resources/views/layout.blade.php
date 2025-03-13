@@ -10,7 +10,7 @@
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('material/assets/images/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/icon-utility/kecap.png') }}">
 
     <!-- Sweet Alert css-->
     <link href="{{ asset('material/assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
@@ -85,13 +85,7 @@
     <script src="{{ asset('material/assets/js/highcharts.js') }}"></script>
     <!-- App js -->
     <script src="{{ asset('material/assets/js/app.js') }}"></script>
-    <!-- <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script> -->
-    <!-- Script for handling logout and DataTable -->
+   
     <script>
         $(document).ready(function() {
             // Logout button handler

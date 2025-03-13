@@ -63,9 +63,9 @@
                 <div class="dropdown ms-sm-3 header-item topbar-user">
                     <button type="button" class="btn shadow-none" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="d-flex align-items-center">
-                            <img class="rounded-circle header-profile-user" src="{{ asset('material/assets/images/users/avatar-1.jpg') }}" alt="Header Avatar" />
+                            <img class="rounded-circle header-profile-user" src="{{ asset('material/assets/images/users/user-dummy-img.jpg') }}" alt="Header Avatar" />
                             <span class="text-start ms-xl-2">
-                                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">user</span>
+                                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text"> {{Session::get('username')}}</span>
                             </span>
                         </span>
                     </button>

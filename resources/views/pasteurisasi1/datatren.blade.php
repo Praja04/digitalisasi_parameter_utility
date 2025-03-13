@@ -115,7 +115,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-xl-12">
                 <div class="card">
                     <div class="card-header">
@@ -126,7 +126,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="row">
             <div class="col-xl-12">
@@ -141,7 +141,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-xl-12">
                 <div class="card">
                     <div class="card-header">
@@ -152,7 +152,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 
@@ -161,255 +161,11 @@
 
 
 
-<!-- <script>
-    $(document).ready(function() {
-        function getData(url, params = {}) {
-            $.ajax({
-                url: url,
-                type: "GET",
-                data: params,
-                dataType: "json",
-                beforeSend: function() {
-                    // Tampilkan loading atau spinner jika perlu
-                },
-                success: function(response) {
-                    resetCharts();
-                    if (response.success && response.data.length > 0) {
-                        let data = response.data.reverse();
-                        updateCharts(data);
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Data Tidak Ditemukan',
-                            text: 'Tidak ada data untuk tanggal yang dipilih.',
-                        });
-                        updateCharts([]);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching pasteurisasi1 data:", error);
-                }
-            });
-        }
 
-        function resetCharts() {
-            $(".chart-container").empty(); // Bersihkan grafik sebelum render ulang
-        }
-
-        function updateCharts(data) {
-            let waktu = data.map(item => item.Waktu);
-
-            let charts = [{
-                    id: "#chart-pasteu-suhu",
-                    title: "Pasteurizer - Suhu",
-                    series: [{
-                            name: "Preheating (°C)",
-                            data: data.map(item => item.SuhuPreheating)
-                        },
-                        {
-                            name: "Heating (°C)",
-                            data: data.map(item => item.SuhuHeating)
-                        },
-                        {
-                            name: "Holding (°C)",
-                            data: data.map(item => item.SuhuHolding)
-                        },
-                        {
-                            name: "Precooling (°C)",
-                            data: data.map(item => item.SuhuPrecooling)
-                        },
-                        {
-                            name: "Cooling (°C)",
-                            data: data.map(item => item.SuhuCooling)
-                        }
-                    ]
-                },
-                {
-                    id: "#chart-pasteu-aliran",
-                    title: "Pasteurizer - Aliran & Kontrol",
-                    series: [{
-                            name: "Flowrate (L/min)",
-                            data: data.map(item => item.Flowrate)
-                        },
-                        {
-                            name: "PCV1 (%)",
-                            data: data.map(item => item.PCV1)
-                        },
-                        {
-                            name: "Time Divert (s)",
-                            data: data.map(item => item.TimeDivert)
-                        }
-                    ]
-                },
-                {
-                    id: "#chart-pasteu-tangki",
-                    title: "Pasteurizer - Tangki & Tekanan",
-                    series: [{
-                            name: "Level BT2 (cm)",
-                            data: data.map(item => item.LevelBT2)
-                        },
-                        {
-                            name: "Speed Pump BT2 (rpm)",
-                            data: data.map(item => item.SpeedPumpBT2)
-                        },
-                        {
-                            name: "Pressure BT2 (bar)",
-                            data: data.map(item => item.PressureBT2)
-                        }
-                    ]
-                },
-                {
-                    id: "#chart-vacum-pompa",
-                    title: "Vacuum Deaerator - Pompa & Level Tangki",
-                    series: [{
-                            name: "Speed Pump BT1 (rpm)",
-                            data: data.map(item => item.SpeedPumpBT1)
-                        },
-                        {
-                            name: "Level BT1 (cm)",
-                            data: data.map(item => item.LevelBT1)
-                        },
-                        {
-                            name: "Speed Pump VD (rpm)",
-                            data: data.map(item => item.SpeedPumpVD)
-                        },
-                        {
-                            name: "Level VD (cm)",
-                            data: data.map(item => item.LevelVD)
-                        }
-                    ]
-                },
-                {
-                    id: "#chart-vacum-tekanan",
-                    title: "Vacuum Deaerator - Tekanan & Kontrol Vacuum",
-                    series: [{
-                            name: "Tekanan VDHH (bar)",
-                            data: data.map(item => item.PressVDHH)
-                        },
-                        {
-                            name: "Tekanan VDLL (bar)",
-                            data: data.map(item => item.PressVDLL)
-                        },
-                        {
-                            name: "Tekanan ke Pasteur (bar)",
-                            data: data.map(item => item.PressToPasteur)
-                        }
-                    ]
-                },
-                {
-                    id: "#chart-vacum-arus",
-                    title: "Vacuum Deaerator - Arus & Aktivitas Mesin",
-                    series: [{
-                            name: "Arus BT1 (A)",
-                            data: data.map(item => item.BT1AM)
-                        },
-                        {
-                            name: "Arus VD (A)",
-                            data: data.map(item => item.VDAM)
-                        }
-                    ]
-                },
-                {
-                    id: "#chart-mixing-kecepatan",
-                    title: "Mixing - Kecepatan Pompa & Tekanan",
-                    series: [{
-                            name: "Speed Pompa Mixing (rpm)",
-                            data: data.map(item => item.SpeedPompaMixing)
-                        },
-                        {
-                            name: "Pressure Mixing (bar)",
-                            data: data.map(item => item.PressureMixing)
-                        }
-                    ]
-                },
-                {
-                    id: "#chart-mixing-arus",
-                    title: "Mixing - Arus Listrik & Aktivitas Mesin",
-                    series: [{
-                        name: "Arus Mixing (A)",
-                        data: data.map(item => item.MixingAM)
-                    }]
-                }
-            ];
-
-            charts.forEach(chart => {
-                let options = {
-                    chart: {
-                        type: "line",
-                        height: 300,
-                    },
-                    series: chart.series,
-                    xaxis: {
-                        categories: waktu,
-                        labels: {
-                            show: false
-                        }
-                    },
-                    markers: {
-                        size: 5,
-                        shape: "circle"
-                    },
-                    yaxis: {
-                        title: {
-                            text: chart.title
-                        }
-                    }
-                };
-
-                new ApexCharts($(chart.id)[0], options).render();
-            });
-        }
-
-        $("#filter-mode").change(function() {
-            let mode = $(this).val();
-            $("#filter-tanggal-container, #filter-mingguan-container").hide();
-            if (mode === "harian") $("#filter-tanggal-container").show();
-            if (mode === "mingguan") $("#filter-mingguan-container").show();
-        });
-
-        $("#apply-filter").click(function() {
-            let mode = $("#filter-mode").val();
-
-            if (mode === "normal") {
-                getData("{{ url('/pasteurisasi1/data') }}");
-            } else if (mode === "harian") {
-                let tanggal = $("#filter-tanggal").val();
-                if (!tanggal) {
-                    Swal.fire({
-                        icon: "warning",
-                        title: "Pilih Tanggal",
-                        text: "Silakan pilih tanggal terlebih dahulu."
-                    });
-                    return;
-                }
-                getData("{{ url('pasteurisasi1/data-harian') }}", {
-                    tanggal: tanggal
-                });
-            } else if (mode === "mingguan") {
-                let tanggalMulai = $("#tanggal-mulai").val();
-                let tanggalSelesai = $("#tanggal-selesai").val();
-                if (!tanggalMulai || !tanggalSelesai) {
-                    Swal.fire({
-                        icon: "warning",
-                        title: "Pilih Rentang Tanggal",
-                        text: "Silakan pilih tanggal mulai dan selesai."
-                    });
-                    return;
-                }
-                getData("{{ url('pasteurisasi1/data-mingguan') }}", {
-                    tanggal_mulai: tanggalMulai,
-                    tanggal_selesai: tanggalSelesai
-                });
-            }
-        });
-
-        getData("{{ url('/pasteurisasi1/data') }}");
-    });
-</script> -->
 
 <script>
     $(document).ready(function() {
-        let chartInstances = {}; // Menyimpan instance chart agar bisa di-update
+        let chartInstances = [];
 
         function getData(url, params = {}) {
             $.ajax({
@@ -421,6 +177,7 @@
                     $("#apply-filter").prop("disabled", true).text("Memuat...");
                 },
                 success: function(response) {
+                    //console.log("Response API:", response);
                     $("#apply-filter").prop("disabled", false).text("Terapkan Filter");
                     if (response.success && response.data.length > 0) {
                         let data = response.data.reverse();
@@ -429,7 +186,7 @@
                         Swal.fire({
                             icon: 'warning',
                             title: 'Data Tidak Ditemukan',
-                            text: 'Tidak ada data untuk tanggal yang dipilih.',
+                            text: 'Tidak ada data untuk rentang tanggal yang dipilih.',
                         });
                         updateCharts([]);
                     }
@@ -441,7 +198,9 @@
         }
 
         function updateCharts(data) {
-            let waktu = data.map(item => item.Waktu);
+            const step = Math.ceil(data.length / 1000);
+            const sampledData = data.filter((_, index) => index % step === 0);
+            let waktu = sampledData.map(item => item.Waktu);
 
             let charts = [{
                     id: "#chart-pasteu-suhu",
@@ -576,42 +335,32 @@
                 }
             ];
 
-            charts.forEach(chart => {
-                let options = {
-                    series: chart.series,
-                    chart: {
-                        type: "line",
-                        height: 300,
-                        animations: {
-                            enabled: true,
-                            easing: "easeinout",
-                            speed: 800,
-                        }
-                    },
-                    xaxis: {
-                        categories: waktu,
-                        labels: {
-                            rotate: -45,
-                            datetimeFormatter: {
-                                hour: "HH:mm"
+            charts.forEach((chart, index) => {
+                if (!chartInstances[index]) {
+                    chartInstances[index] = new ApexCharts($(chart.id)[0], {
+                        chart: {
+                            type: "line",
+                            height: 300
+                        },
+                        series: chart.series,
+                        xaxis: {
+                            categories: waktu,
+                            labels: {
+                                show: false
                             }
                         }
-                    },
-                    markers: {
-                        size: 4
-                    },
-                    yaxis: {
-                        title: {
-                            text: chart.title
-                        }
-                    }
-                };
-
-                if (chartInstances[chart.id]) {
-                    chartInstances[chart.id].updateOptions(options);
+                    });
+                    chartInstances[index].render();
                 } else {
-                    chartInstances[chart.id] = new ApexCharts($(chart.id)[0], options);
-                    chartInstances[chart.id].render();
+                    chartInstances[index].updateSeries(chart.series);
+                    chartInstances[index].updateOptions({
+                        xaxis: {
+                            categories: waktu,
+                            labels: {
+                                show: false
+                            }
+                        }
+                    });
                 }
             });
         }
@@ -626,18 +375,18 @@
         $("#apply-filter").click(function() {
             let mode = $("#filter-mode").val();
             if (mode === "normal") {
-                getData("{{ url('/pasteurisasi1/data') }}");
+                getData("/pasteurisasi1/data");
             } else if (mode === "harian") {
                 let tanggal = $("#filter-tanggal").val();
                 if (!tanggal) {
                     Swal.fire({
                         icon: "warning",
                         title: "Pilih Tanggal",
-                        text: "Silakan pilih tanggal terlebih dahulu."
+                        text: "Silakan pilih tanggal."
                     });
                     return;
                 }
-                getData("{{ url('pasteurisasi1/data-harian') }}", {
+                getData("/pasteurisasi1/data-harian", {
                     tanggal: tanggal
                 });
             } else if (mode === "mingguan") {
@@ -651,15 +400,14 @@
                     });
                     return;
                 }
-                getData("{{ url('pasteurisasi1/data-mingguan') }}", {
+                getData("/pasteurisasi1/data-mingguan", {
                     tanggal_mulai: tanggalMulai,
                     tanggal_selesai: tanggalSelesai
                 });
             }
         });
 
-        // Load data pertama kali
-        getData("{{ url('/pasteurisasi1/data') }}");
+        getData("/pasteurisasi1/data");
     });
 </script>
 @endsection

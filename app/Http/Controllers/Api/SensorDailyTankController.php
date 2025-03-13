@@ -26,11 +26,18 @@ class SensorDailyTankController extends Controller
 
     public function getDailytankData()
     {
+
+        $data = DailyTankModel::whereRaw('SECOND(waktu) = 0')
+            ->latest('waktu')
+            ->take(120)
+            ->get();
+
         return response()->json([
             'success' => true,
             'message' => 'Data daily tank berhasil diambil',
-            'data' => DailyTankModel::getLatestData(20)
+            'data' => $data
         ]);
+        
     }
 
 
@@ -40,6 +47,7 @@ class SensorDailyTankController extends Controller
         $tanggal = $request->input('tanggal');
 
         $data = DailyTankModel::whereDate('waktu', $tanggal)
+            ->whereRaw('SECOND(waktu) = 0')
             ->orderBy('waktu', 'asc')
             ->get();
 
@@ -64,6 +72,7 @@ class SensorDailyTankController extends Controller
         $tanggalSelesai = $request->input('tanggal_selesai');
 
         $data = DailyTankModel::whereBetween('waktu', [$tanggalMulai, $tanggalSelesai])
+            ->whereRaw('SECOND(waktu) = 0')
             ->orderBy('waktu', 'asc')
             ->get();
 

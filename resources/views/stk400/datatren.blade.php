@@ -20,7 +20,35 @@
             </div>
         </div>
 
-      
+        <div class="row">
+            <div class="col-md-4">
+                <label for="filter-mode">Filter Data:</label>
+                <select id="filter-mode" class="form-control">
+                    <option value="normal">Terbaru</option>
+                    <option value="harian">Per Hari</option>
+                    <option value="mingguan">Per Minggu</option>
+                </select>
+            </div>
+            <div class="col-md-4" id="filter-tanggal-container" style="display: none;">
+                <label for="filter-tanggal">Pilih Tanggal:</label>
+                <input type="date" id="filter-tanggal" class="form-control">
+            </div>
+            <div class="col-md-4" id="filter-mingguan-container" style="display: none;">
+                <label>Pilih Rentang Tanggal:</label>
+                <div class="d-flex">
+                    <input type="date" id="tanggal-mulai" class="form-control">
+                    <span class="mx-2">sampai</span>
+                    <input type="date" id="tanggal-selesai" class="form-control">
+                </div>
+            </div>
+            <div class="col-md-4 mt-4">
+                <button class="btn btn-primary" id="apply-filter">search</button>
+            </div>
+        </div>
+
+        <hr>
+
+
         <div class="row">
             <div class="col-xl-12">
                 <div class="card">
@@ -56,19 +84,30 @@
 
 <script>
     $(document).ready(function() {
-        function getstk400data() {
+        let charts = {};
+
+        function getSTK400Data(url, params = {}) {
             $.ajax({
-                url: "{{ url('/stk400/data') }}",
+                url: url,
                 type: "GET",
+                data: params,
                 dataType: "json",
                 success: function(response) {
-                    if (response.success) {
+                    resetCharts();
+                    if (response.success && response.data.length > 0) {
                         let data = response.data.reverse();
                         updateCharts(data);
+                    } else {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Data Tidak Ditemukan",
+                            text: "Tidak ada data untuk tanggal yang dipilih.",
+                        });
+                        updateCharts([]);
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error("Error fetching stk400 data:", error);
+                    console.error("Error fetching STK400 data:", error);
                 }
             });
         }
@@ -76,73 +115,101 @@
         function updateCharts(data) {
             let waktu = data.map(item => item.waktu);
 
-            //  Temperature
-            let TankGlucose = data.map(item => item.Tank_Glucose);
-            let Flowrate = data.map(item => item.Flowrate);
-            
+            createOrUpdateChart("chart-tank-glucose", "Tank Glucose", waktu, [{
+                name: "Tank Glucose",
+                data: data.map(item => parseFloat(item.Tank_Glucose))
+            }]);
 
-           
-            // 🔹 Grafik Level & Tekanan Air
-            new ApexCharts($("#chart-tank-glucose")[0], {
-                chart: {
-                    type: "area",
-                    height: 300
-                },
-                series: [
-                    {
-                        name: "Tank Glucose",
-                        data: TankGlucose
-                    }
-                ],
-                xaxis: {
-                    categories: waktu,
-                    labels: {
-                        show: false
-                    }, // 🔹 Menghilangkan label di sumbu X
-
-                }, markers: {
-                    size: 5, // Ukuran titik
-                    shape: "circle" // Bentuk titik
-                },
-                yaxis: {
-                    title: {
-                        text: "Tank Glucose"
-                    }
-                }
-            }).render();
-
-
-            new ApexCharts($("#chart-flowrate")[0], {
-                chart: {
-                    type: "area",
-                    height: 300
-                },
-                series: [
-                    {
-                        name: "Flowrate ",
-                        data: Flowrate
-                      }
-                ],
-                xaxis: {
-                    categories: waktu,
-                    labels: {
-                        show: false
-                    }, // 🔹 Menghilangkan label di sumbu X
-
-                }, markers: {
-                    size: 5, // Ukuran titik
-                    shape: "circle" // Bentuk titik
-                },
-                yaxis: {
-                    title: {
-                        text: "Flowrate"
-                    }
-                }
-            }).render();
-
+            createOrUpdateChart("chart-flowrate", "Flowrate", waktu, [{
+                name: "Flowrate",
+                data: data.map(item => parseFloat(item.Flowrate))
+            }]);
         }
 
-        getstk400data();
+        function createOrUpdateChart(id, title, categories, seriesData) {
+            if (charts[id]) {
+                charts[id].updateSeries(seriesData);
+            } else {
+                charts[id] = new ApexCharts(document.getElementById(id), {
+                    chart: {
+                        type: "area",
+                        height: 300
+                    },
+                    stroke: {
+                        curve: "smooth"
+                    },
+                    series: seriesData,
+                    xaxis: {
+                        categories: categories,
+                        labels: {
+                            show: false
+                        }
+                    },
+                    markers: {
+                        size: 5,
+                        shape: "circle"
+                    },
+                    yaxis: {
+                        title: {
+                            text: title
+                        }
+                    }
+                });
+                charts[id].render();
+            }
+        }
+
+        function resetCharts() {
+            for (let key in charts) {
+                charts[key].destroy();
+            }
+            charts = {};
+        }
+
+        $("#filter-mode").change(function() {
+            let mode = $(this).val();
+            $("#filter-tanggal-container, #filter-mingguan-container").hide();
+            if (mode === "harian") $("#filter-tanggal-container").show();
+            if (mode === "mingguan") $("#filter-mingguan-container").show();
+        });
+
+        $("#apply-filter").click(function() {
+            let mode = $("#filter-mode").val();
+
+            if (mode === "normal") {
+                getSTK400Data("{{ url('stk400/data') }}");
+            } else if (mode === "harian") {
+                let tanggal = $("#filter-tanggal").val();
+                if (!tanggal) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Pilih Tanggal",
+                        text: "Silakan pilih tanggal terlebih dahulu."
+                    });
+                    return;
+                }
+                getSTK400Data("{{ url('stk400/data-harian') }}", {
+                    tanggal: tanggal
+                });
+            } else if (mode === "mingguan") {
+                let tanggalMulai = $("#tanggal-mulai").val();
+                let tanggalSelesai = $("#tanggal-selesai").val();
+                if (!tanggalMulai || !tanggalSelesai) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Pilih Rentang Tanggal",
+                        text: "Silakan pilih tanggal mulai dan selesai."
+                    });
+                    return;
+                }
+                getSTK400Data("{{ url('stk400/data-mingguan') }}", {
+                    tanggal_mulai: tanggalMulai,
+                    tanggal_selesai: tanggalSelesai
+                });
+            }
+        });
+
+        getSTK400Data("{{ url('/stk400/data') }}");
     });
 </script>
 

@@ -10,7 +10,7 @@
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('material/assets/images/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/icon-utility/kecap.png') }}">
 
     <!-- Layout config Js -->
     <link href="{{ asset('material/assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
@@ -30,14 +30,21 @@
     <!-- Sweet alert init js-->
     <script src="{{ asset('material/assets/js/pages/sweetalerts.init.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <style>
+        .auth-one-bg-position{
+            background-image: url("{{ asset('assetswebbased/img/signin.jpg') }}");
+            background-size: cover; /* Menyesuaikan gambar dengan seluruh area */
+    background-position: center; /* Memusatkan gambar */
+    background-repeat: no-repeat;
+        }
+    </style>
 </head>
 
 <body>
 
     <div class="auth-page-wrapper pt-5">
         <!-- auth page bg -->
-        <div class="auth-one-bg-position auth-one-bg" id="auth-particles">
+        <div class="auth-one-bg-position" id="auth-particles">
             <div class="bg-overlay"></div>
 
             <div class="shape">
@@ -65,8 +72,9 @@
 
                             <div class="card-body p-4">
                                 <div class="text-center mt-2">
-                                    <h5 class="text-primary">Welcome Back !</h5>
-                                    <p class="text-muted">Sign in to continue</p>
+                                    <img src="{{ asset('assetswebbased/img/wings.png') }}" alt="PT.Bumi Alam Segar" style="width: 150px;">
+                                <h5 class="text-primary">Welcome Back to BAS SmartOps!</h5>
+                                <p class="text-muted">Sign in to access your dashboard</p>
                                 </div>
                                 <div class="p-2 mt-4">
                                     <form id="loginForm">
@@ -128,40 +136,7 @@
     <script src="{{ asset('material/assets/js/pages/particles.app.js') }}"></script>
     <!-- password-addon init -->
     <script src="{{ asset('material/assets/js/pages/password-addon.init.js') }}"></script>
-    <!-- <script>
-        $(document).ready(function() {
-            $('#loginForm').submit(function(e) {
-                e.preventDefault();
-
-                $.ajax({
-                    url: "{{ route('login') }}",
-                    method: "POST",
-                    data: {
-                        username: $('#username').val(),
-                        password: $('#password').val(),
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            // alert(response.message);
-                            window.location.href = "{{ url('menu') }}"; // Redirect ke halaman layout
-                        } else {
-                            alert(response.message);
-                        }
-                    },
-                    error: function(xhr) {
-                        if (xhr.status === 401) {
-                            var response = JSON.parse(xhr.responseText);
-                            alert(response.message);
-                        } else {
-                            alert('Terjadi kesalahan pada server.');
-                        }
-                    }
-                });
-            });
-        });
-    </script> -->
-
+ 
     <script>
     $(document).ready(function() {
         $('#loginForm').submit(function(e) {
@@ -195,17 +170,7 @@
                             timer: 1500,
                             showConfirmButton: false
                         }).then(() => {
-                            window.location.href = "{{ url('menu') }}"; // Redirect ke halaman setelah login
-                        });
-                    } else if (response.message === 'Anda sudah login.') {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'Anda sudah login!',
-                            text: 'Mengalihkan ke halaman utama...',
-                            timer: 1500,
-                            showConfirmButton: false
-                        }).then(() => {
-                            window.location.href = "{{ url('menu') }}";
+                            window.location.href = response.redirect; // Redirect sesuai jabatan
                         });
                     } else {
                         Swal.fire({
@@ -219,11 +184,16 @@
                     Swal.close(); // Tutup loading saat error
 
                     if (xhr.status === 401) {
-                        var response = JSON.parse(xhr.responseText);
                         Swal.fire({
                             icon: 'error',
                             title: 'Unauthorized!',
-                            text: response.message
+                            text: 'Username atau password salah.'
+                        });
+                    } else if (xhr.status === 403) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Akses Ditolak!',
+                            text: 'Jabatan tidak dikenali.'
                         });
                     } else {
                         Swal.fire({
@@ -242,12 +212,13 @@
             method: "GET",
             success: function(response) {
                 if (response.success === false && response.message === 'Anda sudah login.') {
-                    window.location.href = "{{ url('menu') }}";
+                    window.location.href = response.redirect; // Redirect sesuai jabatan jika sudah login
                 }
             }
         });
     });
 </script>
+
 
 </body>
 
