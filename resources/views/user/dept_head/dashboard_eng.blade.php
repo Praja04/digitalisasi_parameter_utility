@@ -24,6 +24,38 @@
             </div>
         </div>
         <!-- end page title -->
+        <div class="row mb-3 pb-1">
+            <div class="col-12">
+                <div class="d-flex align-items-lg-center flex-lg-row flex-column">
+                    <div class="flex-grow-1">
+                        <h4 class="fs-16 mb-1">Welcome ,{{Session::get('username')}}!</h4>
+                        <p class="text-muted mb-0">Here's what's happening with your store today.</p>
+                    </div>
+                    <div class="mt-3 mt-lg-0">
+                        <form action="javascript:void(0);">
+                            <div class="row g-3 mb-0 align-items-center">
+                                <!--end col-->
+                                <div class="col-sm-auto">
+                                    <div class="input-group">
+                                        <input style="font-size: 24px; width: 200px; height: 50px;" id="PV-bar" type="text" class="text-center form-control border-0 dash-filter-picker shadow" disabled>
+                                        <div class="input-group-text bg-primary border-primary text-white">
+                                            <h5 class="text-white">PV</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--end col-->
+
+
+                                <!--end col-->
+                            </div>
+                            <!--end row-->
+                        </form>
+                    </div>
+                </div><!-- end card header -->
+            </div>
+            <!--end col-->
+        </div>
+
 
         <div class="row">
             <div class="col-xxl-3">
@@ -188,7 +220,8 @@
             <!-- end col -->
 
             <div class="col-xxl-9 order-xxl-0 order-first">
-                <div class="d-flex flex-column h-100">
+
+                <div class="d-flex flex-column h-900">
                     <div class="row">
                         <div class="col-xl-12">
                             <div class="card">
@@ -707,7 +740,7 @@
 <script src="{{ asset('material/assets/js/pages/dashboard-crypto.init.js') }}"></script>
 <script>
     $(document).ready(function() {
-        let chart,chart_compresor;
+        let chart, chart_compresor;
 
         function fetchData(url, params = {}) {
             return $.ajax({
@@ -816,7 +849,7 @@
             let params = {};
 
             if (filter === "latest") {
-                url = "/sensor/boiler-data";
+                url = "{{ url('sensor/boiler-data') }}";
             } else if (filter === "daily") {
                 let selectedDate = $("#datePicker").val();
                 if (!selectedDate) {
@@ -827,7 +860,7 @@
                     });
                     return;
                 }
-                url = "/sensor/boiler/data-harian";
+                url = "{{ url('sensor/boiler/data-harian') }}";
                 params = {
                     tanggal: selectedDate
                 };
@@ -842,7 +875,7 @@
                     });
                     return;
                 }
-                url = "/sensor/boiler/data-mingguan";
+                url = "{{ url('sensor/boiler/data-mingguan') }}";
                 params = {
                     tanggal_mulai: startDate,
                     tanggal_selesai: endDate
@@ -869,6 +902,21 @@
 
         updateInputFields();
         $("#applyFilter").trigger("click");
+
+        function updatePVSteam() {
+            $.ajax({
+                url: "{{ url('sensor/boiler-realtime') }}",
+                dataType: 'json',
+                success: function(response) {
+                    $('#PV-bar').val(response.PVSteam + " Bar");  // Update nilai feed water
+                },
+                error: function(_xhr, status, error) {
+                    console.error('AJAX Error: ' + status + error);
+                }
+            });
+        }
+        updatePVSteam();
+        setInterval(updatePVSteam, 5000);
     });
 </script>
 

@@ -431,7 +431,7 @@
             let params = {};
 
             if (filter === "latest") {
-                url = "/pasteurisasi1/data";
+                url = "{{ url('pasteurisasi1/data') }}";
             } else if (filter === "daily") {
                 let selectedDate = $("#datePicker").val();
                 if (!selectedDate) {
@@ -442,7 +442,7 @@
                     });
                     return;
                 }
-                url = "/pasteurisasi1/data-harian";
+                url = "{{ url('pasteurisasi1/data-harian') }}";
                 params = {
                     tanggal: selectedDate
                 };
@@ -457,7 +457,7 @@
                     });
                     return;
                 }
-                url = "/pasteurisasi1/data-mingguan";
+                url = "{{ url('pasteurisasi1/data-mingguan') }}";
                 params = {
                     tanggal_mulai: startDate,
                     tanggal_selesai: endDate

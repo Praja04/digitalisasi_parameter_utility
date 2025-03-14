@@ -286,7 +286,9 @@
                     let userList = '';
 
                     users.forEach(user => {
-                        let imageUrl = user.image ? `/uploads/users/${user.image}` : '/material/assets/images/users/user-dummy-img.jpg';
+                        let imageUrl = user.image ?
+                            "{{ url('/uploads/users') }}/" + user.image :
+                            "{{ asset('material/assets/images/users/user-dummy-img.jpg') }}";
 
                         userList += `
                         <div class="col-lg-12">
@@ -353,9 +355,11 @@
                 success: function(users) {
                     let userList = '';
                     users.forEach(user => {
-                        let imageUrl = user.image ? `/uploads/users/${user.image}` : '/material/assets/images/users/user-dummy-img.jpg';
+                        let imageUrl = user.image ? "{{ url('/uploads/users') }}/" + user.image : "{{ asset('material/assets/images/users/user-dummy-img.jpg') }}";
+
                         let randomImageNumber = Math.floor(Math.random() * 10) + 1; // Pilih angka 1-10 secara acak
-                        let randomImage = `/material/assets/images/small/img-${randomImageNumber}.jpg`;
+                        let randomImage = "{{ asset('material/assets/images/small/img-') }}" + randomImageNumber + ".jpg";
+
                         userList += `
                             <div class="col">
                                 <div class="card team-box">
@@ -463,7 +467,8 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `/users/${userId}`,
+                        url: "{{ url('/users') }}/" + userId,
+                        
                         type: 'POST',
                         data: formData,
                         processData: false,

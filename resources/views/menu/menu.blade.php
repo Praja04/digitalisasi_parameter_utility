@@ -41,6 +41,8 @@
 
 
 @section('content')
+
+
 <div class="card-container" style="margin-top: 100px;">
     @php
     $menus = [

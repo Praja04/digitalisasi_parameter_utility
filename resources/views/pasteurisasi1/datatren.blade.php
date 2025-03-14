@@ -375,7 +375,7 @@
         $("#apply-filter").click(function() {
             let mode = $("#filter-mode").val();
             if (mode === "normal") {
-                getData("/pasteurisasi1/data");
+                getData("{{ url('/pasteurisasi1/data') }}");
             } else if (mode === "harian") {
                 let tanggal = $("#filter-tanggal").val();
                 if (!tanggal) {
@@ -386,7 +386,7 @@
                     });
                     return;
                 }
-                getData("/pasteurisasi1/data-harian", {
+                getData("{{ url('/pasteurisasi1/data-harian') }}", {
                     tanggal: tanggal
                 });
             } else if (mode === "mingguan") {
@@ -400,14 +400,16 @@
                     });
                     return;
                 }
-                getData("/pasteurisasi1/data-mingguan", {
+                getData("{{ url('/pasteurisasi1/data-mingguan') }}", {
                     tanggal_mulai: tanggalMulai,
                     tanggal_selesai: tanggalSelesai
                 });
             }
         });
 
-        getData("/pasteurisasi1/data");
+        // Panggil fungsi getData saat halaman dimuat
+        getData("{{ url('/pasteurisasi1/data') }}");
+
     });
 </script>
 @endsection
