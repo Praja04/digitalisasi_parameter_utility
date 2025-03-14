@@ -258,14 +258,26 @@
                     });
                 },
                 error: function(xhr) {
+                    console.error("Error Response:", xhr);
+
+                    let errorMsg = "Failed to add user.";
+                    if (xhr.responseJSON) {
+                        if (xhr.responseJSON.errors) {
+                            errorMsg = Object.values(xhr.responseJSON.errors).flat().join("\n");
+                        } else if (xhr.responseJSON.message) {
+                            errorMsg = xhr.responseJSON.message;
+                        }
+                    }
+
                     Swal.fire({
                         title: "Error!",
-                        text: xhr.responseJSON.message || "Failed to add user.",
+                        text: errorMsg,
                         icon: "error"
                     });
                 }
             });
         });
+
 
 
         $("#grid-view-button").on("click", function() {
@@ -468,7 +480,7 @@
                 if (result.isConfirmed) {
                     $.ajax({
                         url: "{{ url('/users') }}/" + userId,
-                        
+
                         type: 'POST',
                         data: formData,
                         processData: false,
