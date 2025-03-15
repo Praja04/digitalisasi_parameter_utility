@@ -230,7 +230,7 @@
             formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
 
             $.ajax({
-                url: '{{ route("users.store") }}',
+                url: "{{ url('/users') }}",
                 type: 'POST',
                 data: formData,
                 processData: false,
