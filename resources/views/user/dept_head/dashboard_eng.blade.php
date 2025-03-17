@@ -270,7 +270,7 @@
                                 <div class="card-header border-0 align-items-center d-flex">
                                     <h4 class="card-title mb-0 flex-grow-1">Sensor Compressor Chart</h4>
                                     <div class="d-flex gap-2">
-                                        <select id="filterData" class="form-select form-select-sm w-auto">
+                                        <select id="filterData2" class="form-select form-select-sm w-auto">
                                             <option value="latest">Terbaru</option>
                                             <option value="daily">Per Hari</option>
                                             <option value="weekly">Per Minggu</option>

@@ -290,7 +290,7 @@
                             frekuensi divert
                         </h4>
                         <div class="d-flex gap-2">
-                            <select id="filterData" class="form-select form-select-sm w-auto">
+                            <select id="filterData2" class="form-select form-select-sm w-auto">
                                 <option value="latest">Terbaru</option>
                                 <option value="daily">Per Hari</option>
                                 <option value="weekly">Per Minggu</option>
@@ -323,91 +323,96 @@
 <!-- Dashboard init -->
 
 
+
 <script>
     $(document).ready(function() {
-        let chartInstances = [];
+        let chart;
 
-        function getData(url, params = {}) {
-            $.ajax({
+        function fetchData(url, params = {}) {
+            return $.ajax({
                 url: url,
                 type: "GET",
                 data: params,
                 dataType: "json",
-                beforeSend: function() {
-                    $("#applyFilter").prop("disabled", true).text("Memuat...");
-                },
-                success: function(response) {
-                    //console.log("Response API:", response);
-                    $("#applyFilter").prop("disabled", false).text("Terapkan Filter");
-                    if (response.success && response.data.length > 0) {
-                        let data = response.data.reverse();
-                        updateCharts(data);
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Data Tidak Ditemukan',
-                            text: 'Tidak ada data untuk rentang tanggal yang dipilih.',
-                        });
-                        updateCharts([]);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching data:", error);
+                success: function(data) {
+                    console.log(data);
                 }
             });
         }
 
-        function updateCharts(data) {
-            const step = Math.ceil(data.length / 1000);
-            const sampledData = data.filter((_, index) => index % step === 0);
-            let waktu = sampledData.map(item => item.Waktu);
-
-            let charts = [{
-                id: "#ccp_chart",
-                title: "CCP - Suhu",
-                series: [{
-                        name: "Flowrate ",
-                        data: data.map(item => item.Flowrate)
-                    },
-                    {
-                        name: "Heating (°C) ",
-                        data: data.map(item => item.SuhuHolding)
-                    },
-                    {
-                        name: "Holding (°C) ",
-                        data: data.map(item => item.SuhuHeating)
-                    }
-                ]
-            }];
-
-            charts.forEach((chart, index) => {
-                if (!chartInstances[index]) {
-                    chartInstances[index] = new ApexCharts($(chart.id)[0], {
-                        chart: {
-                            type: "line",
-                            height: 300
-                        },
-                        series: chart.series,
-                        xaxis: {
-                            categories: waktu,
-                            labels: {
-                                show: false
-                            }
-                        }
-                    });
-                    chartInstances[index].render();
-                } else {
-                    chartInstances[index].updateSeries(chart.series);
-                    chartInstances[index].updateOptions({
-                        xaxis: {
-                            categories: waktu,
-                            labels: {
-                                show: false
-                            }
-                        }
-                    });
+        function updateChart(data) {
+            if (data.length === 0) {
+                if (chart) {
+                    chart.updateSeries([{
+                        data: []
+                    }]); // Kosongkan chart
                 }
-            });
+                Swal.fire({
+                    icon: "warning",
+                    title: "Data Tidak Ditemukan",
+                    text: "Tidak ada data untuk rentang waktu yang dipilih.",
+                });
+                return;
+            }
+
+            let categories = data.map(item => item.Waktu);
+
+            let seriesData = {
+                Flowrate: data.map(item => item.Flowrate),
+                SuhuHeating: data.map(item => item.SuhuHeating),
+                SuhuHolding: data.map(item => item.SuhuHolding),
+            };
+
+            let chartOptions = {
+                chart: {
+                    type: "line",
+                    height: 350
+                },
+                stroke: {
+                    width: 2,
+                    curve: "smooth"
+                },
+                series: [{
+                        name: "Flowrate",
+                        data: seriesData.Flowrate
+                    },
+                    {
+                        name: "Suhu Heating",
+                        data: seriesData.SuhuHeating
+                    },
+                    {
+                        name: "Suhu Holding",
+                        data: seriesData.SuhuHolding
+                    }
+                ],
+                colors: ["#0acf97", "#fa5c7c", "#ffbc00", "#39afd1", "#727cf5"],
+                xaxis: {
+                    categories: categories,
+                    title: {
+                        text: "Waktu"
+                    },
+                    labels: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: "CCP"
+                    }
+                },
+                tooltip: {
+                    x: {
+                        format: "dd MMM HH:mm"
+                    }
+                }
+            };
+
+            if (chart) {
+                chart.updateOptions(chartOptions);
+            } else {
+                chart = new ApexCharts(document.querySelector("#ccp_chart"), chartOptions);
+                chart.render();
+            }
         }
 
         function updateInputFields() {
@@ -464,7 +469,7 @@
                 };
             }
 
-            getData(url, params).done(response => {
+            fetchData(url, params).done(response => {
                 if (response.success) {
                     updateChart(response.data);
                 } else {
@@ -482,6 +487,8 @@
             });
         });
 
+        updateInputFields();
+        $("#applyFilter").trigger("click");
 
         function updateheatingValue() {
             $.ajax({
@@ -500,45 +507,6 @@
         }
 
         updateheatingValue();
-        updateInputFields();
-        $("#applyFilter").trigger("click");
-
-    });
-</script>
-<script>
-    $(document).ready(function() {
-        function getShift(now) {
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
-
-            if ((hours === 6 && minutes >= 1) || (hours > 6 && hours < 14) || (hours === 14 && minutes === 0)) {
-                return "Shift 1";
-            } else if ((hours === 14 && minutes >= 1) || (hours > 14 && hours < 22) || (hours === 22 && minutes === 0)) {
-                return "Shift 2";
-            } else {
-                return "Shift 3"; // Dari jam 22:01 sampai 06:00 keesokan harinya
-            }
-        }
-
-        function updateDateTime() {
-            let now = new Date();
-            let formattedDate = now.toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit"
-            });
-
-            let shift = getShift(now);
-
-            // Set nilai tanggal dan shift ke elemen yang sesuai
-            $('#date-picker').val(formattedDate);
-            $('#shift').val(shift);
-        }
-
-        // Panggil fungsi pertama kali
-        updateDateTime();
 
     });
 </script>
