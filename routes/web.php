@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ProduksiController;
+use App\Http\Controllers\QCController;
 use App\Http\Controllers\DashboardController;
 
 use Illuminate\Support\Facades\Route;
@@ -23,19 +25,66 @@ Route::get('/', function () {
 Route::get('menu', function () {
     return view('menu/menu');
 });
+Route::get('form', function () {
+    return view('pemakaian_air');
+});
 
 
 Route::prefix('eng')->group(function () {
-   Route::get('/dept_head/dashboard', [AuthController::class, 'dashboardEng']);
-   Route::get('/dept_head/todo', [AuthController::class, 'todoListEng']);
+    Route::get('/dept_head/dashboard', [AuthController::class, 'dashboardEng']);
+    Route::get('/operator/dashboard', [AuthController::class, 'dashboardOperatorEng']);
+    Route::get('/dept_head/todo', [AuthController::class, 'todoListEng']);
 });
 Route::prefix('qc')->group(function () {
-   Route::get('/dept_head/dashboard', [AuthController::class, 'dashboardQc']);
-});
-Route::prefix('prd')->group(function () {
-   Route::get('/dept_head/dashboard', [AuthController::class, 'dashboardProduksi']);
+    Route::get('/dept_head/dashboard', [AuthController::class, 'dashboardQc']);
+    Route::get('/operator/dashboard', [AuthController::class, 'dashboardOperatorQc']);
 });
 
+//PRD
+Route::prefix('prd')->middleware('auth')->group(function () {
+    // Dashboard untuk Dept Head dan Operator
+    Route::get('/dept_head/dashboard', [ProduksiController::class, 'dashboardProduksi']);
+    Route::get('/operator/dashboard', [ProduksiController::class, 'dashboardOperatorProduksi']);
+    Route::get('/operator/detailbatch', [ProduksiController::class, 'showOperatorProduksi']);
+    Route::get('/operator/history', [ProduksiController::class, 'historyBatch']);
+    Route::get('/operator/status_running', [ProduksiController::class, 'statusRunning']);
+
+    // CRUD Batch Produksi
+    Route::get('/batch', [ProduksiController::class, 'index'])->name('batch.index'); // Menampilkan semua batch
+    Route::get('/batch-completed', [ProduksiController::class, 'indexCompleted'])->name('batch.index-completed'); // Menampilkan semua batch
+    Route::post('/batch/store', [ProduksiController::class, 'storeBatch'])->name('batch.store'); // Simpan batch baru
+    Route::get('/operator/batch/{id}', [ProduksiController::class, 'showOperatorProduksi'])->name('operator.batch.show');
+    Route::put('/batch/{id}/update-status', [ProduksiController::class, 'updateStatus'])->name('batch.updateStatus'); // Update status batch
+    Route::delete('/delete/batch/{id}', [ProduksiController::class, 'destroy'])->name('batch.destroy'); // Hapus batch
+
+    // CRUD Shift untuk setiap Batch
+    Route::post('/batch/{batch_id}/shift/store', [ProduksiController::class, 'storeBatchDetail'])->name('batch.shift.store'); // Tambah shift
+    Route::get('/batch/{batch_id}/shift', [ProduksiController::class, 'getShiftData'])->name('batch.shift.get'); // Ambil data shift
+    Route::delete('/batch/shift/{id}', [ProduksiController::class, 'deleteShift'])->name('batch.shift.delete'); // Hapus shift
+    Route::put('/batch/shift/update/{shiftId}', [ProduksiController::class, 'updateShift'])->name('batch.shift.update');
+
+    // CRUD Status Running
+    Route::get('/status-running', [ProduksiController::class, 'StatusRunningList'])->name('statusrunning.read');
+    Route::post('/status-running/store', [ProduksiController::class, 'storeStatusRunning'])->name('statusrunning.store');
+    Route::delete('/status-running/delete/{id}', [ProduksiController::class, 'destroyStatusRunning'])->name('statusrunning.destroy');
+    Route::put('/status-running/update/{id}', [ProduksiController::class, 'updateStatusRunning'])->name('statusrunning.update');
+});
+//End PRD
+
+//QC
+Route::prefix('qc')->middleware('auth')->group(function () {
+    // Dashboard untuk Dept Head dan Operator
+    Route::get('/dept_head/dashboard', [QCController::class, 'dashboardQC']);
+    Route::get('/operator/dashboard', [QCController::class, 'dashboardOperatorQC']);
+
+    // CRUD 
+    Route::get('/data', [QCController::class, 'index'])->name('aftercooling.index'); // Ambil semua data
+    Route::post('/data/store', [QCController::class, 'storeData'])->name('aftercooling.store'); // Simpan data baru
+    Route::put('/data/{id}/update-status', [QCController::class, 'updateStatus'])->name('aftercooling.updateStatus'); // Update status
+    Route::delete('/data/{id}', [QCController::class, 'destroy'])->name('aftercooling.destroy'); // Hapus data
+
+});
+//End QC
 
 
 Route::prefix('dept_head')->group(function () {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\produksi\AchievementBatch;
+use App\Models\produksi\StatusRunning;
 use App\Models\produksi\AchievementBatchDetail;
 use Illuminate\Support\Facades\Session;
 
@@ -19,13 +20,13 @@ class ProduksiController extends Controller
         return view('user.dept_head.dashboard_produksi');
     }
 
-    // 🔹 Dashboard untuk Operator
+    /////////////// 🔹 Dashboard untuk Operator //////////////////
     public function dashboardOperatorProduksi()
     {
         if (Session::get('jabatan') !== 'operator') {
             return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
-        return view('user.operator.dashboard_prd');
+        return view('user.operator.prd.dashboard_prd');
     }
 
     public function showOperatorProduksi($id)
@@ -34,7 +35,7 @@ class ProduksiController extends Controller
             return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
         $batch = AchievementBatch::with('details')->findOrFail($id);
-        return view('user.operator.show_prd', compact('batch'));
+        return view('user.operator.prd.show_prd', compact('batch'));
     }
 
     // Menampilkan data history batch status completed
@@ -43,13 +44,39 @@ class ProduksiController extends Controller
         if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'produksi') {
             return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
-        return view('user.operator.history_batch_prd');
+        return view('user.operator.prd.history_batch_prd');
     }
 
+    public function statusRunning()
+    {
+        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'produksi') {
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        }
+        return view('user.operator.prd.status_running');
+    }
+
+    //////////////////End operator layout/////////
     // 🔹 Menampilkan Semua Batch
     public function index()
     {
-        $batches = AchievementBatch::all();
+        // $batches = AchievementBatch::orderBy('batch_date', 'desc')
+        //     ->get();
+
+        // return response()->json($batches);
+
+        $batches = AchievementBatch::with(['details' => function ($query) {
+            $query->selectRaw('achievement_batch_id, SUM(batch_count) as total_batch_count')
+                ->groupBy('achievement_batch_id');
+        }])
+            ->orderBy('batch_date', 'desc')
+            ->get();
+
+        // Menambahkan total_batch_count langsung di collection
+        $batches->each(function ($batch) {
+            $batch->total_batch_count = $batch->details->sum('total_batch_count');
+            unset($batch->details); // Jika tidak ingin menampilkan details
+        });
+
         return response()->json($batches);
     }
 
@@ -58,7 +85,7 @@ class ProduksiController extends Controller
     {
         $completedCount = AchievementBatch::where('status', 'completed')->count();
         $notCompletedCount = AchievementBatch::where('status', '!=', 'completed')->count();
-    
+
         return response()->json([
             'completed' => $completedCount,
             'not_completed' => $notCompletedCount
@@ -120,6 +147,7 @@ class ProduksiController extends Controller
     public function destroy($id)
     {
         $batch = AchievementBatch::findOrFail($id);
+        $batch->details()->delete();
         $batch->delete();
 
         return response()->json([
@@ -209,6 +237,79 @@ class ProduksiController extends Controller
         return response()->json([
             'message' => 'Jumlah produksi berhasil diperbarui!',
             'updated_count' => $shift->batch_count
+        ]);
+    }
+
+    ///////////////////Status Running Produksi//////////////////
+    public function StatusRunningList()
+    {
+        $batches = StatusRunning::orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($batches);
+    }
+
+    public function storeStatusRunning(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'mode' => 'required|string',
+            'varian' => 'required|string',
+            'batch' => 'required|string',
+            'storage' => 'required|string',
+        ]);
+
+        try {
+            // Simpan batch baru
+            $nama_user = Session::get('username');
+            $data = StatusRunning::create([
+                'mode' => $request->mode,
+                'varian' => $request->varian,
+                'batch' => $request->batch,
+                'created_by_user' => $nama_user,  // Gantilah dengan user yang login
+                'storage' => $request->storage
+            ]);
+
+            return response()->json(['success' => true, 'data' => $data]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    // 🔹 Update Status Running
+    public function updateStatusRunning(Request $request, $id)
+    {
+        $request->validate([
+            'mode' => 'required|string',
+            'varian' => 'required|string',
+            'batch' => 'required|string',
+            'storage' => 'required|string',
+        ]);
+
+        $data = StatusRunning::findOrFail($id);
+        $data->update([
+            'mode' => $request->mode,
+            'varian' => $request->varian,
+            'batch' => $request->batch,
+            'storage' => $request->storage,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status running diperbarui!',
+            'data' => $data
+        ]);
+    }
+
+    // 🔹 Hapus StatusRunning
+    public function destroyStatusRunning($id)
+    {
+        $data = StatusRunning::findOrFail($id);
+        $data->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status running berhasil dihapus!'
         ]);
     }
 }

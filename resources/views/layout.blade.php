@@ -25,9 +25,11 @@
     <link href="{{ asset('material/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- custom Css-->
     <link href="{{ asset('material/assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
-
+    
     <!-- jQuery should be included before DataTables -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="{{ asset('assetswebbased/DataTables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{ asset('assetswebbased/DataTables/datatables.min.js') }}"></script>
     @yield('style')
 </head>
 

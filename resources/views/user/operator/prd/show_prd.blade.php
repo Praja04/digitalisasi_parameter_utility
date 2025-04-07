@@ -17,7 +17,7 @@
             </div>
 
             <!-- Form Tambah Shift -->
-            <h4 class="mb-3">➕ Tambah Data Shift</h4>
+            <h4 class="mb-3">➕ Tambah Data Batch </h4>
             <form id="formTambahShift">
                 @csrf
                 <input type="hidden" id="batch_id" value="{{ $batch->id }}">
@@ -34,13 +34,13 @@
                     <label for="batch_count" class="form-label">Jumlah Produksi</label>
                     <input type="number" class="form-control" id="batch_count" name="batch_count" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Tambah Shift</button>
+                <button type="submit" class="btn btn-primary">Tambah Batch</button>
             </form>
 
             <hr>
 
             <!-- Tabel Daftar Shift -->
-            <h4 class="mb-3">📊 Data Produksi per Shift</h4>
+            <h4 class="mb-3">📊 Data Produksi batch pasteurisasi 1 per Shift</h4>
             <table class="table table-bordered">
                 <thead>
                     <tr>

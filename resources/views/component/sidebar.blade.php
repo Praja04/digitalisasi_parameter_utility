@@ -2,6 +2,7 @@
     <!-- LOGO -->
     <div class="navbar-brand-box">
         <!-- Light Logo-->
+        @if(Session::get('jabatan') === 'dept_head' )
         <a href="{{ url('menu') }}" class="logo logo-light">
             <span class="logo-sm">
                 <img src="{{ asset('assets/images/icon-utility/kecap.png') }}" alt="" height="25">
@@ -10,6 +11,25 @@
                 <img src="{{ asset('assets/images/icon-utility/kecap.png') }}" alt="" height="100">
             </span>
         </a>
+        @elseif(Session::get('jabatan') === 'operator' && Session::get('departemen') === 'produksi')
+        <a href="{{ url('/prd/operator/dashboard') }}" class="logo logo-light">
+            <span class="logo-sm">
+                <img src="{{ asset('assets/images/icon-utility/kecap.png') }}" alt="" height="25">
+            </span>
+            <span class="logo-lg">
+                <img src="{{ asset('assets/images/icon-utility/kecap.png') }}" alt="" height="100">
+            </span>
+        </a>
+        @elseif(Session::get('jabatan') === 'operator' && Session::get('departemen') === 'qc')
+        <a href="{{ url('/qc/operator/dashboard') }}" class="logo logo-light">
+            <span class="logo-sm">
+                <img src="{{ asset('assets/images/icon-utility/kecap.png') }}" alt="" height="25">
+            </span>
+            <span class="logo-lg">
+                <img src="{{ asset('assets/images/icon-utility/kecap.png') }}" alt="" height="100">
+            </span>
+        </a>
+        @endif
         <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
             <i class="ri-record-circle-line"></i>
         </button>
@@ -308,8 +328,37 @@
                     <a class="nav-link menu-link" href="{{ url('dept_head/manajemen_user') }}">
                         <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Manage User</span>
                     </a>
-                </li> 
+                </li>
+                @elseif(Session::get('jabatan') === 'operator' && Session::get('departemen') === 'produksi')
+                <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('prd/operator/dashboard') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form input Batch</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('prd/operator/history') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">List History Batch</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('prd/operator/status_running') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Status Running Produksi</span>
+                    </a>
+                </li>
 
+                @elseif(Session::get('jabatan') === 'operator' && Session::get('departemen') === 'qc')
+                <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('qc/operator/dashboard') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form input AfterCooling</span>
+                    </a>
+                </li>
+                <!-- <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('prd/operator/historys') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">List History Batch</span>
+                    </a>
+                </li> -->
                 @endif
 
             </ul>

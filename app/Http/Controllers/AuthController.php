@@ -41,12 +41,32 @@ class AuthController extends Controller
             Log::info('Username saved in session: ' . Session::get('username'));
 
             // Redirect berdasarkan jabatan
-            if ($user->jabatan === 'dept_head') {
-                $redirectUrl = url('/eng/dept_head/dashboard');
-            } elseif (in_array($user->jabatan, ['operator', 'foreman', 'supervisor'])) {
-                $redirectUrl = url('/operator/dashboard'); // Ubah sesuai kebutuhan
+            if ($user->departemen === 'engineering') {
+                if ($user->jabatan === 'dept_head') {
+                    $redirectUrl = url('/eng/dept_head/dashboard');
+                } elseif (in_array($user->jabatan, ['operator', 'foreman', 'supervisor'])) {
+                    $redirectUrl = url('/eng/operator/dashboard');
+                }
+            } elseif ($user->departemen === 'qc') {
+                if ($user->jabatan === 'dept_head') {
+                    $redirectUrl = url('/qc/dept_head/dashboard');
+                } elseif (in_array($user->jabatan, ['operator', 'foreman', 'supervisor'])) {
+                    $redirectUrl = url('/qc/operator/dashboard');
+                }
+            } elseif ($user->departemen === 'produksi') {
+                if ($user->jabatan === 'dept_head') {
+                    $redirectUrl = url('/prd/dept_head/dashboard');
+                } elseif (in_array($user->jabatan, ['operator', 'foreman', 'supervisor'])) {
+                    $redirectUrl = url('/prd/operator/dashboard');
+                }
+            } elseif ($user->departemen === 'warehouse') {
+                if ($user->jabatan === 'dept_head') {
+                    $redirectUrl = url('/warehouse/dept_head/dashboard');
+                } elseif (in_array($user->jabatan, ['operator', 'foreman', 'supervisor'])) {
+                    $redirectUrl = url('/warehouse/operator/dashboard');
+                }
             } else {
-                $redirectUrl = url('/login'); // Default jika jabatan tidak dikenali
+                $redirectUrl = url('/'); // Default jika departemen tidak dikenali
             }
 
             return response()->json([
@@ -65,13 +85,39 @@ class AuthController extends Controller
 
     private function redirectUser($user)
     {
-        if ($user->jabatan === 'dept_head') {
-            return url('/eng/dept_head/dashboard');
-        } elseif (in_array($user->jabatan, ['operator', 'foreman', 'supervisor'])) {
-            return url('/operator/dashboard');
+        if ($user->departemen === 'engineering') {
+            if ($user->jabatan === 'dept_head') {
+                return url('/eng/dept_head/dashboard');
+            } elseif ($user->jabatan === 'supervisor') {
+                return url('/eng/supervisor/dashboard');
+            } elseif ($user->jabatan === 'foreman') {
+                return url('/eng/foreman/dashboard');
+            } elseif ($user->jabatan === 'operator') {
+                return url('/eng/operator/dashboard');
+            }
+        } elseif ($user->departemen === 'produksi') {
+            if ($user->jabatan === 'dept_head') {
+                return url('/prd/dept_head/dashboard');
+            } elseif ($user->jabatan === 'supervisor') {
+                return url('/prd/supervisor/dashboard');
+            } elseif ($user->jabatan === 'foreman') {
+                return url('/prd/foreman/dashboard');
+            } elseif ($user->jabatan === 'operator') {
+                return url('/prd/operator/dashboard');
+            }
+        } elseif ($user->departemen === 'qc') {
+            if ($user->jabatan === 'dept_head') {
+                return url('/qc/dept_head/dashboard');
+            } elseif ($user->jabatan === 'supervisor') {
+                return url('/qc/supervisor/dashboard');
+            } elseif ($user->jabatan === 'foreman') {
+                return url('/qc/foreman/dashboard');
+            } elseif ($user->jabatan === 'operator') {
+                return url('/qc/operator/dashboard');
+            }
         }
-    
-        return url('/login'); // Default jika jabatan tidak dikenali
+
+        return url('/'); // Default jika jabatan tidak dikenali
     }
 
 
@@ -94,37 +140,35 @@ class AuthController extends Controller
         ]);
     }
 
+    //QC
     public function dashboardQC()
     {
         if (Session::get('jabatan') !== 'dept_head') {
-            return redirect('/login')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
         return view('user.dept_head.dashboard_qc');
     }
+    //end QC
 
-    public function dashboardProduksi()
-    {
-        if (Session::get('jabatan') !== 'dept_head') {
-            return redirect('/login')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
-        }
-        return view('user.dept_head.dashboard_produksi');
-    }
+   
 
+
+    //eng
     public function dashboardEng()
     {
         if (Session::get('jabatan') !== 'dept_head') {
-            return redirect('/login')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
         return view('user.dept_head.dashboard_eng');
     }
 
-
     public function todoListEng()
     {
         if (Session::get('jabatan') !== 'dept_head') {
-            return redirect('/login')->with('error', 'Anda tidak memiliki akses ke halaman
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman
             ini.');
         }
         return view('user.dept_head.todo_list_eng');
     }
+    //end eng
 }

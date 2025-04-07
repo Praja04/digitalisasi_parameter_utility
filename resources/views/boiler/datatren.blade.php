@@ -557,7 +557,7 @@
             let mode = $("#filter-mode").val();
 
             if (mode === "normal") {
-                getBoilerData("/sensor/boiler-data");
+                getBoilerData("{{ url('sensor/boiler-data') }}");
             } else if (mode === "harian") {
                 let tanggal = $("#filter-tanggal").val();
                 if (!tanggal) {
@@ -568,7 +568,7 @@
                     });
                     return;
                 }
-                getBoilerData("/sensor/boiler/data-harian", {
+                getBoilerData("{{ url('sensor/boiler/data-harian') }}", {
                     tanggal: tanggal
                 });
             } else if (mode === "mingguan") {
@@ -582,7 +582,7 @@
                     });
                     return;
                 }
-                getBoilerData("/sensor/boiler/data-mingguan", {
+                getBoilerData("{{ url('sensor/boiler/data-mingguan') }}", {
                     tanggal_mulai: tanggalMulai,
                     tanggal_selesai: tanggalSelesai
                 });

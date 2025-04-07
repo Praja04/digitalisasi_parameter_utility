@@ -88,22 +88,23 @@
                     <div class="card-body">
                         <div>
                             <div class="table-responsive table-card mb-3">
-                                <table class="table align-middle table-nowrap mb-0">
+                                <table id="batchTable" class="table text-center align-middle table-nowrap mb-0">
                                     <thead class="table-light">
                                         <tr>
+                                            <th scope="col">No</th>
                                             <th scope="col">Kode Batch</th>
                                             <th scope="col">Tanggal Batch</th>
                                             <th scope="col">Target Batch</th>
+                                            <th scope="col">Total Batch</th>
                                             <th scope="col">Status</th>
                                             <th scope="col">Dibuat pada</th>
                                             <th scope="col">Created By</th>
-                                            <!-- <th scope="col">Aksi</th> -->
                                         </tr>
                                     </thead>
                                     <tbody class="list form-check-all">
-
                                     </tbody>
                                 </table>
+
                                 <div class="noresult" style="display: none">
                                     <div class="text-center">
                                         <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
@@ -138,56 +139,104 @@
 
 <script>
     $(document).ready(function() {
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let totalPages = 1;
+        let allData = [];
+
         function loadBatchData() {
             $.ajax({
                 url: "{{ url('/prd/batch') }}",
                 type: "GET",
                 dataType: "json",
                 success: function(data) {
-                    let tbody = $(".list.form-check-all");
-                    tbody.empty();
-
-                    if (data.length === 0) {
-                        $(".noresult").show();
-                    } else {
-                        $(".noresult").hide();
-                        $.each(data, function(index, batch) {
-                            let statusBadgeClass = batch.status === "completed" ? "badge-soft-success" : "badge-soft-danger";
-                            let createdDate = new Date(batch.created_at).toLocaleDateString("id-ID");
-                            let row = `
-                                <tr>
-                                   
-                                    <td class="id d-none">${batch.id}</td>
-                                    <td class="name">${batch.batch_code}</td>
-                                    <td class="tanggal">${batch.batch_date}</td>
-                                    <td class="target">${batch.target_batch}</td>
-                                     <td class="status"><span class="badge ${statusBadgeClass}">${batch.status}</span></td>
-                                    <td class="created_date">${createdDate}</td>
-                                    <td class="user">${batch.created_by_user}</td>
-                                       <!-- <td>
-            <div class="dropdown">
-                <button class="btn btn-soft-secondary btn-sm dropdown" type="button" data-bs-toggle="dropdown">
-                    <i class="ri-more-fill align-middle"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item edit-item-btn" href="#api-key-modal" data-bs-toggle="modal">Rename</a></li>
-                    <li><a class="dropdown-item regenerate-api-btn" href="#api-key-modal" data-bs-toggle="modal">Regenerate Key</a></li>
-                    <li><a class="dropdown-item disable-btn" href="javascript:void(0);">Disable</a></li>
-                    <li><a class="dropdown-item remove-item-btn" data-bs-toggle="modal" href="#deleteApiKeyModal">Delete</a></li>
-                </ul>
-            </div>
-        </td> -->
-                                </tr>
-                            `;
-                            tbody.append(row);
-                        });
-                    }
+                    allData = data;
+                    totalPages = Math.ceil(allData.length / itemsPerPage);
+                    updateTable();
+                    updatePagination();
                 },
                 error: function() {
                     console.error("Gagal mengambil data.");
                 }
             });
         }
+
+        function updateTable() {
+            let tbody = $(".list.form-check-all");
+            tbody.empty();
+
+            let start = (currentPage - 1) * itemsPerPage;
+            let end = start + itemsPerPage;
+            let paginatedData = allData.slice(start, end);
+
+            if (paginatedData.length === 0) {
+                $(".noresult").show();
+            } else {
+                $(".noresult").hide();
+                $.each(paginatedData, function(index, batch) {
+                    let statusBadgeClass = batch.status === "completed" ? "badge-soft-success" : "badge-soft-danger";
+                    let createdDate = new Date(batch.created_at).toLocaleDateString("id-ID");
+                    let rowNumber = start + index + 1;
+                    let row = `
+                    <tr>
+                        <td>${rowNumber} %</td>
+                        <td>${batch.batch_code}</td>
+                        <td>${batch.batch_date}</td>
+                        <td>${batch.target_batch}</td>
+                        <td>${batch.total_batch_count}</td>
+                        <td><span class="badge ${statusBadgeClass}">${batch.status}</span></td>
+                        <td>${createdDate}</td>
+                        <td>${batch.created_by_user}</td>
+                    </tr>
+                `;
+                    tbody.append(row);
+                });
+            }
+        }
+
+        function updatePagination() {
+            let paginationList = $(".listjs-pagination");
+            paginationList.empty();
+
+            for (let i = 1; i <= totalPages; i++) {
+                let activeClass = i === currentPage ? "active" : "";
+                paginationList.append(`<li class="page-item ${activeClass}" data-page="${i}"><a href="#">${i}</a></li>`);
+            }
+
+            $(".pagination-prev").toggleClass("disabled", currentPage === 1);
+            $(".pagination-next").toggleClass("disabled", currentPage === totalPages);
+        }
+
+        // Event Listener untuk Pagination
+        $(document).on("click", ".pagination-prev", function(e) {
+            e.preventDefault();
+            if (currentPage > 1) {
+                currentPage--;
+                updateTable();
+                updatePagination();
+            }
+        });
+
+        $(document).on("click", ".pagination-next", function(e) {
+            e.preventDefault();
+            if (currentPage < totalPages) {
+                currentPage++;
+                updateTable();
+                updatePagination();
+            }
+        });
+
+        $(document).on("click", ".page-item", function(e) {
+            e.preventDefault();
+            let page = $(this).data("page");
+            if (page) {
+                currentPage = page;
+                updateTable();
+                updatePagination();
+            }
+        });
+
+        loadBatchData();
 
         function gettotalcompleted() {
             $.ajax({
@@ -205,9 +254,10 @@
 
         }
 
-        loadBatchData();
         gettotalcompleted();
     });
 </script>
+
+
 
 @endsection

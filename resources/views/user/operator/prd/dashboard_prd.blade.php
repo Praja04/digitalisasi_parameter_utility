@@ -32,8 +32,8 @@
                            <thead class="table-light text-center">
                               <tr>
 
-                                 <!-- 
-                                 <th  scope="col">no</th> -->
+                                 
+                                 <th  scope="col">no</th>
                                  <th scope="col">Tanggal Batch</th>
                                  <th scope="col">Target Batch</th>
                                  <th scope="col">Batch Code</th>
@@ -119,12 +119,13 @@
          let paginatedData = batchData.slice(start, start + perPage);
          let rows = '';
 
-         paginatedData.forEach((batch) => {
+         paginatedData.forEach((batch,index) => {
             let detailUrl = `{{ route('operator.batch.show', ['id' => '__ID__']) }}`.replace('__ID__', batch.id);
             let deleteUrl = `{{ route('batch.destroy', ['id' => '__ID__']) }}`.replace('__ID__', batch.id);
-
+            let rowNumber = (currentPage - 1) * perPage + (index + 1);
             rows += `
          <tr id="batch-${batch.id}">
+          <td>${rowNumber}</td>
             <td class="tanggal">${batch.batch_date}</td>
             <td class="target">${batch.target_batch ?? '-'}</td>
             <td class="batchcode form-control apikey-value">${batch.batch_code}</td>

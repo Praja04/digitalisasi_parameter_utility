@@ -206,16 +206,6 @@
             });
         });
 
-        // Cek jika user sudah login saat halaman dimuat
-        $.ajax({
-            url: "{{ route('login') }}",
-            method: "GET",
-            success: function(response) {
-                if (response.success === false && response.message === 'Anda sudah login.') {
-                    window.location.href = response.redirect; // Redirect sesuai jabatan jika sudah login
-                }
-            }
-        });
     });
 </script>
 
