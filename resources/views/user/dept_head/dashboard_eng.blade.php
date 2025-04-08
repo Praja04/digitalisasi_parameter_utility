@@ -6,8 +6,7 @@
         <!-- start page title -->
         <div class="row">
             <div class="col-12">
-                <div
-                    class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                     <h4 class="mb-sm-0">Engineering</h4>
 
                     <div class="page-title-right">
@@ -56,12 +55,146 @@
             <!--end col-->
         </div>
 
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card crm-widget">
+                    <div class="card-body p-0">
+                        <div class="row row-cols-xxl-6 row-cols-md-3 row-cols-1 g-0">
+                            <div class="col">
+                                <div class="py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13">
+                                        LevelFeedWater
+                                    </h5>
+                                    <div id="gauge_chart_levelfeedwater"></div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+                            <div class="col">
+                                <div class="mt-3 mt-md-0 py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13">
+                                        FeedPressure
+
+                                    </h5>
+                                    <div id="gauge_chart_feedpressure"></div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+                            <div class="col">
+                                <div class="mt-3 mt-md-0 py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13">
+                                        SuhuFeedTank
+
+                                    </h5>
+                                    <div id="gauge_chart_suhufeedtank"></div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+                            <div class="col">
+                                <div class="mt-3 mt-lg-0 py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13">
+                                        LHTemp
+
+                                    </h5>
+                                    <div id="gauge_chart_lhtemp"></div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+                            <div class="col">
+                                <div class="mt-3 mt-lg-0 py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13">
+                                        RHTemp
+
+                                    </h5>
+                                    <div id="gauge_chart_rhtemp"></div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+                            <div class="col">
+                                <div class="mt-3 mt-lg-0 py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13">
+                                        IDFan
+
+                                    </h5>
+                                    <div id="gauge_chart_idfan"></div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+                            <div class="col">
+                                <div class="mt-3 mt-lg-0 py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13">
+                                        LHGuiloutine
+
+                                    </h5>
+                                    <div id="gauge_chart_lhguiloutine"></div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+                            <div class="col">
+                                <div class="mt-3 mt-lg-0 py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13">
+                                        RHGuiloutine
+
+                                    </h5>
+                                    <div id="gauge_chart_rhguiloutine"></div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+                            <div class="col">
+                                <div class="mt-3 mt-lg-0 py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13">
+                                        LHFDFan
+
+                                    </h5>
+                                    <div id="gauge_chart_lhfdfan"></div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+                            <div class="col">
+                                <div class="mt-3 mt-lg-0 py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13">
+                                        LHStoker
+
+                                    </h5>
+                                    <div id="gauge_chart_lhstoker"></div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+                            <div class="col">
+                                <div class="mt-3 mt-lg-0 py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13">
+                                        RHStoker
+
+                                    </h5>
+                                    <div id="gauge_chart_rhstoker"></div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+                            <div class="col">
+                                <div class="mt-3 mt-lg-0 py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13">
+                                        InletWaterFlow
+
+                                    </h5>
+                                    <div id="gauge_chart_inletwaterflow"></div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+
+                        </div>
+                        <!-- end row -->
+                    </div>
+                    <!-- end card body -->
+                </div>
+                <!-- end card -->
+            </div>
+            <!-- end col -->
+        </div>
+        <!-- end row -->
 
         <div class="row">
             <div class="col-xxl-3">
                 <div class="card card-height-70">
-                    <div
-                        class="card-header border-0 align-items-center d-flex">
+                    <div class="card-header border-0 align-items-center d-flex">
                         <h4 class="card-title mb-0 flex-grow-1">
                             Pemakaian Chemical
                         </h4>
@@ -92,44 +225,29 @@
                     </div>
                     <!-- end cardheader -->
                     <div class="card-body">
-                        <div
-                            id="portfolio_donut_charts"
-                            data-colors='["--vz-primary", "--vz-info", "--vz-warning", "--vz-success"]'
-                            class="apex-charts"
-                            dir="ltr"></div>
+                        <div id="portfolio_donut_charts" data-colors='["--vz-primary", "--vz-info", "--vz-warning", "--vz-success"]' class="apex-charts" dir="ltr"></div>
 
-                        <ul
-                            class="list-group list-group-flush border-dashed mb-0 mt-3 pt-2">
+                        <ul class="list-group list-group-flush border-dashed mb-0 mt-3 pt-2">
                             <li class="list-group-item px-0">
                                 <div class="d-flex">
-                                    <div
-                                        class="flex-shrink-0 avatar-xs">
-                                        <span
-                                            class="avatar-title bg-light p-1 rounded-circle shadow">
-                                            <img
-                                                src="assets/images/svg/crypto-icons/btc.svg"
-                                                class="img-fluid"
-                                                alt="" />
+                                    <div class="flex-shrink-0 avatar-xs">
+                                        <span class="avatar-title bg-light p-1 rounded-circle shadow">
+                                            <img src="assets/images/svg/crypto-icons/btc.svg" class="img-fluid" alt="" />
                                         </span>
                                     </div>
-                                    <div
-                                        class="flex-grow-1 ms-2">
+                                    <div class="flex-grow-1 ms-2">
                                         <h6 class="mb-1">
                                             Chemical A
                                         </h6>
-                                        <p
-                                            class="fs-12 mb-0 text-muted">
-                                            <i
-                                                class="mdi mdi-circle fs-10 align-middle text-primary me-1"></i>
+                                        <p class="fs-12 mb-0 text-muted">
+                                            <i class="mdi mdi-circle fs-10 align-middle text-primary me-1"></i>
                                         </p>
                                     </div>
-                                    <div
-                                        class="flex-shrink-0 text-end">
+                                    <div class="flex-shrink-0 text-end">
                                         <h6 class="mb-1">
                                             1.200.000
                                         </h6>
-                                        <p
-                                            class="text-danger fs-12 mb-0">
+                                        <p class="text-danger fs-12 mb-0">
                                             m2
                                         </p>
                                     </div>
@@ -138,34 +256,24 @@
                             <!-- end -->
                             <li class="list-group-item px-0">
                                 <div class="d-flex">
-                                    <div
-                                        class="flex-shrink-0 avatar-xs">
-                                        <span
-                                            class="avatar-title bg-light p-1 rounded-circle shadow">
-                                            <img
-                                                src="assets/images/svg/crypto-icons/eth.svg"
-                                                class="img-fluid"
-                                                alt="" />
+                                    <div class="flex-shrink-0 avatar-xs">
+                                        <span class="avatar-title bg-light p-1 rounded-circle shadow">
+                                            <img src="assets/images/svg/crypto-icons/eth.svg" class="img-fluid" alt="" />
                                         </span>
                                     </div>
-                                    <div
-                                        class="flex-grow-1 ms-2">
+                                    <div class="flex-grow-1 ms-2">
                                         <h6 class="mb-1">
                                             Chemical C
                                         </h6>
-                                        <p
-                                            class="fs-12 mb-0 text-muted">
-                                            <i
-                                                class="mdi mdi-circle fs-10 align-middle text-info me-1"></i>
+                                        <p class="fs-12 mb-0 text-muted">
+                                            <i class="mdi mdi-circle fs-10 align-middle text-info me-1"></i>
                                         </p>
                                     </div>
-                                    <div
-                                        class="flex-shrink-0 text-end">
+                                    <div class="flex-shrink-0 text-end">
                                         <h6 class="mb-1">
                                             25.108
                                         </h6>
-                                        <p
-                                            class="text-danger fs-12 mb-0">
+                                        <p class="text-danger fs-12 mb-0">
                                             m2
                                         </p>
                                     </div>
@@ -174,34 +282,24 @@
                             <!-- end -->
                             <li class="list-group-item px-0">
                                 <div class="d-flex">
-                                    <div
-                                        class="flex-shrink-0 avatar-xs">
-                                        <span
-                                            class="avatar-title bg-light p-1 rounded-circle shadow">
-                                            <img
-                                                src="assets/images/svg/crypto-icons/ltc.svg"
-                                                class="img-fluid"
-                                                alt="" />
+                                    <div class="flex-shrink-0 avatar-xs">
+                                        <span class="avatar-title bg-light p-1 rounded-circle shadow">
+                                            <img src="assets/images/svg/crypto-icons/ltc.svg" class="img-fluid" alt="" />
                                         </span>
                                     </div>
-                                    <div
-                                        class="flex-grow-1 ms-2">
+                                    <div class="flex-grow-1 ms-2">
                                         <h6 class="mb-1">
                                             Chemical B
                                         </h6>
-                                        <p
-                                            class="fs-12 mb-0 text-muted">
-                                            <i
-                                                class="mdi mdi-circle fs-10 align-middle text-warning me-1"></i>
+                                        <p class="fs-12 mb-0 text-muted">
+                                            <i class="mdi mdi-circle fs-10 align-middle text-warning me-1"></i>
                                         </p>
                                     </div>
-                                    <div
-                                        class="flex-shrink-0 text-end">
+                                    <div class="flex-shrink-0 text-end">
                                         <h6 class="mb-1">
                                             10.589
                                         </h6>
-                                        <p
-                                            class="text-success fs-12 mb-0">
+                                        <p class="text-success fs-12 mb-0">
                                             m2
                                         </p>
                                     </div>
@@ -299,45 +397,31 @@
 
             <div class="col-xl-3">
                 <div class="card card-height-100">
-                    <div
-                        class="card-header align-items-center d-flex">
+                    <div class="card-header align-items-center d-flex">
                         <h4 class="card-title mb-0 flex-grow-1">
                             Pemakaian Listrik
                         </h4>
                         <div>
-                            <button
-                                type="button"
-                                class="btn btn-soft-info btn-sm shadow-none">
+                            <button type="button" class="btn btn-soft-info btn-sm shadow-none">
                                 1H
                             </button>
-                            <button
-                                type="button"
-                                class="btn btn-soft-info btn-sm shadow-none">
+                            <button type="button" class="btn btn-soft-info btn-sm shadow-none">
                                 1D
                             </button>
-                            <button
-                                type="button"
-                                class="btn btn-soft-info btn-sm shadow-none">
+                            <button type="button" class="btn btn-soft-info btn-sm shadow-none">
                                 7D
                             </button>
-                            <button
-                                type="button"
-                                class="btn btn-soft-primary btn-sm shadow-none">
+                            <button type="button" class="btn btn-soft-primary btn-sm shadow-none">
                                 1M
                             </button>
                         </div>
                     </div>
                     <!-- end card-header -->
                     <div class="card-body p-0">
-                        <ul
-                            class="list-group list-group-flush border-dashed mb-0">
-                            <li
-                                class="list-group-item d-flex align-items-center">
+                        <ul class="list-group list-group-flush border-dashed mb-0">
+                            <li class="list-group-item d-flex align-items-center">
                                 <div class="flex-shrink-0">
-                                    <img
-                                        src="assets/images/svg/crypto-icons/btc.svg"
-                                        class="avatar-xs shadow rounded-circle"
-                                        alt="" />
+                                    <img src="assets/images/svg/crypto-icons/btc.svg" class="avatar-xs shadow rounded-circle" alt="" />
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h6 class="fs-14 mb-1">
@@ -347,25 +431,19 @@
                                         $18.7 Billions
                                     </p>
                                 </div>
-                                <div
-                                    class="flex-shrink-0 text-end">
+                                <div class="flex-shrink-0 text-end">
                                     <h6 class="fs-14 mb-1">
                                         $12,863.08
                                     </h6>
-                                    <p
-                                        class="text-success fs-12 mb-0">
+                                    <p class="text-success fs-12 mb-0">
                                         +$67.21 (+4.33%)
                                     </p>
                                 </div>
                             </li>
                             <!-- end -->
-                            <li
-                                class="list-group-item d-flex align-items-center">
+                            <li class="list-group-item d-flex align-items-center">
                                 <div class="flex-shrink-0">
-                                    <img
-                                        src="assets/images/svg/crypto-icons/eth.svg"
-                                        class="avatar-xs shadow rounded-circle"
-                                        alt="" />
+                                    <img src="assets/images/svg/crypto-icons/eth.svg" class="avatar-xs shadow rounded-circle" alt="" />
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h6 class="fs-14 mb-1">
@@ -375,26 +453,19 @@
                                         $27.4 Billions
                                     </p>
                                 </div>
-                                <div
-                                    class="flex-shrink-0 text-end">
+                                <div class="flex-shrink-0 text-end">
                                     <h6 class="fs-14 mb-1">
                                         $08,256.04
                                     </h6>
-                                    <p
-                                        class="text-success fs-12 mb-0">
-                                        +$51.19<span
-                                            class="ms-1">(+5.64%)</span>
+                                    <p class="text-success fs-12 mb-0">
+                                        +$51.19<span class="ms-1">(+5.64%)</span>
                                     </p>
                                 </div>
                             </li>
                             <!-- end -->
-                            <li
-                                class="list-group-item d-flex align-items-center">
+                            <li class="list-group-item d-flex align-items-center">
                                 <div class="flex-shrink-0">
-                                    <img
-                                        src="assets/images/svg/crypto-icons/aave.svg"
-                                        class="avatar-xs shadow rounded-circle"
-                                        alt="" />
+                                    <img src="assets/images/svg/crypto-icons/aave.svg" class="avatar-xs shadow rounded-circle" alt="" />
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h6 class="fs-14 mb-1">
@@ -404,26 +475,19 @@
                                         $12.9 Billions
                                     </p>
                                 </div>
-                                <div
-                                    class="flex-shrink-0 text-end">
+                                <div class="flex-shrink-0 text-end">
                                     <h6 class="fs-14 mb-1">
                                         $11,896.13
                                     </h6>
-                                    <p
-                                        class="text-danger fs-12 mb-0">
-                                        -$59.01<span
-                                            class="ms-1">(-4.08%)</span>
+                                    <p class="text-danger fs-12 mb-0">
+                                        -$59.01<span class="ms-1">(-4.08%)</span>
                                     </p>
                                 </div>
                             </li>
                             <!-- end -->
-                            <li
-                                class="list-group-item d-flex align-items-center">
+                            <li class="list-group-item d-flex align-items-center">
                                 <div class="flex-shrink-0">
-                                    <img
-                                        src="assets/images/svg/crypto-icons/doge.svg"
-                                        class="avatar-xs shadow rounded-circle"
-                                        alt="" />
+                                    <img src="assets/images/svg/crypto-icons/doge.svg" class="avatar-xs shadow rounded-circle" alt="" />
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h6 class="fs-14 mb-1">
@@ -433,26 +497,19 @@
                                         $09.5 Billions
                                     </p>
                                 </div>
-                                <div
-                                    class="flex-shrink-0 text-end">
+                                <div class="flex-shrink-0 text-end">
                                     <h6 class="fs-14 mb-1">
                                         $15,999.06
                                     </h6>
-                                    <p
-                                        class="text-success fs-12 mb-0">
-                                        +$74.05<span
-                                            class="ms-1">(+3.12%)</span>
+                                    <p class="text-success fs-12 mb-0">
+                                        +$74.05<span class="ms-1">(+3.12%)</span>
                                     </p>
                                 </div>
                             </li>
                             <!-- end -->
-                            <li
-                                class="list-group-item d-flex align-items-center">
+                            <li class="list-group-item d-flex align-items-center">
                                 <div class="flex-shrink-0">
-                                    <img
-                                        src="assets/images/svg/crypto-icons/bnb.svg"
-                                        class="avatar-xs shadow rounded-circle"
-                                        alt="" />
+                                    <img src="assets/images/svg/crypto-icons/bnb.svg" class="avatar-xs shadow rounded-circle" alt="" />
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h6 class="fs-14 mb-1">
@@ -462,26 +519,19 @@
                                         $14.2 Billions
                                     </p>
                                 </div>
-                                <div
-                                    class="flex-shrink-0 text-end">
+                                <div class="flex-shrink-0 text-end">
                                     <h6 class="fs-14 mb-1">
                                         $13,786.18
                                     </h6>
-                                    <p
-                                        class="text-danger fs-12 mb-0">
-                                        -$61.05<span
-                                            class="ms-1">(-9.22%)</span>
+                                    <p class="text-danger fs-12 mb-0">
+                                        -$61.05<span class="ms-1">(-9.22%)</span>
                                     </p>
                                 </div>
                             </li>
                             <!-- end -->
-                            <li
-                                class="list-group-item d-flex align-items-center">
+                            <li class="list-group-item d-flex align-items-center">
                                 <div class="flex-shrink-0">
-                                    <img
-                                        src="assets/images/svg/crypto-icons/ltc.svg"
-                                        class="avatar-xs shadow rounded-circle"
-                                        alt="" />
+                                    <img src="assets/images/svg/crypto-icons/ltc.svg" class="avatar-xs shadow rounded-circle" alt="" />
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h6 class="fs-14 mb-1">
@@ -491,15 +541,12 @@
                                         $09.5 Billions
                                     </p>
                                 </div>
-                                <div
-                                    class="flex-shrink-0 text-end">
+                                <div class="flex-shrink-0 text-end">
                                     <h6 class="fs-14 mb-1">
                                         $10,604.27
                                     </h6>
-                                    <p
-                                        class="text-success fs-12 mb-0">
-                                        +$76.12<span
-                                            class="ms-1">(+4.92%)</span>
+                                    <p class="text-success fs-12 mb-0">
+                                        +$76.12<span class="ms-1">(+4.92%)</span>
                                     </p>
                                 </div>
                             </li>
@@ -514,45 +561,31 @@
 
             <div class="col-xl-3">
                 <div class="card card-height-100">
-                    <div
-                        class="card-header align-items-center d-flex">
+                    <div class="card-header align-items-center d-flex">
                         <h4 class="card-title mb-0 flex-grow-1">
                             Pemakaian Air
                         </h4>
                         <div>
-                            <button
-                                type="button"
-                                class="btn btn-soft-info btn-sm shadow-none">
+                            <button type="button" class="btn btn-soft-info btn-sm shadow-none">
                                 1H
                             </button>
-                            <button
-                                type="button"
-                                class="btn btn-soft-info btn-sm shadow-none">
+                            <button type="button" class="btn btn-soft-info btn-sm shadow-none">
                                 1D
                             </button>
-                            <button
-                                type="button"
-                                class="btn btn-soft-info btn-sm shadow-none">
+                            <button type="button" class="btn btn-soft-info btn-sm shadow-none">
                                 7D
                             </button>
-                            <button
-                                type="button"
-                                class="btn btn-soft-primary btn-sm shadow-none">
+                            <button type="button" class="btn btn-soft-primary btn-sm shadow-none">
                                 1M
                             </button>
                         </div>
                     </div>
                     <!-- end card-header -->
                     <div class="card-body p-0">
-                        <ul
-                            class="list-group list-group-flush border-dashed mb-0">
-                            <li
-                                class="list-group-item d-flex align-items-center">
+                        <ul class="list-group list-group-flush border-dashed mb-0">
+                            <li class="list-group-item d-flex align-items-center">
                                 <div class="flex-shrink-0">
-                                    <img
-                                        src="assets/images/svg/crypto-icons/btc.svg"
-                                        class="avatar-xs shadow rounded-circle"
-                                        alt="" />
+                                    <img src="assets/images/svg/crypto-icons/btc.svg" class="avatar-xs shadow rounded-circle" alt="" />
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h6 class="fs-14 mb-1">
@@ -562,25 +595,19 @@
                                         $18.7 Billions
                                     </p>
                                 </div>
-                                <div
-                                    class="flex-shrink-0 text-end">
+                                <div class="flex-shrink-0 text-end">
                                     <h6 class="fs-14 mb-1">
                                         $12,863.08
                                     </h6>
-                                    <p
-                                        class="text-success fs-12 mb-0">
+                                    <p class="text-success fs-12 mb-0">
                                         +$67.21 (+4.33%)
                                     </p>
                                 </div>
                             </li>
                             <!-- end -->
-                            <li
-                                class="list-group-item d-flex align-items-center">
+                            <li class="list-group-item d-flex align-items-center">
                                 <div class="flex-shrink-0">
-                                    <img
-                                        src="assets/images/svg/crypto-icons/eth.svg"
-                                        class="avatar-xs shadow rounded-circle"
-                                        alt="" />
+                                    <img src="assets/images/svg/crypto-icons/eth.svg" class="avatar-xs shadow rounded-circle" alt="" />
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h6 class="fs-14 mb-1">
@@ -590,26 +617,19 @@
                                         $27.4 Billions
                                     </p>
                                 </div>
-                                <div
-                                    class="flex-shrink-0 text-end">
+                                <div class="flex-shrink-0 text-end">
                                     <h6 class="fs-14 mb-1">
                                         $08,256.04
                                     </h6>
-                                    <p
-                                        class="text-success fs-12 mb-0">
-                                        +$51.19<span
-                                            class="ms-1">(+5.64%)</span>
+                                    <p class="text-success fs-12 mb-0">
+                                        +$51.19<span class="ms-1">(+5.64%)</span>
                                     </p>
                                 </div>
                             </li>
                             <!-- end -->
-                            <li
-                                class="list-group-item d-flex align-items-center">
+                            <li class="list-group-item d-flex align-items-center">
                                 <div class="flex-shrink-0">
-                                    <img
-                                        src="assets/images/svg/crypto-icons/aave.svg"
-                                        class="avatar-xs shadow rounded-circle"
-                                        alt="" />
+                                    <img src="assets/images/svg/crypto-icons/aave.svg" class="avatar-xs shadow rounded-circle" alt="" />
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h6 class="fs-14 mb-1">
@@ -619,26 +639,19 @@
                                         $12.9 Billions
                                     </p>
                                 </div>
-                                <div
-                                    class="flex-shrink-0 text-end">
+                                <div class="flex-shrink-0 text-end">
                                     <h6 class="fs-14 mb-1">
                                         $11,896.13
                                     </h6>
-                                    <p
-                                        class="text-danger fs-12 mb-0">
-                                        -$59.01<span
-                                            class="ms-1">(-4.08%)</span>
+                                    <p class="text-danger fs-12 mb-0">
+                                        -$59.01<span class="ms-1">(-4.08%)</span>
                                     </p>
                                 </div>
                             </li>
                             <!-- end -->
-                            <li
-                                class="list-group-item d-flex align-items-center">
+                            <li class="list-group-item d-flex align-items-center">
                                 <div class="flex-shrink-0">
-                                    <img
-                                        src="assets/images/svg/crypto-icons/doge.svg"
-                                        class="avatar-xs shadow rounded-circle"
-                                        alt="" />
+                                    <img src="assets/images/svg/crypto-icons/doge.svg" class="avatar-xs shadow rounded-circle" alt="" />
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h6 class="fs-14 mb-1">
@@ -648,26 +661,19 @@
                                         $09.5 Billions
                                     </p>
                                 </div>
-                                <div
-                                    class="flex-shrink-0 text-end">
+                                <div class="flex-shrink-0 text-end">
                                     <h6 class="fs-14 mb-1">
                                         $15,999.06
                                     </h6>
-                                    <p
-                                        class="text-success fs-12 mb-0">
-                                        +$74.05<span
-                                            class="ms-1">(+3.12%)</span>
+                                    <p class="text-success fs-12 mb-0">
+                                        +$74.05<span class="ms-1">(+3.12%)</span>
                                     </p>
                                 </div>
                             </li>
                             <!-- end -->
-                            <li
-                                class="list-group-item d-flex align-items-center">
+                            <li class="list-group-item d-flex align-items-center">
                                 <div class="flex-shrink-0">
-                                    <img
-                                        src="assets/images/svg/crypto-icons/bnb.svg"
-                                        class="avatar-xs shadow rounded-circle"
-                                        alt="" />
+                                    <img src="assets/images/svg/crypto-icons/bnb.svg" class="avatar-xs shadow rounded-circle" alt="" />
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h6 class="fs-14 mb-1">
@@ -677,26 +683,19 @@
                                         $14.2 Billions
                                     </p>
                                 </div>
-                                <div
-                                    class="flex-shrink-0 text-end">
+                                <div class="flex-shrink-0 text-end">
                                     <h6 class="fs-14 mb-1">
                                         $13,786.18
                                     </h6>
-                                    <p
-                                        class="text-danger fs-12 mb-0">
-                                        -$61.05<span
-                                            class="ms-1">(-9.22%)</span>
+                                    <p class="text-danger fs-12 mb-0">
+                                        -$61.05<span class="ms-1">(-9.22%)</span>
                                     </p>
                                 </div>
                             </li>
                             <!-- end -->
-                            <li
-                                class="list-group-item d-flex align-items-center">
+                            <li class="list-group-item d-flex align-items-center">
                                 <div class="flex-shrink-0">
-                                    <img
-                                        src="assets/images/svg/crypto-icons/ltc.svg"
-                                        class="avatar-xs shadow rounded-circle"
-                                        alt="" />
+                                    <img src="assets/images/svg/crypto-icons/ltc.svg" class="avatar-xs shadow rounded-circle" alt="" />
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h6 class="fs-14 mb-1">
@@ -706,15 +705,12 @@
                                         $09.5 Billions
                                     </p>
                                 </div>
-                                <div
-                                    class="flex-shrink-0 text-end">
+                                <div class="flex-shrink-0 text-end">
                                     <h6 class="fs-14 mb-1">
                                         $10,604.27
                                     </h6>
-                                    <p
-                                        class="text-success fs-12 mb-0">
-                                        +$76.12<span
-                                            class="ms-1">(+4.92%)</span>
+                                    <p class="text-success fs-12 mb-0">
+                                        +$76.12<span class="ms-1">(+4.92%)</span>
                                     </p>
                                 </div>
                             </li>
@@ -741,39 +737,87 @@
 <script>
     $(document).ready(function() {
         let chart, chart_compresor;
+        let gaugeCharts = {
+            levelfeedwater: null,
+            feedpressure: null,
+            suhufeedtank: null,
+            lhtemp: null,
+            rhtemp: null,
+            idfan: null,
+            lhguiloutine: null,
+            rhguiloutine: null,
+            lhfdfan: null,
+            lhstoker: null,
+            rhstoker: null,
+            inletwaterflow: null,
+        };
 
-        function fetchData(url, params = {}) {
-            return $.ajax({
-                url: url,
+        const gaugeOptions = (value) => ({
+            chart: {
+                height: 150,
+                type: "radialBar"
+            },
+            series: [parseFloat(value)],
+            labels: [""],
+            plotOptions: {
+                radialBar: {
+                    hollow: {
+                        size: "50%"
+                    },
+                    dataLabels: {
+                        name: {
+                            show: false
+                        },
+                        value: {
+                            show: true,
+                            fontSize: "16px",
+                            formatter: function(val) {
+                                return parseFloat(val).toFixed(1); // misal tampilkan 1 angka desimal
+                            }
+                        }
+                    }
+                }
+            },
+            colors: ["#00E396"]
+        });
+
+        const fetchData = (url, params = {}) =>
+            $.ajax({
+                url,
                 type: "GET",
                 data: params,
                 dataType: "json"
             });
-        }
 
-        function updateChart(data) {
-            if (data.length === 0) {
-                if (chart) {
-                    chart.updateSeries([{
-                        data: []
-                    }]); // Kosongkan chart
-                }
+        const UpdateChartSensor = (data) => {
+            if (!data.length) {
+                chart?.updateSeries([{
+                    data: []
+                }]);
                 Swal.fire({
                     icon: "warning",
                     title: "Data Tidak Ditemukan",
-                    text: "Tidak ada data untuk rentang waktu yang dipilih.",
+                    text: "Tidak ada data untuk rentang waktu yang dipilih."
                 });
                 return;
             }
 
-            let categories = data.map(item => item.waktu);
-            let seriesData = {
-                LevelFeedWater: data.map(item => item.LevelFeedWater),
-                PVSteam: data.map(item => item.PVSteam),
-                Batubara_FK: data.map(item => item.Batubara_FK),
-            };
+            const categories = data.map(i => i.waktu);
+            const series = [{
+                    name: "Level Feed Water",
+                    data: data.map(i => i.LevelFeedWater)
+                },
+                {
+                    name: "PV Steam",
+                    data: data.map(i => i.PVSteam)
+                },
+                {
+                    name: "Batu Bara",
+                    data: data.map(i => i.Batubara_FK)
+                }
+            ];
 
-            let chartOptions = {
+            const options = {
                 chart: {
                     type: "line",
                     height: 350
@@ -782,22 +826,10 @@
                     width: 2,
                     curve: "smooth"
                 },
-                series: [{
-                        name: "Level Feed Water",
-                        data: seriesData.LevelFeedWater
-                    },
-                    {
-                        name: "PV Steam",
-                        data: seriesData.PVSteam
-                    },
-                    {
-                        name: "Batu Bara",
-                        data: seriesData.Batubara_FK
-                    }
-                ],
-                colors: ["#0acf97", "#fa5c7c", "#ffbc00", "#39afd1", "#727cf5"],
+                series,
+                colors: ["#0acf97", "#fa5c7c", "#ffbc00"],
                 xaxis: {
-                    categories: categories,
+                    categories,
                     title: {
                         text: "Waktu"
                     },
@@ -818,103 +850,109 @@
             };
 
             if (chart) {
-                chart.updateOptions(chartOptions);
-                chart_compresor.updateOptions(chartOptions);
+                chart.updateOptions(options);
+                chart_compresor.updateOptions(options);
             } else {
-                chart = new ApexCharts(document.querySelector("#boiler_chart"), chartOptions);
-                chart_compresor = new ApexCharts(document.querySelector("#compresor_chart"), chartOptions);
+                chart = new ApexCharts(document.querySelector("#boiler_chart"), options);
+                chart_compresor = new ApexCharts(document.querySelector("#compresor_chart"), options);
                 chart.render();
                 chart_compresor.render();
             }
-        }
+        };
 
-        function updateInputFields() {
-            let filter = $("#filterData").val();
-            $("#datePicker, #startDate, #endDate").addClass("d-none");
-
-            if (filter === "daily") {
-                $("#datePicker").removeClass("d-none");
-            } else if (filter === "weekly") {
-                $("#startDate, #endDate").removeClass("d-none");
+        const updateChart = (selector, config, instanceKey) => {
+            if (gaugeCharts[instanceKey]) {
+                gaugeCharts[instanceKey].updateOptions(config);
+            } else {
+                gaugeCharts[instanceKey] = new ApexCharts(document.querySelector(selector), config);
+                gaugeCharts[instanceKey].render();
             }
-        }
+        };
 
-        $("#filterData").on("change", function() {
-            updateInputFields();
-        });
+        const updateGaugeChart = (data) => {
+            const chartData = {
+                levelfeedwater: data.LevelFeedWater,
+                feedpressure: data.FeedPressure,
+                suhufeedtank: data.SuhuFeedTank,
+                lhtemp: data.LHTemp,
+                rhtemp: data.RHTemp,
+                idfan: data.IDFan,
+                lhguiloutine: data.LHGuiloutine,
+                rhguiloutine: data.RHGuiloutine,
+                lhfdfan: data.LHFDFan,
+                lhstoker: data.LHStoker,
+                rhstoker: data.RHStoker,
+                inletwaterflow: data.InletWaterFlow,
+            };
 
-        $("#applyFilter").on("click", function() {
-            let filter = $("#filterData").val();
-            let url = "";
-            let params = {};
+            for (const [key, val] of Object.entries(chartData)) {
+                updateChart(`#gauge_chart_${key}`, gaugeOptions(val), key);
+            }
+        };
+
+        const updatePVSteam = () => {
+            $.getJSON("{{ url('sensor/boiler-realtime') }}", (response) => {
+                if (response) {
+                    $('#PV-bar').val(`${response.PVSteam} Bar`);
+                    updateGaugeChart(response);
+                }
+            }).fail((xhr, status, error) => console.error(`AJAX Error: ${status} ${error}`));
+        };
+
+        const updateInputFields = () => {
+            const filter = $("#filterData").val();
+            $("#datePicker, #startDate, #endDate").addClass("d-none");
+            if (filter === "daily") $("#datePicker").removeClass("d-none");
+            else if (filter === "weekly") $("#startDate, #endDate").removeClass("d-none");
+        };
+
+        $("#filterData").on("change", updateInputFields);
+
+        $("#applyFilter").on("click", () => {
+            const filter = $("#filterData").val();
+            let url = "",
+                params = {};
 
             if (filter === "latest") {
                 url = "{{ url('sensor/boiler-data') }}";
             } else if (filter === "daily") {
-                let selectedDate = $("#datePicker").val();
-                if (!selectedDate) {
-                    Swal.fire({
-                        icon: "warning",
-                        title: "Pilih Tanggal!",
-                        text: "Harap pilih tanggal sebelum menerapkan filter.",
-                    });
-                    return;
-                }
+                const tanggal = $("#datePicker").val();
+                if (!tanggal) return Swal.fire({
+                    icon: "warning",
+                    title: "Pilih Tanggal!",
+                    text: "Harap pilih tanggal terlebih dahulu."
+                });
                 url = "{{ url('sensor/boiler/data-harian') }}";
                 params = {
-                    tanggal: selectedDate
+                    tanggal
                 };
             } else if (filter === "weekly") {
-                let startDate = $("#startDate").val();
-                let endDate = $("#endDate").val();
-                if (!startDate || !endDate) {
-                    Swal.fire({
-                        icon: "warning",
-                        title: "Pilih Rentang Tanggal!",
-                        text: "Harap pilih tanggal mulai dan tanggal selesai sebelum menerapkan filter.",
-                    });
-                    return;
-                }
+                const start = $("#startDate").val(),
+                    end = $("#endDate").val();
+                if (!start || !end) return Swal.fire({
+                    icon: "warning",
+                    title: "Pilih Rentang Tanggal!",
+                    text: "Harap pilih tanggal mulai dan selesai."
+                });
                 url = "{{ url('sensor/boiler/data-mingguan') }}";
                 params = {
-                    tanggal_mulai: startDate,
-                    tanggal_selesai: endDate
+                    tanggal_mulai: start,
+                    tanggal_selesai: end
                 };
             }
 
             fetchData(url, params).done(response => {
-                if (response.success) {
-                    updateChart(response.data);
-                } else {
-                    if (chart) {
-                        chart.updateSeries([{
-                            data: []
-                        }]); // Kosongkan chart jika data tidak ditemukan
-                    }
+                response.success ? UpdateChartSensor(response.data) :
                     Swal.fire({
                         icon: "warning",
                         title: "Data Tidak Ditemukan",
-                        text: "Tidak ada data untuk rentang waktu yang dipilih.",
+                        text: "Tidak ada data untuk rentang waktu yang dipilih."
                     });
-                }
             });
         });
 
         updateInputFields();
         $("#applyFilter").trigger("click");
-
-        function updatePVSteam() {
-            $.ajax({
-                url: "{{ url('sensor/boiler-realtime') }}",
-                dataType: 'json',
-                success: function(response) {
-                    $('#PV-bar').val(response.PVSteam + " Bar");  // Update nilai feed water
-                },
-                error: function(_xhr, status, error) {
-                    console.error('AJAX Error: ' + status + error);
-                }
-            });
-        }
         updatePVSteam();
         setInterval(updatePVSteam, 5000);
     });
