@@ -253,7 +253,7 @@ class ProduksiController extends Controller
     {
         // Validasi input
         $request->validate([
-            'mode' => 'required|string',
+            'produk' => 'required|string',
             'varian' => 'required|string',
             'batch' => 'required|string',
             'storage' => 'required|string',
@@ -263,10 +263,10 @@ class ProduksiController extends Controller
             // Simpan batch baru
             $nama_user = Session::get('username');
             $data = StatusRunning::create([
-                'mode' => $request->mode,
+                'produk' => $request->produk,
                 'varian' => $request->varian,
                 'batch' => $request->batch,
-                'created_by_user' => $nama_user,  // Gantilah dengan user yang login
+                'created_by' => $nama_user,  // Gantilah dengan user yang login
                 'storage' => $request->storage
             ]);
 

@@ -66,8 +66,8 @@
          <div class="modal-body">
             <form id="formTambahStatus" autocomplete="off">
                <div class="mb-3">
-                  <label for="mode" class="form-label">Mode <span class="text-danger">*</span></label>
-                  <input type="text" class="form-control" id="mode">
+                  <label for="produk" class="form-label">Produk <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="produk">
                </div>
                <div class="mb-3">
                   <label for="varian" class="form-label">Varian <span class="text-danger">*</span></label>
@@ -96,7 +96,7 @@
 
       function fetchStatusRunning() {
          $.ajax({
-            url: '/prd/status-running',
+            url: "{{ url('/prd/status-running') }}",
             method: 'GET',
             dataType: 'json',
             success: function(response) {
@@ -105,11 +105,11 @@
                   response.forEach((item, index) => {
                      rows += `<tr>
                             <td>${index + 1}</td>
-                            <td>${item.mode}</td>
+                            <td>${item.produk}</td>
                             <td>${item.varian}</td>
                             <td>${item.batch}</td>
                             <td>${item.storage}</td>
-                            <td>${item.created_by_user}</td>
+                            <td>${item.created_by}</td>
                             <td>
                                 <button class='btn btn-warning btn-sm edit-btn' data-id='${item.id}'>Edit</button>
                                 <button class='btn btn-danger btn-sm delete-btn' data-id='${item.id}'>Hapus</button>
@@ -129,9 +129,9 @@
          });
       }
 
-      $('#saveStatusRunning').click(function() {
+      $('#save-status').click(function() {
          let data = {
-            mode: $('#mode').val(),
+            produk: $('#produk').val(),
             varian: $('#varian').val(),
             batch: $('#batch').val(),
             storage: $('#storage').val(),
@@ -139,24 +139,52 @@
          };
 
          $.ajax({
-            url: '/prd/status-running/store',
+            url: "{{ url('/prd/status-running/store') }}",
             method: 'POST',
             data: data,
             dataType: 'json',
             success: function() {
-               $('#statusRunningModal').modal('hide');
-               $('#formTambahStatusRunning')[0].reset();
+               $('#status-modal').modal('hide');
+              
                fetchStatusRunning();
+
+               Swal.fire({
+                  icon: 'success',
+                  title: 'Berhasil!',
+                  text: 'Status running berhasil ditambahkan.',
+                  timer: 2000,
+                  showConfirmButton: false
+               });
             },
             error: function(xhr) {
-               alert('Terjadi kesalahan! ' + xhr.responseText);
+               let message = 'Terjadi kesalahan!';
+
+               if (xhr.status === 422) {
+                  let errors = xhr.responseJSON.errors;
+                  message = Object.values(errors).map(e => e[0]).join('<br>');
+                  Swal.fire({
+                     icon: 'error',
+                     title: 'Validasi Gagal',
+                     html: message
+                  });
+               } else {
+                  Swal.fire({
+                     icon: 'error',
+                     title: 'Gagal',
+                     text: xhr.responseText || message
+                  });
+               }
             }
          });
+
       });
+
+
 
       $(document).on('click', '.edit-btn', function() {
          let id = $(this).data('id');
-         $.get(`/prd/status-running/${id}`, function(data) {
+         let url = "{{ url('/prd/status-running') }}/" + id;
+         $.get(url, function(data) {
             $('#editMode').val(data.mode);
             $('#editVarian').val(data.varian);
             $('#editBatch').val(data.batch);
@@ -170,6 +198,7 @@
 
       $('#updateStatusRunning').click(function() {
          let id = $(this).data('id');
+         let url = "{{ url('/prd/status-running/update') }}/" + id;
          let data = {
             mode: $('#editMode').val(),
             varian: $('#editVarian').val(),
@@ -180,7 +209,7 @@
          };
 
          $.ajax({
-            url: `/prd/status-running/update/${id}`,
+            url: url,
             method: 'POST',
             data: data,
             dataType: 'json',
@@ -196,9 +225,10 @@
 
       $(document).on('click', '.delete-btn', function() {
          let id = $(this).data('id');
+         let url = "{{ url('/prd/status-running/delete') }}/" + id;
          if (confirm('Apakah Anda yakin ingin menghapus?')) {
             $.ajax({
-               url: `/prd/status-running/delete/${id}`,
+               url: url,
                method: 'DELETE',
                data: {
                   _token: $('meta[name="csrf-token"]').attr('content')
