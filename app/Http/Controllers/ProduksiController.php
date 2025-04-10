@@ -240,7 +240,108 @@ class ProduksiController extends Controller
         ]);
     }
 
+
+    public function AchievementBatchHarian()
+    {
+        $today = now()->toDateString(); // atau bisa pakai Carbon::today()->format('Y-m-d');
+
+        $data_harian = AchievementBatch::whereDate('batch_date', $today)
+            ->with(['details' => function ($query) {
+                $query->selectRaw('achievement_batch_id, SUM(batch_count) as total_batch_count')
+                    ->groupBy('achievement_batch_id');
+            }])
+            ->get();
+
+        $total_target_batch = $data_harian->sum('target_batch');
+        $total_batch_count = $data_harian->map(function ($item) {
+            return $item->details->sum('total_batch_count');
+        })->sum();
+
+        $achievement_percentage = $total_target_batch > 0
+            ? round(($total_batch_count / $total_target_batch) * 100, 2)
+            : 0;
+
+        return response()->json([
+            'date' => $today,
+            'total_target_batch' => $total_target_batch,
+            'total_batch_count' => $total_batch_count,
+            'achievement_percentage' => $achievement_percentage
+        ]);
+    }
+
+    public function AchievementBatchMingguan()
+    {
+        $startOfWeek = now()->startOfWeek();
+        $endOfWeek = now()->endOfWeek();
+
+        $data_mingguan = AchievementBatch::whereBetween('batch_date', [$startOfWeek, $endOfWeek])
+            ->with(['details' => function ($query) {
+                $query->selectRaw('achievement_batch_id, SUM(batch_count) as total_batch_count')
+                    ->groupBy('achievement_batch_id');
+            }])
+            ->get();
+
+        $total_target_batch = $data_mingguan->sum('target_batch');
+        $total_batch_count = $data_mingguan->map(function ($item) {
+            return $item->details->sum('total_batch_count');
+        })->sum();
+
+        $achievement_percentage = $total_target_batch > 0
+            ? round(($total_batch_count / $total_target_batch) * 100, 2)
+            : 0;
+
+        return response()->json([
+            'start_of_week' => $startOfWeek->toDateString(),
+            'end_of_week' => $endOfWeek->toDateString(),
+            'total_target_batch' => $total_target_batch,
+            'total_batch_count' => $total_batch_count,
+            'achievement_percentage' => $achievement_percentage
+        ]);
+    }
+
+    public function AchievementBatchBulanan()
+    {
+        $startOfMonth = now()->startOfMonth();
+        $endOfMonth = now()->endOfMonth();
+
+        $data_bulanan = AchievementBatch::whereBetween('batch_date', [$startOfMonth, $endOfMonth])
+            ->with(['details' => function ($query) {
+                $query->selectRaw('achievement_batch_id, SUM(batch_count) as total_batch_count')
+                    ->groupBy('achievement_batch_id');
+            }])
+            ->get();
+
+        $total_target_batch = $data_bulanan->sum('target_batch');
+        $total_batch_count = $data_bulanan->map(function ($item) {
+            return $item->details->sum('total_batch_count');
+        })->sum();
+
+        $achievement_percentage = $total_target_batch > 0
+            ? round(($total_batch_count / $total_target_batch) * 100, 2)
+            : 0;
+
+        return response()->json([
+            'month' => now()->format('Y-m'),
+            'start_of_month' => $startOfMonth->toDateString(),
+            'end_of_month' => $endOfMonth->toDateString(),
+            'total_target_batch' => $total_target_batch,
+            'total_batch_count' => $total_batch_count,
+            'achievement_percentage' => $achievement_percentage
+        ]);
+    }
+
     ///////////////////Status Running Produksi//////////////////
+    public function getLastData_statusRunning()
+    {
+        $lastData = StatusRunning::orderBy('created_at', 'desc')->first();
+
+        if ($lastData) {
+            return response()->json($lastData);
+        } else {
+            return response()->json(['message' => 'Tidak ada data status running.'], 404);
+        }
+    }
+
     public function StatusRunningList()
     {
         $batches = StatusRunning::orderBy('created_at', 'desc')

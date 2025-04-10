@@ -179,7 +179,7 @@
                     let rowNumber = start + index + 1;
                     let row = `
                     <tr>
-                        <td>${rowNumber} %</td>
+                        <td>${rowNumber} </td>
                         <td>${batch.batch_code}</td>
                         <td>${batch.batch_date}</td>
                         <td>${batch.target_batch}</td>

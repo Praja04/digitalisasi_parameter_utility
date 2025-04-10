@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProduksiController;
 use App\Http\Controllers\QCController;
+use App\Http\Controllers\EngineeringController;
 use App\Http\Controllers\DashboardController;
 
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,7 @@ Route::prefix('eng')->group(function () {
     Route::get('/operator/dashboard', [AuthController::class, 'dashboardOperatorEng']);
     Route::get('/dept_head/todo', [AuthController::class, 'todoListEng']);
 });
+
 Route::prefix('qc')->group(function () {
     Route::get('/dept_head/dashboard', [AuthController::class, 'dashboardQc']);
     Route::get('/operator/dashboard', [AuthController::class, 'dashboardOperatorQc']);
@@ -48,6 +50,11 @@ Route::prefix('prd')->middleware('auth')->group(function () {
     Route::get('/operator/detailbatch', [ProduksiController::class, 'showOperatorProduksi']);
     Route::get('/operator/history', [ProduksiController::class, 'historyBatch']);
     Route::get('/operator/status_running', [ProduksiController::class, 'statusRunning']);
+
+    // Data Achievement batch
+    Route::get('/achievement/harian', [ProduksiController::class, 'AchievementBatchHarian'])->name('achievement.harian');
+    Route::get('/achievement/mingguan', [ProduksiController::class, 'AchievementBatchMingguan'])->name('achievement.mingguan');
+    Route::get('/achievement/bulanan', [ProduksiController::class, 'AchievementBatchBulanan'])->name('achievement.bulanan');
 
     // CRUD Batch Produksi
     Route::get('/batch', [ProduksiController::class, 'index'])->name('batch.index'); // Menampilkan semua batch
@@ -65,6 +72,7 @@ Route::prefix('prd')->middleware('auth')->group(function () {
 
     // CRUD Status Running
     Route::get('/status-running', [ProduksiController::class, 'StatusRunningList'])->name('statusrunning.read');
+    Route::get('/data/status-running', [ProduksiController::class, 'getLastData_statusRunning'])->name('statusrunning.data');
     Route::post('/status-running/store', [ProduksiController::class, 'storeStatusRunning'])->name('statusrunning.store');
     Route::delete('/status-running/delete/{id}', [ProduksiController::class, 'destroyStatusRunning'])->name('statusrunning.destroy');
     Route::put('/status-running/update/{id}', [ProduksiController::class, 'updateStatusRunning'])->name('statusrunning.update');
@@ -85,6 +93,39 @@ Route::prefix('qc')->middleware('auth')->group(function () {
 
 });
 //End QC
+
+
+//Eng
+Route::prefix('eng')->middleware('auth')->group(function () {
+    Route::get('/operator/pemakaian_air', [EngineeringController::class, 'formPemakaianAir']);
+    Route::get('/operator/pemakaian_listrik', [EngineeringController::class, 'formPemakaianListrik']);
+    Route::get('/operator/pemakaian_chemical', [EngineeringController::class, 'formPemakaianChemical']);
+
+    // CRUD air
+    Route::get('/data/air', [EngineeringController::class, 'indexAir'])->name('air.index'); // Ambil semua data
+    Route::post('/data/air/store', [EngineeringController::class, 'storeAir'])->name('air.store'); // Simpan data baru
+    Route::put('/data/air/{id}/update', [EngineeringController::class, 'updateAir'])->name('air.update'); // Update status
+    Route::delete('/data/air/{id}', [EngineeringController::class, 'destroyAir'])->name('air.destroy'); // Hapus data
+
+    // CRUD listrik
+    Route::get('/data/listrik', [EngineeringController::class, 'indexListrik'])->name('listrik.index'); // Ambil semua data
+    Route::post('/data/listrik/store', [EngineeringController::class, 'storeListrik'])->name('listrik.store'); // Simpan data baru
+    Route::put('/data/listrik/{id}/update', [EngineeringController::class, 'updateListrik'])->name('listrik.update'); // Update status
+    Route::delete('/data/listrik/{id}', [EngineeringController::class, 'destroyListrik'])->name('listrik.destroy'); // Hapus data
+
+    // CRUD chemical
+    Route::get('/data/chemical', [EngineeringController::class, 'indexChemical'])->name('chemical.index'); // Ambil semua data
+    Route::post('/data/chemical/store', [EngineeringController::class, 'storeChemical'])->name('chemical.store'); // Simpan data baru
+    Route::put('/data/chemical/{id}/update', [EngineeringController::class, 'updateChemical'])->name('chemical.update'); // Update status
+    Route::delete('/data/chemical/{id}', [EngineeringController::class, 'destroyChemical'])->name('chemical.destroy'); // Hapus data
+
+    // api
+    Route::get('/api/chemical/harian', [EngineeringController::class, 'ApiChemicalPerHari']);
+    Route::get('/api/chemical/mingguan', [EngineeringController::class, 'ApiChemicalPerMinggu']);
+    Route::get('/api/chemical/bulanan', [EngineeringController::class, 'ApiChemicalPerBulan']);
+
+});
+//End eng
 
 
 Route::prefix('dept_head')->group(function () {

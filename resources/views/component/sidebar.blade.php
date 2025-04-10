@@ -29,6 +29,15 @@
                 <img src="{{ asset('assets/images/icon-utility/kecap.png') }}" alt="" height="100">
             </span>
         </a>
+        @elseif(Session::get('jabatan') === 'operator' && Session::get('departemen') === 'engineering')
+        <a href="{{ url('/eng/operator/pemakaian_air') }}" class="logo logo-light">
+            <span class="logo-sm">
+                <img src="{{ asset('assets/images/icon-utility/kecap.png') }}" alt="" height="25">
+            </span>
+            <span class="logo-lg">
+                <img src="{{ asset('assets/images/icon-utility/kecap.png') }}" alt="" height="100">
+            </span>
+        </a>
         @endif
         <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
             <i class="ri-record-circle-line"></i>
@@ -135,8 +144,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link menu-link" href="#sidebarDailytank" data-bs-toggle="collapse"
-                                    role="button" aria-expanded="false" aria-controls="sidebarDailytank">
+                                <a class="nav-link menu-link" href="#sidebarDailytank" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDailytank">
                                     <i class="mdi mdi-speedometer"></i>
                                     <span data-key="t-dashboards">Daily Tank</span>
                                 </a>
@@ -159,8 +167,7 @@
 
 
                             <li class="nav-item">
-                                <a class="nav-link menu-link" href="#sidebarDissolver" data-bs-toggle="collapse"
-                                    role="button" aria-expanded="false" aria-controls="sidebarDissolver">
+                                <a class="nav-link menu-link" href="#sidebarDissolver" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDissolver">
                                     <i class="mdi mdi-speedometer"></i>
                                     <span data-key="t-dashboards">Dissolver</span>
                                 </a>
@@ -182,8 +189,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link menu-link" href="#sidebarGlucose" data-bs-toggle="collapse"
-                                    role="button" aria-expanded="false" aria-controls="sidebarGlucose">
+                                <a class="nav-link menu-link" href="#sidebarGlucose" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarGlucose">
                                     <i class="mdi mdi-speedometer"></i>
                                     <span data-key="t-dashboards">Glucose</span>
                                 </a>
@@ -205,8 +211,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link menu-link" href="#sidebarOlahsari" data-bs-toggle="collapse"
-                                    role="button" aria-expanded="false" aria-controls="sidebarOlahsari">
+                                <a class="nav-link menu-link" href="#sidebarOlahsari" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarOlahsari">
                                     <i class="mdi mdi-speedometer"></i>
                                     <span data-key="t-dashboards">Olah Sari</span>
                                 </a>
@@ -229,8 +234,7 @@
 
 
                             <li class="nav-item">
-                                <a class="nav-link menu-link" href="#sidebarPasteur1" data-bs-toggle="collapse"
-                                    role="button" aria-expanded="false" aria-controls="sidebarPasteur1">
+                                <a class="nav-link menu-link" href="#sidebarPasteur1" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarPasteur1">
                                     <i class="mdi mdi-speedometer"></i>
                                     <span data-key="t-dashboards">Pasteurisasi 1</span>
                                 </a>
@@ -252,8 +256,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link menu-link" href="#sidebarPasteur2" data-bs-toggle="collapse"
-                                    role="button" aria-expanded="false" aria-controls="sidebarPasteur2">
+                                <a class="nav-link menu-link" href="#sidebarPasteur2" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarPasteur2">
                                     <i class="mdi mdi-speedometer"></i>
                                     <span data-key="t-dashboards">Pasteurisasi 2</span>
                                 </a>
@@ -275,8 +278,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link menu-link" href="#sidebarStk400" data-bs-toggle="collapse"
-                                    role="button" aria-expanded="false" aria-controls="sidebarStk400">
+                                <a class="nav-link menu-link" href="#sidebarStk400" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarStk400">
                                     <i class="mdi mdi-speedometer"></i>
                                     <span data-key="t-dashboards">STK 400</span>
                                 </a>
@@ -298,8 +300,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link menu-link" href="#sidebarSt53" data-bs-toggle="collapse"
-                                    role="button" aria-expanded="false" aria-controls="sidebarSt53">
+                                <a class="nav-link menu-link" href="#sidebarSt53" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarSt53">
                                     <i class="mdi mdi-speedometer"></i>
                                     <span data-key="t-dashboards">ST53</span>
                                 </a>
@@ -359,6 +360,23 @@
                         <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">List History Batch</span>
                     </a>
                 </li> -->
+                @elseif(Session::get('jabatan') === 'operator' && Session::get('departemen') === 'engineering')
+                <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('eng/operator/pemakaian_air') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form Pemakaian Air</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('eng/operator/pemakaian_listrik') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form Pemakaian Listrik</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('eng/operator/pemakaian_chemical') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form Pemakaian Chemical</span>
+                    </a>
+                </li>
                 @endif
 
             </ul>

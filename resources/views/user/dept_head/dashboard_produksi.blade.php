@@ -345,8 +345,8 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
                                     <div>
-                                        <p class="fw-medium text-muted mb-0">Mode</p>
-                                        <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value" id="mode_status_running"></span></h2>
+                                        <p class="fw-medium text-muted mb-0">Produk</p>
+                                        <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value" id="produk_status_running"></span></h2>
 
                                     </div>
                                     <div>
@@ -647,7 +647,7 @@
                 },
                 colors: ["#00E396"]
             };
-            
+
 
             chart_gauge = updateChart("#gauge_chart_hw", options, chart_gauge);
             chart_gauge_BT1 = updateChart("#gauge_chart_bt1", options2, chart_gauge_BT1);
@@ -707,15 +707,27 @@
                 url: "{{ url('pasteurisasi1/data-realtime') }}",
                 dataType: "json",
                 success: function(res) {
-                    $('#varian_status_running').text(res.Varian);
-                    $('#mode_status_running').text(res.Mode);
-                    $('#batch_status_running').text(res.Batch);
-                    $('#storage_status_running').text(res.Storage);
+
 
                     // Update gauge dari suhu holding realtime
                     if (res.SpeedPompaMixing !== undefined && res.SpeedPompaMixing !== null) {
                         updateGaugeChart(res);
                     }
+                },
+                error: function(_xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                }
+            });
+
+            $.ajax({
+                url: "{{ url('prd/data/status-running') }}",
+                dataType: "json",
+                success: function(res) {
+                    console.log(res);
+                    $('#varian_status_running').text(res.varian);
+                    $('#produk_status_running').text(res.produk);
+                    $('#batch_status_running').text(res.batch);
+                    $('#storage_status_running').text(res.storage);
                 },
                 error: function(_xhr, status, error) {
                     console.error('AJAX Error:', status, error);
@@ -740,6 +752,39 @@
         $("#applyFilter").trigger("click");
         $("#applyFilterFlowrate").trigger("click");
         updateRealtimeInfo();
+
+        function getShift(now) {
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+
+            if ((hours === 6 && minutes >= 1) || (hours > 6 && hours < 14) || (hours === 14 && minutes === 0)) {
+                return "Shift 1";
+            } else if ((hours === 14 && minutes >= 1) || (hours > 14 && hours < 22) || (hours === 22 && minutes === 0)) {
+                return "Shift 2";
+            } else {
+                return "Shift 3"; // Dari jam 22:01 sampai 06:00 keesokan harinya
+            }
+        }
+
+        function updateDateTime() {
+            let now = new Date();
+            let formattedDate = now.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+
+            let shift = getShift(now);
+
+            // Set nilai tanggal dan shift ke elemen yang sesuai
+            $('#date-picker').val(formattedDate);
+            $('#shift').val(shift);
+        }
+
+        // Panggil fungsi pertama kali
+        updateDateTime();
     });
 </script>
 

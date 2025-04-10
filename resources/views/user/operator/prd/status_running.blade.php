@@ -29,11 +29,12 @@
                            <thead class="table-light text-center">
                               <tr>
                                  <th scope="col">No</th>
-                                 <th scope="col">Mode</th>
+                                 <th scope="col">Produk</th>
                                  <th scope="col">Varian</th>
                                  <th scope="col">Batch</th>
                                  <th scope="col">Storage</th>
                                  <th scope="col">Created By</th>
+                                 <th scope="col">Created At</th>
                                  <th scope="col">Aksi</th>
                               </tr>
                            </thead>
@@ -110,6 +111,15 @@
                             <td>${item.batch}</td>
                             <td>${item.storage}</td>
                             <td>${item.created_by}</td>
+                            <td>${new Date(item.created_at).toLocaleString('id-ID', {
+                                 day: '2-digit',
+                                  month: '2-digit',
+                                    year: 'numeric',
+                                       hour: '2-digit',
+                                          minute: '2-digit',
+                                              hour12: false
+                              })}
+                           </td>
                             <td>
                                 <button class='btn btn-warning btn-sm edit-btn' data-id='${item.id}'>Edit</button>
                                 <button class='btn btn-danger btn-sm delete-btn' data-id='${item.id}'>Hapus</button>
@@ -145,7 +155,7 @@
             dataType: 'json',
             success: function() {
                $('#status-modal').modal('hide');
-              
+
                fetchStatusRunning();
 
                Swal.fire({
