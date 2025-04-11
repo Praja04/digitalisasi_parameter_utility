@@ -241,6 +241,7 @@ class ProduksiController extends Controller
     }
 
 
+    // Api data achievement batch harian, mingguan, bulanan
     public function AchievementBatchHarian()
     {
         $today = now()->toDateString(); // atau bisa pakai Carbon::today()->format('Y-m-d');

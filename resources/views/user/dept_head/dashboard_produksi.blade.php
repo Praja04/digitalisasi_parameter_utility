@@ -65,6 +65,10 @@
             <div class="col-xl-12">
                 <div class="card crm-widget">
                     <div class="card-body p-0">
+                        <button class="btn btn-primary" onclick="loadAchievement('harian')">Harian</button>
+                        <button class="btn btn-primary" onclick="loadAchievement('mingguan')">Mingguan</button>
+                        <button class="btn btn-primary" onclick="loadAchievement('bulanan')">Bulanan</button>
+
                         <div class="row row-cols-xxl-4 row-cols-md-3 row-cols-1 g-0">
                             <div class="col">
                                 <div class="py-4 px-3">
@@ -77,7 +81,7 @@
                                         </div>
                                         <div class="flex-grow-1 ms-3">
                                             <h2 class="mb-0">
-                                                <span class="counter-value" data-target="197">0</span>
+                                                <span class="counter-value" id="output_batch" data-target=""></span>
                                             </h2>
                                         </div>
                                     </div>
@@ -96,7 +100,7 @@
                                         </div>
                                         <div class="flex-grow-1 ms-3">
                                             <h2 class="mb-0">
-                                                <span class="counter-value" data-target="89.4">0</span>%
+                                                <span class="counter-value" id="achievement_output_batch" data-target="">0</span>%
                                             </h2>
                                         </div>
                                     </div>
@@ -785,7 +789,34 @@
 
         // Panggil fungsi pertama kali
         updateDateTime();
+
+
+
+        loadAchievement();
     });
+
+    function loadAchievement(filter = 'harian') {
+        $.ajax({
+            url: "{{ url('prd/achievement') }}/" + filter,
+            dataType: "json",
+            success: function(res) {
+                let totalBatch = res.total_batch_count ?? 0;
+                let percentage = res.achievement_percentage ?? 0;
+
+                // Update Output Batch
+                $('#output_batch')
+                    .text(totalBatch);
+
+                // Update Achievement Rate Output Batch
+                $('#achievement_output_batch')
+                    .text(percentage);
+
+            },
+            error: function(_xhr, status, error) {
+                console.error('AJAX Error:', status, error);
+            }
+        });
+    }
 </script>
 
 
