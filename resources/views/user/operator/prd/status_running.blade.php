@@ -29,7 +29,7 @@
                            <thead class="table-light text-center">
                               <tr>
                                  <th scope="col">No</th>
-                                 <th scope="col">Produk</th>
+                                 <th scope="col">Mode</th>
                                  <th scope="col">Varian</th>
                                  <th scope="col">Batch</th>
                                  <th scope="col">Storage</th>
@@ -67,8 +67,8 @@
          <div class="modal-body">
             <form id="formTambahStatus" autocomplete="off">
                <div class="mb-3">
-                  <label for="produk" class="form-label">Produk <span class="text-danger">*</span></label>
-                  <input type="text" class="form-control" id="produk">
+                  <label for="mode" class="form-label">Mode <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="mode">
                </div>
                <div class="mb-3">
                   <label for="varian" class="form-label">Varian <span class="text-danger">*</span></label>
@@ -106,7 +106,7 @@
                   response.forEach((item, index) => {
                      rows += `<tr>
                             <td>${index + 1}</td>
-                            <td>${item.produk}</td>
+                            <td>${item.mode}</td>
                             <td>${item.varian}</td>
                             <td>${item.batch}</td>
                             <td>${item.storage}</td>
@@ -141,7 +141,7 @@
 
       $('#save-status').click(function() {
          let data = {
-            produk: $('#produk').val(),
+            mode: $('#mode').val(),
             varian: $('#varian').val(),
             batch: $('#batch').val(),
             storage: $('#storage').val(),

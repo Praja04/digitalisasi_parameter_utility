@@ -14,7 +14,7 @@ class StatusRunning extends Model
     protected $primaryKey = 'id';
     public $timestamps = true;
 
-    protected $fillable = ['produk','varian','batch','storage','created_by'];
+    protected $fillable = ['mode','varian','batch','storage','created_by'];
 
 
 }

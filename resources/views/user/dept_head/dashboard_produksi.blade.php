@@ -162,13 +162,13 @@
             <div class="col-xl-12">
                 <div class="card crm-widget">
                     <div class="card-body p-0">
-                        <div class="row row-cols-xxl-4 row-cols-md-3 row-cols-1 g-0">
+                        <div class="row row-cols-xxl-5 row-cols-md-3 row-cols-1 g-0">
                             <div class="col">
                                 <div class="py-4 px-3">
                                     <h5 class="text-muted text-uppercase fs-13">
-                                        Speed Pompa Hw
+                                        Speed Pompa Mixing
                                     </h5>
-                                    <div id="gauge_chart_hw"></div>
+                                    <div id="gauge_chart_pompa_mixing"></div>
                                 </div>
                             </div>
                             <!-- end col -->
@@ -182,6 +182,61 @@
                                 </div>
                             </div>
                             <!-- end col -->
+                            <div class="col">
+                                <div class="mt-3 mt-md-0 py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13 text-center">
+                                        Status Running (NOW)
+                                    </h5>
+                                    <div class="card-body">
+
+                                        <div class="table-responsive mt-3">
+                                            <table class="table table-borderless table-sm table-centered align-middle table-nowrap mb-0">
+                                                <tbody class="border-0">
+                                                    <tr>
+                                                        <td>
+                                                            <h4 class="text-truncate fs-10 fs-medium mb-0">Mode</h4>
+                                                        </td>
+                                                        <td>:</td>
+                                                        <td>
+                                                            <p class="text-muted fs-10 mb-0" id="mode_status_running"></p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <h4 class="text-truncate fs-10 fs-medium mb-0">Storage</h4>
+                                                        </td>
+                                                        <td>:</td>
+                                                        <td>
+                                                            <p class="text-muted fs-10 mb-0" id="storage_status_running"></p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <h4 class="text-truncate fs-10 fs-medium mb-0">Varian</h4>
+                                                        </td>
+                                                        <td>:</td>
+                                                        <td>
+                                                            <p class="text-muted fs-10 mb-0" id="varian_status_running"></p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <h4 class="text-truncate fs-10 fs-medium mb-0">Batch</h4>
+                                                        </td>
+                                                        <td>:</td>
+                                                        <td>
+                                                            <p class="text-muted fs-10 mb-0" id="batch_status_running"></p>
+                                                        </td>
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+
                             <div class="col">
                                 <div class="mt-3 mt-md-0 py-4 px-3">
                                     <h5 class="text-muted text-uppercase fs-13">
@@ -274,98 +329,7 @@
             <!-- end col -->
 
 
-            <div class="col-xxl-12 col-md-12">
-                <hr>
-                <h4>Status Running Produksi</h4>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card card-animate">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <p class="fw-medium text-muted mb-0">Varian</p>
-                                        <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value" id="varian_status_running"></span></h2>
-
-                                    </div>
-                                    <div>
-                                        <div class="avatar-sm flex-shrink-0">
-                                            <span class="avatar-title bg-primary rounded-circle fs-2">
-                                                <i data-feather="users"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div><!-- end card body -->
-                        </div> <!-- end card-->
-                    </div> <!-- end col-->
-
-                    <div class="col-md-6">
-                        <div class="card card-animate">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <p class="fw-medium text-muted mb-0">Batch</p>
-                                        <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value" id="batch_status_running"></span></h2>
-
-                                    </div>
-                                    <div>
-                                        <div class="avatar-sm flex-shrink-0">
-                                            <span class="avatar-title bg-danger rounded-circle fs-2">
-                                                <i data-feather="activity"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div><!-- end card body -->
-                        </div> <!-- end card-->
-                    </div> <!-- end col-->
-                </div> <!-- end row-->
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card card-animate">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <p class="fw-medium text-muted mb-0">Storage</p>
-                                        <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value" id="storage_status_running"></span></h2>
-
-                                    </div>
-                                    <div>
-                                        <div class="avatar-sm flex-shrink-0">
-                                            <span class="avatar-title bg-warning rounded-circle fs-2">
-                                                <i data-feather="clock"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div><!-- end card body -->
-                        </div> <!-- end card-->
-                    </div> <!-- end col-->
-
-                    <div class="col-md-6">
-                        <div class="card card-animate">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <p class="fw-medium text-muted mb-0">Produk</p>
-                                        <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value" id="produk_status_running"></span></h2>
-
-                                    </div>
-                                    <div>
-                                        <div class="avatar-sm flex-shrink-0">
-                                            <span class="avatar-title bg-success rounded-circle fs-2">
-                                                <i data-feather="external-link"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div><!-- end card body -->
-                        </div> <!-- end card-->
-                    </div> <!-- end col-->
-                </div> <!-- end row-->
-            </div>
 
             <!-- end col -->
 
@@ -653,7 +617,7 @@
             };
 
 
-            chart_gauge = updateChart("#gauge_chart_hw", options, chart_gauge);
+            chart_gauge = updateChart("#gauge_chart_pompa_mixing", options, chart_gauge);
             chart_gauge_BT1 = updateChart("#gauge_chart_bt1", options2, chart_gauge_BT1);
             chart_gauge_BT2 = updateChart("#gauge_chart_bt2", options3, chart_gauge_BT2);
             chart_gauge_VD = updateChart("#gauge_chart_vd", options4, chart_gauge_VD);
@@ -729,7 +693,7 @@
                 success: function(res) {
                     console.log(res);
                     $('#varian_status_running').text(res.varian);
-                    $('#produk_status_running').text(res.produk);
+                    $('#mode_status_running').text(res.mode);
                     $('#batch_status_running').text(res.batch);
                     $('#storage_status_running').text(res.storage);
                 },
