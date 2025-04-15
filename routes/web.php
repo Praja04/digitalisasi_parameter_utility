@@ -33,7 +33,7 @@ Route::get('form', function () {
 
 Route::prefix('eng')->group(function () {
     Route::get('/dept_head/dashboard', [AuthController::class, 'dashboardEng']);
-    Route::get('/operator/dashboard', [AuthController::class, 'dashboardOperatorEng']);
+   // Route::get('/operator/dashboard', [AuthController::class, 'dashboardOperatorEng']);
     Route::get('/dept_head/todo', [AuthController::class, 'todoListEng']);
 });
 
@@ -119,10 +119,14 @@ Route::prefix('eng')->middleware('auth')->group(function () {
     Route::put('/data/chemical/{id}/update', [EngineeringController::class, 'updateChemical'])->name('chemical.update'); // Update status
     Route::delete('/data/chemical/{id}', [EngineeringController::class, 'destroyChemical'])->name('chemical.destroy'); // Hapus data
 
-    // api
+    // api pemakaian chemical
     Route::get('/api/chemical/harian', [EngineeringController::class, 'ApiChemicalPerHari']);
     Route::get('/api/chemical/mingguan', [EngineeringController::class, 'ApiChemicalPerMinggu']);
     Route::get('/api/chemical/bulanan', [EngineeringController::class, 'ApiChemicalPerBulan']);
+
+    //api pemakaian air
+    Route::get('api/air/{mode}', [EngineeringController::class, 'getPemakaianAir']);
+
 
 });
 //End eng

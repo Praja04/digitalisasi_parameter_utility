@@ -198,117 +198,22 @@
                         <h4 class="card-title mb-0 flex-grow-1">
                             Pemakaian Chemical
                         </h4>
-                        <!-- <div>
-                            <div class="dropdown">
-                                <button
-                                    class="btn btn-soft-primary btn-sm shadow-none"
-                                    data-bs-toggle="dropdown"
-                                    aria-haspopup="true"
-                                    aria-expanded="false">
-                                    <span class="text-uppercase">Btc<i
-                                            class="mdi mdi-chevron-down align-middle ms-1"></i></span>
-                                </button>
-                                <div
-                                    class="dropdown-menu dropdown-menu-end">
-                                    <a
-                                        class="dropdown-item"
-                                        href="#">BTC</a>
-                                    <a
-                                        class="dropdown-item"
-                                        href="#">USD</a>
-                                    <a
-                                        class="dropdown-item"
-                                        href="#">Euro</a>
-                                </div>
-                            </div>
-                        </div> -->
+                    </div>
+                    <div class="d-flex mb-3">
+                        <select id="modeSelector" class="form-select w-auto">
+                            <option value="harian" selected>Harian</option>
+                            <option value="mingguan">Mingguan</option>
+                            <option value="bulanan">Bulanan</option>
+                        </select>
                     </div>
                     <!-- end cardheader -->
                     <div class="card-body">
                         <div id="portfolio_donut_charts" data-colors='["--vz-primary", "--vz-info", "--vz-warning", "--vz-success"]' class="apex-charts" dir="ltr"></div>
 
-                        <ul class="list-group list-group-flush border-dashed mb-0 mt-3 pt-2">
-                            <li class="list-group-item px-0">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0 avatar-xs">
-                                        <span class="avatar-title bg-light p-1 rounded-circle shadow">
-                                            <img src="assets/images/svg/crypto-icons/btc.svg" class="img-fluid" alt="" />
-                                        </span>
-                                    </div>
-                                    <div class="flex-grow-1 ms-2">
-                                        <h6 class="mb-1">
-                                            Chemical A
-                                        </h6>
-                                        <p class="fs-12 mb-0 text-muted">
-                                            <i class="mdi mdi-circle fs-10 align-middle text-primary me-1"></i>
-                                        </p>
-                                    </div>
-                                    <div class="flex-shrink-0 text-end">
-                                        <h6 class="mb-1">
-                                            1.200.000
-                                        </h6>
-                                        <p class="text-danger fs-12 mb-0">
-                                            m2
-                                        </p>
-                                    </div>
-                                </div>
-                            </li>
-                            <!-- end -->
-                            <li class="list-group-item px-0">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0 avatar-xs">
-                                        <span class="avatar-title bg-light p-1 rounded-circle shadow">
-                                            <img src="assets/images/svg/crypto-icons/eth.svg" class="img-fluid" alt="" />
-                                        </span>
-                                    </div>
-                                    <div class="flex-grow-1 ms-2">
-                                        <h6 class="mb-1">
-                                            Chemical C
-                                        </h6>
-                                        <p class="fs-12 mb-0 text-muted">
-                                            <i class="mdi mdi-circle fs-10 align-middle text-info me-1"></i>
-                                        </p>
-                                    </div>
-                                    <div class="flex-shrink-0 text-end">
-                                        <h6 class="mb-1">
-                                            25.108
-                                        </h6>
-                                        <p class="text-danger fs-12 mb-0">
-                                            m2
-                                        </p>
-                                    </div>
-                                </div>
-                            </li>
-                            <!-- end -->
-                            <li class="list-group-item px-0">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0 avatar-xs">
-                                        <span class="avatar-title bg-light p-1 rounded-circle shadow">
-                                            <img src="assets/images/svg/crypto-icons/ltc.svg" class="img-fluid" alt="" />
-                                        </span>
-                                    </div>
-                                    <div class="flex-grow-1 ms-2">
-                                        <h6 class="mb-1">
-                                            Chemical B
-                                        </h6>
-                                        <p class="fs-12 mb-0 text-muted">
-                                            <i class="mdi mdi-circle fs-10 align-middle text-warning me-1"></i>
-                                        </p>
-                                    </div>
-                                    <div class="flex-shrink-0 text-end">
-                                        <h6 class="mb-1">
-                                            10.589
-                                        </h6>
-                                        <p class="text-success fs-12 mb-0">
-                                            m2
-                                        </p>
-                                    </div>
-                                </div>
-                            </li>
-                            <!-- end -->
-
-                            <!-- end -->
+                        <ul id="chemical-list" class="list-group list-group-flush border-dashed mb-0 mt-3 pt-2">
+                            {{-- Dynamic content here --}}
                         </ul>
+
                         <!-- end -->
                     </div>
                     <!-- end card body -->
@@ -399,158 +304,21 @@
                 <div class="card card-height-100">
                     <div class="card-header align-items-center d-flex">
                         <h4 class="card-title mb-0 flex-grow-1">
-                            Pemakaian Listrik
+                            Pemakaian Air
                         </h4>
-                        <div>
-                            <button type="button" class="btn btn-soft-info btn-sm shadow-none">
-                                1H
-                            </button>
-                            <button type="button" class="btn btn-soft-info btn-sm shadow-none">
-                                1D
-                            </button>
-                            <button type="button" class="btn btn-soft-info btn-sm shadow-none">
-                                7D
-                            </button>
-                            <button type="button" class="btn btn-soft-primary btn-sm shadow-none">
-                                1M
-                            </button>
+                        <div class="d-flex mb-3">
+                            <select id="modeAirSelector" class="form-select w-auto">
+                                <option value="terakhir" selected>7 Terakhir</option>
+                                <option value="harian">Harian</option>
+                                <option value="mingguan">Mingguan</option>
+                                <option value="bulanan">Bulanan</option>
+                            </select>
                         </div>
                     </div>
                     <!-- end card-header -->
                     <div class="card-body p-0">
-                        <ul class="list-group list-group-flush border-dashed mb-0">
-                            <li class="list-group-item d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <img src="assets/images/svg/crypto-icons/btc.svg" class="avatar-xs shadow rounded-circle" alt="" />
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="fs-14 mb-1">
-                                        Bitcoin
-                                    </h6>
-                                    <p class="text-muted mb-0">
-                                        $18.7 Billions
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0 text-end">
-                                    <h6 class="fs-14 mb-1">
-                                        $12,863.08
-                                    </h6>
-                                    <p class="text-success fs-12 mb-0">
-                                        +$67.21 (+4.33%)
-                                    </p>
-                                </div>
-                            </li>
-                            <!-- end -->
-                            <li class="list-group-item d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <img src="assets/images/svg/crypto-icons/eth.svg" class="avatar-xs shadow rounded-circle" alt="" />
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="fs-14 mb-1">
-                                        Eathereum
-                                    </h6>
-                                    <p class="text-muted mb-0">
-                                        $27.4 Billions
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0 text-end">
-                                    <h6 class="fs-14 mb-1">
-                                        $08,256.04
-                                    </h6>
-                                    <p class="text-success fs-12 mb-0">
-                                        +$51.19<span class="ms-1">(+5.64%)</span>
-                                    </p>
-                                </div>
-                            </li>
-                            <!-- end -->
-                            <li class="list-group-item d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <img src="assets/images/svg/crypto-icons/aave.svg" class="avatar-xs shadow rounded-circle" alt="" />
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="fs-14 mb-1">
-                                        Avalanche
-                                    </h6>
-                                    <p class="text-muted mb-0">
-                                        $12.9 Billions
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0 text-end">
-                                    <h6 class="fs-14 mb-1">
-                                        $11,896.13
-                                    </h6>
-                                    <p class="text-danger fs-12 mb-0">
-                                        -$59.01<span class="ms-1">(-4.08%)</span>
-                                    </p>
-                                </div>
-                            </li>
-                            <!-- end -->
-                            <li class="list-group-item d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <img src="assets/images/svg/crypto-icons/doge.svg" class="avatar-xs shadow rounded-circle" alt="" />
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="fs-14 mb-1">
-                                        Dogecoin
-                                    </h6>
-                                    <p class="text-muted mb-0">
-                                        $09.5 Billions
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0 text-end">
-                                    <h6 class="fs-14 mb-1">
-                                        $15,999.06
-                                    </h6>
-                                    <p class="text-success fs-12 mb-0">
-                                        +$74.05<span class="ms-1">(+3.12%)</span>
-                                    </p>
-                                </div>
-                            </li>
-                            <!-- end -->
-                            <li class="list-group-item d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <img src="assets/images/svg/crypto-icons/bnb.svg" class="avatar-xs shadow rounded-circle" alt="" />
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="fs-14 mb-1">
-                                        Binance
-                                    </h6>
-                                    <p class="text-muted mb-0">
-                                        $14.2 Billions
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0 text-end">
-                                    <h6 class="fs-14 mb-1">
-                                        $13,786.18
-                                    </h6>
-                                    <p class="text-danger fs-12 mb-0">
-                                        -$61.05<span class="ms-1">(-9.22%)</span>
-                                    </p>
-                                </div>
-                            </li>
-                            <!-- end -->
-                            <li class="list-group-item d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <img src="assets/images/svg/crypto-icons/ltc.svg" class="avatar-xs shadow rounded-circle" alt="" />
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="fs-14 mb-1">
-                                        Litecoin
-                                    </h6>
-                                    <p class="text-muted mb-0">
-                                        $09.5 Billions
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0 text-end">
-                                    <h6 class="fs-14 mb-1">
-                                        $10,604.27
-                                    </h6>
-                                    <p class="text-success fs-12 mb-0">
-                                        +$76.12<span class="ms-1">(+4.92%)</span>
-                                    </p>
-                                </div>
-                            </li>
-                            <!-- end -->
+                        <ul id="list-air-pemakaian" class="list-group list-group-flush border-dashed mb-0">
+                            <!-- Data will be inserted here -->
                         </ul>
                         <!-- end ul -->
                     </div>
@@ -563,7 +331,7 @@
                 <div class="card card-height-100">
                     <div class="card-header align-items-center d-flex">
                         <h4 class="card-title mb-0 flex-grow-1">
-                            Pemakaian Air
+                            Pemakaian Listrik
                         </h4>
                         <div>
                             <button type="button" class="btn btn-soft-info btn-sm shadow-none">
@@ -733,7 +501,6 @@
 </div>
 <!-- 🔹 Include ApexCharts & jQuery -->
 <script src="{{ asset('material/assets/libs/apexcharts/apexcharts.min.js') }}"></script>
-<script src="{{ asset('material/assets/js/pages/dashboard-crypto.init.js') }}"></script>
 <script>
     $(document).ready(function() {
         let chart, chart_compresor;
@@ -955,7 +722,182 @@
         $("#applyFilter").trigger("click");
         updatePVSteam();
         setInterval(updatePVSteam, 5000);
+
+        ////////////////////chemical////////////////////////
+        function fetchChemicalData(mode = 'harian') {
+            let apiUrl = "{{url('/eng/api/chemical')}}" +'/'+ mode;
+
+            $.ajax({
+                url: apiUrl,
+                dataType: "json",
+                success: function(res) {
+                    console.log(res);
+
+                    // Render Chart
+                    renderChemicalChart(res.data || []);
+
+                    // Render Top 3 List
+                    renderTop3List(res.top3 || []);
+                },
+                error: function(_xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                }
+            });
+        }
+
+        function renderTop3List(top3) {
+            const listContainer = $("#chemical-list");
+            listContainer.empty();
+
+            if (top3.length === 0) {
+                listContainer.append(`<li class="list-group-item px-0 text-center text-muted">Tidak ada data.</li>`);
+                return;
+            }
+
+            const colorClass = ["text-primary", "text-warning", "text-info", "text-success"];
+            const icons = ["btc.svg", "ltc.svg", "eth.svg", "usdt.svg"];
+
+            top3.forEach((item, index) => {
+                let color = colorClass[index % colorClass.length];
+                let icon = icons[index % icons.length];
+
+                listContainer.append(`
+                    <li class="list-group-item px-0">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 avatar-xs">
+                                <span class="avatar-title bg-light p-1 rounded-circle shadow">
+                                    <img src="assets/images/svg/crypto-icons/${icon}" class="img-fluid" alt="" />
+                                </span>
+                            </div>
+                            <div class="flex-grow-1 ms-2">
+                                <h6 class="mb-1">${item.nama_chemical}</h6>
+                                <p class="fs-12 mb-0 text-muted">
+                                    <i class="mdi mdi-circle fs-10 align-middle ${color} me-1"></i>
+                                </p>
+                            </div>
+                            <div class="flex-shrink-0 text-end">
+                                <h6 class="mb-1">${item.total.toLocaleString()}</h6>
+                                <p class="text-danger fs-12 mb-0">
+                                Kilogram</p>
+                            </div>
+                        </div>
+                    </li>
+                `);
+            });
+        }
+
+        // Dropdown filter handler
+        $('#modeSelector').on('change', function() {
+            const mode = $(this).val();
+            fetchChemicalData(mode);
+        });
+
+        // Initial fetch
+        fetchChemicalData();
+
+        //api pemakaian air
+        function loadAirData(mode = 'terakhir') {
+            let apiUrl = mode === 'terakhir' ?
+                "{{url('eng/api/air/terakhir')}}" :
+                "{{url('eng/api/air/')}}" + $mode;
+
+            $.ajax({
+                url: apiUrl,
+                dataType: 'json',
+                success: function(data) {
+                    renderAirList(data);
+                },
+                error: function(_xhr, status, error) {
+                    console.error('Gagal load data air:', status, error);
+                }
+            });
+        }
+
+        function renderAirList(data) {
+            let list = $('#list-air-pemakaian');
+            list.empty();
+
+            if (data.length === 0) {
+                list.append(`<li class="list-group-item text-center text-muted">Tidak ada data.</li>`);
+                return;
+            }
+
+            data.forEach((item, i) => {
+                const iconList = ['btc', 'eth', 'ltc', 'aave', 'bnb', 'doge', 'usdt'];
+                const icon = iconList[i % iconList.length];
+
+                list.append(`
+                    <li class="list-group-item d-flex align-items-center">
+                       
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="fs-14 mb-1">Pemakaian Air</h6>
+                            <p class="text-muted mb-0">${item.tanggal}</p>
+                        </div>
+                        <div class="flex-shrink-0 text-end">
+                            <h6 class="fs-14 mb-1">${parseFloat(item.pemakaian_liter).toLocaleString()} L</h6>
+                            <p class="text-success fs-12 mb-0">${item.notes ?? ''}</p>
+                        </div>
+                    </li>
+                `);
+            });
+        }
+
+        $('#modeAirSelector').on('change', function() {
+            let mode = $(this).val();
+            loadAirData(mode);
+        });
+
+        loadAirData(); // Load default
     });
+
+    let chartChemical;
+
+    function renderChemicalChart(data) {
+        const colors = getChartColorsArray("#portfolio_donut_charts");
+
+        const labels = data.map(item => item.nama_chemical);
+        const totals = data.map(item => item.total);
+
+        const options = {
+            chart: {
+                type: 'donut',
+                height: 250
+            },
+            labels: labels,
+            series: totals,
+            colors: colors,
+            legend: {
+                position: 'bottom'
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '70%'
+                    }
+                }
+            }
+        };
+
+        if (chartChemical) {
+            chartChemical.updateOptions(options);
+        } else {
+            chartChemical = new ApexCharts(document.querySelector("#portfolio_donut_charts"), options);
+            chartChemical.render();
+        }
+    }
+
+    function getChartColorsArray(chartId) {
+        const colors = document.querySelector(chartId).getAttribute("data-colors");
+        return JSON.parse(colors).map(value => {
+            const newValue = value.replace(" ", "");
+            if (newValue.indexOf("--") !== -1) {
+                const style = getComputedStyle(document.documentElement);
+                return style.getPropertyValue(newValue) || undefined;
+            } else {
+                return newValue;
+            }
+        });
+    }
 </script>
 
 @endsection

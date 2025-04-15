@@ -93,7 +93,7 @@ class AuthController extends Controller
             } elseif ($user->jabatan === 'foreman') {
                 return url('/eng/foreman/dashboard');
             } elseif ($user->jabatan === 'operator') {
-                return url('/eng/operator/dashboard');
+                return url('/eng/operator/pemakaian_air');
             }
         } elseif ($user->departemen === 'produksi') {
             if ($user->jabatan === 'dept_head') {

@@ -368,7 +368,7 @@ class EngineeringController extends Controller
     }
 
 
-    // Api
+    // Api chemical
     public function ApiChemicalPerHari()
     {
         $today = Carbon::now()->toDateString(); // format: 'YYYY-MM-DD'
@@ -432,6 +432,59 @@ class EngineeringController extends Controller
             'data' => $data,
             'top3' => $top3
         ]);
+    }
+
+    //api air
+
+    public function getPemakaianAir($mode)
+    {
+        $query = PemakaianAirModel::query();
+
+        if ($mode == 'harian') {
+            $query->whereDate('tanggal', Carbon::today());
+        } elseif ($mode == 'mingguan') {
+            $query->whereBetween('tanggal', [
+                Carbon::now()->subDays(7)->startOfDay(),
+                Carbon::now()->endOfDay()
+            ]);
+        } elseif ($mode == 'bulanan') {
+            $query->whereMonth('tanggal', Carbon::now()->month);
+        }
+        elseif ($mode === 'terakhir') {
+            $data = PemakaianAirModel::orderBy('tanggal', 'desc')->limit(7)->get();
+            return response()->json($data);
+        }
+
+
+        $data = $query->orderBy('tanggal', 'desc')->limit(7)->get();
+
+        return response()->json($data);
+    }
+
+    //api listrik
+
+    public function getPemakaianListrik($mode)
+    {
+        $query = PemakaianListrikModel::query();
+
+        if ($mode == 'harian') {
+            $query->whereDate('tanggal', Carbon::today());
+        } elseif ($mode == 'mingguan') {
+            $query->whereBetween('tanggal', [
+                Carbon::now()->subDays(7)->startOfDay(),
+                Carbon::now()->endOfDay()
+            ]);
+        } elseif ($mode == 'bulanan') {
+            $query->whereMonth('tanggal', Carbon::now()->month);
+        } elseif ($mode === 'terakhir') {
+            $data = PemakaianListrikModel::orderBy('tanggal', 'desc')->limit(7)->get();
+            return response()->json($data);
+        }
+
+
+        $data = $query->orderBy('tanggal', 'desc')->limit(7)->get();
+
+        return response()->json($data);
     }
 
 }

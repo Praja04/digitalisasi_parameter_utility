@@ -7,8 +7,7 @@
         <!-- start page title -->
         <div class="row">
             <div class="col-12">
-                <div
-                    class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                     <h4 class="mb-sm-0">Team</h4>
 
                     <div class="page-title-right">
@@ -81,7 +80,7 @@
                                                         </div>
                                                     </div>
                                                 </label>
-                                                <input class="form-control d-none" id="member-image-input" type="file" name="image" accept="image/png, image/gif, image/jpeg" />
+                                                <input class="form-control" id="member-image-input" type="file" name="image" accept="image/png, image/gif, image/jpeg" required />
                                             </div>
                                         </div>
                                     </div>
@@ -97,7 +96,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="password" class="form-label">Password</label>
-                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter email" required />
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required />
                                         <div class="invalid-feedback">Please enter a password</div>
                                     </div>
                                     <div class="mb-3">
@@ -226,7 +225,21 @@
         $('#memberlist-form').submit(function(e) {
             e.preventDefault();
 
-            var formData = new FormData(this);
+            // Cek validasi form
+            var form = this;
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                $('member-image-input').add('was-validated');
+                Swal.fire({
+                    title: "Data Belum Lengkap",
+                    text: "Silakan lengkapi semua field yang wajib diisi.",
+                    icon: "warning"
+                });
+
+                return; // Hentikan submit kalau form tidak valid
+            }
+
+            var formData = new FormData(form);
             formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
 
             $.ajax({
@@ -277,6 +290,7 @@
                 }
             });
         });
+
 
 
 
@@ -523,7 +537,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `/users/${userId}`,
+                        url: "{{ url('/users') }}/" + userId,
                         type: "DELETE",
                         data: {
                             _token: $('meta[name="csrf-token"]').attr("content") // CSRF token
