@@ -476,7 +476,7 @@
 
         $('#editMemberForm').submit(function(e) {
             e.preventDefault();
-
+            let base_url = "{{ url('/users/') }}";
             let userId = $('#editUserId').val();
             let formData = new FormData(this);
 
@@ -493,7 +493,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "{{ url('/users') }}/" + userId,
+                        url: base_url + userId,
 
                         type: 'POST',
                         data: formData,
