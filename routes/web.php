@@ -126,6 +126,7 @@ Route::prefix('eng')->middleware('auth')->group(function () {
 
     //api pemakaian air
     Route::get('api/air/{mode}', [EngineeringController::class, 'getPemakaianAir']);
+    Route::get('api/listrik/{mode}', [EngineeringController::class, 'getPemakaianListrik']);
 
 
 });

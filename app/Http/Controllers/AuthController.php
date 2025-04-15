@@ -45,7 +45,7 @@ class AuthController extends Controller
                 if ($user->jabatan === 'dept_head') {
                     $redirectUrl = url('/eng/dept_head/dashboard');
                 } elseif (in_array($user->jabatan, ['operator', 'foreman', 'supervisor'])) {
-                    $redirectUrl = url('/eng/operator/dashboard');
+                    $redirectUrl = url('/eng/operator/pemakaian_air');
                 }
             } elseif ($user->departemen === 'qc') {
                 if ($user->jabatan === 'dept_head') {
