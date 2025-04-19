@@ -59,10 +59,6 @@ class ProduksiController extends Controller
     // 🔹 Menampilkan Semua Batch
     public function index()
     {
-        // $batches = AchievementBatch::orderBy('batch_date', 'desc')
-        //     ->get();
-
-        // return response()->json($batches);
 
         $batches = AchievementBatch::with(['details' => function ($query) {
             $query->selectRaw('achievement_batch_id, SUM(batch_count) as total_batch_count')

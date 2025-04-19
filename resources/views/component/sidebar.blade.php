@@ -355,11 +355,11 @@
                         <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form input AfterCooling</span>
                     </a>
                 </li>
-                <!-- <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ url('prd/operator/historys') }}">
-                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">List History Batch</span>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('qc/operator/list') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">List Data AfterCooling</span>
                     </a>
-                </li> -->
+                </li>
                 @elseif(Session::get('jabatan') === 'operator' && Session::get('departemen') === 'engineering')
                 <li class="menu-title"><span data-key="t-menu">Menu</span></li>
                 <li class="nav-item">

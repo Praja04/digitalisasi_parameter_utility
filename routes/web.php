@@ -84,12 +84,21 @@ Route::prefix('qc')->middleware('auth')->group(function () {
     // Dashboard untuk Dept Head dan Operator
     Route::get('/dept_head/dashboard', [QCController::class, 'dashboardQC']);
     Route::get('/operator/dashboard', [QCController::class, 'dashboardOperatorQC']);
+    Route::get('/operator/detail/{id}', [QCController::class, 'detailAfterCoolingOperatorQC']);
+    Route::get('/operator/list', [QCController::class, 'listAfterCoolingOperatorQC']);
+    Route::get('/data/status', [QCController::class, 'AfterCoolingCompleted']);
 
     // CRUD 
     Route::get('/data', [QCController::class, 'index'])->name('aftercooling.index'); // Ambil semua data
+    Route::get('/all/data', [QCController::class, 'showData'])->name('aftercooling.show'); // Ambil semua data
     Route::post('/data/store', [QCController::class, 'storeData'])->name('aftercooling.store'); // Simpan data baru
-    Route::put('/data/{id}/update-status', [QCController::class, 'updateStatus'])->name('aftercooling.updateStatus'); // Update status
-    Route::delete('/data/{id}', [QCController::class, 'destroy'])->name('aftercooling.destroy'); // Hapus data
+    Route::delete('/data/{id}', [QCController::class, 'deleteData'])->name('aftercooling.destroy'); // Hapus data
+
+    // CRDU Detail
+    Route::get('/detail/{id}', [QCController::class, 'getDetail'])->name('aftercoolingdetail.show');
+    Route::post('/detail/store/{id}', [QCController::class, 'storeDetail'])->name('aftercoolingdetail.store');
+    Route::put('/detail/update/{id}', [QCController::class, 'updateDetail'])->name('aftercoolingdetail.update');
+    Route::delete('/detail/delete/{id}', [QCController::class, 'deleteDetail'])->name('aftercoolingdetail.delete');
 
 });
 //End QC

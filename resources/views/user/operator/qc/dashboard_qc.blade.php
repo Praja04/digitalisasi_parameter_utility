@@ -41,16 +41,13 @@
                                        <button id="apply-filter" class="btn btn-sm btn-primary mt-2 w-100">Terapkan</button>
                                     </div>
                                  </th>
-                                 <th scope="col">Viscositas</th>
-                                 <th scope="col">Aw</th>
-                                 <th scope="col">pH</th>
-                                 <th scope="col">Bj</th>
-                                 <th scope="col">Buih</th>
-                                 <th scope="col">Endapan</th>
+                                 <th>
+                                    Created By
+                                 </th>
                                  <th scope="col">Aksi</th>
                               </tr>
                            </thead>
-                           <tbody class="list form-check-all text-center" id="batchList"></tbody>
+                           <tbody class="list form-check-all text-center" id="dataList"></tbody>
                         </table>
                         <div class="noresult text-center mt-3" style="display: none;">
                            <p class="text-muted">Tidak ada data yang ditemukan.</p>
@@ -80,7 +77,7 @@
             <button type="button" class="btn-close" id="close-modal" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
          <div class="modal-body">
-            <form id="formTambahBatch" autocomplete="off">
+            <form id="formTambahdata" autocomplete="off">
                <input type="hidden" name="_token" value="{{ csrf_token() }}">
                <div id="api-key-error-msg" class="alert alert-danger py-2 d-none"></div>
 
@@ -88,35 +85,6 @@
                   <label for="tanggal" class="form-label">Tanggal <span class="text-danger">*</span></label>
                   <input type="date" class="form-control" id="tanggal">
                </div>
-               <div class="mb-3">
-                  <label for="viscositas" class="form-label">Viscositas <span class="text-danger">*</span></label>
-                  <input class="form-control" type="number" min="0" max="100" step="0.01" id="viscositas" placeholder="Masukkan nilai">
-               </div>
-               <div class="mb-3">
-                  <label for="brix" class="form-label">Brix <span class="text-danger">*</span></label>
-                  <input class="form-control" type="number" min="0" max="100" step="0.01" id="brix" placeholder="Masukkan nilai">
-               </div>
-               <div class="mb-3">
-                  <label for="aw" class="form-label">Aw<span class="text-danger">*</span></label>
-                  <input class="form-control" type="number" min="0" max="100" step="0.01" id="aw" placeholder="Masukkan nilai">
-               </div>
-               <div class="mb-3">
-                  <label for="ph" class="form-label">pH<span class="text-danger">*</span></label>
-                  <input class="form-control" type="number" min="0" max="100" step="0.01" id="ph" placeholder="Masukkan nilai">
-               </div>
-               <div class="mb-3">
-                  <label for="bj" class="form-label">Bj<span class="text-danger">*</span></label>
-                  <input class="form-control" type="number" min="0" max="100" step="0.01" id="bj" placeholder="Masukkan nilai">
-               </div>
-               <div class="mb-3">
-                  <label for="buih" class="form-label">Buih<span class="text-danger">*</span></label>
-                  <input class="form-control" type="number" min="0" max="100" step="0.01" id="buih" placeholder="Masukkan nilai">
-               </div>
-               <div class="mb-3">
-                  <label for="endapan" class="form-label">Endapan<span class="text-danger">*</span></label>
-                  <input class="form-control" type="number" min="0" max="100" step="0.01" id="endapan" placeholder="Masukkan nilai">
-               </div>
-
             </form>
          </div>
          <div class="modal-footer">
@@ -159,13 +127,8 @@
       $("#save-button").on("click", function() {
          let formData = {
             _token: csrfToken,
-            viscositas: $("#viscositas").val(),
-            brix: $("#brix").val(),
-            aw: $("#aw").val(),
-            ph: $("#ph").val(),
-            bj: $("#bj").val(),
-            buih: $("#buih").val(),
-            endapan: $("#endapan").val(),
+
+            tanggal: $("#tanggal").val(),
          };
 
          $.ajax({
@@ -212,7 +175,7 @@
 
       // 🔹 Update Tampilan Tabel
       function updateTable() {
-         let tbody = $("#batchList");
+         let tbody = $("#dataList");
          tbody.empty();
 
          let start = (currentPage - 1) * itemsPerPage;
@@ -225,17 +188,14 @@
             $(".noresult").hide();
             $.each(paginatedData, function(index, item) {
                let rowNumber = start + index + 1;
+               let detailUrl ="{{url('qc/operator/detail')}}";
                let row = `
                   <tr>
                      <td>${rowNumber}</td>
-                     <td>${new Date(item.created_at).toLocaleDateString()}</td>
-                     <td>${item.viscositas} %</td>
-                     <td>${item.aw} %</td>
-                     <td>${item.ph} %</td>
-                     <td>${item.bj} %</td>
-                     <td>${item.buih} %</td>
-                     <td>${item.endapan} %</td>
+                     <td>${item.tanggal}</td>
+                     <td>${item.created_by_user}</td>
                      <td>
+                      <a href="${detailUrl}/${item.id}" class="btn btn-info btn-sm">Detail</a>
                         <button class="btn btn-danger btn-sm delete-button" data-id="${item.id}">Hapus</button>
                      </td>
                   </tr>
@@ -309,28 +269,7 @@
          }
       });
 
-      // 🔹 Hapus Data
-      $(document).on("click", ".delete-button", function() {
-         let id = $(this).data("id");
-         if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
-            $.ajax({
-               url: baseUrl + "/" + id,
-               type: "DELETE",
-               headers: {
-                  "X-CSRF-TOKEN": csrfToken,
-               },
-               success: function() {
-                  alert("Data berhasil dihapus!");
-                  loadData();
-               },
-               error: function(xhr) {
-                  console.error("Error deleting data:", xhr);
-                  alert("Gagal menghapus data.");
-               },
-            });
-         }
-      });
-
+     
       // 🔹 Klik Dua Kali untuk Menampilkan Input Rentang Tanggal
       let clickCount = 0;
       $("#th-tanggal").on("click", function() {
