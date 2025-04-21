@@ -67,13 +67,14 @@
             <div class="col-xl-12">
                 <div class="card crm-widget">
                     <div class="card-body p-0">
-                        <div class="row row-cols-xxl-4 row-cols-md-3 row-cols-1 g-0">
+                        <div class="row row-cols-xxl-3 row-cols-md-3 row-cols-1 g-0">
                             <div class="col">
                                 <div class="py-4 px-3">
                                     <h5 class="text-muted text-uppercase fs-13">
                                         Brix
                                     </h5>
                                     <div id="chart_brix"></div>
+                                    
                                 </div>
                             </div>
                             <!-- end col -->
@@ -97,15 +98,7 @@
                                 </div>
                             </div>
                             <!-- end col -->
-                            <div class="col">
-                                <div class="mt-3 mt-lg-0 py-4 px-3">
-                                    <h5 class="text-muted text-uppercase fs-13">
-                                        pH
 
-                                    </h5>
-                                    <div id="chart_ph"></div>
-                                </div>
-                            </div>
                             <!-- end col -->
 
 
@@ -113,7 +106,17 @@
                         <!-- end row -->
                     </div>
                     <!-- end card body -->
+                </div>
+                <!-- end card -->
+            </div>
+            <!-- end col -->
+        </div>
+        <!-- end row -->
 
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card crm-widget">
                     <div class="card-body p-0">
                         <div class="row row-cols-xxl-3 row-cols-md-3 row-cols-1 g-0">
                             <div class="col">
@@ -137,12 +140,12 @@
                             </div>
                             <!-- end col -->
                             <div class="col">
-                                <div class="mt-4 mt-lg-0 py-4 px-3">
+                                <div class="mt-3 mt-lg-0 py-4 px-3">
                                     <h5 class="text-muted text-uppercase fs-13">
-                                        Endapan
+                                        pH
 
                                     </h5>
-                                    <div id="chart_endapan"></div>
+                                    <div id="chart_ph"></div>
                                 </div>
                             </div>
                             <!-- end col -->
@@ -233,13 +236,14 @@
 <script>
     $(document).ready(function() {
         $.ajax({
-            url: "{{ url('qc/data') }}",
+            url: "{{ url('qc/api/chartaftercooling') }}",
             method: "GET",
             dataType: "json",
             success: function(data) {
                 const categories = data.map(item => {
                     let date = new Date(item.created_at);
-                    return date.toISOString().split('T')[0]; // hasil: "2025-04-09"
+                    //return date.toISOString().split('T')[0]; // hasil: "2025-04-09"
+                    return date.toISOString().replace('T', ' ').substring(0, 19);
                 });
 
                 const chartData = {
@@ -283,7 +287,8 @@
                         enabled: true,
                         y: {
                             formatter: function(val) {
-                                return val + ' %';
+                                return val;
+                                // return val + ' %';
                             }
                         }
                     }
@@ -295,7 +300,7 @@
                 new ApexCharts(document.querySelector("#chart_ph"), chartOptions('pH', chartData.ph)).render();
                 new ApexCharts(document.querySelector("#chart_bj"), chartOptions('Bj', chartData.bj)).render();
                 new ApexCharts(document.querySelector("#chart_buih"), chartOptions('Buih', chartData.buih)).render();
-                new ApexCharts(document.querySelector("#chart_endapan"), chartOptions('Endapan', chartData.endapan)).render();
+                // new ApexCharts(document.querySelector("#chart_endapan"), chartOptions('Endapan', chartData.endapan)).render();
             },
             error: function(xhr) {
                 console.error("Gagal ambil data QC:", xhr);

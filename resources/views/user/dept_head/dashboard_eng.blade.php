@@ -402,7 +402,7 @@
                             show: true,
                             fontSize: "16px",
                             formatter: function(val) {
-                                return parseFloat(val).toFixed(1); // misal tampilkan 1 angka desimal
+                                return parseFloat(val).toFixed(2); // misal tampilkan 1 angka desimal
                             }
                         }
                     }
@@ -523,6 +523,7 @@
         const updatePVSteam = () => {
             $.getJSON("{{ url('sensor/boiler-realtime') }}", (response) => {
                 if (response) {
+                    console.log(response);
                     $('#PV-bar').val(`${response.PVSteam} Bar`);
                     updateGaugeChart(response);
                 }
@@ -584,7 +585,7 @@
         updateInputFields();
         $("#applyFilter").trigger("click");
         updatePVSteam();
-        setInterval(updatePVSteam, 5000);
+        setInterval(updatePVSteam, 3000);
 
         ////////////////////chemical////////////////////////
         function fetchChemicalData(mode = 'harian') {

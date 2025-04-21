@@ -42,6 +42,9 @@
                                     </div>
                                  </th>
                                  <th>
+                                    Batch
+                                 </th>
+                                 <th>
                                     Created By
                                  </th>
                                  <th scope="col">Aksi</th>
@@ -85,6 +88,10 @@
                   <label for="tanggal" class="form-label">Tanggal <span class="text-danger">*</span></label>
                   <input type="date" class="form-control" id="tanggal">
                </div>
+               <div class="mb-3">
+                  <label for="batch" class="form-label">Batch <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="batch">
+               </div>
             </form>
          </div>
          <div class="modal-footer">
@@ -118,7 +125,11 @@
             },
             error: function(xhr) {
                console.error("Error loading data:", xhr);
-               alert("Gagal mengambil data.");
+               Swal.fire({
+                  icon: 'error',
+                  title: 'Gagal!',
+                  text: xhr.responseJSON.message || 'Terjadi kesalahan.',
+               });
             },
          });
       }
@@ -129,6 +140,7 @@
             _token: csrfToken,
 
             tanggal: $("#tanggal").val(),
+            batch: $("#batch").val(),
          };
 
          $.ajax({
@@ -140,13 +152,22 @@
                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
             },
             success: function(response) {
-               alert("Data berhasil disimpan!");
-               $("#aftercooling-modal").modal("hide");
-               loadData();
+               Swal.fire({
+                  icon: 'success',
+                  title: 'Berhasil!',
+                  text: 'Data berhasil disimpan!',
+                  timer: 3000,
+                  showConfirmButton: true
+               }).then(() => {
+                  location.reload();
+               });
             },
             error: function(xhr) {
-               console.error("Error saving data:", xhr.responseJSON);
-               alert("Gagal menyimpan data. Pastikan semua field terisi.");
+               Swal.fire({
+                  icon: 'error',
+                  title: 'Oops!',
+                  text: 'Gagal mengambil data.'
+               });
             },
          });
       });
@@ -162,12 +183,22 @@
                   "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
                },
                success: function() {
-                  alert("Data berhasil dihapus!");
-                  loadData();
+                  Swal.fire({
+                     icon: 'success',
+                     title: 'Berhasil!',
+                     text: 'Data berhasil disimpan!',
+                     timer: 3000,
+                     showConfirmButton: true
+                  }).then(() => {
+                     location.reload();
+                  });
                },
                error: function(xhr) {
-                  console.error("Error deleting data:", xhr);
-                  alert("Gagal menghapus data.");
+                  Swal.fire({
+                     icon: 'error',
+                     title: 'Gagal!',
+                     text: xhr.responseJSON.message || 'Terjadi kesalahan.',
+                  });
                },
             });
          }
@@ -188,11 +219,12 @@
             $(".noresult").hide();
             $.each(paginatedData, function(index, item) {
                let rowNumber = start + index + 1;
-               let detailUrl ="{{url('qc/operator/detail')}}";
+               let detailUrl = "{{url('qc/operator/detail')}}";
                let row = `
                   <tr>
                      <td>${rowNumber}</td>
                      <td>${item.tanggal}</td>
+                     <td>${item.batch}</td>
                      <td>${item.created_by_user}</td>
                      <td>
                       <a href="${detailUrl}/${item.id}" class="btn btn-info btn-sm">Detail</a>
@@ -269,7 +301,7 @@
          }
       });
 
-     
+
       // 🔹 Klik Dua Kali untuk Menampilkan Input Rentang Tanggal
       let clickCount = 0;
       $("#th-tanggal").on("click", function() {

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\QC\AfterCooling;
 use App\Models\QC\AfterCoolingDetail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 
 class QCController extends Controller
 {
@@ -34,10 +35,11 @@ class QCController extends Controller
             return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
         $data = AfterCooling::with('details')->findOrFail($id);
-        return view('user.operator.qc.detail_after_cooling',compact('data'));
+        return view('user.operator.qc.detail_after_cooling', compact('data'));
     }
 
-    public function listAfterCoolingOperatorQC(){
+    public function listAfterCoolingOperatorQC()
+    {
         if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'qc') {
             return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
@@ -60,6 +62,7 @@ class QCController extends Controller
         // Validasi input
         $request->validate([
             'tanggal' => 'required|date',
+            'batch' => 'required',
         ]);
 
         try {
@@ -67,6 +70,7 @@ class QCController extends Controller
             $nama_user = Session::get('username');
             $data = AfterCooling::create([
                 'tanggal' => $request->tanggal,
+                'batch' => $request->batch,
                 'created_by_user' => $nama_user,
             ]);
 
@@ -78,7 +82,14 @@ class QCController extends Controller
 
     public function showData()
     {
-        $data = AfterCooling::with('details')->get();
+        // $data = AfterCooling::with('details')->get();
+        // return response()->json($data);
+        $data = AfterCooling::with(['details' => function ($query) {
+            $query->orderBy('shift', 'desc'); // Optional: order detail by shift
+        }])
+            ->orderBy('tanggal', 'desc') // Urutkan berdasarkan tanggal secara descending
+            ->get();
+
         return response()->json($data);
     }
 
@@ -138,13 +149,13 @@ class QCController extends Controller
             'created_by_user' => session('username')
         ]);
 
-         // Cek apakah semua shift (1,2,3) sudah ada
-         $totalShifts = AfterCoolingDetail::where('id_after_cooling', $id)->count();
+        // Cek apakah semua shift (1,2,3) sudah ada
+        $totalShifts = AfterCoolingDetail::where('id_after_cooling', $id)->count();
 
-         if ($totalShifts === 3) {
-             // Update status batch menjadi completed
-             AfterCooling::where('id', $id)->update(['status' => 'completed']);
-         }
+        if ($totalShifts === 3) {
+            // Update status batch menjadi completed
+            AfterCooling::where('id', $id)->update(['status' => 'completed']);
+        }
 
         return response()->json([
             'success' => true,
@@ -168,8 +179,9 @@ class QCController extends Controller
             'bj' => 'required|numeric',
             'aw' => 'required|numeric',
             'buih' => 'required|numeric',
-            'endapan' => 'required|numeric',
-            'organo' => 'required|string',
+            'endapan' => 'required',
+            'organo' => 'required',
+            'warna' => 'required',
             'shift' => 'required|integer|min:1|max:3',
         ]);
 
@@ -183,6 +195,7 @@ class QCController extends Controller
             'buih' => $request->buih,
             'endapan' => $request->endapan,
             'organo' => $request->organo,
+            'warna' => $request->warna,
             'shift' => $request->shift,
         ]);
 
@@ -207,11 +220,165 @@ class QCController extends Controller
     public function AfterCoolingCompleted()
     {
         $completedCount = AfterCooling::where('status', 'completed')->count();
-        $notCompletedCount = AfterCooling::where('status', '!=', 'completed')->count();
+        $notCompletedCount = AfterCooling::where('status', NULL)->count();
 
         return response()->json([
             'completed' => $completedCount,
             'not_completed' => $notCompletedCount
         ]);
+    }
+
+
+    //olah after cooling
+    public function olahAfterCooling()
+    {
+        $data = AfterCooling::with('details')->get();
+        $hasil = [];
+
+        foreach ($data as $ac) {
+            $total = $ac->details->count();
+
+            $bjUnder = $ac->details->where('bj', '<', 1.39)->count();
+            $bjOver = $ac->details->where('bj', '>', 1.41)->count();
+            $bjOkPercent = ($total > 0) ? round(($total - ($bjUnder + $bjOver)) / $total * 100, 2) : 0;
+
+            $brixUnder = $ac->details->where('brix', '<', 77)->count();
+            $brixOkPercent = ($total > 0) ? round(($total - $brixUnder) / $total * 100, 2) : 0;
+
+            $phUnder = $ac->details->where('ph', '<', 4.3)->count();
+            $phOver = $ac->details->where('ph', '>', 5)->count();
+            $phOkPercent = ($total > 0) ? round(($total - ($phUnder + $phOver)) / $total * 100, 2) : 0;
+
+            $viscoUnder = $ac->details->where('viscositas', '<', 17)->count();
+            $viscoOver = $ac->details->where('viscositas', '>', 28)->count();
+            $viscoOkPercent = ($total > 0) ? round(($total - ($viscoUnder + $viscoOver)) / $total * 100, 2) : 0;
+
+            $awOver = $ac->details->where('aw', '>', 0.70)->count();
+            $awOkPercent = ($total > 0) ? round(($total - $awOver) / $total * 100, 2) : 0;
+            $awPresOverPercent = ($total > 0) ? round($awOver / $total * 100, 2) : 0;
+
+            $buihOver = $ac->details->where('buih', '>', 0.5)->count();
+            $buihOkPercent = ($total > 0) ? round(($total - $buihOver) / $total * 100, 2) : 0;
+
+            // $endapanOver = $ac->details->where('endapan', '>', 0.1)->count();
+            // $endapanOkPercent = ($total > 0) ? round(($total - $endapanOver) / $total * 100, 2) : 0;
+
+            $endapanNotStandar = $ac->details->filter(fn($d) => strtolower(trim($d->endapan)) !== '<0,1')->count();
+            $endapanOkPercent = ($total > 0) ? round(($total - $endapanNotStandar) / $total * 100, 2) : 0;
+
+            $organoNotStandar = $ac->details->filter(fn($d) => strtolower(trim($d->organo)) !== 'standar')->count();
+            $organoOkPercent = ($total > 0) ? round(($total - $organoNotStandar) / $total * 100, 2) : 0;
+
+            $hasil[] = [
+                'id' => $ac->id,
+                'batch' => $ac->batch,
+                'tanggal' => $ac->tanggal,
+                'jumlah_data' => $total,
+
+                // BJ
+                'bj_under' => $bjUnder,
+                'bj_over' => $bjOver,
+                'bj_ok_percent' => $bjOkPercent,
+
+                // Brix
+                'brix_under' => $brixUnder,
+                'brix_ok_percent' => $brixOkPercent,
+
+                // pH
+                'ph_under' => $phUnder,
+                'ph_over' => $phOver,
+                'ph_ok_percent' => $phOkPercent,
+
+                // Visco
+                'visco_under' => $viscoUnder,
+                'visco_over' => $viscoOver,
+                'visco_ok_percent' => $viscoOkPercent,
+
+                // Aw
+                'aw_over' => $awOver,
+                'aw_ok_percent' => $awOkPercent,
+                'aw_pres_over_percent' => $awPresOverPercent,
+
+                // Buih
+                'buih_over' => $buihOver,
+                'buih_ok_percent' => $buihOkPercent,
+
+                // Endapan
+                // 'endapan_over' => $endapanOver,
+                // 'endapan_ok_percent' => $endapanOkPercent,
+                'endapan_not_standar' => $endapanNotStandar,
+                'endapan_ok_percent' => $endapanOkPercent,
+
+                // Organo
+                'organo_not_standar' => $organoNotStandar,
+                'organo_ok_percent' => $organoOkPercent,
+            ];
+        }
+
+        return response()->json($hasil);
+    }
+
+    //statistik
+    public function statistik(Request $request)
+    {
+        $start = $request->input('start_date');
+        $end = $request->input('end_date');
+
+        $query = DB::table('after_cooling_detail')
+            ->join('after_cooling', 'after_cooling.id', '=', 'after_cooling_detail.id_after_cooling')
+            ->select(
+                DB::raw('MIN(bj) as bj_min'),
+                DB::raw('MAX(bj) as bj_max'),
+                DB::raw('AVG(bj) as bj_avg'),
+                DB::raw('STDDEV_POP(bj) as bj_std'),
+
+                DB::raw('MIN(brix) as brix_min'),
+                DB::raw('MAX(brix) as brix_max'),
+                DB::raw('AVG(brix) as brix_avg'),
+                DB::raw('STDDEV_POP(brix) as brix_std'),
+
+                DB::raw('MIN(ph) as ph_min'),
+                DB::raw('MAX(ph) as ph_max'),
+                DB::raw('AVG(ph) as ph_avg'),
+                DB::raw('STDDEV_POP(ph) as ph_std'),
+
+                DB::raw('MIN(viscositas) as visco_min'),
+                DB::raw('MAX(viscositas) as visco_max'),
+                DB::raw('AVG(viscositas) as visco_avg'),
+                DB::raw('STDDEV_POP(viscositas) as visco_std'),
+
+                DB::raw('MIN(aw) as aw_min'),
+                DB::raw('MAX(aw) as aw_max'),
+                DB::raw('AVG(aw) as aw_avg'),
+                DB::raw('STDDEV_POP(aw) as aw_std'),
+
+                DB::raw('MIN(buih) as buih_min'),
+                DB::raw('MAX(buih) as buih_max'),
+                DB::raw('AVG(buih) as buih_avg'),
+                DB::raw('STDDEV_POP(buih) as buih_std'),
+
+                // DB::raw('MIN(endapan) as endapan_min'),
+                // DB::raw('MAX(endapan) as endapan_max'),
+                // DB::raw('AVG(endapan) as endapan_avg'),
+                // DB::raw('STDDEV_POP(endapan) as endapan_std')
+            );
+
+        // if ($start && $end) {
+        //     $query->whereBetween('aftercoolings.tanggal', [$start, $end]);
+        // }
+
+        $statistik = $query->first();
+
+        return response()->json($statistik);
+    }
+
+
+    // chart grafik line 
+    public function getChartData()
+    {
+        $data = AfterCoolingDetail::select('*')->orderBy('id_after_cooling', 'DESC')->get();
+
+
+        return response()->json($data);
     }
 }

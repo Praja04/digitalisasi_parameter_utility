@@ -100,6 +100,10 @@ Route::prefix('qc')->middleware('auth')->group(function () {
     Route::put('/detail/update/{id}', [QCController::class, 'updateDetail'])->name('aftercoolingdetail.update');
     Route::delete('/detail/delete/{id}', [QCController::class, 'deleteDetail'])->name('aftercoolingdetail.delete');
 
+    //Api after cooling
+    Route::get('/api/olahaftercooling', [QCController::class, 'olahAfterCooling'])->name('aftercooling.olah');
+    Route::get('/api/statistikaftercooling', [QCController::class, 'statistik'])->name('aftercooling.statistik');
+    Route::get('/api/chartaftercooling', [QCController::class, 'getChartData'])->name('aftercooling.chart');
 });
 //End QC
 

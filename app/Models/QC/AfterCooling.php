@@ -14,7 +14,7 @@ class AfterCooling extends Model
     protected $primaryKey = 'id';
     public $timestamps = true;
 
-    protected $fillable = ['tanggal', 'created_by_user', 'created_at', 'updated_at','status'];
+    protected $fillable = ['tanggal', 'created_by_user', 'created_at', 'updated_at','status','batch'];
 
     // Relasi ke Detail Batch (Shift)
     public function details()

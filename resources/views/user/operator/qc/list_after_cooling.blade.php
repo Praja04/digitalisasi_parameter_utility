@@ -93,11 +93,14 @@
                                         <tr>
                                             <th rowspan="2">No</th>
                                             <th rowspan="2">Tanggal</th>
+                                            <th rowspan="2">Status</th>
+                                            <th rowspan="2">Batch</th>
                                             <th rowspan="2">Created By</th>
                                             <th colspan="10">Detail After Cooling</th>
                                         </tr>
                                         <tr>
                                             <th>Shift</th>
+                                            <th>Jam</th>
                                             <th>Brix</th>
                                             <th>Viscositas</th>
                                             <th>Aw</th>
@@ -165,32 +168,62 @@
         pageData.forEach(item => {
             const rowSpan = item.details.length;
 
-            item.details.forEach((detail, index) => {
+            if (item.details.length === 0) {
                 const tr = document.createElement('tr');
-
-                if (index === 0) {
-                    tr.innerHTML += `
-                        <td rowspan="${rowSpan}">${no++}</td>
-                        <td rowspan="${rowSpan}">${item.tanggal}</td>
-                        <td rowspan="${rowSpan}">${item.created_by_user}</td>
-                    `;
-                }
-
                 tr.innerHTML += `
-                    <td>${detail.shift}</td>
-                    <td>${detail.brix}</td>
-                    <td>${detail.viscositas}</td>
-                    <td>${detail.aw}</td>
-                    <td>${detail.ph}</td>
-                    <td>${detail.bj}</td>
-                    <td>${detail.buih}</td>
-                    <td>${detail.endapan}</td>
-                    <td>${detail.organo}</td>
-                    <td>${detail.warna}</td>
-                `;
-
+                        <td rowspan="1">${no++}</td>
+                        <td rowspan="1">${item.tanggal}</td>
+                        <td rowspan="1" class="${item.status === 'completed' ? 'text-success' : 'text-danger'}">
+                            ${item.status === 'completed' ? 'completed' : 'not completed'}
+                        </td>
+                        <td rowspan="1">${item.batch}</td>
+                        <td rowspan="1">${item.created_by_user}</td>
+                        <td>null</td>
+                        <td>null</td>
+                        <td>null</td>
+                        <td>null</td>
+                        <td>null</td>
+                        <td>null</td>
+                        <td>null</td>
+                        <td>null</td>
+                        <td>null</td>
+                        <td>null</td>
+                        <td>null</td>
+                    `;
                 tbody.appendChild(tr);
-            });
+            } else {
+                item.details.forEach((detail, index) => {
+                    const tr = document.createElement('tr');
+
+                    if (index === 0) {
+                        tr.innerHTML += `
+                    <td rowspan="${rowSpan}">${no++}</td>
+                    <td rowspan="${rowSpan}">${item.tanggal}</td>
+                    <td rowspan="${rowSpan}" class="${item.status === 'completed' ? 'text-success' : 'text-danger'}">
+                        ${item.status === 'completed' ? 'completed' : 'not completed'}
+                    </td>
+                    <td rowspan="${rowSpan}">${item.batch}</td>
+                    <td rowspan="${rowSpan}">${item.created_by_user}</td>
+                `;
+                    }
+
+                    tr.innerHTML += `
+                            <td>${detail.shift ?? 'null'}</td>
+                           <td>${detail.created_at ? new Date(detail.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'null'}</td>
+                            <td>${detail.brix ?? 'null'}</td>
+                            <td>${detail.viscositas ?? 'null'}</td>
+                            <td>${detail.aw ?? 'null'}</td>
+                            <td>${detail.ph ?? 'null'}</td>
+                            <td>${detail.bj ?? 'null'}</td>
+                            <td>${detail.buih ?? 'null'}</td>
+                            <td>${detail.endapan ?? 'null'}</td>
+                            <td>${detail.organo ?? 'null'}</td>
+                            <td>${detail.warna ?? 'null'}</td>
+                        `;
+
+                    tbody.appendChild(tr);
+                });
+            }
         });
     }
 

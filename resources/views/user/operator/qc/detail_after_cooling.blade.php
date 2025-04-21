@@ -71,13 +71,13 @@
                                 <option value="3">Shift 3</option>
                             </select>
                         </div>
-                        <div class="mb-3"><label>Brix</label><input id="brix" type="number" step="0.01" class="form-control" name="brix" required></div>
-                        <div class="mb-3"><label>Viscositas</label><input id="viscositas" type="number" step="0.01" class="form-control" name="viscositas" required></div>
-                        <div class="mb-3"><label>pH</label><input id="ph" type="number" step="0.01" class="form-control" name="ph" required></div>
-                        <div class="mb-3"><label>Bj</label><input id="bj" type="number" step="0.01" class="form-control" name="bj" required></div>
-                        <div class="mb-3"><label>Aw</label><input id="aw" type="number" step="0.01" class="form-control" name="aw" required></div>
-                        <div class="mb-3"><label>Buih</label><input id="buih" type="number" step="0.01" class="form-control" name="buih" required></div>
-                        <div class="mb-3"><label>Endapan</label><input id="endapan" type="number" step="0.01" class="form-control" name="endapan" required></div>
+                        <div class="mb-3"><label>Brix</label><input id="brix" type="number" step="any" class="form-control" name="brix" required></div>
+                        <div class="mb-3"><label>Viscositas</label><input id="viscositas" type="number" step="any" class="form-control" name="viscositas" required></div>
+                        <div class="mb-3"><label>pH</label><input id="ph" type="number" step="any" class="form-control" name="ph" required></div>
+                        <div class="mb-3"><label>Bj</label><input id="bj" type="number" step="any" class="form-control" name="bj" required></div>
+                        <div class="mb-3"><label>Aw</label><input id="aw" type="number" step="any" class="form-control" name="aw" required></div>
+                        <div class="mb-3"><label>Buih</label><input id="buih" type="number" step="any" class="form-control" name="buih" required></div>
+                        <div class="mb-3"><label>Endapan</label><input id="endapan" type="text"  class="form-control" name="endapan" required></div>
                         <div class="mb-3"><label>Organo</label><input id="organo" type="text" class="form-control" name="organo" required></div>
                         <div class="mb-3"><label>Warna</label><input id="warna" type="text" class="form-control" name="warna" required></div>
                     </div>
@@ -154,6 +154,7 @@
                         <tr>
                             <td>${index + 1}</td>
                             <td>${item.shift}</td>
+                            <td>${item.brix}</td>
                             <td>${item.viscositas}</td>
                             <td>${item.aw}</td>
                             <td>${item.ph}</td>
@@ -227,15 +228,14 @@
                     <form id="editForm">
                         @csrf
                         <input type="hidden" id="edit_id" value="${detail.id}">
-                        <div class="mb-2"><label>Shift:</label><input type="number" class="form-control" id="edit_shift" value="${detail.shift}"></div>
-                        <div class="mb-2"><label>Brix:</label><input type="number" class="form-control" id="edit_brix" value="${detail.brix}"></div>
-                        <div class="mb-2"><label>Viscositas:</label><input type="number" class="form-control" id="edit_viscositas" value="${detail.viscositas}"></div>
-                        <div class="mb-2"><label>Brix:</label><input type="number" class="form-control" id="edit_brix" value="${detail.brix}"></div>
-                        <div class="mb-2"><label>pH:</label><input type="number" class="form-control" id="edit_ph" value="${detail.ph}"></div>
-                        <div class="mb-2"><label>BJ:</label><input type="number" class="form-control" id="edit_bj" value="${detail.bj}"></div>
-                        <div class="mb-2"><label>Aw:</label><input type="number" class="form-control" id="edit_aw" value="${detail.aw}"></div>
-                        <div class="mb-2"><label>Buih:</label><input type="number" class="form-control" id="edit_buih" value="${detail.buih}"></div>
-                        <div class="mb-2"><label>Endapan:</label><input type="number" class="form-control" id="edit_endapan" value="${detail.endapan}"></div>
+                        <div class="mb-2"><label>Shift:</label><input type="number" step="any" class="form-control" id="edit_shift" value="${detail.shift}"></div>
+                        <div class="mb-2"><label>Brix:</label><input type="number" step="any" class="form-control" id="edit_brix" value="${detail.brix}"></div>
+                        <div class="mb-2"><label>Viscositas:</label><input type="number" step="any" class="form-control" id="edit_viscositas" value="${detail.viscositas}"></div>
+                       <div class="mb-2"><label>pH:</label><input type="number" step="any" class="form-control" id="edit_ph" value="${detail.ph}"></div>
+                        <div class="mb-2"><label>BJ:</label><input type="number" step="any" class="form-control" id="edit_bj" value="${detail.bj}"></div>
+                        <div class="mb-2"><label>Aw:</label><input type="number" step="any" class="form-control" id="edit_aw" value="${detail.aw}"></div>
+                        <div class="mb-2"><label>Buih:</label><input type="number" step="any" class="form-control" id="edit_buih" value="${detail.buih}"></div>
+                        <div class="mb-2"><label>Endapan:</label><input type="text" class="form-control" id="edit_endapan" value="${detail.endapan}"></div>
                         <div class="mb-2"><label>Organo:</label><input type="text" class="form-control" id="edit_organo" value="${detail.organo}"></div>
                         <div class="mb-2"><label>Warna:</label><input type="text" class="form-control" id="edit_warna" value="${detail.warna}"></div>
                         <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
