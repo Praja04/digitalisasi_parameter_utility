@@ -74,7 +74,7 @@
                                         Brix
                                     </h5>
                                     <div id="chart_brix"></div>
-                                    
+
                                 </div>
                             </div>
                             <!-- end col -->
@@ -112,6 +112,7 @@
             <!-- end col -->
         </div>
         <!-- end row -->
+
 
 
         <div class="row">
@@ -160,6 +161,100 @@
             <!-- end col -->
         </div>
         <!-- end row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card" id="tasksList">
+                    <div class="card-header border-0">
+                        <div class="d-flex align-items-center">
+                            <h5 class="card-title mb-0 flex-grow-1">All Data</h5>
+
+                        </div>
+                    </div>
+                    <div class="card-body border border-dashed border-end-0 border-start-0">
+                        <form>
+                            <div class="row g-3">
+                                <div class="col-xxl-5 col-sm-12">
+                                    <div class="search-box">
+                                        <input type="text" class="form-control search bg-light border-light" placeholder="Search for tasks or something..." onkeyup="SearchData()">
+                                        <i class="ri-search-line search-icon"></i>
+                                    </div>
+                                </div>
+                                <!--end col-->
+
+                                <div class="col-xxl-2 col-sm-4">
+                                    <input type="date" class="form-control bg-light border-light" id="start_date" onchange="SearchData()" placeholder="Start Date">
+                                </div>
+                                <div class="col-xxl-2 col-sm-4">
+                                    <input type="date" class="form-control bg-light border-light" id="end_date" onchange="SearchData()" placeholder="End Date">
+                                </div>
+                                <!--end col-->
+
+
+                                <!--end col-->
+                                <!-- <div class="col-xxl-1 col-sm-4">
+                                    <button type="button" class="btn btn-primary w-100" onclick="SearchData();"> <i class="ri-equalizer-fill me-1 align-bottom"></i>
+                                        Filters
+                                    </button>
+                                </div> -->
+                                <!--end col-->
+                            </div>
+                            <!--end row-->
+                        </form>
+                    </div>
+                    <!--end card-body-->
+                    <div class="card-body">
+                        <div class="table-responsive table-card mb-4">
+                            <table class="table align-middle table-nowrap mb-0" id="tasksTable">
+                                <thead class="table-light text-muted">
+                                    <tr>
+                                        <th rowspan="2">No</th>
+                                        <th rowspan="2">Tanggal</th>
+                                        <th rowspan="2">Batch</th>
+                                        <th rowspan="2">BJ OK (%)</th>
+                                        <th rowspan="2">BRIX OK (%)</th>
+                                        <th rowspan="2">PH OK (%)</th>
+                                        <th rowspan="2">Visco OK (%)</th>
+                                        <th rowspan="2">Aw OK (%)</th>
+                                        <th rowspan="2">Buih OK (%)</th>
+                                        <th rowspan="2">Endapan OK (%)</th>
+                                        <th rowspan="2">Organo OK (%)</th>
+                                        <th rowspan="2">Detail Sample</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody">
+
+
+                                </tbody>
+                            </table>
+                            <!--end table-->
+                            <div class="noresult" style="display: none">
+                                <div class="text-center">
+                                    <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                                    <h5 class="mt-2">Sorry! No Result Found</h5>
+                                    <p class="text-muted mb-0"> We did not find any tasks for you search.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            <div class="pagination-wrap hstack gap-2">
+                                <a class="page-item pagination-prev disabled" href="#">
+                                    Previous
+                                </a>
+                                <ul class="pagination listjs-pagination mb-0"></ul>
+                                <a class="page-item pagination-next" href="#">
+                                    Next
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end card-body-->
+                </div>
+                <!--end card-->
+            </div>
+            <!--end col-->
+        </div>
+        <!--end row-->
+
 
         <div class="row">
             <div class="col-xxl-6">
@@ -565,4 +660,93 @@
         updateDateTime();
     })
 </script>
+
+<script>
+    let allData = [];
+
+    $(document).ready(function() {
+        $.ajax({
+            url: '/qc/api/olahaftercooling',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                allData = data;
+                renderTable(data); // Tampilkan data awal
+            },
+            error: function(err) {
+                console.error('Error:', err);
+            }
+        });
+    });
+
+    function SearchData() {
+        const search = $('.search').val().toLowerCase();
+        const startDate = $('#start_date').val();
+        const endDate = $('#end_date').val();
+
+        const filtered = allData.filter(item => {
+            const itemDate = item.tanggal;
+            const matchSearch = !search || item.batch.toLowerCase().includes(search);
+            const matchDate = (!startDate || itemDate >= startDate) && (!endDate || itemDate <= endDate);
+            return matchSearch && matchDate;
+        });
+
+        renderTable(filtered);
+    }
+
+    function renderTable(data) {
+        let rows = '';
+
+        if (data.length === 0) {
+            $('.noresult').show();
+            $('#tasksTable tbody').html('');
+            return;
+        }
+
+        $('.noresult').hide();
+
+        data.forEach((item, index) => {
+            rows += `
+            <tr>
+                <td rowspan="${item.detail_sample.length + 1}">${index + 1}</td>
+                <td rowspan="${item.detail_sample.length + 1}">${item.tanggal}</td>
+                <td rowspan="${item.detail_sample.length + 1}">${item.batch}</td>
+                <td rowspan="${item.detail_sample.length + 1}">${item.bj_ok_percent}%</td>
+                <td rowspan="${item.detail_sample.length + 1}">${item.brix_ok_percent}%</td>
+                <td rowspan="${item.detail_sample.length + 1}">${item.ph_ok_percent}%</td>
+                <td rowspan="${item.detail_sample.length + 1}">${item.visco_ok_percent}%</td>
+                <td rowspan="${item.detail_sample.length + 1}">${item.aw_ok_percent}%</td>
+                <td rowspan="${item.detail_sample.length + 1}">${item.buih_ok_percent}%</td>
+                <td rowspan="${item.detail_sample.length + 1}">${item.endapan_ok_percent}%</td>
+                <td rowspan="${item.detail_sample.length + 1}">${item.organo_ok_percent}%</td>
+            </tr>
+        `;
+
+            item.detail_sample.forEach(detail => {
+                rows += `
+                <tr>
+                    <td>
+                        <ul class="mb-0 ps-3">
+                            <li>
+                                <strong>Shift:</strong> ${detail.shift} |
+                                <strong>BJ:</strong> ${detail.bj} |
+                                <strong>Brix:</strong> ${detail.brix} |
+                                <strong>PH:</strong> ${detail.ph} |
+                                <strong>Visco:</strong> ${detail.viscositas} |
+                                <strong>AW:</strong> ${detail.aw} |
+                                <strong>Buih:</strong> ${detail.buih} |
+                                <strong>Endapan:</strong> ${detail.endapan} |
+                                <strong>Organo:</strong> ${detail.organo}
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            `;
+            });
+        });
+
+        $('#tasksTable tbody').html(rows);
+    }
+</script>
+
 @endsection
