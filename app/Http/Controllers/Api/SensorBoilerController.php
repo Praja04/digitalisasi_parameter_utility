@@ -209,4 +209,92 @@ class SensorBoilerController extends Controller
     }
     //filter data trend end
 
+
+    public function getAbnormalPeriodsRHTemp(Request $request)
+    {
+       
+        $filter = $request->input('filter'); // 'today', 'date', 'range'
+        $start = $request->input('start');   // jika date/range
+        $end   = $request->input('end');     // jika range
+
+        $periods = ReadSensors_Boiler::getAbnormalRHTempPeriods($filter, $start, $end);
+
+        $data = array_map(function ($item) {
+            return [
+                'waktu_mulai' => $item->waktu_mulai,
+                'waktu_akhir' => $item->waktu_akhir,
+            ];
+        }, $periods);
+
+        return response()->json([
+            'total' => count($data),
+            'data' => $data
+        ]);
+    }
+
+    public function getAbnormalPeriodsLHTemp(Request $request)
+    {
+
+        $filter = $request->input('filter'); // 'today', 'date', 'range'
+        $start = $request->input('start');   // jika date/range
+        $end   = $request->input('end');     // jika range
+
+        $periods = ReadSensors_Boiler::getAbnormalLHTempPeriods($filter, $start, $end);
+
+        $data = array_map(function ($item) {
+            return [
+                'waktu_mulai' => $item->waktu_mulai,
+                'waktu_akhir' => $item->waktu_akhir,
+            ];
+        }, $periods);
+
+        return response()->json([
+            'total' => count($data),
+            'data' => $data
+        ]);
+    }
+
+    public function getAbnormalPeriodsPVSteam(Request $request)
+    {
+
+        $filter = $request->input('filter'); // 'today', 'date', 'range'
+        $start = $request->input('start');   // jika date/range
+        $end   = $request->input('end');     // jika range
+
+        $periods = ReadSensors_Boiler::getAbnormalPVSteamPeriods($filter, $start, $end);
+
+        $data = array_map(function ($item) {
+            return [
+                'waktu_mulai' => $item->waktu_mulai,
+                'waktu_akhir' => $item->waktu_akhir,
+            ];
+        }, $periods);
+
+        return response()->json([
+            'total' => count($data),
+            'data' => $data
+        ]);
+    }
+
+    public function getAbnormalPeriodsLevelFeedWater(Request $request)
+    {
+
+        $filter = $request->input('filter'); // 'today', 'date', 'range'
+        $start = $request->input('start');   // jika date/range
+        $end   = $request->input('end');     // jika range
+
+        $periods = ReadSensors_Boiler::getAbnormalLevelFeedWaterPeriods($filter, $start, $end);
+
+        $data = array_map(function ($item) {
+            return [
+                'waktu_mulai' => $item->waktu_mulai,
+                'waktu_akhir' => $item->waktu_akhir,
+            ];
+        }, $periods);
+
+        return response()->json([
+            'total' => count($data),
+            'data' => $data
+        ]);
+    }
 }

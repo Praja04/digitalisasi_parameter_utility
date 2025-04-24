@@ -9,11 +9,17 @@ use App\Models\eng\PemakaianAirModel;
 use App\Models\eng\PemakaianListrikModel;
 use App\Models\eng\PemakaianChemicalModel;
 use Illuminate\Support\Carbon;
-
+use App\Services\TelegramService;
+use App\Models\Boiler\ReadSensors_Boiler;
 
 class EngineeringController extends Controller
 {
-    //
+    protected $telegramService;
+
+    public function __construct(TelegramService $telegramService)
+    {
+        $this->telegramService = $telegramService;
+    }
     // 🔹 Form untuk Operator
     public function formPemakaianAir()
     {
@@ -449,8 +455,7 @@ class EngineeringController extends Controller
             ]);
         } elseif ($mode == 'bulanan') {
             $query->whereMonth('tanggal', Carbon::now()->month);
-        }
-        elseif ($mode === 'terakhir') {
+        } elseif ($mode === 'terakhir') {
             $data = PemakaianAirModel::orderBy('tanggal', 'desc')->limit(7)->get();
             return response()->json($data);
         }
@@ -487,4 +492,33 @@ class EngineeringController extends Controller
         return response()->json($data);
     }
 
+
+    public function Notif_boiler()
+    {
+        $dataReadSensors = ReadSensors_Boiler::orderByDesc('waktu')->first();
+
+        $pv = $dataReadSensors->PVSteam;
+        $icon = '';
+        $statusText = '';
+
+        if ($pv > 7) {
+            $icon = '🚨'; // Danger
+            $statusText = 'Danger, tekanan lebih dari 7 bar';
+        } elseif ($pv > 6) {
+            $icon = '⚠️'; // Warning
+            $statusText = 'Warning, tekanan lebih dari 6 bar';
+        } else {
+            $icon = '✅'; // Normal
+            $statusText = 'Aman, tekanan normal';
+        }
+
+        $message = "{$icon} <b>Data PV steam</b>\n"
+            . "🆔 Nilai PV Steam Now: {$pv} Bar\n"
+            . "🕒 Waktu: {$dataReadSensors->waktu}\n"
+            . "📌 Status: {$statusText}";
+
+        $this->telegramService->sendMessage($message);
+
+        return response()->json(['message' => 'send success'], 200);
+    }
 }

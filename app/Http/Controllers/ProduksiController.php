@@ -8,6 +8,7 @@ use App\Models\produksi\AchievementBatch;
 use App\Models\produksi\StatusRunning;
 use App\Models\produksi\AchievementBatchDetail;
 use Illuminate\Support\Facades\Session;
+use Carbon\Carbon;
 
 class ProduksiController extends Controller
 {
@@ -59,10 +60,6 @@ class ProduksiController extends Controller
     // 🔹 Menampilkan Semua Batch
     public function index()
     {
-        // $batches = AchievementBatch::orderBy('batch_date', 'desc')
-        //     ->get();
-
-        // return response()->json($batches);
 
         $batches = AchievementBatch::with(['details' => function ($query) {
             $query->selectRaw('achievement_batch_id, SUM(batch_count) as total_batch_count')
@@ -330,6 +327,119 @@ class ProduksiController extends Controller
             'achievement_percentage' => $achievement_percentage
         ]);
     }
+
+    // public function AchievementBatch(Request $request)
+    // {
+    //     $filter = $request->get('filter', 'today');
+    //     $startDate = null;
+    //     $endDate = null;
+
+    //     switch ($filter) {
+    //         case 'date':
+    //             $startDate = Carbon::parse($request->get('start_date'))->startOfDay();
+    //             $endDate = Carbon::parse($request->get('start_date'))->endOfDay();
+    //             break;
+    //         case 'range':
+    //             $startDate = Carbon::parse($request->get('start_date'))->startOfDay();
+    //             $endDate = Carbon::parse($request->get('end_date'))->endOfDay();
+    //             break;
+    //         case 'today':
+    //         default:
+    //             $startDate = now()->startOfDay();
+    //             $endDate = now()->endOfDay();
+    //             break;
+    //     }
+
+    //     $data = AchievementBatch::whereBetween('batch_date', [$startDate, $endDate])
+    //     ->with(['details' => function ($query) {
+    //         $query->selectRaw('achievement_batch_id, SUM(batch_count) as total_batch_count')
+    //         ->groupBy('achievement_batch_id');
+    //     }])
+    //     ->get();
+
+    //     $total_target_batch = $data->sum('target_batch');
+    //     $total_batch_count = $data->map(function ($item) {
+    //         return $item->details->sum('total_batch_count');
+    //     })->sum();
+
+    //     $achievement_percentage = $total_target_batch > 0
+    //     ? round(($total_batch_count / $total_target_batch) * 100, 2)
+    //     : 0;
+
+    //     return response()->json([
+    //         'start_date' => $startDate->toDateString(),
+    //         'end_date' => $endDate->toDateString(),
+    //         'total_target_batch' => $total_target_batch,
+    //         'total_batch_count' => $total_batch_count,
+    //         'achievement_percentage' => $achievement_percentage
+    //     ]);
+    // }
+
+    public function AchievementBatch(Request $request)
+    {
+        $filter = $request->get('filter', 'today');
+        $startDate = null;
+        $endDate = null;
+
+        switch ($filter) {
+            case 'date':
+                $startDate = Carbon::parse($request->get('start_date'))->startOfDay();
+                $endDate = Carbon::parse($request->get('start_date'))->endOfDay();
+                break;
+            case 'range':
+                $startDate = Carbon::parse($request->get('start_date'))->startOfDay();
+                $endDate = Carbon::parse($request->get('end_date'))->endOfDay();
+                break;
+            case 'today':
+            default:
+                $startDate = now()->startOfDay();
+                $endDate = now()->endOfDay();
+                break;
+        }
+
+        $data = AchievementBatch::whereBetween('batch_date', [$startDate, $endDate])
+            ->with(['details'])
+            ->get();
+
+        $total_target_batch = $data->sum('target_batch');
+
+        $total_batch_count = 0;
+        $shift_counts = [
+            'shift_1' => 0,
+            'shift_2' => 0,
+            'shift_3' => 0
+        ];
+
+        foreach ($data as $batch) {
+            foreach ($batch->details as $detail) {
+                $total_batch_count += $detail->batch_count;
+
+                if ($detail->shift == 1) {
+                    $shift_counts['shift_1'] += $detail->batch_count;
+                } elseif ($detail->shift == 2) {
+                    $shift_counts['shift_2'] += $detail->batch_count;
+                } elseif ($detail->shift == 3) {
+                    $shift_counts['shift_3'] += $detail->batch_count;
+                }
+            }
+        }
+
+        $achievement_percentage = $total_target_batch > 0
+            ? round(($total_batch_count / $total_target_batch) * 100, 2)
+            : 0;
+
+        return response()->json([
+            'start_date' => $startDate->toDateString(),
+            'end_date' => $endDate->toDateString(),
+            'total_target_batch' => $total_target_batch,
+            'total_batch_count' => $total_batch_count,
+            'achievement_percentage' => $achievement_percentage,
+            'shift_counts' => $shift_counts,
+        ]);
+    }
+
+
+
 
     ///////////////////Status Running Produksi//////////////////
     public function getLastData_statusRunning()

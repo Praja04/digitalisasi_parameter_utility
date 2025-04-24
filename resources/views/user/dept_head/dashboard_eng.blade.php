@@ -30,13 +30,15 @@
                         <h4 class="fs-16 mb-1">Welcome ,{{Session::get('username')}}!</h4>
                         <p class="text-muted mb-0">Here's what's happening with your store today.</p>
                     </div>
+
+
                     <div class="mt-3 mt-lg-0">
                         <form action="javascript:void(0);">
                             <div class="row g-3 mb-0 align-items-center">
                                 <!--end col-->
                                 <div class="col-sm-auto">
                                     <div class="input-group">
-                                        <input style="font-size: 24px; width: 200px; height: 50px;" id="PV-bar" type="text" class="text-center form-control border-0 dash-filter-picker shadow" disabled>
+                                        <input style="font-size: 24px; width: 200px; height: 50px;" id="PV-bar" type="text" class="text-center form-control border-0 dash-filter-picker shadow " disabled>
                                         <div class="input-group-text bg-primary border-primary text-white">
                                             <h5 class="text-white">PV</h5>
                                         </div>
@@ -50,8 +52,172 @@
                             <!--end row-->
                         </form>
                     </div>
+
                 </div><!-- end card header -->
             </div>
+            <!--end col-->
+        </div>
+
+        <div class="row mb-6 ">
+            <div class="d-flex justify-content-end align-items-center flex-wrap">
+                <div class="me-2">
+                    <select id="filter_abnormal" class="form-control">
+                        <option value="today" selected>Hari Ini</option>
+                        <option value="date">Pilih Tanggal</option>
+                        <option value="range">Rentang Tanggal</option>
+                    </select>
+                </div>
+                <div class="me-2 d-none" id="start-date-group">
+                    <input type="date" id="start-date" class="form-control" />
+                </div>
+                <div class="me-2 d-none" id="end-date-group">
+                    <input type="date" id="end-date" class="form-control" />
+                </div>
+                <div>
+                    <button class="btn btn-primary" id="apply-filter-abnormal">Terapkan</button>
+                </div>
+            </div>
+        </div>
+        <br>
+
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="d-flex flex-column h-100">
+                    <div class="row">
+                        <div class="col-xl-3 col-md-3">
+                            <div class="card card-animate overflow-hidden abnormal-card" data-type="rhtemp">
+                                <div class="position-absolute start-0" style="z-index: 0">
+                                    <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                        <style>
+                                            .s0 {
+                                                opacity: 0.05;
+                                                fill: var(--vz-info);
+                                            }
+                                        </style>
+                                        <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                    </svg>
+                                </div>
+                                <div class="card-body" style="z-index: 1">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <p class="text-uppercase fw-medium text-muted text-truncate mb-3">
+                                                RH Temp Abnormal
+                                            </p>
+                                            <h4 class="fs-22 fw-semibold ff-secondary mb-0">
+                                                <span class="counter-value" id="rhtemp_abnormal" data-target=""></span>
+                                            </h4>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <!--end col-->
+                        <div class="col-xl-3 col-md-3">
+                            <!-- card -->
+                            <div class="card card-animate overflow-hidden abnormal-card" data-type="lhtemp">
+                                <div class="position-absolute start-0" style="z-index: 0">
+                                    <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                        <style>
+                                            .s0 {
+                                                opacity: 0.05;
+                                                fill: var(--vz-info);
+                                            }
+                                        </style>
+                                        <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                    </svg>
+                                </div>
+                                <div class="card-body" style="z-index: 1">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <p class="text-uppercase fw-medium text-muted text-truncate mb-3">
+                                                LH Temp Abnormal
+                                            </p>
+                                            <h4 class="fs-22 fw-semibold ff-secondary mb-0">
+                                                <span class="counter-value" id="lhtemp_abnormal" data-target=""></span>
+                                            </h4>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <!-- end col -->
+                        <div class="col-xl-3 col-md-3">
+                            <div class="card card-animate overflow-hidden abnormal-card" data-type="pvsteam">
+                                <div class="position-absolute start-0" style="z-index: 0">
+                                    <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                        <style>
+                                            .s0 {
+                                                opacity: 0.05;
+                                                fill: var(--vz-info);
+                                            }
+                                        </style>
+                                        <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                    </svg>
+                                </div>
+                                <div class="card-body" style="z-index: 1">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <p class="text-uppercase fw-medium text-muted text-truncate mb-3">
+                                                PV Steam Abnormal
+                                            </p>
+                                            <h4 class="fs-22 fw-semibold ff-secondary mb-0">
+                                                <span class="counter-value" id="pvsteam_abnormal" data-target=""></span>
+                                            </h4>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <!--end col-->
+                        <div class="col-xl-3 col-md-3">
+                            <!-- card -->
+                            <div class="card card-animate overflow-hidden abnormal-card" data-type="levelfeed">
+                                <div class="position-absolute start-0" style="z-index: 0">
+                                    <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                        <style>
+                                            .s0 {
+                                                opacity: 0.05;
+                                                fill: var(--vz-info);
+                                            }
+                                        </style>
+                                        <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                    </svg>
+                                </div>
+                                <div class="card-body" style="z-index: 1">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <p class="text-uppercase fw-medium text-muted text-truncate mb-3">
+                                                Level Feed Water Abnormal
+                                            </p>
+                                            <h4 class="fs-22 fw-semibold ff-secondary mb-0">
+                                                <span class="counter-value" id="levelfeed_abnormal" data-target=""></span>
+                                            </h4>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <!-- end col -->
+
+                    </div>
+                    <!--end row-->
+                </div>
+            </div>
+            <!--end col-->
+
             <!--end col-->
         </div>
 
@@ -190,6 +356,8 @@
             <!-- end col -->
         </div>
         <!-- end row -->
+
+
 
         <div class="row">
             <div class="col-xxl-3">
@@ -360,6 +528,21 @@
         <!-- end row -->
 
     </div>
+
+    <div class="modal fade" id="abnormalModal" tabindex="-1" aria-labelledby="abnormalModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="abnormalModalLabel">Detail Abnormal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body" id="abnormalModalBody">
+                    <!-- Data detail akan ditampilkan di sini -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- container-fluid -->
 </div>
 <!-- 🔹 Include ApexCharts & jQuery -->
@@ -402,7 +585,7 @@
                             show: true,
                             fontSize: "16px",
                             formatter: function(val) {
-                                return parseFloat(val).toFixed(1); // misal tampilkan 1 angka desimal
+                                return parseFloat(val).toFixed(2); // misal tampilkan 1 angka desimal
                             }
                         }
                     }
@@ -523,8 +706,29 @@
         const updatePVSteam = () => {
             $.getJSON("{{ url('sensor/boiler-realtime') }}", (response) => {
                 if (response) {
+                    console.log(response);
                     $('#PV-bar').val(`${response.PVSteam} Bar`);
+                    const $pvInput = $('#PV-bar');
+                    const pvValue = parseFloat(response.PVSteam);
+                    $pvInput.removeClass('bg-danger bg-warning bg-success text-white text-dark');
+                    if (pvValue > 7) {
+                        $pvInput.addClass('bg-danger text-white'); // merah
+                    } else if (pvValue > 6) {
+                        $pvInput.addClass('bg-warning text-dark'); // kuning
+                    } else {
+                        $pvInput.addClass('bg-success text-white'); // hijau
+                    }
                     updateGaugeChart(response);
+
+                    if (response.PVSteam > 6) {
+                        $.ajax({
+                            url: "{{ url('eng/send/tele') }}",
+                            type: "GET",
+                            dataType: "json"
+                        }).done((response) => {
+                            console.log(response);
+                        }).fail((xhr, status, error) => console.error(`AJAX Error: ${status} ${error}`));
+                    }
                 }
             }).fail((xhr, status, error) => console.error(`AJAX Error: ${status} ${error}`));
         };
@@ -584,7 +788,7 @@
         updateInputFields();
         $("#applyFilter").trigger("click");
         updatePVSteam();
-        setInterval(updatePVSteam, 5000);
+        setInterval(updatePVSteam, 3000);
 
         ////////////////////chemical////////////////////////
         function fetchChemicalData(mode = 'harian') {
@@ -714,7 +918,7 @@
 
 
         // api pemakaian listrik
-         function loadListrikData(mode = 'terakhir') {
+        function loadListrikData(mode = 'terakhir') {
             let apiUrl = mode === 'terakhir' ?
                 "{{url('eng/api/listrik/terakhir')}}" :
                 "{{url('eng/api/listrik/')}}" + $mode;
@@ -741,7 +945,7 @@
             }
 
             data.forEach((item, i) => {
-                
+
 
                 list.append(`
                     <li class="list-group-item d-flex align-items-center">
@@ -765,6 +969,139 @@
         });
 
         loadListrikData(); // Load default
+
+
+
+        function fetchData_abnormal(filter = 'today', start = '', end = '') {
+            $.ajax({
+                url: '{{ url("sensor/rhtemp") }}',
+                method: 'GET',
+                data: {
+                    filter: filter,
+                    start: start,
+                    end: end
+                },
+                success: function(res) {
+                    console.log(res);
+                    $('#rhtemp_abnormal').text(res.total).attr('data-target', res.total);
+                },
+                error: function() {
+                    alert("Gagal mengambil data.");
+                }
+            });
+
+            $.ajax({
+                url: '{{ url("sensor/lhtemp") }}',
+                method: 'GET',
+                data: {
+                    filter,
+                    start,
+                    end
+                },
+                success: function(res) {
+                    console.log(res);
+                    $('#lhtemp_abnormal').text(res.total).attr('data-target', res.total);
+                },
+                error: function() {
+                    alert("Gagal mengambil data LH Temp.");
+                }
+            });
+
+            $.ajax({
+                url: '{{ url("sensor/pvsteam") }}',
+                method: 'GET',
+                data: {
+                    filter,
+                    start,
+                    end
+                },
+                success: function(res) {
+                    console.log(res);
+                    $('#pvsteam_abnormal').text(res.total).attr('data-target', res.total);
+                },
+                error: function() {
+                    alert("Gagal mengambil data PV Steam.");
+                }
+            });
+
+            $.ajax({
+                url: '{{ url("sensor/levelfeedwater") }}',
+                method: 'GET',
+                data: {
+                    filter,
+                    start,
+                    end
+                },
+                success: function(res) {
+                    console.log(res);
+                    $('#levelfeed_abnormal').text(res.total).attr('data-target', res.total);
+                },
+                error: function() {
+                    alert("Gagal mengambil data Level Feed Water.");
+                }
+            });
+        }
+
+        // Load data awal (today)
+        fetchData_abnormal();
+
+        $('#filter_abnormal').change(function() {
+            const val = $(this).val();
+            if (val === 'date') {
+                $('#start-date-group').removeClass('d-none');
+                $('#end-date-group').addClass('d-none');
+            } else if (val === 'range') {
+                $('#start-date-group').removeClass('d-none');
+                $('#end-date-group').removeClass('d-none');
+            } else {
+                $('#start-date-group, #end-date-group').addClass('d-none');
+            }
+        });
+
+        $('#apply-filter-abnormal').click(function() {
+            const filter = $('#filter_abnormal').val();
+            const start = $('#start-date').val();
+            const end = $('#end-date').val();
+            fetchData_abnormal(filter, start, end);
+        });
+
+        $('.abnormal-card').on('click', function() {
+            const type = $(this).data('type');
+            $.ajax({
+                url: '{{ url("sensor") }}/' + type, // asumsi endpoint sama
+                method: 'GET',
+                data: {
+                    filter: $('#filter_abnormal').val(),
+                    start: $('#start-date').val(),
+                    end: $('#end-date').val()
+                },
+                success: function(res) {
+                    let html = '<p>Total: <strong>' + res.total + '</strong></p>';
+
+                    // Tambahkan detail jika ada
+                    if (res.data && Array.isArray(res.data)) {
+                        html += '<ul class="list-group">';
+                        res.data.forEach(item => {
+                            html += `
+                <li class="list-group-item">
+                    <strong>Waktu Mulai:</strong> ${item.waktu_mulai}<br>
+                    <strong>Waktu Akhir:</strong> ${item.waktu_akhir}
+                </li>
+            `;
+                        });
+                        html += '</ul>';
+                    }
+
+                    $('#abnormalModalBody').html(html);
+                    $('#abnormalModal').modal('show');
+                },
+                error: function() {
+                    alert('Gagal mengambil detail data!');
+                }
+            });
+        });
+
+
     });
 
     let chartChemical;
