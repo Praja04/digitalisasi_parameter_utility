@@ -52,6 +52,7 @@ Route::prefix('prd')->middleware('auth')->group(function () {
     Route::get('/operator/status_running', [ProduksiController::class, 'statusRunning']);
 
     // Data Achievement batch
+    Route::get('/achievement', [ProduksiController::class, 'AchievementBatch'])->name('achievement.batch');
     Route::get('/achievement/harian', [ProduksiController::class, 'AchievementBatchHarian'])->name('achievement.harian');
     Route::get('/achievement/mingguan', [ProduksiController::class, 'AchievementBatchMingguan'])->name('achievement.mingguan');
     Route::get('/achievement/bulanan', [ProduksiController::class, 'AchievementBatchBulanan'])->name('achievement.bulanan');
@@ -141,6 +142,9 @@ Route::prefix('eng')->middleware('auth')->group(function () {
     Route::get('api/air/{mode}', [EngineeringController::class, 'getPemakaianAir']);
     Route::get('api/listrik/{mode}', [EngineeringController::class, 'getPemakaianListrik']);
 
+    //send tele bot
+    Route::get('send/tele', [EngineeringController::class, 'Notif_boiler']);
+
 
 });
 //End eng
@@ -176,6 +180,10 @@ Route::prefix('sensor')->group(function () {
     Route::get('/boiler/data-harian', [SensorBoilerController::class, 'getBoilerDataHarian']);
     Route::get('/boiler/data-mingguan', [SensorBoilerController::class, 'getBoilerDataMingguan']);
     Route::get('/boiler-realtime', [SensorBoilerController::class, 'getSensorData']);
+    Route::get('/rhtemp', [SensorBoilerController::class, 'getAbnormalPeriodsRHTemp']);
+    Route::get('/lhtemp', [SensorBoilerController::class, 'getAbnormalPeriodsLHTemp']);
+    Route::get('/pvsteam', [SensorBoilerController::class, 'getAbnormalPeriodsPVSteam']);
+    Route::get('/levelfeedwater', [SensorBoilerController::class, 'getAbnormalPeriodsLevelFeedWater']);
 });
 
 Route::prefix('daily-tank')->group(function () {
@@ -214,6 +222,9 @@ Route::prefix('pasteurisasi1')->group(function () {
     Route::get('/data-mingguan', [SensorPasteurisasi1Controller::class, 'getPasteurisasi1DataMingguan']);
     Route::get('/data-realtime', [SensorPasteurisasi1Controller::class, 'getLatestData']);
     Route::get('/data', [SensorPasteurisasi1Controller::class, 'getPasteurisasi1Data']);
+    Route::get('/suhuheating', [SensorPasteurisasi1Controller::class, 'getAbnormalPeriodsSuhuHeating']);
+    Route::get('/suhuholding', [SensorPasteurisasi1Controller::class, 'getAbnormalPeriodsSuhuHolding']);
+    Route::get('/flowrate', [SensorPasteurisasi1Controller::class, 'getAbnormalPeriodsFlowRate']);
 });
 
 Route::prefix('pasteurisasi2')->group(function () {

@@ -77,7 +77,7 @@
                         <div class="mb-3"><label>Bj</label><input id="bj" type="number" step="any" class="form-control" name="bj" required></div>
                         <div class="mb-3"><label>Aw</label><input id="aw" type="number" step="any" class="form-control" name="aw" required></div>
                         <div class="mb-3"><label>Buih</label><input id="buih" type="number" step="any" class="form-control" name="buih" required></div>
-                        <div class="mb-3"><label>Endapan</label><input id="endapan" type="text"  class="form-control" name="endapan" required></div>
+                        <div class="mb-3"><label>Endapan</label><input id="endapan" type="text" class="form-control" name="endapan" required></div>
                         <div class="mb-3"><label>Organo</label><input id="organo" type="text" class="form-control" name="organo" required></div>
                         <div class="mb-3"><label>Warna</label><input id="warna" type="text" class="form-control" name="warna" required></div>
                     </div>
@@ -105,7 +105,7 @@
             // const idAfterCooling = $('#id_after_cooling').val();
 
             $.ajax({
-                url: `/qc/detail/store/${idAfterCooling}`,
+                url: "{{ url('/qc/detail/store') }}/" + idAfterCooling,
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
@@ -144,7 +144,7 @@
 
         // Ambil dan tampilkan data shift
         function loadShiftData() {
-            $.get(`/qc/detail/${idAfterCooling}`, function(data) {
+            $.get("{{ url('/qc/detail') }}/" + idAfterCooling, function(data) {
                 let rows = '';
                 if (data.length === 0) {
                     rows = '<tr><td colspan="10" class="text-center">Belum ada data.</td></tr>';
@@ -190,7 +190,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `/qc/detail/delete/${idDetail}`,
+                        url: "{{ url('/qc/detail/delete') }}/" + idDetail,
                         method: 'DELETE',
                         data: {
                             _token: '{{ csrf_token() }}'
@@ -221,7 +221,7 @@
             const idDetail = $(this).data('id');
 
             // Ambil data by ID
-            $.get(`/qc/detail/${idAfterCooling}`, function(data) {
+            $.get("{{ url('/qc/detail') }}/" + idAfterCooling, function(data) {
                 const detail = data.find(d => d.id === idDetail);
                 if (detail) {
                     const formHtml = `
@@ -253,7 +253,7 @@
                         const id = $('#edit_id').val();
 
                         $.ajax({
-                            url: `/qc/detail/update/${id}`,
+                            url: "{{ url('/qc/detail/update') }}/" + id,
                             method: 'PUT',
                             data: {
                                 _token: '{{ csrf_token() }}',

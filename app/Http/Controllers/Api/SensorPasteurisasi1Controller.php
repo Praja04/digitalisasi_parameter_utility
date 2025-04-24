@@ -82,4 +82,71 @@ class SensorPasteurisasi1Controller extends Controller
         ]);
     }
     //end filter
+
+
+    public function getAbnormalPeriodsSuhuHeating(Request $request)
+    {
+
+        $filter = $request->input('filter'); // 'today', 'date', 'range'
+        $start = $request->input('start');   // jika date/range
+        $end   = $request->input('end');     // jika range
+
+        $periods = Sensor_Pasteurisasi1::getAbnormalSuhuHeatingPeriods($filter, $start, $end);
+
+        $data = array_map(function ($item) {
+            return [
+                'waktu_mulai' => $item->Waktu_mulai,
+                'waktu_akhir' => $item->Waktu_akhir,
+            ];
+        }, $periods);
+
+        return response()->json([
+            'total' => count($data),
+            'data' => $data
+        ]);
+    }
+
+    public function getAbnormalPeriodsSuhuHolding(Request $request)
+    {
+
+        $filter = $request->input('filter'); // 'today', 'date', 'range'
+        $start = $request->input('start');   // jika date/range
+        $end   = $request->input('end');     // jika range
+
+        $periods = Sensor_Pasteurisasi1::getAbnormalSuhuHoldingPeriods($filter, $start, $end);
+
+        $data = array_map(function ($item) {
+            return [
+                'waktu_mulai' => $item->Waktu_mulai,
+                'waktu_akhir' => $item->Waktu_akhir,
+            ];
+        }, $periods);
+
+        return response()->json([
+            'total' => count($data),
+            'data' => $data
+        ]);
+    }
+
+    public function getAbnormalPeriodsFlowrate(Request $request)
+    {
+
+        $filter = $request->input('filter'); // 'today', 'date', 'range'
+        $start = $request->input('start');   // jika date/range
+        $end   = $request->input('end');     // jika range
+
+        $periods = Sensor_Pasteurisasi1::getAbnormalFlowratePeriods($filter, $start, $end);
+
+        $data = array_map(function ($item) {
+            return [
+                'waktu_mulai' => $item->Waktu_mulai,
+                'waktu_akhir' => $item->Waktu_akhir,
+            ];
+        }, $periods);
+
+        return response()->json([
+            'total' => count($data),
+            'data' => $data
+        ]);
+    }
 }

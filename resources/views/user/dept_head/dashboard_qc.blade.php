@@ -7,7 +7,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                    <h4 class="mb-sm-0">QC - Pasteurisasi Line 1</h4>
+                    <h4 class="mb-sm-0">Pasteurisasi Line 1 - After Cooling</h4>
 
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
@@ -61,6 +61,28 @@
             <!--end col-->
         </div>
         <!-- end row -->
+        <div class="row mb-6 ">
+            <div class="d-flex justify-content-end align-items-center flex-wrap">
+                <div class="me-2">
+                    <select id="filterType" class="form-control">
+                        <option value="today">Hari Ini</option>
+                        <option value="date">Pilih Tanggal</option>
+                        <option value="range">Rentang Tanggal</option>
+                        <option value="all" selected>All</option>
+                    </select>
+                </div>
+                <div class="me-2 d-none" id="start-date-group">
+                    <input type="date" id="start-date" class="form-control" />
+                </div>
+                <div class="me-2 d-none" id="end-date-group">
+                    <input type="date" id="end-date" class="form-control" />
+                </div>
+                <div>
+                    <button class="btn btn-primary" id="loadChart">Terapkan</button>
+                </div>
+            </div>
+        </div>
+        <br>
 
 
         <div class="row">
@@ -74,8 +96,33 @@
                                         Brix
                                     </h5>
                                     <div id="chart_brix"></div>
-
                                 </div>
+                                <table class="table align-middle text-center table-nowrap mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Average</th>
+                                            <th>STD Deviasi</th>
+                                            <th>Min</th>
+                                            <th>Max</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <p id="average_brix"></p>
+                                            </td>
+                                            <td>
+                                                <p id="std_brix"></p>
+                                            </td>
+                                            <td>
+                                                <p id="min_brix"></p>
+                                            </td>
+                                            <td>
+                                                <p id="max_brix"></p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                             <!-- end col -->
                             <div class="col">
@@ -86,6 +133,32 @@
                                     </h5>
                                     <div id="chart_viscositas"></div>
                                 </div>
+                                <table class="table align-middle text-center table-nowrap mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Average</th>
+                                            <th>STD Deviasi</th>
+                                            <th>Min</th>
+                                            <th>Max</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <p id="average_visco"></p>
+                                            </td>
+                                            <td>
+                                                <p id="std_visco"></p>
+                                            </td>
+                                            <td>
+                                                <p id="min_visco"></p>
+                                            </td>
+                                            <td>
+                                                <p id="max_visco"></p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                             <!-- end col -->
                             <div class="col">
@@ -96,6 +169,32 @@
                                     </h5>
                                     <div id="chart_aw"></div>
                                 </div>
+                                <table class="table align-middle text-center table-nowrap mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Average</th>
+                                            <th>STD Deviasi</th>
+                                            <th>Min</th>
+                                            <th>Max</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <p id="average_aw"></p>
+                                            </td>
+                                            <td>
+                                                <p id="std_aw"></p>
+                                            </td>
+                                            <td>
+                                                <p id="min_aw"></p>
+                                            </td>
+                                            <td>
+                                                <p id="max_aw"></p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                             <!-- end col -->
 
@@ -128,9 +227,36 @@
                                     </h5>
                                     <div id="chart_bj"></div>
                                 </div>
+                                <table class="table align-middle text-center table-nowrap mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Average</th>
+                                            <th>STD Deviasi</th>
+                                            <th>Min</th>
+                                            <th>Max</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <p id="average_bj"></p>
+                                            </td>
+                                            <td>
+                                                <p id="std_bj"></p>
+                                            </td>
+                                            <td>
+                                                <p id="min_bj"></p>
+                                            </td>
+                                            <td>
+                                                <p id="max_bj"></p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
                             </div>
                             <!-- end col -->
-                            <div class="col">
+                            <div class=" col">
                                 <div class="mt-4 mt-lg-0 py-4 px-3">
                                     <h5 class="text-muted text-uppercase fs-13">
                                         Buih
@@ -138,6 +264,32 @@
                                     </h5>
                                     <div id="chart_buih"></div>
                                 </div>
+                                <table class="table align-middle text-center table-nowrap mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Average</th>
+                                            <th>STD Deviasi</th>
+                                            <th>Min</th>
+                                            <th>Max</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <p id="average_buih"></p>
+                                            </td>
+                                            <td>
+                                                <p id="std_buih"></p>
+                                            </td>
+                                            <td>
+                                                <p id="min_buih"></p>
+                                            </td>
+                                            <td>
+                                                <p id="max_buih"></p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                             <!-- end col -->
                             <div class="col">
@@ -148,6 +300,32 @@
                                     </h5>
                                     <div id="chart_ph"></div>
                                 </div>
+                                <table class="table align-middle text-center table-nowrap mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Average</th>
+                                            <th>STD Deviasi</th>
+                                            <th>Min</th>
+                                            <th>Max</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <p id="average_ph"></p>
+                                            </td>
+                                            <td>
+                                                <p id="std_ph"></p>
+                                            </td>
+                                            <td>
+                                                <p id="min_ph"></p>
+                                            </td>
+                                            <td>
+                                                <p id="max_ph"></p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                             <!-- end col -->
 
@@ -161,100 +339,6 @@
             <!-- end col -->
         </div>
         <!-- end row -->
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card" id="tasksList">
-                    <div class="card-header border-0">
-                        <div class="d-flex align-items-center">
-                            <h5 class="card-title mb-0 flex-grow-1">All Data</h5>
-
-                        </div>
-                    </div>
-                    <div class="card-body border border-dashed border-end-0 border-start-0">
-                        <form>
-                            <div class="row g-3">
-                                <div class="col-xxl-5 col-sm-12">
-                                    <div class="search-box">
-                                        <input type="text" class="form-control search bg-light border-light" placeholder="Search for tasks or something..." onkeyup="SearchData()">
-                                        <i class="ri-search-line search-icon"></i>
-                                    </div>
-                                </div>
-                                <!--end col-->
-
-                                <div class="col-xxl-2 col-sm-4">
-                                    <input type="date" class="form-control bg-light border-light" id="start_date" onchange="SearchData()" placeholder="Start Date">
-                                </div>
-                                <div class="col-xxl-2 col-sm-4">
-                                    <input type="date" class="form-control bg-light border-light" id="end_date" onchange="SearchData()" placeholder="End Date">
-                                </div>
-                                <!--end col-->
-
-
-                                <!--end col-->
-                                <!-- <div class="col-xxl-1 col-sm-4">
-                                    <button type="button" class="btn btn-primary w-100" onclick="SearchData();"> <i class="ri-equalizer-fill me-1 align-bottom"></i>
-                                        Filters
-                                    </button>
-                                </div> -->
-                                <!--end col-->
-                            </div>
-                            <!--end row-->
-                        </form>
-                    </div>
-                    <!--end card-body-->
-                    <div class="card-body">
-                        <div class="table-responsive table-card mb-4">
-                            <table class="table align-middle table-nowrap mb-0" id="tasksTable">
-                                <thead class="table-light text-muted">
-                                    <tr>
-                                        <th rowspan="2">No</th>
-                                        <th rowspan="2">Tanggal</th>
-                                        <th rowspan="2">Batch</th>
-                                        <th rowspan="2">BJ OK (%)</th>
-                                        <th rowspan="2">BRIX OK (%)</th>
-                                        <th rowspan="2">PH OK (%)</th>
-                                        <th rowspan="2">Visco OK (%)</th>
-                                        <th rowspan="2">Aw OK (%)</th>
-                                        <th rowspan="2">Buih OK (%)</th>
-                                        <th rowspan="2">Endapan OK (%)</th>
-                                        <th rowspan="2">Organo OK (%)</th>
-                                        <th rowspan="2">Detail Sample</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tbody">
-
-
-                                </tbody>
-                            </table>
-                            <!--end table-->
-                            <div class="noresult" style="display: none">
-                                <div class="text-center">
-                                    <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
-                                    <h5 class="mt-2">Sorry! No Result Found</h5>
-                                    <p class="text-muted mb-0"> We did not find any tasks for you search.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-end mt-2">
-                            <div class="pagination-wrap hstack gap-2">
-                                <a class="page-item pagination-prev disabled" href="#">
-                                    Previous
-                                </a>
-                                <ul class="pagination listjs-pagination mb-0"></ul>
-                                <a class="page-item pagination-next" href="#">
-                                    Next
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!--end card-body-->
-                </div>
-                <!--end card-->
-            </div>
-            <!--end col-->
-        </div>
-        <!--end row-->
-
 
         <div class="row">
             <div class="col-xxl-6">
@@ -316,6 +400,108 @@
 
             <!-- end col -->
         </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card" id="tasksList">
+                    <div class="card-header border-0">
+                        <div class="d-flex align-items-center">
+                            <h5 class="card-title mb-0 flex-grow-1">All Data AfterCooling</h5>
+
+                        </div>
+                    </div>
+                    <div class="card-body border border-dashed border-end-0 border-start-0">
+                        <form>
+                            <div class="row g-3">
+                                <div class="col-xxl-5 col-sm-12">
+                                    <div class="search-box">
+                                        <input type="text" class="form-control search bg-light border-light" placeholder="Search for data batch..." onkeyup="SearchData()">
+                                        <i class="ri-search-line search-icon"></i>
+                                    </div>
+                                </div>
+                                <!--end col-->
+
+                                <div class="col-xxl-2 col-sm-4">
+                                    <input type="date" class="form-control bg-light border-light" id="start_date" onchange="SearchData()" placeholder="Start Date">
+                                </div>
+                                <div class="col-xxl-2 col-sm-4">
+                                    <input type="date" class="form-control bg-light border-light" id="end_date" onchange="SearchData()" placeholder="End Date">
+                                </div>
+                                <!--end col-->
+                            </div>
+                            <!--end row-->
+                        </form>
+                    </div>
+                    <!--end card-body-->
+                    <div class="card-body">
+                        <div class="table-responsive table-card mb-4">
+
+
+                            <table class="table align-middle table-nowrap mb-0" id="tasksTable">
+                                <thead class="table-light text-muted">
+
+                                    <tr>
+                                        <th rowspan="2">No</th>
+                                        <th rowspan="2">Tanggal</th>
+                                        <th rowspan="2">Batch</th>
+                                        <th rowspan="2">BJ OK (%)</th>
+                                        <th rowspan="2">BRIX OK (%)</th>
+                                        <th rowspan="2">PH OK (%)</th>
+                                        <th rowspan="2">Visco OK (%)</th>
+                                        <th rowspan="2">Aw OK (%)</th>
+                                        <th rowspan="2">Buih OK (%)</th>
+                                        <th rowspan="2">Endapan OK (%)</th>
+                                        <th rowspan="2">Organo OK (%)</th>
+                                        <th colspan="12">Detail After Cooling</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Shift</th>
+                                        <th>Jam</th>
+                                        <th>Brix</th>
+                                        <th>Viscositas</th>
+                                        <th>Aw</th>
+                                        <th>pH</th>
+                                        <th>Bj</th>
+                                        <th>Buih</th>
+                                        <th>Endapan</th>
+                                        <th>Organo</th>
+                                        <th>Warna</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody">
+
+
+                                </tbody>
+                            </table>
+                            <!--end table-->
+                            <div class="noresult" style="display: none">
+                                <div class="text-center">
+                                    <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                                    <h5 class="mt-2">Sorry! No Result Found</h5>
+                                    <p class="text-muted mb-0"> We did not find any tasks for you search.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            <div class="pagination-wrap hstack gap-2">
+                                <a class="page-item pagination-prev disabled" href="#">
+                                    Previous
+                                </a>
+                                <ul class="pagination listjs-pagination mb-0"></ul>
+                                <a class="page-item pagination-next" href="#">
+                                    Next
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end card-body-->
+                </div>
+                <!--end card-->
+            </div>
+            <!--end col-->
+        </div>
+        <!--end row-->
+
     </div>
     <!-- end row -->
 </div>
@@ -327,81 +513,123 @@
 
 <!-- Dashboard init -->
 
-
 <script>
     $(document).ready(function() {
-        $.ajax({
-            url: "{{ url('qc/api/chartaftercooling') }}",
-            method: "GET",
-            dataType: "json",
-            success: function(data) {
-                const categories = data.map(item => {
-                    let date = new Date(item.created_at);
-                    //return date.toISOString().split('T')[0]; // hasil: "2025-04-09"
-                    return date.toISOString().replace('T', ' ').substring(0, 19);
-                });
+        let chartInstances = [];
 
-                const chartData = {
-                    brix: data.map(item => item.brix),
-                    viscositas: data.map(item => item.viscositas),
-                    aw: data.map(item => item.aw),
-                    ph: data.map(item => item.ph),
-                    bj: data.map(item => item.bj),
-                    buih: data.map(item => item.buih),
-                    endapan: data.map(item => item.endapan)
-                };
+        const $startDateGroup = $('#start-date-group');
+        const $endDateGroup = $('#end-date-group');
 
-                const chartOptions = (title, dataSeries, id) => ({
-                    chart: {
-                        type: 'line',
-                        height: 200,
-                        toolbar: {
-                            show: false
-                        }
-                    },
-                    series: [{
-                        name: title,
-                        data: dataSeries
-                    }],
-                    xaxis: {
-                        categories: categories,
-                        labels: {
-                            show: false,
-                        },
-                        title: {
-                            text: "Tanggal"
-                        }
-                    },
-                    stroke: {
-                        curve: 'smooth'
-                    },
-                    dataLabels: {
-                        enabled: false
-                    },
-                    tooltip: {
-                        enabled: true,
-                        y: {
-                            formatter: function(val) {
-                                return val;
-                                // return val + ' %';
-                            }
-                        }
-                    }
-                });
-
-                new ApexCharts(document.querySelector("#chart_brix"), chartOptions('Brix', chartData.brix)).render();
-                new ApexCharts(document.querySelector("#chart_viscositas"), chartOptions('Viscositas', chartData.viscositas)).render();
-                new ApexCharts(document.querySelector("#chart_aw"), chartOptions('Aw', chartData.aw)).render();
-                new ApexCharts(document.querySelector("#chart_ph"), chartOptions('pH', chartData.ph)).render();
-                new ApexCharts(document.querySelector("#chart_bj"), chartOptions('Bj', chartData.bj)).render();
-                new ApexCharts(document.querySelector("#chart_buih"), chartOptions('Buih', chartData.buih)).render();
-                // new ApexCharts(document.querySelector("#chart_endapan"), chartOptions('Endapan', chartData.endapan)).render();
-            },
-            error: function(xhr) {
-                console.error("Gagal ambil data QC:", xhr);
+        // Tampilkan/hidden input tanggal berdasarkan filter
+        $('#filterType').change(function() {
+            const val = $(this).val();
+            if (val === 'date') {
+                $('#start-date-group').removeClass('d-none');
+                $('#end-date-group').addClass('d-none');
+            } else if (val === 'range') {
+                $('#start-date-group').removeClass('d-none');
+                $('#end-date-group').removeClass('d-none');
+            } else {
+                $('#start-date-group, #end-date-group').addClass('d-none');
             }
         });
 
+        $('#loadChart').on('click', function() {
+            const filter = $('#filterType').val();
+            const data = {
+                filter
+            };
+
+            if (filter === 'date' || filter === 'range') {
+                data.start_date = $('#start-date').val();
+            }
+
+            if (filter === 'range') {
+                data.end_date = $('#end-date').val();
+            }
+
+            $.ajax({
+                url: "{{ url('qc/api/chartaftercooling') }}",
+                method: "GET",
+                data: data,
+                dataType: "json",
+                success: function(data) {
+                    console.log(data);
+                    const categories = data.map(item => {
+                        let date = new Date(item.created_at);
+                        return date.toISOString().replace('T', ' ').substring(0, 19);
+                    });
+
+                    const chartData = {
+                        brix: data.map(item => item.brix),
+                        viscositas: data.map(item => item.viscositas),
+                        aw: data.map(item => item.aw),
+                        ph: data.map(item => item.ph),
+                        bj: data.map(item => item.bj),
+                        buih: data.map(item => item.buih),
+                        endapan: data.map(item => item.endapan)
+                    };
+
+                    const chartOptions = (title, dataSeries) => ({
+                        chart: {
+                            type: 'line',
+                            height: 200,
+                            toolbar: {
+                                show: false
+                            }
+                        },
+                        series: [{
+                            name: title,
+                            data: dataSeries
+                        }],
+                        xaxis: {
+                            categories: categories,
+                            labels: {
+                                show: false
+                            },
+                            title: {
+                                text: "Tanggal"
+                            }
+                        },
+                        stroke: {
+                            curve: 'smooth'
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        tooltip: {
+                            enabled: true,
+                            y: {
+                                formatter: function(val) {
+                                    return val;
+                                }
+                            }
+                        }
+                    });
+
+                    // Destroy semua chart lama
+                    chartInstances.forEach(chart => chart.destroy());
+                    chartInstances = [];
+
+                    // Tambahkan chart baru
+                    chartInstances.push(new ApexCharts(document.querySelector("#chart_brix"), chartOptions('Brix', chartData.brix)));
+                    chartInstances.push(new ApexCharts(document.querySelector("#chart_viscositas"), chartOptions('Viscositas', chartData.viscositas)));
+                    chartInstances.push(new ApexCharts(document.querySelector("#chart_aw"), chartOptions('Aw', chartData.aw)));
+                    chartInstances.push(new ApexCharts(document.querySelector("#chart_ph"), chartOptions('pH', chartData.ph)));
+                    chartInstances.push(new ApexCharts(document.querySelector("#chart_bj"), chartOptions('Bj', chartData.bj)));
+                    chartInstances.push(new ApexCharts(document.querySelector("#chart_buih"), chartOptions('Buih', chartData.buih)));
+
+                    // Render semua chart
+                    chartInstances.forEach(chart => chart.render());
+                },
+                error: function(xhr) {
+                    console.error("Gagal ambil data QC:", xhr);
+                }
+            });
+        });
+
+        // Optional: langsung load chart saat halaman dibuka
+        $('#loadChart').click();
 
         let chart = null;
         let chart_flowrate = null;
@@ -587,27 +815,6 @@
             });
         }
 
-        function updateRealtimeInfo() {
-            $.ajax({
-                url: "{{ url('pasteurisasi1/data-realtime') }}",
-                dataType: "json",
-                success: function(res) {
-                    $('#varian_status_running').text(res.Varian);
-                    $('#mode_status_running').text(res.Mode);
-                    $('#batch_status_running').text(res.Batch);
-                    $('#storage_status_running').text(res.Storage);
-
-                    // Update gauge dari suhu holding realtime
-                    if (res.SpeedPompaMixing !== undefined && res.SpeedPompaMixing !== null) {
-                        updateGaugeChart(res);
-                    }
-                },
-                error: function(_xhr, status, error) {
-                    console.error('AJAX Error:', status, error);
-                }
-            });
-        }
-
         // Inisialisasi
         updateInputFields();
         updateInputFields("Flowrate");
@@ -624,7 +831,6 @@
         // Load awal
         $("#applyFilter").trigger("click");
         $("#applyFilterFlowrate").trigger("click");
-        updateRealtimeInfo();
 
         function getShift(now) {
             let hours = now.getHours();
@@ -654,24 +860,170 @@
             // Set nilai tanggal dan shift ke elemen yang sesuai
             $('#date-picker').val(formattedDate);
             $('#shift').val(shift);
+
+            $.ajax({
+                url: "{{ url('qc/api/statistikaftercooling') }}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $('#average_bj').text(parseFloat(data.bj_avg).toFixed(5));
+                    $('#average_buih').text(parseFloat(data.buih_avg).toFixed(5));
+                    $('#average_brix').text(parseFloat(data.brix_avg).toFixed(5));
+                    $('#average_ph').text(parseFloat(data.ph_avg).toFixed(5));
+                    $('#average_visco').text(parseFloat(data.visco_avg).toFixed(5));
+                    $('#average_aw').text(parseFloat(data.aw_avg).toFixed(5));
+
+                    $('#std_bj').text(parseFloat(data.bj_std).toFixed(8));
+                    $('#std_buih').text(parseFloat(data.buih_std).toFixed(8));
+                    $('#std_brix').text(parseFloat(data.brix_std).toFixed(8));
+                    $('#std_ph').text(parseFloat(data.ph_std).toFixed(8));
+                    $('#std_visco').text(parseFloat(data.visco_std).toFixed(8));
+                    $('#std_aw').text(parseFloat(data.aw_std).toFixed(8));
+
+
+                    $('#min_bj').text(data.bj_min);
+                    $('#min_buih').text(data.buih_min);
+                    $('#min_brix').text(data.brix_min);
+                    $('#min_ph').text(data.ph_min);
+                    $('#min_visco').text(data.visco_min);
+                    $('#min_aw').text(data.aw_min);
+
+                    $('#max_bj').text(data.bj_max);
+                    $('#max_buih').text(data.buih_max);
+                    $('#max_brix').text(data.brix_max);
+                    $('#max_ph').text(data.ph_max);
+                    $('#max_visco').text(data.visco_max);
+                    $('#max_aw').text(data.aw_max);
+                },
+                error: function(err) {
+                    console.error('Error:', err);
+                }
+            });
         }
 
-        // Panggil fungsi pertama kali
         updateDateTime();
+        // Panggil fungsi pertama kali
+        setInterval(updateDateTime, 6000); // Update setiap 60 detik
     })
 </script>
 
 <script>
-    let allData = [];
+    let currentPage = 1;
+    const rowsPerPage = 5;
+
+    function paginateData(data, page = 1) {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        return data.slice(start, end);
+    }
+
+    function renderPaginationControls(data) {
+        const totalPages = Math.ceil(data.length / rowsPerPage);
+
+        $('.pagination-prev').toggleClass('disabled', currentPage === 1);
+        $('.pagination-next').toggleClass('disabled', currentPage === totalPages);
+
+        $('.pagination-prev').off('click').on('click', function(e) {
+            e.preventDefault();
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable(paginateData(data, currentPage));
+                renderPaginationControls(data);
+            }
+        });
+
+        $('.pagination-next').off('click').on('click', function(e) {
+            e.preventDefault();
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable(paginateData(data, currentPage));
+                renderPaginationControls(data);
+            }
+        });
+    }
+
+    function renderTable(dataSubset) {
+        let rows = '';
+
+        if (dataSubset.length === 0) {
+            $('.noresult').show();
+            $('#tasksTable tbody').html('');
+            return;
+        }
+
+        $('.noresult').hide();
+
+        dataSubset.forEach((item, index) => {
+            const details = item.detail_sample || [];
+            const rowspan = details.length > 0 ? `rowspan="${details.length}"` : 'rowspan="1"';
+
+            if (details.length > 0) {
+                details.forEach((detail, i) => {
+                    rows += `<tr>`;
+                    if (i === 0) {
+                        rows += `
+                            <td ${rowspan}>${(currentPage - 1) * rowsPerPage + index + 1}</td>
+                            <td ${rowspan}>${item.tanggal}</td>
+                            <td ${rowspan}>${item.batch}</td>
+                            <td ${rowspan}>${item.bj_ok_percent}%</td>
+                            <td ${rowspan}>${item.brix_ok_percent}%</td>
+                            <td ${rowspan}>${item.ph_ok_percent}%</td>
+                            <td ${rowspan}>${item.visco_ok_percent}%</td>
+                            <td ${rowspan}>${item.aw_ok_percent}%</td>
+                            <td ${rowspan}>${item.buih_ok_percent}%</td>
+                            <td ${rowspan}>${item.endapan_ok_percent}%</td>
+                            <td ${rowspan}>${item.organo_ok_percent}%</td>
+                        `;
+                    }
+
+                    rows += `
+                        <td>${detail.shift}</td>
+                       <td>${detail.created_at ? new Date(detail.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
+                        <td>${detail.brix}</td>
+                        <td>${detail.viscositas}</td>
+                        <td>${detail.aw}</td>
+                        <td>${detail.ph}</td>
+                        <td>${detail.bj}</td>
+                        <td>${detail.buih}</td>
+                        <td>${detail.endapan}</td>
+                        <td>${detail.organo}</td>
+                        <td>${detail.warna}</td>
+                    </tr>`;
+                });
+            } else {
+                // Jika tidak ada detail_sample
+                rows += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.tanggal}</td>
+                        <td>${item.batch}</td>
+                        <td>${item.bj_ok_percent}%</td>
+                        <td>${item.brix_ok_percent}%</td>
+                        <td>${item.ph_ok_percent}%</td>
+                        <td>${item.visco_ok_percent}%</td>
+                        <td>${item.aw_ok_percent}%</td>
+                        <td>${item.buih_ok_percent}%</td>
+                        <td>${item.endapan_ok_percent}%</td>
+                        <td>${item.organo_ok_percent}%</td>
+                        <td colspan="12" class="text-center text-danger">Tidak ada data detail</td>
+                    </tr>
+                `;
+            }
+        });
+
+        $('#tasksTable tbody').html(rows);
+    }
 
     $(document).ready(function() {
         $.ajax({
-            url: '/qc/api/olahaftercooling',
+            url: "{{ url('/qc/api/olahaftercooling') }}",
             type: 'GET',
             dataType: 'json',
             success: function(data) {
                 allData = data;
-                renderTable(data); // Tampilkan data awal
+                currentPage = 1;
+                renderTable(paginateData(allData, currentPage));
+                renderPaginationControls(allData);
             },
             error: function(err) {
                 console.error('Error:', err);
@@ -686,67 +1038,26 @@
 
         const filtered = allData.filter(item => {
             const itemDate = item.tanggal;
-            const matchSearch = !search || item.batch.toLowerCase().includes(search);
-            const matchDate = (!startDate || itemDate >= startDate) && (!endDate || itemDate <= endDate);
-            return matchSearch && matchDate;
+
+            // Konversi tanggal ke objek Date untuk perbandingan akurat
+            const itemDateObj = new Date(itemDate);
+            const startDateObj = startDate ? new Date(startDate) : null;
+            const endDateObj = endDate ? new Date(endDate) : null;
+
+            const matchDate =
+                (!startDateObj || itemDateObj >= startDateObj) &&
+                (!endDateObj || itemDateObj <= endDateObj);
+
+            const itemString = JSON.stringify(item).toLowerCase(); // mencakup seluruh item dan detail_sample
+
+            const matchSearch = !search || itemString.includes(search);
+
+            return matchDate && matchSearch;
         });
 
-        renderTable(filtered);
-    }
-
-    function renderTable(data) {
-        let rows = '';
-
-        if (data.length === 0) {
-            $('.noresult').show();
-            $('#tasksTable tbody').html('');
-            return;
-        }
-
-        $('.noresult').hide();
-
-        data.forEach((item, index) => {
-            rows += `
-            <tr>
-                <td rowspan="${item.detail_sample.length + 1}">${index + 1}</td>
-                <td rowspan="${item.detail_sample.length + 1}">${item.tanggal}</td>
-                <td rowspan="${item.detail_sample.length + 1}">${item.batch}</td>
-                <td rowspan="${item.detail_sample.length + 1}">${item.bj_ok_percent}%</td>
-                <td rowspan="${item.detail_sample.length + 1}">${item.brix_ok_percent}%</td>
-                <td rowspan="${item.detail_sample.length + 1}">${item.ph_ok_percent}%</td>
-                <td rowspan="${item.detail_sample.length + 1}">${item.visco_ok_percent}%</td>
-                <td rowspan="${item.detail_sample.length + 1}">${item.aw_ok_percent}%</td>
-                <td rowspan="${item.detail_sample.length + 1}">${item.buih_ok_percent}%</td>
-                <td rowspan="${item.detail_sample.length + 1}">${item.endapan_ok_percent}%</td>
-                <td rowspan="${item.detail_sample.length + 1}">${item.organo_ok_percent}%</td>
-            </tr>
-        `;
-
-            item.detail_sample.forEach(detail => {
-                rows += `
-                <tr>
-                    <td>
-                        <ul class="mb-0 ps-3">
-                            <li>
-                                <strong>Shift:</strong> ${detail.shift} |
-                                <strong>BJ:</strong> ${detail.bj} |
-                                <strong>Brix:</strong> ${detail.brix} |
-                                <strong>PH:</strong> ${detail.ph} |
-                                <strong>Visco:</strong> ${detail.viscositas} |
-                                <strong>AW:</strong> ${detail.aw} |
-                                <strong>Buih:</strong> ${detail.buih} |
-                                <strong>Endapan:</strong> ${detail.endapan} |
-                                <strong>Organo:</strong> ${detail.organo}
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
-            `;
-            });
-        });
-
-        $('#tasksTable tbody').html(rows);
+        currentPage = 1;
+        renderTable(paginateData(filtered, currentPage));
+        renderPaginationControls(filtered);
     }
 </script>
-
 @endsection

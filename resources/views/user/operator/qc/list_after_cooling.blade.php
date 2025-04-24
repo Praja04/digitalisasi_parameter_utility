@@ -96,7 +96,7 @@
                                             <th rowspan="2">Status</th>
                                             <th rowspan="2">Batch</th>
                                             <th rowspan="2">Created By</th>
-                                            <th colspan="10">Detail After Cooling</th>
+                                            <th colspan="12">Detail After Cooling</th>
                                         </tr>
                                         <tr>
                                             <th>Shift</th>

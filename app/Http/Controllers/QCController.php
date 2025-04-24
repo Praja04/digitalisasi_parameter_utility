@@ -7,6 +7,7 @@ use App\Models\QC\AfterCooling;
 use App\Models\QC\AfterCoolingDetail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class QCController extends Controller
 {
@@ -347,10 +348,10 @@ class QCController extends Controller
             $buihOver = $ac->details->where('buih', '>', 0.5)->count();
             $buihOkPercent = ($total > 0) ? round(($total - $buihOver) / $total * 100, 2) : 0;
 
-            $endapanNotStandar = $ac->details->filter(fn($d) => strtolower(trim($d->endapan)) !== '<0,1')->count();
+            $endapanNotStandar = $ac->details->filter(fn ($d) => strtolower(trim($d->endapan)) !== '<0,1')->count();
             $endapanOkPercent = ($total > 0) ? round(($total - $endapanNotStandar) / $total * 100, 2) : 0;
 
-            $organoNotStandar = $ac->details->filter(fn($d) => strtolower(trim($d->organo)) !== 'standar')->count();
+            $organoNotStandar = $ac->details->filter(fn ($d) => strtolower(trim($d->organo)) !== 'standar')->count();
             $organoOkPercent = ($total > 0) ? round(($total - $organoNotStandar) / $total * 100, 2) : 0;
 
             // Ambil 3 data detail
@@ -473,10 +474,36 @@ class QCController extends Controller
 
 
     // chart grafik line 
-    public function getChartData()
-    {
-        $data = AfterCoolingDetail::select('*')->orderBy('id_after_cooling', 'DESC')->get();
+    // public function getChartData()
+    // {
+    //     $data = AfterCoolingDetail::select('*')->orderBy('id_after_cooling', 'DESC')->get();
+    //     return response()->json($data);
+    // }
 
+    public function getChartData(Request $request)
+    {
+        $filter = $request->get('filter');
+        $startDate = null;
+        $endDate = null;
+
+        if ($filter === 'today') {
+            $startDate = now()->startOfDay();
+            $endDate = now()->endOfDay();
+        } elseif ($filter === 'date') {
+            $startDate = Carbon::parse($request->get('start_date'))->startOfDay();
+            $endDate = Carbon::parse($request->get('start_date'))->endOfDay();
+        } elseif ($filter === 'range') {
+            $startDate = Carbon::parse($request->get('start_date'))->startOfDay();
+            $endDate = Carbon::parse($request->get('end_date'))->endOfDay();
+        }
+
+        $query = AfterCoolingDetail::query();
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        $data = $query->orderBy('created_at', 'ASC')->get();
 
         return response()->json($data);
     }

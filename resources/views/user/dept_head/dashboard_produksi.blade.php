@@ -63,11 +63,26 @@
 
         <div class="row">
             <div class="col-xl-12">
+                <div class="d-flex justify-content-start align-items-center flex-wrap">
+                    <div class="me-2">
+                        <select id="filter" class="form-control">
+                            <option value="today" selected>Hari Ini</option>
+                            <option value="date">Pilih Tanggal</option>
+                            <option value="range">Rentang Tanggal</option>
+                        </select>
+                    </div>
+                    <div class="me-2 d-none" id="start-date-group">
+                        <input type="date" id="start-date" class="form-control" />
+                    </div>
+                    <div class="me-2 d-none" id="end-date-group">
+                        <input type="date" id="end-date" class="form-control" />
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" id="apply-filter">Terapkan</button>
+                    </div>
+                </div><br>
                 <div class="card crm-widget">
                     <div class="card-body p-0">
-                        <button class="btn btn-primary" onclick="loadAchievement('harian')">Harian</button>
-                        <button class="btn btn-primary" onclick="loadAchievement('mingguan')">Mingguan</button>
-                        <button class="btn btn-primary" onclick="loadAchievement('bulanan')">Bulanan</button>
 
                         <div class="row row-cols-xxl-4 row-cols-md-3 row-cols-1 g-0">
                             <div class="col">
@@ -87,6 +102,85 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- end col -->
+
+                            <div class="col">
+                                <div class="mt-3 mt-md-0 py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13">
+                                        Output Shift 1
+
+                                    </h5>
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+                                            <i class="ri-space-ship-line display-6 text-muted"></i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h2 class="mb-0">
+                                                <span class="counter-value" id="output_batch_shift1" data-target=""></span>
+                                            </h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+                            <div class="col">
+                                <div class="mt-3 mt-lg-0 py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13">
+                                        Output Shift 2
+
+                                    </h5>
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+                                            <i class="ri-space-ship-line display-6 text-muted"></i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h2 class="mb-0">
+                                                <span class="counter-value" id="output_batch_shift2" data-target=""></span>
+                                            </h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+
+                            <div class="col">
+                                <div class="mt-3 mt-lg-0 py-4 px-3">
+                                    <h5 class="text-muted text-uppercase fs-13">
+                                        Output Shift 3
+
+                                    </h5>
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h2 class="mb-0">
+                                                <span class="counter-value" id="output_batch_shift3" data-target=""></span>
+                                            </h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+
+                        </div>
+                        <!-- end row -->
+                    </div>
+                    <!-- end card body -->
+                </div>
+                <!-- end card -->
+            </div>
+            <!-- end col -->
+        </div>
+        <!-- end row -->
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card crm-widget">
+                    <div class="card-body p-0">
+
+                        <div class="row row-cols-xxl-3 row-cols-md-3 row-cols-1 g-0">
+
                             <!-- end col -->
                             <div class="col">
                                 <div class="mt-3 mt-md-0 py-4 px-3">
@@ -119,7 +213,7 @@
                                         </div>
                                         <div class="flex-grow-1 ms-3">
                                             <h2 class="mb-0">
-                                                <span class="counter-value" data-target="32.89">0</span>%
+                                                <span class="counter-value" data-target="">0</span>%
                                             </h2>
                                         </div>
                                     </div>
@@ -138,7 +232,7 @@
                                         </div>
                                         <div class="flex-grow-1 ms-3">
                                             <h2 class="mb-0">
-                                                <span class="counter-value" data-target="1596.5">0</span>
+                                                <span class="counter-value" data-target="">0</span>
                                             </h2>
                                         </div>
                                     </div>
@@ -155,7 +249,6 @@
             </div>
             <!-- end col -->
         </div>
-        <!-- end row -->
 
 
         <div class="row">
@@ -359,6 +452,151 @@
             </div> -->
             <!-- end card -->
         </div>
+
+        <div class="row mb-6 ">
+            <div class="d-flex justify-content-end align-items-center flex-wrap">
+                <div class="me-2">
+                    <select id="filter_abnormal" class="form-control">
+                        <option value="today" selected>Hari Ini</option>
+                        <option value="date">Pilih Tanggal</option>
+                        <option value="range">Rentang Tanggal</option>
+                    </select>
+                </div>
+                <div class="me-2 d-none" id="start-date-group">
+                    <input type="date" id="start-date" class="form-control" />
+                </div>
+                <div class="me-2 d-none" id="end-date-group">
+                    <input type="date" id="end-date" class="form-control" />
+                </div>
+                <div>
+                    <button class="btn btn-primary" id="apply-filter-abnormal">Terapkan</button>
+                </div>
+            </div>
+        </div>
+        <br>
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="d-flex flex-column h-100">
+                    <div class="row">
+                        <div class="col-xl-4 col-md-3">
+                            <div class="card card-animate overflow-hidden abnormal-card" data-type="suhuholding">
+                                <div class="position-absolute start-0" style="z-index: 0">
+                                    <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                        <style>
+                                            .s0 {
+                                                opacity: 0.05;
+                                                fill: var(--vz-info);
+                                            }
+                                        </style>
+                                        <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                    </svg>
+                                </div>
+                                <div class="card-body" style="z-index: 1">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <p class="text-uppercase fw-medium text-muted text-truncate mb-3">
+                                                Suhu Holding Abnormal
+                                            </p>
+                                            <h4 class="fs-22 fw-semibold ff-secondary mb-0">
+                                                <span class="counter-value" id="suhuholding_abnormal" data-target=""></span>
+                                            </h4>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <!--end col-->
+                        <div class="col-xl-4 col-md-3">
+                            <!-- card -->
+                            <div class="card card-animate overflow-hidden abnormal-card" data-type="suhuheating">
+                                <div class="position-absolute start-0" style="z-index: 0">
+                                    <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                        <style>
+                                            .s0 {
+                                                opacity: 0.05;
+                                                fill: var(--vz-info);
+                                            }
+                                        </style>
+                                        <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                    </svg>
+                                </div>
+                                <div class="card-body" style="z-index: 1">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <p class="text-uppercase fw-medium text-muted text-truncate mb-3">
+                                                Suhu Heating Abnormal
+                                            </p>
+                                            <h4 class="fs-22 fw-semibold ff-secondary mb-0">
+                                                <span class="counter-value" id="suhuheating_abnormal" data-target=""></span>
+                                            </h4>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <!-- end col -->
+                        <div class="col-xl-4 col-md-3">
+                            <div class="card card-animate overflow-hidden abnormal-card" data-type="flowrate">
+                                <div class="position-absolute start-0" style="z-index: 0">
+                                    <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                        <style>
+                                            .s0 {
+                                                opacity: 0.05;
+                                                fill: var(--vz-info);
+                                            }
+                                        </style>
+                                        <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                    </svg>
+                                </div>
+                                <div class="card-body" style="z-index: 1">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <p class="text-uppercase fw-medium text-muted text-truncate mb-3">
+                                                Flowrate Abnormal
+                                            </p>
+                                            <h4 class="fs-22 fw-semibold ff-secondary mb-0">
+                                                <span class="counter-value" id="flowrate_abnormal" data-target=""></span>
+                                            </h4>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <!--end col-->
+                    </div>
+                    <!--end row-->
+                </div>
+            </div>
+            <!--end col-->
+
+            <!--end col-->
+        </div>
+
+        <div class="modal fade" id="abnormalModal" tabindex="-1" aria-labelledby="abnormalModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="abnormalModalLabel">Detail Abnormal</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div class="modal-body" id="abnormalModalBody">
+                        <!-- Data detail akan ditampilkan di sini -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
     <!-- end row -->
 </div>
@@ -720,6 +958,7 @@
         $("#applyFilter").trigger("click");
         $("#applyFilterFlowrate").trigger("click");
         updateRealtimeInfo();
+        setInterval(updateRealtimeInfo, 10000); // Update setiap 10 detik
 
         function getShift(now) {
             let hours = now.getHours();
@@ -751,36 +990,177 @@
             $('#shift').val(shift);
         }
 
-        // Panggil fungsi pertama kali
-        updateDateTime();
+
+        function fetchData_abnormal(filter = 'today', start = '', end = '') {
+            $.ajax({
+                url: '{{ url("pasteurisasi1/suhuholding") }}',
+                method: 'GET',
+                data: {
+                    filter: filter,
+                    start: start,
+                    end: end
+                },
+                success: function(res) {
+                    console.log(res);
+                    $('#suhuholding_abnormal').text(res.total).attr('data-target', res.total);
+                },
+                error: function() {
+                    alert("Gagal mengambil data.");
+                }
+            });
+
+            $.ajax({
+                url: '{{ url("pasteurisasi1/suhuheating") }}',
+                method: 'GET',
+                data: {
+                    filter,
+                    start,
+                    end
+                },
+                success: function(res) {
+                    console.log(res);
+                    $('#suhuheating_abnormal').text(res.total).attr('data-target', res.total);
+                },
+                error: function() {
+                    alert("Gagal mengambil data LH Temp.");
+                }
+            });
+
+            $.ajax({
+                url: '{{ url("pasteurisasi1/flowrate") }}',
+                method: 'GET',
+                data: {
+                    filter,
+                    start,
+                    end
+                },
+                success: function(res) {
+                    console.log(res);
+                    $('#flowrate_abnormal').text(res.total).attr('data-target', res.total);
+                },
+                error: function() {
+                    alert("Gagal mengambil data PV Steam.");
+                }
+            });
 
 
+        }
 
-        loadAchievement();
-    });
-
-    function loadAchievement(filter = 'harian') {
-        $.ajax({
-            url: "{{ url('prd/achievement') }}/" + filter,
-            dataType: "json",
-            success: function(res) {
-                let totalBatch = res.total_batch_count ?? 0;
-                let percentage = res.achievement_percentage ?? 0;
-
-                // Update Output Batch
-                $('#output_batch')
-                    .text(totalBatch);
-
-                // Update Achievement Rate Output Batch
-                $('#achievement_output_batch')
-                    .text(percentage);
-
-            },
-            error: function(_xhr, status, error) {
-                console.error('AJAX Error:', status, error);
+        $('#filter_abnormal').change(function() {
+            const val = $(this).val();
+            if (val === 'date') {
+                $('#start-date-group').removeClass('d-none');
+                $('#end-date-group').addClass('d-none');
+            } else if (val === 'range') {
+                $('#start-date-group').removeClass('d-none');
+                $('#end-date-group').removeClass('d-none');
+            } else {
+                $('#start-date-group, #end-date-group').addClass('d-none');
             }
         });
-    }
+
+        $('#apply-filter-abnormal').click(function() {
+            const filter = $('#filter_abnormal').val();
+            const start = $('#start-date').val();
+            const end = $('#end-date').val();
+            fetchData_abnormal(filter, start, end);
+        });
+
+        $('.abnormal-card').on('click', function() {
+            const type = $(this).data('type');
+            $.ajax({
+                url: '{{ url("pasteurisasi1") }}/' + type, // asumsi endpoint sama
+                method: 'GET',
+                data: {
+                    filter: $('#filter_abnormal').val(),
+                    start: $('#start-date').val(),
+                    end: $('#end-date').val()
+                },
+                success: function(res) {
+                    let html = '<p>Total: <strong>' + res.total + '</strong></p>';
+
+                    // Tambahkan detail jika ada
+                    if (res.data && Array.isArray(res.data)) {
+                        html += '<ul class="list-group">';
+                        res.data.forEach(item => {
+                            html += `
+                <li class="list-group-item">
+                    <strong>Waktu Mulai:</strong> ${item.waktu_mulai}<br>
+                    <strong>Waktu Akhir:</strong> ${item.waktu_akhir}
+                </li>
+            `;
+                        });
+                        html += '</ul>';
+                    }
+
+                    $('#abnormalModalBody').html(html);
+                    $('#abnormalModal').modal('show');
+                },
+                error: function() {
+                    alert('Gagal mengambil detail data!');
+                }
+            });
+        });
+
+        // Panggil fungsi pertama kali
+        // Load data awal (today)
+        fetchData_abnormal();
+        updateDateTime();
+
+        function fetchAchievement(filter = 'today', startDate = null, endDate = null) {
+            $.ajax({
+                url: "{{url('/prd/achievement')}}",
+                type: 'GET',
+                data: {
+                    filter: filter,
+                    start_date: startDate,
+                    end_date: endDate
+                },
+                success: function(res) {
+                    console.log(res);
+                    $('#output_batch').attr('data-target', res.total_batch_count).text(res.total_batch_count + ' ton');
+                    $('#output_batch_shift1').attr('data-target', res.shift_counts.shift_1).text(res.shift_counts.shift_1 + ' ton');
+                    $('#output_batch_shift2').attr('data-target', res.shift_counts.shift_2).text(res.shift_counts.shift_2 + ' ton');
+                    $('#output_batch_shift3').attr('data-target', res.shift_counts.shift_3).text(res.shift_counts.shift_3 + ' ton');
+                    $('#achievement_output_batch').attr('data-target', res.achievement_percentage).text(res.achievement_percentage);
+                },
+                error: function(xhr) {
+                    alert('Gagal mengambil data. Coba lagi nanti.');
+                    console.log(xhr.responseText);
+                }
+            });
+        }
+
+        $('#filter').on('change', function() {
+            const selected = $(this).val();
+            $('#start-date-group, #end-date-group').addClass('d-none');
+
+            if (selected === 'date') {
+                $('#start-date-group').removeClass('d-none');
+            } else if (selected === 'range') {
+                $('#start-date-group, #end-date-group').removeClass('d-none');
+            }
+        });
+
+        $('#apply-filter').on('click', function() {
+            const filter = $('#filter').val();
+            let startDate = null;
+            let endDate = null;
+
+            if (filter === 'date') {
+                startDate = $('#start-date').val();
+            } else if (filter === 'range') {
+                startDate = $('#start-date').val();
+                endDate = $('#end-date').val();
+            }
+
+            fetchAchievement(filter, startDate, endDate);
+        });
+
+        // First trigger
+        fetchAchievement();
+
+    });
 </script>
 
 
