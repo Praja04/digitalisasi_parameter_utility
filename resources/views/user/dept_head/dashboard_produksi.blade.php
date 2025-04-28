@@ -196,6 +196,7 @@
                                             <h2 class="mb-0">
                                                 <span class="counter-value" id="achievement_output_batch" data-target="">0</span>%
                                             </h2>
+                                            <p>Target PPIC : <span id="target_batch"></span></p>
                                         </div>
                                     </div>
                                 </div>
@@ -1123,6 +1124,7 @@
                     $('#output_batch_shift2').attr('data-target', res.shift_counts.shift_2).text(res.shift_counts.shift_2 + ' ton');
                     $('#output_batch_shift3').attr('data-target', res.shift_counts.shift_3).text(res.shift_counts.shift_3 + ' ton');
                     $('#achievement_output_batch').attr('data-target', res.achievement_percentage).text(res.achievement_percentage);
+                    $('#target_batch').text(res.total_target_batch + ' ton');
                 },
                 error: function(xhr) {
                     alert('Gagal mengambil data. Coba lagi nanti.');
