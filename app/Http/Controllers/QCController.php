@@ -11,15 +11,39 @@ use Illuminate\Support\Carbon;
 
 class QCController extends Controller
 {
-    //
+
     // 🔹 Dashboard untuk Dept Head
     public function dashboardQC()
     {
-        if (Session::get('jabatan') !== 'dept_head') {
-            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        if (Session::get('jabatan') == 'dept_head') {
+            return view('user.dept_head.dashboard_qc');
         }
-        return view('user.dept_head.dashboard_qc');
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
+    // End Dept Head
+
+    // 🔹 Dashboard untuk Supervisor
+    public function dashboardSupervisorQC()
+    {
+        if (Session::get('jabatan') == 'supervisor' && Session::get('departemen') == 'qc') {
+            return view('user.supervisor.dashboard_qc');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+    // End Supervisor
+
+    // Dashboard untuk foreman
+    public function dashboardForemanQC()
+    {
+        if (Session::get('jabatan') == 'foreman' && Session::get('departemen') == 'qc') {
+            return view('user.foreman.dashboard_qc');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+    // End Foreman
+
+
+
 
     // 🔹 Dashboard untuk Operator
     public function dashboardOperatorQC()
@@ -46,6 +70,10 @@ class QCController extends Controller
         }
         return view('user.operator.qc.list_after_cooling');
     }
+
+
+
+
 
     public function index()
     {
@@ -230,94 +258,7 @@ class QCController extends Controller
     }
 
 
-    //olah after cooling
-    // public function olahAfterCooling()
-    // {
-    //     $data = AfterCooling::with('details')->get();
-    //     $hasil = [];
 
-    //     foreach ($data as $ac) {
-    //         $total = $ac->details->count();
-
-    //         $bjUnder = $ac->details->where('bj', '<', 1.39)->count();
-    //         $bjOver = $ac->details->where('bj', '>', 1.41)->count();
-    //         $bjOkPercent = ($total > 0) ? round(($total - ($bjUnder + $bjOver)) / $total * 100, 2) : 0;
-
-    //         $brixUnder = $ac->details->where('brix', '<', 77)->count();
-    //         $brixOkPercent = ($total > 0) ? round(($total - $brixUnder) / $total * 100, 2) : 0;
-
-    //         $phUnder = $ac->details->where('ph', '<', 4.3)->count();
-    //         $phOver = $ac->details->where('ph', '>', 5)->count();
-    //         $phOkPercent = ($total > 0) ? round(($total - ($phUnder + $phOver)) / $total * 100, 2) : 0;
-
-    //         $viscoUnder = $ac->details->where('viscositas', '<', 17)->count();
-    //         $viscoOver = $ac->details->where('viscositas', '>', 28)->count();
-    //         $viscoOkPercent = ($total > 0) ? round(($total - ($viscoUnder + $viscoOver)) / $total * 100, 2) : 0;
-
-    //         $awOver = $ac->details->where('aw', '>', 0.70)->count();
-    //         $awOkPercent = ($total > 0) ? round(($total - $awOver) / $total * 100, 2) : 0;
-    //         $awPresOverPercent = ($total > 0) ? round($awOver / $total * 100, 2) : 0;
-
-    //         $buihOver = $ac->details->where('buih', '>', 0.5)->count();
-    //         $buihOkPercent = ($total > 0) ? round(($total - $buihOver) / $total * 100, 2) : 0;
-
-    //         // $endapanOver = $ac->details->where('endapan', '>', 0.1)->count();
-    //         // $endapanOkPercent = ($total > 0) ? round(($total - $endapanOver) / $total * 100, 2) : 0;
-
-    //         $endapanNotStandar = $ac->details->filter(fn($d) => strtolower(trim($d->endapan)) !== '<0,1')->count();
-    //         $endapanOkPercent = ($total > 0) ? round(($total - $endapanNotStandar) / $total * 100, 2) : 0;
-
-    //         $organoNotStandar = $ac->details->filter(fn($d) => strtolower(trim($d->organo)) !== 'standar')->count();
-    //         $organoOkPercent = ($total > 0) ? round(($total - $organoNotStandar) / $total * 100, 2) : 0;
-
-    //         $hasil[] = [
-    //             'id' => $ac->id,
-    //             'batch' => $ac->batch,
-    //             'tanggal' => $ac->tanggal,
-    //             'jumlah_data' => $total,
-
-    //             // BJ
-    //             'bj_under' => $bjUnder,
-    //             'bj_over' => $bjOver,
-    //             'bj_ok_percent' => $bjOkPercent,
-
-    //             // Brix
-    //             'brix_under' => $brixUnder,
-    //             'brix_ok_percent' => $brixOkPercent,
-
-    //             // pH
-    //             'ph_under' => $phUnder,
-    //             'ph_over' => $phOver,
-    //             'ph_ok_percent' => $phOkPercent,
-
-    //             // Visco
-    //             'visco_under' => $viscoUnder,
-    //             'visco_over' => $viscoOver,
-    //             'visco_ok_percent' => $viscoOkPercent,
-
-    //             // Aw
-    //             'aw_over' => $awOver,
-    //             'aw_ok_percent' => $awOkPercent,
-    //             'aw_pres_over_percent' => $awPresOverPercent,
-
-    //             // Buih
-    //             'buih_over' => $buihOver,
-    //             'buih_ok_percent' => $buihOkPercent,
-
-    //             // Endapan
-    //             // 'endapan_over' => $endapanOver,
-    //             // 'endapan_ok_percent' => $endapanOkPercent,
-    //             'endapan_not_standar' => $endapanNotStandar,
-    //             'endapan_ok_percent' => $endapanOkPercent,
-
-    //             // Organo
-    //             'organo_not_standar' => $organoNotStandar,
-    //             'organo_ok_percent' => $organoOkPercent,
-    //         ];
-    //     }
-
-    //     return response()->json($hasil);
-    // }
     public function olahAfterCooling()
     {
         $data = AfterCooling::with('details')->get();
@@ -358,6 +299,7 @@ class QCController extends Controller
             $detailSample = $ac->details->take(3)->map(function ($item) {
                 return [
                     'id' => $item->id,
+                    'created_at' => $item->created_at,
                     'shift' => $item->shift,
                     'user' => $item->user,
                     'bj' => $item->bj,

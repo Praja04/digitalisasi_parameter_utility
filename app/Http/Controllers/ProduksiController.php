@@ -15,11 +15,45 @@ class ProduksiController extends Controller
     // 🔹 Dashboard untuk Dept Head
     public function dashboardProduksi()
     {
-        if (Session::get('jabatan') !== 'dept_head') {
-            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        if (Session::get('jabatan') == 'dept_head') {
+            return view('user.dept_head.dashboard_produksi');
         }
-        return view('user.dept_head.dashboard_produksi');
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
+
+    public function dashboardProduksi_retail()
+    {
+        if (Session::get('jabatan') == 'dept_head') {
+            return view('user.dept_head.Retail.dashboard_retaild4');  
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+
+
+    ///////////End View Dept Head ///////////////////
+
+    // 🔹 Dashboard untuk Supervisor
+    public function dashboardSupervisorProduksi()
+    {
+        if (Session::get('jabatan') == 'supervisor') {
+            return view('user.supervisor.dashboard_produksi');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+
+    ///////////End View Supervisor ///////////////////
+
+
+    // 🔹 Dashboard untuk foreman
+    public function dashboardForemanProduksi()
+    {
+        if (Session::get('jabatan') == 'foreman') {
+            return view('user.foreman.dashboard_produksi');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+
+    ///////////End View Supervisor ///////////////////
 
     /////////////// 🔹 Dashboard untuk Operator //////////////////
     public function dashboardOperatorProduksi()
@@ -38,6 +72,17 @@ class ProduksiController extends Controller
         $batch = AchievementBatch::with('details')->findOrFail($id);
         return view('user.operator.prd.show_prd', compact('batch'));
     }
+
+    ////////////End View Operator /////////////////
+
+
+
+
+
+
+
+
+
 
     // Menampilkan data history batch status completed
     public function historyBatch()
@@ -328,52 +373,7 @@ class ProduksiController extends Controller
         ]);
     }
 
-    // public function AchievementBatch(Request $request)
-    // {
-    //     $filter = $request->get('filter', 'today');
-    //     $startDate = null;
-    //     $endDate = null;
-
-    //     switch ($filter) {
-    //         case 'date':
-    //             $startDate = Carbon::parse($request->get('start_date'))->startOfDay();
-    //             $endDate = Carbon::parse($request->get('start_date'))->endOfDay();
-    //             break;
-    //         case 'range':
-    //             $startDate = Carbon::parse($request->get('start_date'))->startOfDay();
-    //             $endDate = Carbon::parse($request->get('end_date'))->endOfDay();
-    //             break;
-    //         case 'today':
-    //         default:
-    //             $startDate = now()->startOfDay();
-    //             $endDate = now()->endOfDay();
-    //             break;
-    //     }
-
-    //     $data = AchievementBatch::whereBetween('batch_date', [$startDate, $endDate])
-    //     ->with(['details' => function ($query) {
-    //         $query->selectRaw('achievement_batch_id, SUM(batch_count) as total_batch_count')
-    //         ->groupBy('achievement_batch_id');
-    //     }])
-    //     ->get();
-
-    //     $total_target_batch = $data->sum('target_batch');
-    //     $total_batch_count = $data->map(function ($item) {
-    //         return $item->details->sum('total_batch_count');
-    //     })->sum();
-
-    //     $achievement_percentage = $total_target_batch > 0
-    //     ? round(($total_batch_count / $total_target_batch) * 100, 2)
-    //     : 0;
-
-    //     return response()->json([
-    //         'start_date' => $startDate->toDateString(),
-    //         'end_date' => $endDate->toDateString(),
-    //         'total_target_batch' => $total_target_batch,
-    //         'total_batch_count' => $total_batch_count,
-    //         'achievement_percentage' => $achievement_percentage
-    //     ]);
-    // }
+   
 
     public function AchievementBatch(Request $request)
     {
