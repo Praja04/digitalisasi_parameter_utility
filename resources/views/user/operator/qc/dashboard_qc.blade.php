@@ -45,6 +45,9 @@
                                     Batch
                                  </th>
                                  <th>
+                                    Varian
+                                 </th>
+                                 <th>
                                     Created By
                                  </th>
                                  <th scope="col">Aksi</th>
@@ -91,6 +94,10 @@
                <div class="mb-3">
                   <label for="batch" class="form-label">Batch <span class="text-danger">*</span></label>
                   <input type="text" class="form-control" id="batch">
+               </div>
+               <div class="mb-3">
+                  <label for="batch" class="form-label">Varian <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="varian">
                </div>
             </form>
          </div>
@@ -141,6 +148,7 @@
 
             tanggal: $("#tanggal").val(),
             batch: $("#batch").val(),
+            varian: $("#varian").val(),
          };
 
          $.ajax({
@@ -225,6 +233,7 @@
                      <td>${rowNumber}</td>
                      <td>${item.tanggal}</td>
                      <td>${item.batch}</td>
+                     <td>${item.varian}</td>
                      <td>${item.created_by_user}</td>
                      <td>
                       <a href="${detailUrl}/${item.id}" class="btn btn-info btn-sm">Detail</a>

@@ -62,6 +62,87 @@
         </div>
 
         <div class="row">
+            <div class="col-xl-4 col-md-6">
+                <!-- card -->
+                <div class="card card-animate">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1 overflow-hidden">
+                                <p class="text-uppercase fw-medium text-muted text-truncate mb-0"> Total Counter</p>
+                            </div>
+
+                        </div>
+                        <div class="d-flex align-items-end justify-content-between mt-4">
+                            <div>
+                                <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" id="total_counter"></span></h4>
+                                <p>Retail D4</p>
+                            </div>
+                            <div class="avatar-sm flex-shrink-0" data-aos="flip-up">
+                                <span class=" avatar-title bg-success rounded fs-3">
+                                    <i class="bx bx-plus-circle"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div><!-- end card body -->
+                </div><!-- end card -->
+            </div><!-- end col -->
+
+            <div class="col-xl-4 col-md-6">
+                <!-- card -->
+                <div class="card card-animate">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1 overflow-hidden">
+                                <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Average Main Speed (%)</p>
+                            </div>
+
+                        </div>
+                        <div class="d-flex align-items-end justify-content-between mt-4">
+                            <div>
+                                <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" id="average_main_speed"></span></h4>
+                                <p>Retail D4</p>
+                            </div>
+                            <div class="avatar-sm flex-shrink-0" data-aos="flip-up">
+                                <span class=" avatar-title bg-info rounded fs-3">
+                                    <i class="bx bx-tachometer"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div><!-- end card body -->
+                </div><!-- end card -->
+            </div><!-- end col -->
+
+            <div class="col-xl-4 col-md-6">
+                <!-- card -->
+                <div class="card card-animate total-start-mesin">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1 overflow-hidden">
+                                <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Start Periods Mesin</p>
+                            </div>
+
+                        </div>
+                        <div class="d-flex align-items-end justify-content-between mt-4">
+                            <div>
+                                <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" id="total_start_mesin"></span></h4>
+
+                                <p>See details</p>
+
+                            </div>
+                            <div class="avatar-sm flex-shrink-0" data-aos="flip-up">
+                                <span class=" avatar-title bg-warning rounded fs-3">
+                                    <i class="bx bx-cog"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div><!-- end card body -->
+                </div><!-- end card -->
+            </div><!-- end col -->
+
+
+        </div>
+
+        <div class="row">
             <div class="col-xl-12">
                 <div class="d-flex justify-content-start align-items-center flex-wrap">
                     <div class="me-2">
@@ -184,7 +265,7 @@
                                         </div>
                                         <div class="flex-grow-1 ms-3">
                                             <h2 class="mb-0">
-                                                <span class="counter-value" id="total_nozzle1" data-target=""></span>
+                                                <span class="counter-value" id="total_nozzle2" data-target=""></span>
                                             </h2>
                                         </div>
                                     </div>
@@ -262,82 +343,6 @@
         </div>
         <!-- end row -->
 
-        <div class="row">
-            <div class="col-xl-12">
-                <div class="card crm-widget">
-                    <div class="card-body p-0">
-
-                        <div class="row row-cols-xxl-3 row-cols-md-3 row-cols-1 g-0">
-
-                            <!-- end col -->
-                            <div class="col">
-                                <div class="mt-3 mt-md-0 py-4 px-3">
-                                    <h5 class="text-muted text-uppercase fs-13">
-                                        Total Counter
-
-                                    </h5>
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <i class="ri-exchange-dollar-line display-6 text-muted"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h2 class="mb-0">
-                                                <span class="counter-value" id="total_counter" data-target="">0</span>
-                                            </h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- end col -->
-                            <div class="col">
-                                <div class="mt-3 mt-md-0 py-4 px-3">
-                                    <h5 class="text-muted text-uppercase fs-13">
-                                        Average Main Speed
-
-                                    </h5>
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <i class="ri-pulse-line display-6 text-muted"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h2 class="mb-0">
-                                                <span class="counter-value" id="average_main_speed" data-target="">0</span>
-                                            </h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- end col -->
-                            <div class="col">
-                                <div class="mt-3 mt-lg-0 py-4 px-3">
-                                    <h5 class="text-muted text-uppercase fs-13">
-                                        Total Mesin Menyala
-
-                                    </h5>
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <i class="ri-trophy-line display-6 text-muted"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h2 class="mb-0">
-                                                <span class="counter-value" id="total_start_mesin" data-target="">0</span>
-                                            </h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- end col -->
-
-                        </div>
-                        <!-- end row -->
-                    </div>
-                    <!-- end card body -->
-                </div>
-                <!-- end card -->
-            </div>
-            <!-- end col -->
-        </div>
-
 
         <div class="row">
             <div class="col-xl-12">
@@ -346,8 +351,8 @@
                         <div class="row row-cols-xxl-2 row-cols-md-3 row-cols-1 g-0">
                             <div class="col">
                                 <div class="py-4 px-3">
-                                    <h5 class="text-muted text-uppercase fs-13">
-                                        Main Speed 
+                                    <h5 class="text-muted text-center text-uppercase fs-13">
+                                        Main Speed
                                     </h5>
                                     <div id="gauge_main_speed"></div>
                                 </div>
@@ -358,7 +363,7 @@
                                     <h5 class="text-muted text-uppercase fs-13 text-center">
                                         Status Mesin (NOW)
                                     </h5>
-                                    <div class="card-body">
+                                    <div class="card-body text-center" data-aos="fade-right" id="start_mesin">
 
                                     </div>
                                 </div>
@@ -378,13 +383,306 @@
     <!-- end row -->
 </div>
 <!-- container-fluid -->
+<div class="modal fade" id="abnormalModal" tabindex="-1" aria-labelledby="abnormalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="abnormalModalLabel">Detail data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body" id="abnormalModalBody">
+                <!-- Data detail akan ditampilkan di sini -->
+            </div>
+        </div>
+    </div>
 </div>
+
+
 <!-- 🔹 Include ApexCharts & jQuery -->
 <script src="{{ asset('material/assets/libs/apexcharts/apexcharts.min.js') }}"></script>
 
 
 <!-- Dashboard init -->
 
+<script>
+    $(document).ready(function() {
+        let gaugeChart = null;
+
+        function initGaugeChart(value) {
+            let options = {
+                chart: {
+                    type: 'radialBar',
+                    height: 200,
+                },
+                series: [value],
+                labels: ['Main Speed'],
+                plotOptions: {
+                    radialBar: {
+                        hollow: {
+                            size: '60%',
+                        },
+                        dataLabels: {
+                            name: {
+                                show: true,
+                                fontSize: '18px',
+                            },
+                            value: {
+                                show: true,
+                                fontSize: '22px',
+                                formatter: function(val) {
+                                    return parseFloat(val).toFixed(1) + ' %';
+                                }
+                            }
+                        }
+                    }
+                },
+                fill: {
+                    colors: ['#008FFB']
+                }
+            };
+
+            gaugeChart = new ApexCharts($("#gauge_main_speed")[0], options);
+            gaugeChart.render();
+        }
+
+        function updateGaugeChart(value) {
+            if (gaugeChart) {
+                gaugeChart.updateSeries([value]);
+            }
+        }
+
+        function getShift(now) {
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+
+            if ((hours === 6 && minutes >= 1) || (hours > 6 && hours < 14) || (hours === 14 && minutes === 0)) {
+                return "Shift 1";
+            } else if ((hours === 14 && minutes >= 1) || (hours > 14 && hours < 22) || (hours === 22 && minutes === 0)) {
+                return "Shift 2";
+            } else {
+                return "Shift 3"; // Dari jam 22:01 sampai 06:00 keesokan harinya
+            }
+        }
+
+        function updateDateTime() {
+            let now = new Date();
+            let formattedDate = now.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+
+            let shift = getShift(now);
+
+            // Set nilai tanggal dan shift ke elemen yang sesuai
+            $('#date-picker').val(formattedDate);
+            $('#shift').val(shift);
+        }
+
+        function get_data() {
+            $.ajax({
+                url: "{{ url('retail/d4/last') }}",
+                type: "GET",
+                dataType: "json",
+                success: function(data) {
+                    console.log(data);
+                    const totalCounter = data.total_counter;
+                    animateCounter($('#total_counter'), totalCounter, 1000);
+                    let startMesin = data.Start_Mesin;
+                    let imagePath = '';
+
+                    if (startMesin == 1) {
+                        imagePath = '{{ asset("assets/images/hijau.png") }}';
+                    } else {
+                        imagePath = '{{ asset("assets/images/merah.png") }}';
+                    }
+
+                    $('#start_mesin').html(`<img src="${imagePath}" alt="Status Mesin" style="height: 100px;">`);
+
+
+                    let speed = parseFloat(data.main_speed) || 0;
+
+                    if (!gaugeChart) {
+                        initGaugeChart(speed);
+                    } else {
+                        updateGaugeChart(speed);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching data:", error);
+                }
+            });
+           
+            updateDateTime();
+        }
+
+        get_data();
+        setInterval(get_data, 10000); // refresh setiap 10 detik
+
+        $('#filter').on('change', function() {
+            let selected = $(this).val();
+            $('#start-date-group, #end-date-group').addClass('d-none');
+            if (selected === 'date') {
+                $('#start-date-group').removeClass('d-none');
+            } else if (selected === 'range') {
+                $('#start-date-group, #end-date-group').removeClass('d-none');
+            }
+        });
+
+        function fetchdataFilter() {
+            let filter = $('#filter').val() || 'today'; // default ke 'today' jika kosong
+            let data = {};
+
+            if (filter === 'today') {
+                data.filter = 'realtime';
+            } else if (filter === 'date') {
+                data.filter = 'tanggal';
+                data.tanggal = $('#start-date').val();
+            } else if (filter === 'range') {
+                data.filter = 'range';
+                data.start_date = $('#start-date').val();
+                data.end_date = $('#end-date').val();
+            }
+
+            $.ajax({
+                url: "{{url('retail/d4/average-main-speed')}}",
+                method: 'GET',
+                data: data,
+                success: function(response) {
+                    console.log('Average Main Speed:', response.average_main_speed);
+                    // $('#average_main_speed').text(
+                    //     response.average_main_speed !== null ?
+                    //     parseFloat(response.average_main_speed).toFixed(2) + ' %' :
+                    //     '0 %'
+                    // );
+
+
+                    const avg = parseFloat(response.average_main_speed).toFixed(2) || 0;
+                    animateCounter($('#average_main_speed'), avg, 1000);
+
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr.responseJSON);
+                }
+            });
+
+            $.ajax({
+                url: "{{url('retail/d4/nozzle-count')}}",
+                method: 'GET',
+                data: data,
+                success: function(response) {
+                    $('#output_nozzle1_shift1').text(response.shift_1?.nozzle_1 ?? 0);
+                    $('#output_nozzle1_shift2').text(response.shift_2?.nozzle_1 ?? 0);
+                    $('#output_nozzle1_shift3').text(response.shift_3?.nozzle_1 ?? 0);
+                    $('#output_nozzle2_shift1').text(response.shift_1?.nozzle_2 ?? 0);
+                    $('#output_nozzle2_shift2').text(response.shift_2?.nozzle_2 ?? 0);
+                    $('#output_nozzle2_shift3').text(response.shift_3?.nozzle_2 ?? 0);
+
+                    $('#total_nozzle1').text(response.total_nozzle_1 ?? 0);
+                    $('#total_nozzle2').text(response.total_nozzle_2 ?? 0);
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr.responseJSON);
+                }
+            });
+
+            $.ajax({
+                url: "{{url('retail/d4/mesin-start-periods')}}",
+                method: 'GET',
+                data: data,
+                success: function(response) {
+
+                    const total = parseInt(response.total) || 0;
+                    animateCounter($('#total_start_mesin'), total, 1000);
+                    console.log(response);
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr.responseJSON);
+                }
+            });
+
+            $(document).on('click', '.total-start-mesin', function() {
+                let filter = $('#filter').val() || 'today';
+                let data = {};
+
+                if (filter === 'today') {
+                    data.filter = 'realtime';
+                } else if (filter === 'date') {
+                    data.filter = 'tanggal';
+                    data.tanggal = $('#start-date').val();
+                } else if (filter === 'range') {
+                    data.filter = 'range';
+                    data.start_date = $('#start-date').val();
+                    data.end_date = $('#end-date').val();
+                }
+
+                // Ambil ulang data dan tampilkan ke modal
+                $.ajax({
+                    url: "{{url('retail/d4/mesin-start-periods')}}",
+                    method: 'GET',
+                    data: data,
+                    success: function(response) {
+                        const detailList = response.data;
+
+                        let html = '';
+                        if (detailList.length > 0) {
+                            html += '<ul class="list-group">';
+                            detailList.forEach(function(item, index) {
+                                html += `
+                        <li class="list-group-item">
+                            <strong>${index + 1}.</strong>
+                            <br>Mesin: Retail D4
+                            <br>Start: ${item.waktu_mulai ?? '-'}
+                            <br>End: ${item.waktu_akhir ?? '-'}
+                            
+                        </li>
+                    `;
+                            });
+                            html += '</ul>';
+                        } else {
+                            html = '<p class="text-muted">Tidak ada data start periods untuk periode ini.</p>';
+                        }
+
+                        $('#abnormalModalLabel').text('Detail Start Periods Mesin');
+                        $('#abnormalModalBody').html(html);
+                        $('#abnormalModal').modal('show');
+                    },
+                    error: function(xhr) {
+                        $('#abnormalModalBody').html('<p class="text-danger">Gagal memuat data</p>');
+                        $('#abnormalModal').modal('show');
+                    }
+                });
+            });
+
+        }
+
+        function animateCounter($element, endValue, duration = 1000) {
+            let startValue = 0;
+            let startTime = null;
+
+            function step(currentTime) {
+                if (!startTime) startTime = currentTime;
+                const progress = Math.min((currentTime - startTime) / duration, 1);
+                const currentValue = Math.floor(progress * (endValue - startValue) + startValue);
+                $element.text(currentValue);
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
+            }
+
+            requestAnimationFrame(step);
+        }
+
+        $('#apply-filter').on('click', function() {
+            fetchdataFilter();
+        });
+        fetchdataFilter();
+
+
+    });
+</script>
 
 
 @endsection

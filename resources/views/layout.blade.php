@@ -25,7 +25,8 @@
     <link href="{{ asset('material/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- custom Css-->
     <link href="{{ asset('material/assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
-    
+    <link href="{{ asset('material/assets/libs/aos/aos.css') }}" rel="stylesheet" type="text/css" />
+
     <!-- jQuery should be included before DataTables -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="{{ asset('assetswebbased/DataTables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
@@ -86,8 +87,10 @@
 
     <script src="{{ asset('material/assets/js/highcharts.js') }}"></script>
     <!-- App js -->
+    <script src="{{ asset('material/assets/libs/aos/aos.js') }}"></script>
+    <script src="{{ asset('material/assets/js/pages/animation-aos.init.js') }}"></script>
     <script src="{{ asset('material/assets/js/app.js') }}"></script>
-   
+
     <script>
         $(document).ready(function() {
             // Logout button handler

@@ -272,8 +272,9 @@ Route::prefix('dissolver')->group(function () {
 //retail
 Route::prefix('retail')->group(function () {
     //retail d4
-    Route::get('/d4/last', [RetailController::class, 'getLastData']);
     Route::get('/d4/data', [RetailController::class, 'getData']);
+    
+    Route::get('/d4/last', [RetailController::class, 'getLastData']);
     Route::get('/d4/average-main-speed', [RetailController::class, 'getAverageMainSpeed']);
     Route::get('/d4/total-counter', [RetailController::class, 'getTotalCounter']);
     Route::get('/d4/nozzle-count', [RetailController::class, 'getNozzleCount']);

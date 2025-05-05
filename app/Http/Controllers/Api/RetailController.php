@@ -74,11 +74,12 @@ class RetailController extends Controller
             $query->whereBetween('waktu', [$request->start_date, $request->end_date]);
         }
 
-        // Hitung rata-rata main_speed
-        $average = $query->avg('main_speed');
+        // Hitung rata-rata main_speed, kembalikan 0 jika null
+        $average = $query->avg('main_speed') ?? 0;
 
         return response()->json(['average_main_speed' => $average]);
     }
+
     // buatkan fungsi menghitung jumlah keseluruhan dari total_counter saja berdasarkan waktu, dengan 3 filter yaitu realtime hari ini, lalu pilih tanggal, dan range tanggal. dan juga dibagi menjadi 3 shift, shift 1 dari 06.00 sampai 14.00, shift 2 dari 14.01 sampai 22.00,dan shift 3 dari 22.01 sampai 05.59 tanggal berikutnya
     public function getTotalCounter(Request $request)
     {
@@ -117,7 +118,8 @@ class RetailController extends Controller
         } elseif ($request->filter === 'range') {
             $start = Carbon::parse($request->start_date);
             $end = Carbon::parse($request->end_date);
-            for ($date = $start;
+            for (
+                $date = $start;
                 $date->lte($end);
                 $date->addDay()
             ) {
@@ -138,7 +140,13 @@ class RetailController extends Controller
 
     public function getMesinStartPeriods(Request $request)
     {
-        $filter = $request->input('filter'); // 'today', 'date', 'range'
+        $request->validate([
+            'filter' => 'nullable|in:realtime,tanggal,range',
+            'start' => 'nullable|date',
+            'end' => 'nullable|date',
+        ]);
+
+        $filter = $request->input('filter', 'realtime'); // Default ke 'today' jika tidak dikirim
         $start = $request->input('start');
         $end = $request->input('end');
 

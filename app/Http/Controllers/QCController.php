@@ -92,6 +92,7 @@ class QCController extends Controller
         $request->validate([
             'tanggal' => 'required|date',
             'batch' => 'required',
+            'varian' => 'required',
         ]);
 
         try {
@@ -100,6 +101,7 @@ class QCController extends Controller
             $data = AfterCooling::create([
                 'tanggal' => $request->tanggal,
                 'batch' => $request->batch,
+                'varian' => $request->varian,
                 'created_by_user' => $nama_user,
             ]);
 
@@ -317,6 +319,7 @@ class QCController extends Controller
             $hasil[] = [
                 'id' => $ac->id,
                 'batch' => $ac->batch,
+                'varian' => $ac->varian,
                 'tanggal' => $ac->tanggal,
                 'created_by_user' => $ac->created_by_user,
                 'status' => $ac->status,

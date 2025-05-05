@@ -20,47 +20,51 @@ class retail_d4 extends Model
         'waktu', 'main_speed', 'total_counter', 'nozzle_1', 'nozzle_2', 'Start_Mesin'
     ];
 
-    public static function getMesinStartPeriods($filterType = 'today', $startDate = null, $endDate = null)
+    public static function getMesinStartPeriods($filterType = 'realtime', $startDate = null, $endDate = null)
     {
-        // Tentukan filter
+        $bindings = [];
         $whereClause = "";
 
-        if ($filterType === 'today') {
+        if ($filterType === 'realtime') {
             $whereClause = "WHERE DATE(waktu) = CURDATE()";
         } elseif ($filterType === 'date' && $startDate) {
-            $whereClause = "WHERE DATE(waktu) = '{$startDate}'";
+            $whereClause = "WHERE DATE(waktu) = ?";
+            $bindings[] = $startDate;
         } elseif ($filterType === 'range' && $startDate && $endDate) {
-            $whereClause = "WHERE DATE(waktu) BETWEEN '{$startDate}' AND '{$endDate}'";
+            $whereClause = "WHERE DATE(waktu) BETWEEN ? AND ?";
+            $bindings[] = $startDate;
+            $bindings[] = $endDate;
         }
 
         $query = "
-        WITH flagged_status AS (
-            SELECT 
-                waktu,
-                Start_Mesin,
-                CASE 
-                    WHEN Start_Mesin = 1 THEN 1 ELSE 0
-                END AS is_running
-            FROM retail_d4
-            {$whereClause}
-        ),
-        grouped_blocks AS (
-            SELECT *,
-                ROW_NUMBER() OVER (ORDER BY waktu)
-              - ROW_NUMBER() OVER (PARTITION BY is_running ORDER BY waktu) AS group_id
-            FROM flagged_status
-        )
+    WITH flagged_status AS (
         SELECT 
-            MIN(waktu) AS Waktu_mulai,
-            MAX(waktu) AS Waktu_akhir
-        FROM grouped_blocks
-        WHERE is_running = 1
-        GROUP BY group_id
-        ORDER BY Waktu_mulai
+            waktu,
+            Start_Mesin,
+            CASE 
+                WHEN Start_Mesin = 1 THEN 1 ELSE 0
+            END AS is_running
+        FROM retail_d4
+        {$whereClause}
+    ),
+    grouped_blocks AS (
+        SELECT *,
+            ROW_NUMBER() OVER (ORDER BY waktu)
+          - ROW_NUMBER() OVER (PARTITION BY is_running ORDER BY waktu) AS group_id
+        FROM flagged_status
+    )
+    SELECT 
+        MIN(waktu) AS Waktu_mulai,
+        MAX(waktu) AS Waktu_akhir
+    FROM grouped_blocks
+    WHERE is_running = 1
+    GROUP BY group_id
+    ORDER BY Waktu_mulai
     ";
 
-        return DB::select($query);
+        return DB::select($query, $bindings);
     }
+
 
     public static function getTotalCounterWithShifts($filter, $tanggal = null, $start = null, $end = null)
     {

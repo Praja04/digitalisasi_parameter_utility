@@ -95,6 +95,7 @@
                                             <th rowspan="2">Tanggal</th>
                                             <th rowspan="2">Status</th>
                                             <th rowspan="2">Batch</th>
+                                            <th rowspan="2">Varian</th>
                                             <th rowspan="2">Created By</th>
                                             <th colspan="12">Detail After Cooling</th>
                                         </tr>
@@ -177,6 +178,7 @@
                             ${item.status === 'completed' ? 'completed' : 'not completed'}
                         </td>
                         <td rowspan="1">${item.batch}</td>
+                        <td rowspan="1">${item.varian}</td>
                         <td rowspan="1">${item.created_by_user}</td>
                         <td>null</td>
                         <td>null</td>
@@ -203,6 +205,7 @@
                         ${item.status === 'completed' ? 'completed' : 'not completed'}
                     </td>
                     <td rowspan="${rowSpan}">${item.batch}</td>
+                    <td rowspan="${rowSpan}">${item.varian}</td>
                     <td rowspan="${rowSpan}">${item.created_by_user}</td>
                 `;
                     }
