@@ -3,8 +3,7 @@
 use App\Http\Controllers\ProduksiController;
 use App\Http\Controllers\QCController;
 use App\Http\Controllers\EngineeringController;
-use App\Http\Controllers\DashboardController;
-
+use App\Http\Controllers\Api\RetailController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SensorBoilerController;
 use App\Http\Controllers\Api\SensorDailyTankController;
@@ -31,22 +30,16 @@ Route::get('form', function () {
 });
 
 
-Route::prefix('eng')->group(function () {
-    Route::get('/dept_head/dashboard', [AuthController::class, 'dashboardEng']);
-   // Route::get('/operator/dashboard', [AuthController::class, 'dashboardOperatorEng']);
-    Route::get('/dept_head/todo', [AuthController::class, 'todoListEng']);
-});
-
-Route::prefix('qc')->group(function () {
-    Route::get('/dept_head/dashboard', [AuthController::class, 'dashboardQc']);
-    Route::get('/operator/dashboard', [AuthController::class, 'dashboardOperatorQc']);
-});
-
 //PRD
 Route::prefix('prd')->middleware('auth')->group(function () {
-    // Dashboard untuk Dept Head dan Operator
+    // Dashboard
     Route::get('/dept_head/dashboard', [ProduksiController::class, 'dashboardProduksi']);
+    Route::get('/dept_head/dashboard_retaild4', [ProduksiController::class, 'dashboardProduksi_retail']);
+    Route::get('/supervisor/dashboard', [ProduksiController::class, 'dashboardSupervisorProduksi']);
+    Route::get('/foreman/dashboard', [ProduksiController::class, 'dashboardForemanProduksi']);
     Route::get('/operator/dashboard', [ProduksiController::class, 'dashboardOperatorProduksi']);
+
+
     Route::get('/operator/detailbatch', [ProduksiController::class, 'showOperatorProduksi']);
     Route::get('/operator/history', [ProduksiController::class, 'historyBatch']);
     Route::get('/operator/status_running', [ProduksiController::class, 'statusRunning']);
@@ -82,9 +75,12 @@ Route::prefix('prd')->middleware('auth')->group(function () {
 
 //QC
 Route::prefix('qc')->middleware('auth')->group(function () {
-    // Dashboard untuk Dept Head dan Operator
+    // Dashboard 
     Route::get('/dept_head/dashboard', [QCController::class, 'dashboardQC']);
+    Route::get('/supervisor/dashboard', [QCController::class, 'dashboardSupervisorQC']);
+    Route::get('/foreman/dashboard', [QCController::class, 'dashboardForemanQC']);
     Route::get('/operator/dashboard', [QCController::class, 'dashboardOperatorQC']);
+
     Route::get('/operator/detail/{id}', [QCController::class, 'detailAfterCoolingOperatorQC']);
     Route::get('/operator/list', [QCController::class, 'listAfterCoolingOperatorQC']);
     Route::get('/data/status', [QCController::class, 'AfterCoolingCompleted']);
@@ -111,6 +107,15 @@ Route::prefix('qc')->middleware('auth')->group(function () {
 
 //Eng
 Route::prefix('eng')->middleware('auth')->group(function () {
+
+    Route::get('/dept_head/dashboard', [EngineeringController::class, 'dashboardEng']);
+    Route::get('/dept_head/todo', [EngineeringController::class, 'todoListEng']);
+    Route::get('/supervisor/dashboard', [EngineeringController::class, 'dashboardSupervisorEng']);
+    Route::get('/foreman/dashboard', [EngineeringController::class, 'dashboardForemanEng']);
+    Route::get('/foreman/data_listrik', [EngineeringController::class, 'dataPemakaianListrikForemanEng']);
+    Route::get('/foreman/data_chemical', [EngineeringController::class, 'dataPemakaianChemicalForemanEng']);
+
+
     Route::get('/operator/pemakaian_air', [EngineeringController::class, 'formPemakaianAir']);
     Route::get('/operator/pemakaian_listrik', [EngineeringController::class, 'formPemakaianListrik']);
     Route::get('/operator/pemakaian_chemical', [EngineeringController::class, 'formPemakaianChemical']);
@@ -247,6 +252,7 @@ Route::prefix('st53')->group(function () {
     Route::get('/data-harian', [SensorST53Controller::class, 'getST53DataHarian']);
     Route::get('/data-mingguan', [SensorST53Controller::class, 'getST53DataMingguan']);
 });
+
 Route::prefix('stk400')->group(function () {
     Route::view('/realtime', 'stk400.realtime');
     Route::view('/datatren', 'stk400.datatren');
@@ -261,4 +267,16 @@ Route::prefix('dissolver')->group(function () {
     Route::view('/datatren', 'dissolver.datatren');
     Route::get('/data-realtime', [SensorDissolverController::class, 'getLatestData']);
     Route::get('/data/{dissolver}', [SensorDissolverController::class, 'getData']);
+});
+
+//retail
+Route::prefix('retail')->group(function () {
+    //retail d4
+    Route::get('/d4/data', [RetailController::class, 'getData']);
+    
+    Route::get('/d4/last', [RetailController::class, 'getLastData']);
+    Route::get('/d4/average-main-speed', [RetailController::class, 'getAverageMainSpeed']);
+    Route::get('/d4/total-counter', [RetailController::class, 'getTotalCounter']);
+    Route::get('/d4/nozzle-count', [RetailController::class, 'getNozzleCount']);
+    Route::get('/d4/mesin-start-periods', [RetailController::class, 'getMesinStartPeriods']);
 });

@@ -19,10 +19,10 @@
             <div class="col-lg-12">
                 <div class="card" id="apiKeyList">
                     <div class="card-header d-flex align-items-center">
-                        <h5 class="card-title flex-grow-1 mb-0">Form Pemakaian Chemical</h5>
+                        <h5 class="card-title flex-grow-1 mb-0">Form Pemakaian Listrik</h5>
                         <div class="d-flex gap-1 flex-wrap">
                             <button type="button" class="btn btn-info create-btn" data-bs-toggle="modal" data-bs-target="#pemakaian-modal">
-                                <i class="ri-add-line align-bottom me-1"></i> Catat Pemakaian Chemical
+                                <i class="ri-add-line align-bottom me-1"></i> Catat Pemakaian Listrik
                             </button>
                         </div>
                     </div>
@@ -41,14 +41,13 @@
                                                     <button id="apply-filter" class="btn btn-sm btn-primary mt-2 w-100">Terapkan</button>
                                                 </div>
                                             </th>
-                                            <th scope="col">Pemakaian Chemical (kg)</th>
-                                            <th scope="col">Nama Chemical</th>
+                                            <th scope="col">Pemakaian Listrik (kwh)</th>
                                             <th scope="col">Notes</th>
                                             <th scope="col">Created By</th>
-                                            <!-- <th scope="col">Aksi</th> -->
+                                            <th scope="col">Aksi</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="list form-check-all text-center" id="airChemical"></tbody>
+                                    <tbody class="list form-check-all text-center" id="airListrik"></tbody>
                                 </table>
                                 <div class="noresult text-center mt-3" style="display: none;">
                                     <p class="text-muted">Tidak ada data yang ditemukan.</p>
@@ -74,11 +73,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Tambahkan Data Pemakaian Chemical</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Tambahkan Data Pemakaian Listrik</h5>
                 <button type="button" class="btn-close" id="close-modal" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="formTambahPemakaianChemical" autocomplete="off">
+                <form id="formTambahPemakaianListrik" autocomplete="off">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <div id="api-key-error-msg" class="alert alert-danger py-2 d-none"></div>
 
@@ -87,12 +86,8 @@
                         <input type="date" class="form-control" id="tanggal">
                     </div>
                     <div class="mb-3">
-                        <label for="pemakaian_kg" class="form-label">Pemakaian Chemical (kg)<span class="text-danger">*</span></label>
-                        <input class="form-control" type="number" step="0.01" id="pemakaian_kg" placeholder="Masukkan nilai dalam kg...">
-                    </div>
-                    <div class="mb-3">
-                        <label for="nama_chemical" class="form-label">Nama Chemical<span class="text-danger">*</span></label>
-                        <input class="form-control" type="text" id="nama_chemical" placeholder="Input nama chemical...">
+                        <label for="pemakaian_kwh" class="form-label">Pemakaian Listrik (kwh)<span class="text-danger">*</span></label>
+                        <input class="form-control" type="number" step="0.01" id="pemakaian_kwh" placeholder="Masukkan nilai dalam liter...">
                     </div>
                     <div class="mb-3">
                         <label for="notes" class="form-label">Notes <span class="text-danger">*</span></label>
@@ -111,7 +106,7 @@
 
 <script>
     $(document).ready(function() {
-        let baseUrl = "{{ url('eng/data/chemical') }}";
+        let baseUrl = "{{ url('eng/data/listrik') }}";
         let csrfToken = $('meta[name="csrf-token"]').attr("content");
         let currentPage = 1;
         let itemsPerPage = 10;
@@ -126,8 +121,7 @@
 
             if (item) {
                 $("#tanggal").val(item.tanggal);
-                $("#pemakaian_kg").val(item.pemakaian_kg);
-                $("#nama_chemical").val(item.nama_chemical);
+                $("#pemakaian_kwh").val(item.pemakaian_kwh);
                 $("#notes").val(item.notes);
                 $("#pemakaian-modal").modal("show");
             }
@@ -157,8 +151,7 @@
             let formData = {
                 _token: csrfToken,
                 tanggal: $("#tanggal").val(),
-                pemakaian_kg: $("#pemakaian_kg").val(),
-                nama_chemical: $("#nama_chemical").val(),
+                pemakaian_kwh: $("#pemakaian_kwh").val(),
                 notes: $("#notes").val() || "-"
             };
 
@@ -247,7 +240,7 @@
 
         // 🔹 Update Tampilan Tabel
         function updateTable() {
-            let tbody = $("#airChemical");
+            let tbody = $("#airListrik");
             tbody.empty();
 
             let start = (currentPage - 1) * itemsPerPage;
@@ -264,19 +257,19 @@
                   <tr>
                      <td>${rowNumber}</td>
                      <td>${new Date(item.created_at).toLocaleDateString()}</td>
-                     <td>${item.pemakaian_kg} </td>
-                     <td>${item.nama_chemical} </td>
+                     <td>${item.pemakaian_kwh} </td>
                      <td>${item.notes} </td>
                      <td>${item.created_by} </td>
-                    
+                     <td>
+                        <button class="btn btn-danger btn-sm delete-button" data-id="${item.id}">Hapus</button>
+                        <button class="btn btn-warning btn-sm update-button" data-id="${item.id}">Edit</button>
+                    </td>
                   </tr>
                `;
                     tbody.append(row);
                 });
-                //  <td>
-                //     <button class="btn btn-danger btn-sm delete-button" data-id="${item.id}">Hapus</button>
-                //     <button class="btn btn-warning btn-sm update-button" data-id="${item.id}">Edit</button>
-                //  </td>
+
+
             }
         }
 
@@ -365,7 +358,7 @@
         });
 
         $("#pemakaian-modal").on("hidden.bs.modal", function() {
-            $("#formTambahPemakaianChemical")[0].reset();
+            $("#formTambahPemakaianListrik")[0].reset();
             currentEditId = null;
         });
 

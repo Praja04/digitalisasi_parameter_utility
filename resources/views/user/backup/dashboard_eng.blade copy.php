@@ -991,15 +991,15 @@
                     end: end
                 },
                 success: function(res) {
-                    // Swal.close();
+                    //Swal.close();
                     $('#rhtemp_abnormal').text(res.total).attr('data-target', res.total);
                 },
                 error: function() {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal!',
-                        text: 'Gagal mengambil data. Coba lagi nanti.',
-                    });
+                    // Swal.fire({
+                    //     icon: 'error',
+                    //     title: 'Gagal!',
+                    //     text: 'Gagal mengambil data. Coba lagi nanti.',
+                    // });
                 }
             });
 

@@ -444,7 +444,6 @@
                                         <th rowspan="2">No</th>
                                         <th rowspan="2">Tanggal</th>
                                         <th rowspan="2">Batch</th>
-                                        <th rowspan="2">Varian</th>
                                         <th rowspan="2">BJ OK (%)</th>
                                         <th rowspan="2">BRIX OK (%)</th>
                                         <th rowspan="2">PH OK (%)</th>
@@ -966,7 +965,6 @@
                             <td ${rowspan}>${(currentPage - 1) * rowsPerPage + index + 1}</td>
                             <td ${rowspan}>${item.tanggal}</td>
                             <td ${rowspan}>${item.batch}</td>
-                            <td ${rowspan}>${item.varian}</td>
                             <td ${rowspan}>${item.bj_ok_percent}%</td>
                             <td ${rowspan}>${item.brix_ok_percent}%</td>
                             <td ${rowspan}>${item.ph_ok_percent}%</td>
@@ -999,7 +997,6 @@
                         <td>${index + 1}</td>
                         <td>${item.tanggal}</td>
                         <td>${item.batch}</td>
-                        <td>${item.varian}</td>
                         <td>${item.bj_ok_percent}%</td>
                         <td>${item.brix_ok_percent}%</td>
                         <td>${item.ph_ok_percent}%</td>

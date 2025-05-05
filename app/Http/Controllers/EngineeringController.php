@@ -15,11 +15,72 @@ use App\Models\Boiler\ReadSensors_Boiler;
 class EngineeringController extends Controller
 {
     protected $telegramService;
-
     public function __construct(TelegramService $telegramService)
     {
         $this->telegramService = $telegramService;
     }
+
+
+   //View
+   ///depthead
+    public function dashboardEng()
+    {
+        if (Session::get('jabatan') == 'dept_head') {
+            return view('user.dept_head.dashboard_eng');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+
+    public function todoListEng()
+    {
+        if (Session::get('jabatan') == 'dept_head') {
+            return view('user.dept_head.todo_list_eng');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+
+    /////End View Depthead ///////////
+
+    //supervisor
+    public function dashboardSupervisorEng()
+    {
+        if (Session::get('jabatan') == 'supervisor') {
+            return view('user.supervisor.dashboard_eng');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+
+    ////End View Supervisor ///////////
+
+    //foreman
+
+    public function dashboardForemanEng()
+    {
+        if (Session::get('jabatan') == 'foreman') {
+            return view('user.foreman.eng.data_pemakaian_air');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+
+    public function dataPemakaianListrikForemanEng()
+    {
+        if (Session::get('jabatan') == 'foreman') {
+            return view('user.foreman.eng.data_pemakaian_listrik');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+
+    public function dataPemakaianChemicalForemanEng()
+    {
+        if (Session::get('jabatan') == 'foreman') {
+            return view('user.foreman.eng.data_pemakaian_chemical');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+
+    ////End View Foreman ///////////
+
+    //operator
     // 🔹 Form untuk Operator
     public function formPemakaianAir()
     {
@@ -43,7 +104,11 @@ class EngineeringController extends Controller
         return view('user.operator.eng.form_pemakaian_chemical');
     }
 
-    // buatkan crud untuk pemakaian air api nya
+
+    /////End View Operator ////////////////
+
+
+    // Api crud operator
     public function indexAir()
     {
         $data = PemakaianAirModel::orderBy('tanggal', 'desc')->get();

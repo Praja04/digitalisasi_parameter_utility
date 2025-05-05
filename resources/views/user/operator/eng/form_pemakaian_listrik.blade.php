@@ -44,7 +44,7 @@
                                             <th scope="col">Pemakaian Listrik (kwh)</th>
                                             <th scope="col">Notes</th>
                                             <th scope="col">Created By</th>
-                                            <th scope="col">Aksi</th>
+                                            <!-- <th scope="col">Aksi</th> -->
                                         </tr>
                                     </thead>
                                     <tbody class="list form-check-all text-center" id="airListrik"></tbody>
@@ -260,14 +260,16 @@
                      <td>${item.pemakaian_kwh} </td>
                      <td>${item.notes} </td>
                      <td>${item.created_by} </td>
-                     <td>
-                        <button class="btn btn-danger btn-sm delete-button" data-id="${item.id}">Hapus</button>
-                        <button class="btn btn-warning btn-sm update-button" data-id="${item.id}">Edit</button>
-                     </td>
+                    
                   </tr>
                `;
                     tbody.append(row);
                 });
+
+                //  <td>
+                //     <button class="btn btn-danger btn-sm delete-button" data-id="${item.id}">Hapus</button>
+                //     <button class="btn btn-warning btn-sm update-button" data-id="${item.id}">Edit</button>
+                //  </td>
             }
         }
 

@@ -364,6 +364,119 @@
         <!-- end row -->
 
         <div class="row">
+            <div class="col-xxl-6">
+                <div class="card card-height-100">
+                    <div class="card-header align-items-center d-flex">
+                        <h4 class="card-title mb-0 flex-grow-1">
+                            Suhu
+                        </h4>
+                        <div class="d-flex gap-2">
+                            <select id="filterData" class="form-select form-select-sm w-auto">
+                                <option value="latest">Terbaru</option>
+                                <option value="daily">Per Hari</option>
+                                <option value="weekly">Per Minggu</option>
+                            </select>
+                            <input type="date" id="datePicker" class="form-control form-control-sm w-auto d-none">
+                            <input type="date" id="startDate" class="form-control form-control-sm w-auto d-none">
+                            <input type="date" id="endDate" class="form-control form-control-sm w-auto d-none">
+                            <button id="applyFilter" class="btn btn-primary btn-sm">Terapkan</button>
+                        </div>
+
+                    </div>
+                    <!-- end card header -->
+                    <div class="card-body px-0">
+
+
+                        <div id="ccp_chart"></div>
+                    </div>
+                </div>
+                <!-- end card -->
+            </div>
+            <div class="col-xxl-6">
+                <div class="card card-height-100">
+                    <div class="card-header align-items-center d-flex">
+                        <h4 class="card-title mb-0 flex-grow-1">
+                            Flowrate
+                        </h4>
+                        <div class="d-flex gap-2">
+                            <select id="filterDataFlowrate" class="form-select form-select-sm w-auto">
+                                <option value="latest">Terbaru</option>
+                                <option value="daily">Per Hari</option>
+                                <option value="weekly">Per Minggu</option>
+                            </select>
+                            <input type="date" id="datePickerFlowrate" class="form-control form-control-sm w-auto d-none">
+                            <input type="date" id="startDateFlowrate" class="form-control form-control-sm w-auto d-none">
+                            <input type="date" id="endDateFlowrate" class="form-control form-control-sm w-auto d-none">
+                            <button id="applyFilterFlowrate" class="btn btn-primary btn-sm">Terapkan</button>
+                        </div>
+
+                    </div>
+                    <!-- end card header -->
+                    <div class="card-body px-0">
+
+
+                        <div id="flowrate_chart"></div>
+                    </div>
+                </div>
+                <!-- end card -->
+            </div>
+            <!-- end col -->
+
+
+
+
+            <!-- end col -->
+
+            <!-- <div class="col-xxl-4 col-md-6">
+                <div class="card">
+                    <div class="card-header align-items-center d-flex">
+                        <h4 class="card-title mb-0 flex-grow-1">
+                            frekuensi divert
+                        </h4>
+                        <div class="d-flex gap-2">
+                            <select id="filterData2" class="form-select form-select-sm w-auto">
+                                <option value="latest">Terbaru</option>
+                                <option value="daily">Per Hari</option>
+                                <option value="weekly">Per Minggu</option>
+                            </select>
+                            <input type="date" id="datePicker" class="form-control form-control-sm w-auto d-none">
+                            <input type="date" id="startDate" class="form-control form-control-sm w-auto d-none">
+                            <input type="date" id="endDate" class="form-control form-control-sm w-auto d-none">
+                            <button id="applyFilter" class="btn btn-primary btn-sm">Terapkan</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body pb-0">
+                    <div id="sales-forecast-chart" data-colors='["--vz-primary", "--vz-success", "--vz-warning"]' class="apex-charts" dir="ltr"></div>
+                </div>
+            </div> -->
+            <!-- end card -->
+        </div>
+
+        <div class="row mb-6 ">
+            <div class="d-flex justify-content-end align-items-center flex-wrap">
+                <div class="me-2">
+                    <select id="filter_abnormal" class="form-control">
+                        <option value="today" selected>Hari Ini</option>
+                        <option value="date">Pilih Tanggal</option>
+                        <option value="range">Rentang Tanggal</option>
+                    </select>
+                </div>
+                <div class="me-2 d-none" id="start-date-group">
+                    <input type="date" id="start-date" class="form-control" />
+                </div>
+                <div class="me-2 d-none" id="end-date-group">
+                    <input type="date" id="end-date" class="form-control" />
+                </div>
+                <div>
+                    <button class="btn btn-primary" id="apply-filter-abnormal">Terapkan</button>
+                </div>
+            </div>
+        </div>
+        <br>
+
+        <div class="row">
             <div class="col-xl-12">
                 <div class="d-flex flex-column h-100">
                     <div class="row">
@@ -469,99 +582,6 @@
 
             <!--end col-->
         </div>
-
-
-
-        <div class="row">
-            <div class="col-xxl-6">
-                <div class="card card-height-100">
-                    <div class="card-header align-items-center d-flex">
-                        <h4 class="card-title mb-0 flex-grow-1">
-                            Suhu
-                        </h4>
-                        <div class="d-flex gap-2">
-                            <select id="filterData" class="form-select form-select-sm w-auto">
-                                <option value="latest">Terbaru</option>
-                                <option value="daily">Per Hari</option>
-                                <option value="weekly">Per Minggu</option>
-                            </select>
-                            <input type="date" id="datePicker" class="form-control form-control-sm w-auto d-none">
-                            <input type="date" id="startDate" class="form-control form-control-sm w-auto d-none">
-                            <input type="date" id="endDate" class="form-control form-control-sm w-auto d-none">
-                            <button id="applyFilter" class="btn btn-primary btn-sm">Terapkan</button>
-                        </div>
-
-                    </div>
-                    <!-- end card header -->
-                    <div class="card-body px-0">
-
-
-                        <div id="ccp_chart"></div>
-                    </div>
-                </div>
-                <!-- end card -->
-            </div>
-            <div class="col-xxl-6">
-                <div class="card card-height-100">
-                    <div class="card-header align-items-center d-flex">
-                        <h4 class="card-title mb-0 flex-grow-1">
-                            Flowrate
-                        </h4>
-                        <div class="d-flex gap-2">
-                            <select id="filterDataFlowrate" class="form-select form-select-sm w-auto">
-                                <option value="latest">Terbaru</option>
-                                <option value="daily">Per Hari</option>
-                                <option value="weekly">Per Minggu</option>
-                            </select>
-                            <input type="date" id="datePickerFlowrate" class="form-control form-control-sm w-auto d-none">
-                            <input type="date" id="startDateFlowrate" class="form-control form-control-sm w-auto d-none">
-                            <input type="date" id="endDateFlowrate" class="form-control form-control-sm w-auto d-none">
-                            <button id="applyFilterFlowrate" class="btn btn-primary btn-sm">Terapkan</button>
-                        </div>
-
-                    </div>
-                    <!-- end card header -->
-                    <div class="card-body px-0">
-
-
-                        <div id="flowrate_chart"></div>
-                    </div>
-                </div>
-                <!-- end card -->
-            </div>
-            <!-- end col -->
-
-
-
-
-            <!-- end col -->
-
-
-        </div>
-
-        <div class="row mb-6 ">
-            <!-- <div class="d-flex justify-content-end align-items-center flex-wrap">
-                <div class="me-2">
-                    <select id="filter_abnormal" class="form-control">
-                        <option value="today" selected>Hari Ini</option>
-                        <option value="date">Pilih Tanggal</option>
-                        <option value="range">Rentang Tanggal</option>
-                    </select>
-                </div>
-                <div class="me-2 d-none" id="start-date-group">
-                    <input type="date" id="start-date" class="form-control" />
-                </div>
-                <div class="me-2 d-none" id="end-date-group">
-                    <input type="date" id="end-date" class="form-control" />
-                </div>
-                <div>
-                    <button class="btn btn-primary" id="apply-filter-abnormal">Terapkan</button>
-                </div>
-            </div> -->
-        </div>
-        <br>
-
-
 
         <div class="modal fade" id="abnormalModal" tabindex="-1" aria-labelledby="abnormalModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -842,6 +862,8 @@
             chart_gauge_VD = updateChart("#gauge_chart_vd", options4, chart_gauge_VD);
         }
 
+
+
         function updateInputFields(prefix = "") {
             const filter = $(`#filterData${prefix}`).val();
             $(`#datePicker${prefix}, #startDate${prefix}, #endDate${prefix}`).addClass("d-none");
@@ -1025,6 +1047,25 @@
 
         }
 
+        $('#filter_abnormal').change(function() {
+            const val = $(this).val();
+            if (val === 'date') {
+                $('#start-date-group').removeClass('d-none');
+                $('#end-date-group').addClass('d-none');
+            } else if (val === 'range') {
+                $('#start-date-group').removeClass('d-none');
+                $('#end-date-group').removeClass('d-none');
+            } else {
+                $('#start-date-group, #end-date-group').addClass('d-none');
+            }
+        });
+
+        $('#apply-filter-abnormal').click(function() {
+            const filter = $('#filter_abnormal').val();
+            const start = $('#start-date').val();
+            const end = $('#end-date').val();
+            fetchData_abnormal(filter, start, end);
+        });
 
         $('.abnormal-card').on('click', function() {
             const type = $(this).data('type');
@@ -1068,14 +1109,6 @@
         updateDateTime();
 
         function fetchAchievement(filter = 'today', startDate = null, endDate = null) {
-            Swal.fire({
-                title: 'Loading data...',
-                text: 'Harap tunggu',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
             $.ajax({
                 url: "{{url('/prd/achievement')}}",
                 type: 'GET',
@@ -1092,15 +1125,10 @@
                     $('#output_batch_shift3').attr('data-target', res.shift_counts.shift_3).text(res.shift_counts.shift_3 + ' ton');
                     $('#achievement_output_batch').attr('data-target', res.achievement_percentage).text(res.achievement_percentage);
                     $('#target_batch').text(res.total_target_batch + ' ton');
-                    Swal.close();
                 },
                 error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal!',
-                        text: 'Gagal mengambil data. Coba lagi nanti.',
-                    });
-                    console.error(xhr.responseText);
+                    alert('Gagal mengambil data. Coba lagi nanti.');
+                    console.log(xhr.responseText);
                 }
             });
         }
@@ -1117,12 +1145,7 @@
         });
 
         $('#apply-filter').on('click', function() {
-
             const filter = $('#filter').val();
-            // const filter = $('#filter_abnormal').val();
-            const start = $('#start-date').val();
-            const end = $('#end-date').val();
-            fetchData_abnormal(filter, start, end);
             let startDate = null;
             let endDate = null;
 
