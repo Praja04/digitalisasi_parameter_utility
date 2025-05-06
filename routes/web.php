@@ -149,8 +149,6 @@ Route::prefix('eng')->middleware('auth')->group(function () {
 
     //send tele bot
     Route::get('send/tele', [EngineeringController::class, 'Notif_boiler']);
-
-
 });
 //End eng
 
@@ -273,10 +271,19 @@ Route::prefix('dissolver')->group(function () {
 Route::prefix('retail')->group(function () {
     //retail d4
     Route::get('/d4/data', [RetailController::class, 'getData']);
-    
+
     Route::get('/d4/last', [RetailController::class, 'getLastData']);
     Route::get('/d4/average-main-speed', [RetailController::class, 'getAverageMainSpeed']);
     Route::get('/d4/total-counter', [RetailController::class, 'getTotalCounter']);
     Route::get('/d4/nozzle-count', [RetailController::class, 'getNozzleCount']);
+
     Route::get('/d4/mesin-start-periods', [RetailController::class, 'getMesinStartPeriods']);
+    Route::get('/d4/mesin/performance', [RetailController::class, 'getperformanceActual']);
+    Route::get('/d4/output/performance', [RetailController::class, 'getperformanceOutput']);
+    Route::get('/d4/output/performance/all_shift', [RetailController::class, 'getperformanceOutputAllShift']);
+    Route::get('/d4/output/gagal/filling', [RetailController::class, 'getGagalFilling']);
+    Route::get('/d4/mesin/uptime', [RetailController::class, 'getuptime']);
+    Route::get('/d4/mesin/downtime', [RetailController::class, 'getdowntime']);
+    Route::get('/d4/mesin', [RetailController::class, 'getStartPeriods']);
+   
 });

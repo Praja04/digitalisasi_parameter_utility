@@ -18,9 +18,10 @@ class Retail_d4 extends Seeder
     {
         $data = [];
 
-        for ($i = 0; $i < 100; $i++) {
+        // Mulai dari 99 turun ke 0 agar waktu terlama duluan, terbaru terakhir
+        for ($i = 99; $i >= 0; $i--) {
             $data[] = [
-                'waktu' => Carbon::now()->subMinutes($i),
+                'waktu' => Carbon::now('Asia/Jakarta')->subMinutes($i),
                 'main_speed' => round(mt_rand(0, 100) / 10, 2),
                 'total_counter' => round(mt_rand(100, 500) / 10, 2),
                 'nozzle_1' => mt_rand(0, 1),

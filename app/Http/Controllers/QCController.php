@@ -26,7 +26,7 @@ class QCController extends Controller
     public function dashboardSupervisorQC()
     {
         if (Session::get('jabatan') == 'supervisor' && Session::get('departemen') == 'qc') {
-            return view('user.supervisor.dashboard_qc');
+            return view('user.supervisor.qc.dashboard_qc');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }

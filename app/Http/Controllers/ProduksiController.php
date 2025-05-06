@@ -36,7 +36,7 @@ class ProduksiController extends Controller
     public function dashboardSupervisorProduksi()
     {
         if (Session::get('jabatan') == 'supervisor') {
-            return view('user.supervisor.dashboard_produksi');
+            return view('user.supervisor.prd.dashboard_produksi');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
