@@ -62,7 +62,7 @@
         </div>
 
         <div class="row">
-            <div class="col-xl-4 col-md-6">
+            <div class="col-xl-3 col-md-6">
                 <!-- card -->
                 <div class="card card-animate">
                     <div class="card-body">
@@ -87,13 +87,13 @@
                 </div><!-- end card -->
             </div><!-- end col -->
 
-            <div class="col-xl-4 col-md-6">
+            <div class="col-xl-3 col-md-6">
                 <!-- card -->
                 <div class="card card-animate">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div class="flex-grow-1 overflow-hidden">
-                                <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Average Main Speed (%)</p>
+                                <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Average Main Speed (Spm)</p>
                             </div>
 
                         </div>
@@ -112,7 +112,7 @@
                 </div><!-- end card -->
             </div><!-- end col -->
 
-            <div class="col-xl-4 col-md-6">
+            <div class="col-xl-3 col-md-6">
                 <!-- card -->
                 <div class="card card-animate total-start-mesin">
                     <div class="card-body">
@@ -126,7 +126,7 @@
                             <div>
                                 <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" id="total_start_mesin"></span></h4>
 
-                                <p>See details</p>
+                                <p>See details Uptime Mesin</p>
 
                             </div>
                             <div class="avatar-sm flex-shrink-0" data-aos="flip-up">
@@ -139,29 +139,187 @@
                 </div><!-- end card -->
             </div><!-- end col -->
 
+            <div class="col-xl-3 col-md-6">
+                <!-- card -->
+                <div class="card card-animate ">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1 overflow-hidden">
+                                <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Performance Output </p>
+                            </div>
 
+                        </div>
+                        <div class="d-flex align-items-end justify-content-between mt-4">
+                            <div>
+                                <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" id="performance_output_realtime"></span></h4>
+
+                                <p>Realtime <span id="shift_performance"></span></p>
+
+                            </div>
+                            <div class="avatar-sm flex-shrink-0" data-aos="flip-up">
+                                <span class=" avatar-title bg-primary rounded fs-3">
+                                    <i class="bx bx-bar-chart-alt-2"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div><!-- end card body -->
+                </div><!-- end card -->
+            </div><!-- end col -->
+        </div>
+        <div class="d-flex justify-content-start align-items-center flex-wrap">
+            <div class="me-2">
+                <select id="filter" class="form-control">
+                    <option value="today" selected>Hari Ini</option>
+                    <option value="date">Pilih Tanggal</option>
+                    <!-- <option value="range">Rentang Tanggal</option> -->
+                </select>
+            </div>
+            <div class="me-2 d-none" id="start-date-group">
+                <input type="date" id="start-date" class="form-control" />
+            </div>
+            <div class="me-2 d-none" id="end-date-group">
+                <input type="date" id="end-date" class="form-control" />
+            </div>
+            <div>
+                <button class="btn btn-primary" id="apply-filter">Terapkan</button>
+            </div>
+        </div><br>
+
+
+
+        <div class="row project-wrapper">
+
+            <div class="col-xxl-8">
+                <div class="row">
+                    <div class="col-xl-3">
+                        <div class="card card-animate">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm flex-shrink-0">
+                                        <span class="avatar-title bg-success rounded-2 fs-2">
+                                            <i data-feather="trending-up"></i>
+                                        </span>
+
+                                    </div>
+                                    <div class="flex-grow-1 overflow-hidden ms-3">
+                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Uptime Mesin</p>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <h6 class="fs-6 flex-grow-1 mb-0">Shift 1</h6>
+                                            <h6 class="fs-6 flex-grow-1 mb-0">Shift 2</h6>
+                                            <h6 class="fs-6 flex-grow-1 mb-0">Shift 3</h6>
+
+                                        </div>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <h4 class="fs-6 flex-grow-1 mb-0"><span class="badge badge-soft-primary" id="uptime_shift1"></span></h4>
+                                            <h4 class="fs-6 flex-grow-1 mb-0"><span class="badge badge-soft-primary" id="uptime_shift2"></span></h4>
+
+                                            <h4 class="fs-6 flex-grow-1 mb-0"><span class="badge badge-soft-primary" id="uptime_shift3"></span></h4>
+
+                                        </div>
+                                        <p class="text-muted mb-0">By date - Shift</p>
+                                    </div>
+                                </div>
+                            </div><!-- end card body -->
+                        </div>
+                    </div><!-- end col -->
+
+                    <div class="col-xl-3">
+                        <div class="card card-animate">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm flex-shrink-0">
+                                        <span class="avatar-title bg-danger rounded-2 fs-2">
+                                            <i data-feather="power"></i>
+                                        </span>
+                                    </div>
+                                    <div class="flex-grow-1 overflow-hidden ms-3">
+                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Downtime Mesin</p>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <h6 class="fs-6 flex-grow-1 mb-0">Shift 1</h6>
+                                            <h6 class="fs-6 flex-grow-1 mb-0">Shift 2</h6>
+                                            <h6 class="fs-6 flex-grow-1 mb-0">Shift 3</h6>
+
+                                        </div>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <h4 class="fs-6 flex-grow-1 mb-0"><span class="badge badge-soft-primary" id="downtime_shift1"></span></h4>
+                                            <h4 class="fs-6 flex-grow-1 mb-0"><span class="badge badge-soft-primary" id="downtime_shift2"></span></h4>
+                                            <h4 class="fs-6 flex-grow-1 mb-0"><span class="badge badge-soft-primary" id="downtime_shift3"></span></h4>
+
+                                        </div>
+                                        <p class="text-muted mb-0">By date - Shift</p>
+                                    </div>
+                                </div>
+                            </div><!-- end card body -->
+                        </div>
+                    </div><!-- end col -->
+                    <div class="col-xl-3">
+                        <div class="card card-animate">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm flex-shrink-0">
+                                        <span class="avatar-title bg-warning rounded-2 fs-2">
+                                            <i data-feather="award"></i>
+                                        </span>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <p class="text-uppercase fw-medium text-muted mb-3">Performance Output</p>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <h6 class="fs-6 flex-grow-1 mb-0">Shift 1</h6>
+                                            <h6 class="fs-6 flex-grow-1 mb-0">Shift 2</h6>
+                                            <h6 class="fs-6 flex-grow-1 mb-0">Shift 3</h6>
+
+                                        </div>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <h4 class="fs-6 flex-grow-1 mb-0"><span class="badge badge-soft-primary" id="performance_shift1"></span></h4>
+                                            <h4 class="fs-6 flex-grow-1 mb-0"><span class="badge badge-soft-primary" id="performance_shift2"></span></h4>
+                                            <h4 class="fs-6 flex-grow-1 mb-0"><span class="badge badge-soft-primary" id="performance_shift3"></span></h4>
+
+                                        </div>
+                                        <p class="text-muted mb-0">By date - Shift</p>
+                                    </div>
+                                </div>
+                            </div><!-- end card body -->
+                        </div>
+                    </div><!-- end col -->
+
+                    <div class="col-xl-3">
+                        <div class="card card-animate">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm flex-shrink-0">
+                                        <span class="avatar-title bg-info rounded-2 fs-2">
+                                            <i data-feather="x-circle"></i>
+                                        </span>
+                                    </div>
+                                    <div class="flex-grow-1 overflow-hidden ms-3">
+                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-3">
+                                            Gagal Filling</p>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <h6 class="fs-6 flex-grow-1 mb-0">Shift 1</h6>
+                                            <h6 class="fs-6 flex-grow-1 mb-0">Shift 2</h6>
+                                            <h6 class="fs-6 flex-grow-1 mb-0">Shift 3</h6>
+
+                                        </div>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <h4 class="fs-6 flex-grow-1 mb-0"><span class="badge badge-soft-primary" id="gagal_filling_shift1"></span></h4>
+                                            <h4 class="fs-6 flex-grow-1 mb-0"><span class="badge badge-soft-primary" id="gagal_filling_shift2"></span></h4>
+                                            <h4 class="fs-6 flex-grow-1 mb-0"><span class="badge badge-soft-primary" id="gagal_filling_shift3"></span></h4>
+
+                                        </div>
+                                        <p class="text-muted mb-0">By date - Shift</p>
+                                    </div>
+                                </div>
+                            </div><!-- end card body -->
+                        </div>
+                    </div><!-- end col -->
+
+                </div><!-- end row -->
+            </div>
         </div>
 
         <div class="row">
             <div class="col-xl-12">
-                <div class="d-flex justify-content-start align-items-center flex-wrap">
-                    <div class="me-2">
-                        <select id="filter" class="form-control">
-                            <option value="today" selected>Hari Ini</option>
-                            <option value="date">Pilih Tanggal</option>
-                            <option value="range">Rentang Tanggal</option>
-                        </select>
-                    </div>
-                    <div class="me-2 d-none" id="start-date-group">
-                        <input type="date" id="start-date" class="form-control" />
-                    </div>
-                    <div class="me-2 d-none" id="end-date-group">
-                        <input type="date" id="end-date" class="form-control" />
-                    </div>
-                    <div>
-                        <button class="btn btn-primary" id="apply-filter">Terapkan</button>
-                    </div>
-                </div><br>
+
                 <div class="card crm-widget">
                     <div class="card-body p-0">
 
@@ -430,7 +588,7 @@
                                 show: true,
                                 fontSize: '22px',
                                 formatter: function(val) {
-                                    return parseFloat(val).toFixed(1) + ' %';
+                                    return parseFloat(val).toFixed(1) + ' Spm';
                                 }
                             }
                         }
@@ -487,9 +645,10 @@
                 type: "GET",
                 dataType: "json",
                 success: function(data) {
-                    console.log(data);
-                    const totalCounter = data.total_counter;
-                    animateCounter($('#total_counter'), totalCounter, 1000);
+                    // console.log(data);
+                    $('#total_counter').text(data.total_counter);
+                    // const totalCounter = data.total_counter;
+                    // animateCounter($('#total_counter'), totalCounter, 1000);
                     let startMesin = data.Start_Mesin;
                     let imagePath = '';
 
@@ -514,12 +673,59 @@
                     console.error("Error fetching data:", error);
                 }
             });
-           
+
+            $.ajax({
+                url: "{{ url('retail/d4/output/performance') }}",
+                type: "GET",
+                dataType: "json",
+                success: function(data) {
+                    //console.log(data);
+                    $('#performance_output_realtime').text(data.performance_output_percent + ' %');
+                    $('#shift_performance').text(data.shift);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching data:", error);
+                }
+            });
+
+            $.ajax({
+                url: "{{url('retail/d4/mesin-start-periods')}}",
+                method: 'GET',
+                // data: data,
+                dataType: "json",
+                success: function(response) {
+                    $('#total_start_mesin').text(response.total);
+                    // const total = parseInt(response.total) || 0;
+                    // animateCounter($('#total_start_mesin'), total, 1000);
+                    //  console.log(response);
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr.responseJSON);
+                }
+            });
+
+            $.ajax({
+                url: "{{url('retail/d4/average-main-speed')}}",
+                method: 'GET',
+                // data: data,
+                dataType: "json",
+                success: function(response) {
+                    // console.log('Average Main Speed:', response.average_main_speed);
+                    const avg = parseFloat(response.average_main_speed).toFixed(2) || 0;
+                    // animateCounter($('#average_main_speed'), avg, 1000);
+                    $('#average_main_speed').text(avg);
+
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr.responseJSON);
+                }
+            });
+
             updateDateTime();
         }
 
         get_data();
-        setInterval(get_data, 10000); // refresh setiap 10 detik
+        setInterval(get_data, 5000); // refresh setiap 5 detik
 
         $('#filter').on('change', function() {
             let selected = $(this).val();
@@ -547,28 +753,6 @@
             }
 
             $.ajax({
-                url: "{{url('retail/d4/average-main-speed')}}",
-                method: 'GET',
-                data: data,
-                success: function(response) {
-                    console.log('Average Main Speed:', response.average_main_speed);
-                    // $('#average_main_speed').text(
-                    //     response.average_main_speed !== null ?
-                    //     parseFloat(response.average_main_speed).toFixed(2) + ' %' :
-                    //     '0 %'
-                    // );
-
-
-                    const avg = parseFloat(response.average_main_speed).toFixed(2) || 0;
-                    animateCounter($('#average_main_speed'), avg, 1000);
-
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseJSON);
-                }
-            });
-
-            $.ajax({
                 url: "{{url('retail/d4/nozzle-count')}}",
                 method: 'GET',
                 data: data,
@@ -589,14 +773,71 @@
             });
 
             $.ajax({
-                url: "{{url('retail/d4/mesin-start-periods')}}",
+                url: "{{url('retail/d4/mesin/uptime')}}",
                 method: 'GET',
                 data: data,
                 success: function(response) {
+                    response.forEach(item => {
+                        const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
+                        const text = item.mesin_uptime + ' %';
+                        $(`#uptime_${shiftId}`).text(text);
+                    });
 
-                    const total = parseInt(response.total) || 0;
-                    animateCounter($('#total_start_mesin'), total, 1000);
-                    console.log(response);
+                    //console.log(response);
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr.responseJSON);
+                }
+            });
+
+            $.ajax({
+                url: "{{url('retail/d4/mesin/downtime')}}",
+                method: 'GET',
+                data: data,
+                success: function(response) {
+                    response.forEach(item => {
+                        const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
+                        const text = item.mesin_downtime + ' %';
+                        $(`#downtime_${shiftId}`).text(text);
+                    });
+
+                    //console.log(response);
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr.responseJSON);
+                }
+            });
+
+            $.ajax({
+                url: "{{url('retail/d4/output/performance/all_shift')}}",
+                method: 'GET',
+                data: data,
+                success: function(response) {
+                    response.forEach(item => {
+                        const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
+                        const text = item.performance_output_percent + ' %';
+                        $(`#performance_${shiftId}`).text(text);
+                    });
+
+                    // console.log(response);
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr.responseJSON);
+                }
+            });
+
+            $.ajax({
+                url: "{{url('retail/d4/output/gagal/filling')}}",
+                method: 'GET',
+                data: data,
+                success: function(response) {
+                    response.forEach(item => {
+                        const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
+                        const text = item.performance_gagal_filling_percent + ' %';
+                        $(`#gagal_filling_${shiftId}`).text(text);
+                    });
+
+                    //console.log(response);
                 },
                 error: function(xhr) {
                     console.error('Error:', xhr.responseJSON);

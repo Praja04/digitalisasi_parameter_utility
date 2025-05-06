@@ -56,23 +56,23 @@ class RetailController extends Controller
     public function getAverageMainSpeed(Request $request)
     {
         // Validasi input
-        $request->validate([
-            'filter' => 'required|in:realtime,tanggal,range',
-            'tanggal' => 'nullable|date',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date'
-        ]);
+        // $request->validate([
+        //     'filter' => 'required|in:realtime,tanggal,range',
+        //     'tanggal' => 'nullable|date',
+        //     'start_date' => 'nullable|date',
+        //     'end_date' => 'nullable|date'
+        // ]);
 
         $query = retail_d4::query();
 
         // Filter berdasarkan waktu
-        if ($request->filter == 'realtime') {
+        // if ($request->filter == 'realtime') {
             $query->whereDate('waktu', now());
-        } elseif ($request->filter == 'tanggal') {
-            $query->whereDate('waktu', $request->tanggal);
-        } elseif ($request->filter == 'range') {
-            $query->whereBetween('waktu', [$request->start_date, $request->end_date]);
-        }
+        // } elseif ($request->filter == 'tanggal') {
+        //     $query->whereDate('waktu', $request->tanggal);
+        // } elseif ($request->filter == 'range') {
+        //     $query->whereBetween('waktu', [$request->start_date, $request->end_date]);
+        // }
 
         // Hitung rata-rata main_speed, kembalikan 0 jika null
         $average = $query->avg('main_speed') ?? 0;
@@ -140,15 +140,16 @@ class RetailController extends Controller
 
     public function getMesinStartPeriods(Request $request)
     {
-        $request->validate([
-            'filter' => 'nullable|in:realtime,tanggal,range',
-            'start' => 'nullable|date',
-            'end' => 'nullable|date',
-        ]);
+        // Ambil parameter langsung dari query string
+        $filter = $request->query('filter', 'realtime');
+        $tanggal = $request->query('tanggal'); // untuk filter 'tanggal'
+        $start = $request->query('start_date');
+        $end = $request->query('end_date');
 
-        $filter = $request->input('filter', 'realtime'); // Default ke 'today' jika tidak dikirim
-        $start = $request->input('start');
-        $end = $request->input('end');
+        // Mapping untuk model
+        if ($filter === 'tanggal') {
+            $start = $tanggal;
+        }
 
         $periods = retail_d4::getMesinStartPeriods($filter, $start, $end);
 
@@ -163,5 +164,206 @@ class RetailController extends Controller
             'total' => count($data),
             'data' => $data
         ]);
+    }
+
+
+    //performance mesin
+
+    public function getTotalMesinRunningMinutes(Request $request)
+    {
+        $request->validate([
+            'filter' => 'nullable|in:realtime,tanggal,range',
+            'start' => 'nullable|date',
+            'end' => 'nullable|date',
+        ]);
+
+        $filter = $request->input('filter', 'realtime');
+        $start = $request->input('start');
+        $end = $request->input('end');
+
+        // Ambil total menit dan uptime untuk masing-masing shift
+        $uptime = retail_d4::getTotalMesinRunningMinutesByShift($filter, $start, $end);
+
+        return response()->json([
+            'shift1_uptime' => $uptime['shift1_uptime'],
+            'shift2_uptime' => $uptime['shift2_uptime'],
+            'shift3_uptime' => $uptime['shift3_uptime'],
+        ]);
+    }
+
+    public function getTotalMesinStopMinutes(Request $request)
+    {
+        $request->validate([
+            'filter' => 'nullable|in:realtime,tanggal,range',
+            'start' => 'nullable|date',
+            'end' => 'nullable|date',
+        ]);
+
+        $filter = $request->input('filter', 'realtime');
+        $start = $request->input('start');
+        $end = $request->input('end');
+
+        // Ambil total menit dan uptime untuk masing-masing shift
+        $uptime = retail_d4::getTotalMesinDowntimeByShift($filter, $start, $end);
+
+        return response()->json([
+            'shift1_downtime' => $uptime['shift1_downtime'],
+            'shift2_downtime' => $uptime['shift2_downtime'],
+            'shift3_downtime' => $uptime['shift3_downtime'],
+        ]);
+    }
+
+    public function getStartPeriods(Request $request)
+    {
+        $request->validate([
+            'filter' => 'nullable|in:realtime,tanggal',  // Filter yang dapat berisi 'realtime' atau 'tanggal'
+            'tanggal' => 'nullable|date',                // Validasi input tanggal jika ada
+        ]);
+
+        // Ambil nilai filter dari request, default 'realtime' jika tidak ada
+        $filter = $request->input('filter', 'realtime');
+
+        // Ambil nilai tanggal dari request, jika tidak ada, set null
+        $tanggal = $request->input('tanggal', null);
+
+        // Menentukan logika berdasarkan filter yang dipilih
+        if ($filter == 'realtime') {
+            // Set tanggal ke hari ini menggunakan fungsi PHP `date`
+            $tanggal = date('Y-m-d');  // Tanggal hari ini dalam format Y-m-d
+        }
+
+        // Ambil data berdasarkan tanggal yang sudah diset
+        $data = retail_d4::getDurasiMesinPerShift($tanggal);
+
+        // Kembalikan hasil dalam format JSON
+        return response()->json($data);
+    }
+
+    public function getuptime(Request $request)
+    {
+        $request->validate([
+            'filter' => 'nullable|in:realtime,tanggal',  // Filter yang dapat berisi 'realtime' atau 'tanggal'
+            'tanggal' => 'nullable|date',                // Validasi input tanggal jika ada
+        ]);
+
+        // Ambil nilai filter dari request, default 'realtime' jika tidak ada
+        $filter = $request->input('filter', 'realtime');
+
+        // Ambil nilai tanggal dari request, jika tidak ada, set null
+        $tanggal = $request->input('tanggal', null);
+
+        // Menentukan logika berdasarkan filter yang dipilih
+        if ($filter == 'realtime') {
+            // Set tanggal ke hari ini menggunakan fungsi PHP `date`
+            $tanggal = date('Y-m-d');  // Tanggal hari ini dalam format Y-m-d
+        }
+
+        // Ambil data berdasarkan tanggal yang sudah diset
+        $data = retail_d4::getUptime($tanggal);
+
+        // Kembalikan hasil dalam format JSON
+        return response()->json($data);
+    }
+
+    public function getdowntime(Request $request)
+    {
+        $request->validate([
+            'filter' => 'nullable|in:realtime,tanggal',  // Filter yang dapat berisi 'realtime' atau 'tanggal'
+            'tanggal' => 'nullable|date',                // Validasi input tanggal jika ada
+        ]);
+
+        // Ambil nilai filter dari request, default 'realtime' jika tidak ada
+        $filter = $request->input('filter', 'realtime');
+
+        // Ambil nilai tanggal dari request, jika tidak ada, set null
+        $tanggal = $request->input('tanggal', null);
+
+        // Menentukan logika berdasarkan filter yang dipilih
+        if ($filter == 'realtime') {
+            // Set tanggal ke hari ini menggunakan fungsi PHP `date`
+            $tanggal = date('Y-m-d');  // Tanggal hari ini dalam format Y-m-d
+        }
+
+        // Ambil data berdasarkan tanggal yang sudah diset
+        $data = retail_d4::getDownTime($tanggal);
+
+        // Kembalikan hasil dalam format JSON
+        return response()->json($data);
+    }
+
+    public function getperformanceActual(Request $request)
+    {
+
+        $tanggal = date('Y-m-d');
+
+
+        // Ambil data berdasarkan tanggal yang sudah diset
+        $data = retail_d4::getUptimeWithRealtime($tanggal);
+
+        // Kembalikan hasil dalam format JSON
+        return response()->json($data);
+    }
+
+    public function getperformanceOutput(Request $request)
+    {
+        $tanggal = date('Y-m-d');
+
+        // Ambil data berdasarkan tanggal yang sudah diset
+        $data = retail_d4::getPerformanceOutput($tanggal);
+
+        // Kembalikan hasil dalam format JSON
+        return response()->json($data);
+    }
+
+    public function getperformanceOutputAllShift(Request $request)
+    {
+        $request->validate([
+            'filter' => 'nullable|in:realtime,tanggal',  // Filter yang dapat berisi 'realtime' atau 'tanggal'
+            'tanggal' => 'nullable|date',                // Validasi input tanggal jika ada
+        ]);
+
+        // Ambil nilai filter dari request, default 'realtime' jika tidak ada
+        $filter = $request->input('filter', 'realtime');
+
+        // Ambil nilai tanggal dari request, jika tidak ada, set null
+        $tanggal = $request->input('tanggal', null);
+
+        // Menentukan logika berdasarkan filter yang dipilih
+        if ($filter == 'realtime') {
+            // Set tanggal ke hari ini menggunakan fungsi PHP `date`
+            $tanggal = date('Y-m-d');  // Tanggal hari ini dalam format Y-m-d
+        }
+
+        // Ambil data berdasarkan tanggal yang sudah diset
+        $data = retail_d4::getAllShiftPerformanceOutput($tanggal);
+
+        // Kembalikan hasil dalam format JSON
+        return response()->json($data);
+    }
+
+    public function getGagalFilling(Request $request)
+    {
+        $request->validate([
+            'filter' => 'nullable|in:realtime,tanggal',  // Filter yang dapat berisi 'realtime' atau 'tanggal'
+            'tanggal' => 'nullable|date',                // Validasi input tanggal jika ada
+        ]);
+
+        // Ambil nilai filter dari request, default 'realtime' jika tidak ada
+        $filter = $request->input('filter', 'realtime');
+
+        // Ambil nilai tanggal dari request, jika tidak ada, set null
+        $tanggal = $request->input('tanggal', null);
+
+        // Menentukan logika berdasarkan filter yang dipilih
+        if ($filter == 'realtime') {
+            // Set tanggal ke hari ini menggunakan fungsi PHP `date`
+            $tanggal = date('Y-m-d');  // Tanggal hari ini dalam format Y-m-d
+        }
+
+        // Ambil data berdasarkan tanggal yang sudah diset
+        $data = retail_d4::getPerformanceGagalFilling($tanggal);
+
+        // Kembalikan hasil dalam format JSON
+        return response()->json($data);
     }
 }

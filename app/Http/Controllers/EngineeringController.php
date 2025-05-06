@@ -45,7 +45,7 @@ class EngineeringController extends Controller
     public function dashboardSupervisorEng()
     {
         if (Session::get('jabatan') == 'supervisor') {
-            return view('user.supervisor.dashboard_eng');
+            return view('user.supervisor.eng.dashboard_eng');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
