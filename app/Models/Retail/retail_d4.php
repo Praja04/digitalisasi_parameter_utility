@@ -1470,7 +1470,7 @@ class retail_d4 extends Model
             // 4️⃣ Hitung performance gagal filling
             $denominator = $runningTimeMinutescount * $actualSpeed * 2;
             $performanceGoodFilling = $denominator > 0
-                ? ($totalNozzleAktif / $denominator) 
+                ? (($totalNozzleAktif / $denominator)*100 )
                 : 0;
             $performanceGagalFilling = $performanceGoodFilling > 0 ? (100 - $performanceGoodFilling) : 0;
 
