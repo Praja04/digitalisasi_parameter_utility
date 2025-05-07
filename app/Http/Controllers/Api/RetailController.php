@@ -398,15 +398,15 @@ class RetailController extends Controller
             $hasil = [
                 'shift1' => [
                     'shift1_detik' => $durasi['shift1_detik'],
-                    'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 480 : 0,
+                    'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
                 ],
                 'shift2' => [
                     'shift2_detik' => $durasi['shift2_detik'],
-                    'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 480 : 0,
+                    'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 420 : 0,
                 ],
                 'shift3' => [
                     'shift3_detik' => $durasi['shift3_detik'],
-                    'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 480 : 0,
+                    'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 420 : 0,
                 ]
             ];
         } elseif ($filter === 'tanggal' && $tanggal) {
@@ -416,15 +416,15 @@ class RetailController extends Controller
             $hasil = [
                 'shift1' => [
                     'shift1_detik' => $durasi['shift1_detik'],
-                    'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 480 : 0,
+                    'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
                 ],
                 'shift2' => [
                     'shift2_detik' => $durasi['shift2_detik'],
-                    'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 480 : 0,
+                    'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 420 : 0,
                 ],
                 'shift3' => [
                     'shift3_detik' => $durasi['shift3_detik'],
-                    'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 480 : 0,
+                    'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 420 : 0,
                 ]
             ];
         } elseif ($filter === 'range' && $start && $end) {
@@ -439,15 +439,15 @@ class RetailController extends Controller
                 $periode[$tanggal] = [
                     'shift1' => [
                         'shift1_detik' => $durasi['shift1_detik'],
-                        'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 480 : 0,
+                        'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
                     ],
                     'shift2' => [
                         'shift2_detik' => $durasi['shift2_detik'],
-                        'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 480 : 0,
+                        'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 420 : 0,
                     ],
                     'shift3' => [
                         'shift3_detik' => $durasi['shift3_detik'],
-                        'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 480 : 0,
+                        'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 420 : 0,
                     ]
                 ];
 
@@ -488,15 +488,15 @@ class RetailController extends Controller
             $hasil = [
                 'shift1' => [
                     'shift1_detik' => $durasi['shift1_detik'],
-                    'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 480 : 0,
+                    'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
                 ],
                 'shift2' => [
                     'shift2_detik' => $durasi['shift2_detik'],
-                    'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 480 : 0,
+                    'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 420 : 0,
                 ],
                 'shift3' => [
                     'shift3_detik' => $durasi['shift3_detik'],
-                    'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 480 : 0,
+                    'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 420 : 0,
                 ]
             ];
         } elseif ($filter === 'tanggal' && $tanggal) {
@@ -506,15 +506,15 @@ class RetailController extends Controller
             $hasil = [
                 'shift1' => [
                     'shift1_detik' => $durasi['shift1_detik'],
-                    'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 480 : 0,
+                    'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
                 ],
                 'shift2' => [
                     'shift2_detik' => $durasi['shift2_detik'],
-                    'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 480 : 0,
+                    'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 420 : 0,
                 ],
                 'shift3' => [
                     'shift3_detik' => $durasi['shift3_detik'],
-                    'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 480 : 0,
+                    'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 420 : 0,
                 ]
             ];
         } elseif ($filter === 'range' && $start && $end) {
@@ -529,15 +529,15 @@ class RetailController extends Controller
                 $periode[$tgl] = [
                     'shift1' => [
                         'shift1_detik' => $durasi['shift1_detik'],
-                        'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 480 : 0,
+                        'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
                     ],
                     'shift2' => [
                         'shift2_detik' => $durasi['shift2_detik'],
-                        'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 480 : 0,
+                        'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 420 : 0,
                     ],
                     'shift3' => [
                         'shift3_detik' => $durasi['shift3_detik'],
-                        'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 480 : 0,
+                        'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 420 : 0,
                     ]
                 ];
 
