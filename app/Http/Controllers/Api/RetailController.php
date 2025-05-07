@@ -578,8 +578,8 @@ class RetailController extends Controller
 
             // Tentukan awal dan akhir shift dalam WIB
             $shift1_awal = Carbon::createFromFormat('Y-m-d H:i:s', "$tanggal 06:00:00", 'Asia/Jakarta');
-            $shift2_awal = Carbon::createFromFormat('Y-m-d H:i:s', "$tanggal 14:01:00", 'Asia/Jakarta');
-            $shift3_awal = Carbon::createFromFormat('Y-m-d H:i:s', "$tanggal 22:01:00", 'Asia/Jakarta');
+            $shift2_awal = Carbon::createFromFormat('Y-m-d H:i:s', "$tanggal 14:00:01", 'Asia/Jakarta');
+            $shift3_awal = Carbon::createFromFormat('Y-m-d H:i:s', "$tanggal 22:00:01", 'Asia/Jakarta');
             $shift3_akhir = Carbon::createFromFormat('Y-m-d H:i:s', Carbon::parse($tanggal)->addDay()->format('Y-m-d') . ' 05:59:59', 'Asia/Jakarta');
 
             // Hitung menit berjalan hanya jika sekarang berada dalam range shift-nya
@@ -632,8 +632,8 @@ class RetailController extends Controller
 
             // Tentukan awal dan akhir shift dalam WIB
             $shift1_awal = Carbon::createFromFormat('Y-m-d H:i:s', "$tanggal 06:00:00", 'Asia/Jakarta');
-            $shift2_awal = Carbon::createFromFormat('Y-m-d H:i:s', "$tanggal 14:01:00", 'Asia/Jakarta');
-            $shift3_awal = Carbon::createFromFormat('Y-m-d H:i:s', "$tanggal 22:01:00", 'Asia/Jakarta');
+            $shift2_awal = Carbon::createFromFormat('Y-m-d H:i:s', "$tanggal 14:00:01", 'Asia/Jakarta');
+            $shift3_awal = Carbon::createFromFormat('Y-m-d H:i:s', "$tanggal 22:00:01", 'Asia/Jakarta');
             $shift3_akhir = Carbon::createFromFormat('Y-m-d H:i:s', Carbon::parse($tanggal)->addDay()->format('Y-m-d') . ' 05:59:59', 'Asia/Jakarta');
 
             // Hitung menit berjalan hanya jika sekarang berada dalam range shift-nya
