@@ -1267,82 +1267,82 @@ class retail_d4 extends Model
         return $results;
     }
 
-    public static function getPerformanceGagalFilling($tanggal = null)
-    {
-        $timezone = 'Asia/Jakarta';
-        $now = Carbon::now($timezone);
-        $carbonDate = $tanggal
-            ? Carbon::parse($tanggal, $timezone)
-            : $now->copy();
+    // public static function getPerformanceGagalFilling($tanggal = null)
+    // {
+    //     $timezone = 'Asia/Jakarta';
+    //     $now = Carbon::now($timezone);
+    //     $carbonDate = $tanggal
+    //         ? Carbon::parse($tanggal, $timezone)
+    //         : $now->copy();
 
-        $shifts = [
-            [
-                'name' => 'Shift 1',
-                'start' => $carbonDate->copy()->setTime(6, 0, 0),
-                'end'   => $carbonDate->copy()->setTime(14, 0, 0),
-            ],
-            [
-                'name' => 'Shift 2',
-                'start' => $carbonDate->copy()->setTime(14, 1, 0),
-                'end'   => $carbonDate->copy()->setTime(22, 0, 0),
-            ],
-            [
-                'name' => 'Shift 3',
-                'start' => $carbonDate->copy()->setTime(22, 1, 0),
-                'end'   => $carbonDate->copy()->addDay()->setTime(5, 59, 59),
-            ],
-        ];
+    //     $shifts = [
+    //         [
+    //             'name' => 'Shift 1',
+    //             'start' => $carbonDate->copy()->setTime(6, 0, 0),
+    //             'end'   => $carbonDate->copy()->setTime(14, 0, 0),
+    //         ],
+    //         [
+    //             'name' => 'Shift 2',
+    //             'start' => $carbonDate->copy()->setTime(14, 1, 0),
+    //             'end'   => $carbonDate->copy()->setTime(22, 0, 0),
+    //         ],
+    //         [
+    //             'name' => 'Shift 3',
+    //             'start' => $carbonDate->copy()->setTime(22, 1, 0),
+    //             'end'   => $carbonDate->copy()->addDay()->setTime(5, 59, 59),
+    //         ],
+    //     ];
 
-        $results = [];
+    //     $results = [];
 
-        foreach ($shifts as $shift) {
-            $data = self::whereBetween('waktu', [$shift['start'], $shift['end']])
-                ->orderBy('waktu')
-                ->get();
+    //     foreach ($shifts as $shift) {
+    //         $data = self::whereBetween('waktu', [$shift['start'], $shift['end']])
+    //             ->orderBy('waktu')
+    //             ->get();
 
-            // 1️⃣ Hitung durasi mesin menyala (Start_Mesin = 1)
-            $runningTimeMinutes = 0;
-            $previousTime = null;
-            foreach ($data as $row) {
-                if ($row->Start_Mesin == 1) {
-                    if ($previousTime) {
-                        $diff = Carbon::parse($row->waktu)->diffInMinutes($previousTime);
-                        $runningTimeMinutes += $diff;
-                    }
-                    $previousTime = Carbon::parse($row->waktu);
-                } else {
-                    $previousTime = null;
-                }
-            }
+    //         // 1️⃣ Hitung durasi mesin menyala (Start_Mesin = 1)
+    //         $runningTimeMinutes = 0;
+    //         $previousTime = null;
+    //         foreach ($data as $row) {
+    //             if ($row->Start_Mesin == 1) {
+    //                 if ($previousTime) {
+    //                     $diff = Carbon::parse($row->waktu)->diffInMinutes($previousTime);
+    //                     $runningTimeMinutes += $diff;
+    //                 }
+    //                 $previousTime = Carbon::parse($row->waktu);
+    //             } else {
+    //                 $previousTime = null;
+    //             }
+    //         }
 
-            // 2️⃣ Hitung total nozzle aktif
-            $totalNozzleAktif = $data->reduce(function ($carry, $item) {
-                return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
-            }, 0);
+    //         // 2️⃣ Hitung total nozzle aktif
+    //         $totalNozzleAktif = $data->reduce(function ($carry, $item) {
+    //             return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
+    //         }, 0);
 
-            // 3️⃣ Ambil nilai actual speed terakhir
-            $actualSpeed = optional($data->last())->main_speed ?? 0;
-            $hasilrunningtime = $runningTimeMinutes * (-1);
-            // 4️⃣ Hitung performance gagal filling
-            $denominator = $hasilrunningtime * $actualSpeed * 2;
-            $performanceGoodFilling = $denominator > 0
-                ? ($totalNozzleAktif / $denominator) * 100
-                : 0;
-            $performanceGagalFilling= $performanceGoodFilling > 0 ? (100 - $performanceGoodFilling) : 0;
-            $results[] = [
-                'shift' => $shift['name'],
-                'tanggal' => $carbonDate->toDateString(),
-                'waktu_awal_shift' => $shift['start']->toDateTimeString(),
-                'waktu_akhir_shift' => $shift['end']->toDateTimeString(),
-                'akumulasi_menit_mesin_menyala' => $hasilrunningtime,
-                'actual_speed' => $actualSpeed,
-                'total_nozzle_aktif' => $totalNozzleAktif,
-                'performance_gagal_filling_percent' => round($performanceGagalFilling, 2),
-            ];
-        }
+    //         // 3️⃣ Ambil nilai actual speed terakhir
+    //         $actualSpeed = optional($data->last())->main_speed ?? 0;
+    //         $hasilrunningtime = $runningTimeMinutes * (-1);
+    //         // 4️⃣ Hitung performance gagal filling
+    //         $denominator = $hasilrunningtime * $actualSpeed * 2;
+    //         $performanceGoodFilling = $denominator > 0
+    //             ? ($totalNozzleAktif / $denominator) * 100
+    //             : 0;
+    //         $performanceGagalFilling= $performanceGoodFilling > 0 ? (100 - $performanceGoodFilling) : 0;
+    //         $results[] = [
+    //             'shift' => $shift['name'],
+    //             'tanggal' => $carbonDate->toDateString(),
+    //             'waktu_awal_shift' => $shift['start']->toDateTimeString(),
+    //             'waktu_akhir_shift' => $shift['end']->toDateTimeString(),
+    //             'akumulasi_menit_mesin_menyala' => $hasilrunningtime,
+    //             'actual_speed' => $actualSpeed,
+    //             'total_nozzle_aktif' => $totalNozzleAktif,
+    //             'performance_gagal_filling_percent' => round($performanceGagalFilling, 2),
+    //         ];
+    //     }
 
-        return $results;
-    }
+    //     return $results;
+    // }
 
     public static function getPerformanceGagalFillingRange($startDate, $endDate)
     {
@@ -1417,6 +1417,75 @@ class retail_d4 extends Model
                     'performance_gagal_filling_percent' => round($performanceGagalFilling, 2),
                 ];
             }
+        }
+
+        return $results;
+    }
+
+    public static function getPerformanceGagalFilling($tanggal = null)
+    {
+        $timezone = 'Asia/Jakarta';
+        $now = Carbon::now($timezone);
+        $carbonDate = $tanggal
+        ? Carbon::parse($tanggal, $timezone)
+        : $now->copy();
+
+        $shifts = [
+                [
+                    'name' => 'Shift 1',
+                    'start' => $carbonDate->copy()->setTime(6, 0, 0),
+                    'end'   => $carbonDate->copy()->setTime(14, 0, 0),
+                ],
+                [
+                    'name' => 'Shift 2',
+                    'start' => $carbonDate->copy()->setTime(14, 1, 0),
+                    'end'   => $carbonDate->copy()->setTime(22, 0, 0),
+                ],
+                [
+                    'name' => 'Shift 3',
+                    'start' => $carbonDate->copy()->setTime(22, 1, 0),
+                    'end'   => $carbonDate->copy()->addDay()->setTime(5, 59, 59),
+                ],
+            ];
+
+        $results = [];
+
+        foreach ($shifts as $shift) {
+            $data = self::whereBetween('waktu', [$shift['start'], $shift['end']])
+                ->orderBy('waktu')
+                ->get();
+
+            // 1️⃣ Hitung jumlah Start_Mesin == 1
+            $runningTimeMinutes = $data->where('Start_Mesin', 1)->count();
+            $runningTimeMinutescount = $runningTimeMinutes / 60; // Ubah detik ke menit
+
+            // 2️⃣ Hitung total nozzle aktif
+            $totalNozzleAktif = $data->reduce(function ($carry, $item) {
+                return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
+            }, 0);
+
+            // 3️⃣ Ambil nilai actual speed terakhir
+            $actualSpeed = optional($data->last())->main_speed ?? 0;
+
+            // 4️⃣ Hitung performance gagal filling
+            $denominator = $runningTimeMinutescount * $actualSpeed * 2;
+            $performanceGoodFilling = $denominator > 0
+                ? ($totalNozzleAktif / $denominator) 
+                : 0;
+            $performanceGagalFilling = $performanceGoodFilling > 0 ? (100 - $performanceGoodFilling) : 0;
+
+            $results[] = [
+                'shift' => $shift['name'],
+                'dominator' => $denominator,
+                'goodfilling' => $performanceGoodFilling,
+                'tanggal' => $carbonDate->toDateString(),
+                'waktu_awal_shift' => $shift['start']->toDateTimeString(),
+                'waktu_akhir_shift' => $shift['end']->toDateTimeString(),
+                'jumlah_start_mesin' => $runningTimeMinutescount,
+                'actual_speed' => $actualSpeed,
+                'total_nozzle_aktif' => $totalNozzleAktif,
+                'performance_gagal_filling_percent' => round($performanceGagalFilling, 2),
+            ];
         }
 
         return $results;
