@@ -288,6 +288,7 @@ Route::prefix('retail')->group(function () {
 
     Route::get('/d4/mesin/start', [RetailController::class, 'durasiStartMesinPerShift']);
     Route::get('/d4/mesin/start/realtime', [RetailController::class, 'durasiStartMesinPerShiftRealtime']);
+    Route::get('/d4/mesin/stop/realtime', [RetailController::class, 'durasiStopMesinPerShiftRealtime']);
     Route::get('/d4/mesin/stop', [RetailController::class, 'durasiOffMesinPerShift']);
    
 });
