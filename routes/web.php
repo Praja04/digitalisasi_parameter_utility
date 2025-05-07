@@ -285,5 +285,9 @@ Route::prefix('retail')->group(function () {
     Route::get('/d4/mesin/uptime', [RetailController::class, 'getuptime']);
     Route::get('/d4/mesin/downtime', [RetailController::class, 'getdowntime']);
     Route::get('/d4/mesin', [RetailController::class, 'getStartPeriods']);
+
+    Route::get('/d4/mesin/start', [RetailController::class, 'durasiStartMesinPerShift']);
+    Route::get('/d4/mesin/start/realtime', [RetailController::class, 'durasiStartMesinPerShiftRealtime']);
+    Route::get('/d4/mesin/stop', [RetailController::class, 'durasiOffMesinPerShift']);
    
 });

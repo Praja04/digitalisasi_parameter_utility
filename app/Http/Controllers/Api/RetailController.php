@@ -307,6 +307,8 @@ class RetailController extends Controller
     public function getperformanceOutput(Request $request)
     {
         $tanggal = date('Y-m-d');
+        // Pastikan timezone Asia/Jakarta
+        $tanggal = Carbon::now('Asia/Jakarta')->format('Y-m-d');
 
         // Ambil data berdasarkan tanggal yang sudah diset
         $data = retail_d4::getPerformanceOutput($tanggal);
@@ -366,4 +368,245 @@ class RetailController extends Controller
         // Kembalikan hasil dalam format JSON
         return response()->json($data);
     }
+
+
+
+    /////test
+
+    
+
+    public function durasiStartMesinPerShift(Request $request)
+    {
+        $request->validate([
+            'filter' => 'nullable|in:realtime,tanggal,range',
+            'start' => 'nullable|date',
+            'end' => 'nullable|date',
+        ]);
+
+        $filter = $request->input('filter', 'realtime');
+        $start = $request->input('start');
+        $end = $request->input('end');
+
+        $hasil = [];
+
+        if ($filter === 'realtime') {
+            $tanggal = Carbon::now()->toDateString(); // hari ini
+            $durasi = retail_d4::getStartMesinDurasiPerShift($tanggal);
+
+            // Menghitung hasil per shift langsung dalam controller
+            $hasil = [
+                'shift1' => [
+                    'shift1_detik' => $durasi['shift1_detik'],
+                    'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
+                ],
+                'shift2' => [
+                    'shift2_detik' => $durasi['shift2_detik'],
+                    'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 420 : 0,
+                ],
+                'shift3' => [
+                    'shift3_detik' => $durasi['shift3_detik'],
+                    'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 420 : 0,
+                ]
+            ];
+        } elseif ($filter === 'tanggal' && $start) {
+            $tanggal = Carbon::parse($start)->toDateString();
+            $durasi = retail_d4::getStartMesinDurasiPerShift($tanggal);
+
+            // Menghitung hasil per shift langsung dalam controller
+            $hasil = [
+                'shift1' => [
+                    'shift1_detik' => $durasi['shift1_detik'],
+                    'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
+                ],
+                'shift2' => [
+                    'shift2_detik' => $durasi['shift2_detik'],
+                    'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 420 : 0,
+                ],
+                'shift3' => [
+                    'shift3_detik' => $durasi['shift3_detik'],
+                    'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 420 : 0,
+                ]
+            ];
+        } elseif ($filter === 'range' && $start && $end) {
+            $periode = [];
+            $mulai = Carbon::parse($start);
+            $selesai = Carbon::parse($end);
+
+            while ($mulai->lte($selesai)) {
+                $tanggal = $mulai->toDateString();
+                $durasi = retail_d4::getStartMesinDurasiPerShift($tanggal);
+
+                // Menghitung hasil per shift langsung dalam controller
+                $periode[$tanggal] = [
+                    'shift1' => [
+                        'shift1_detik' => $durasi['shift1_detik'],
+                        'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
+                    ],
+                    'shift2' => [
+                        'shift2_detik' => $durasi['shift2_detik'],
+                        'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 420 : 0,
+                    ],
+                    'shift3' => [
+                        'shift3_detik' => $durasi['shift3_detik'],
+                        'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 420 : 0,
+                    ]
+                ];
+
+                $mulai->addDay();
+            }
+
+            $hasil = $periode;
+        }
+
+        return response()->json([
+            "result"=> $hasil
+        ]);
+    }
+
+
+
+    public function durasiOffMesinPerShift(Request $request)
+    {
+        $request->validate([
+            'filter' => 'nullable|in:realtime,tanggal,range',
+            'start' => 'nullable|date',
+            'end' => 'nullable|date',
+        ]);
+
+        $filter = $request->input('filter', 'realtime');
+        $start = $request->input('start');
+        $end = $request->input('end');
+
+        $hasil = [];
+
+        if ($filter === 'realtime') {
+            $tanggal = Carbon::now()->toDateString(); // hari ini
+            $durasi = retail_d4::getOffMesinDurasiPerShift($tanggal);
+
+            // Menghitung hasil per shift langsung dalam controller
+            $hasil = [
+                'shift1' => [
+                    'shift1_detik' => $durasi['shift1_detik'],
+                    'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
+                ],
+                'shift2' => [
+                    'shift2_detik' => $durasi['shift2_detik'],
+                    'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 420 : 0,
+                ],
+                'shift3' => [
+                    'shift3_detik' => $durasi['shift3_detik'],
+                    'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 420 : 0,
+                ]
+            ];
+        } elseif ($filter === 'tanggal' && $start) {
+            $tanggal = Carbon::parse($start)->toDateString();
+            $durasi = retail_d4::getOffMesinDurasiPerShift($tanggal);
+
+            // Menghitung hasil per shift langsung dalam controller
+            $hasil = [
+                'shift1' => [
+                    'shift1_detik' => $durasi['shift1_detik'],
+                    'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
+                ],
+                'shift2' => [
+                    'shift2_detik' => $durasi['shift2_detik'],
+                    'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 420 : 0,
+                ],
+                'shift3' => [
+                    'shift3_detik' => $durasi['shift3_detik'],
+                    'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 420 : 0,
+                ]
+            ];
+        } elseif ($filter === 'range' && $start && $end) {
+            $periode = [];
+            $mulai = Carbon::parse($start);
+            $selesai = Carbon::parse($end);
+
+            while ($mulai->lte($selesai)) {
+                $tanggal = $mulai->toDateString();
+                $durasi = retail_d4::getOffMesinDurasiPerShift($tanggal);
+
+                // Menghitung hasil per shift langsung dalam controller
+                $periode[$tanggal] = [
+                    'shift1' => [
+                        'shift1_detik' => $durasi['shift1_detik'],
+                        'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
+                    ],
+                    'shift2' => [
+                        'shift2_detik' => $durasi['shift2_detik'],
+                        'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / 420 : 0,
+                    ],
+                    'shift3' => [
+                        'shift3_detik' => $durasi['shift3_detik'],
+                        'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 420 : 0,
+                    ]
+                ];
+
+                $mulai->addDay();
+            }
+
+            $hasil = $periode;
+        }
+
+        return response()->json([
+           "result"=> $hasil
+        ]);
+    }
+
+
+   
+    public function durasiStartMesinPerShiftRealtime(Request $request)
+    {
+        $request->validate([
+            'filter' => 'nullable|in:realtime,tanggal,range',
+            'start' => 'nullable|date',
+            'end' => 'nullable|date',
+        ]);
+
+        $filter = $request->input('filter', 'realtime');
+        $start = $request->input('start');
+        $end = $request->input('end');
+
+        $hasil = [];
+
+        if ($filter === 'realtime') {
+            $now = Carbon::now('Asia/Jakarta');
+            $tanggal = $now->toDateString(); // hari ini WIB
+            $durasi = retail_d4::getStartMesinDurasiPerShift($tanggal);
+
+            // Tentukan awal dan akhir shift dalam WIB
+            $shift1_awal = Carbon::createFromFormat('Y-m-d H:i:s', "$tanggal 06:00:00", 'Asia/Jakarta');
+            $shift2_awal = Carbon::createFromFormat('Y-m-d H:i:s', "$tanggal 14:01:00", 'Asia/Jakarta');
+            $shift3_awal = Carbon::createFromFormat('Y-m-d H:i:s', "$tanggal 22:01:00", 'Asia/Jakarta');
+            $shift3_akhir = Carbon::createFromFormat('Y-m-d H:i:s', Carbon::parse($tanggal)->addDay()->format('Y-m-d') . ' 05:59:59', 'Asia/Jakarta');
+
+            // Hitung menit berjalan hanya jika sekarang berada dalam range shift-nya
+            $menit_shift1 = ($now->between($shift1_awal, $shift2_awal)) ? $shift1_awal->diffInMinutes($now) : 420;
+            $menit_shift2 = ($now->between($shift2_awal, $shift3_awal)) ? $shift2_awal->diffInMinutes($now) : 420;
+            $menit_shift3 = ($now->between($shift3_awal, $shift3_akhir)) ? $shift3_awal->diffInMinutes($now) : 420;
+
+            $hasil = [
+                'shift1' => [
+                    'menit_shift' => $menit_shift1,
+                    'shift1_detik' => $durasi['shift1_detik'],
+                    'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / max($menit_shift1, 1) : 0,
+                ],
+                'shift2' => [
+                    'menit_shift' => $menit_shift2,
+                    'shift2_detik' => $durasi['shift2_detik'],
+                    'hasil' => $durasi['shift2_detik'] > 0 ? ($durasi['shift2_detik'] / 60) / max($menit_shift2, 1) : 0,
+                ],
+                'shift3' => [
+                    'menit_shift' => $menit_shift3,
+                    'shift3_detik' => $durasi['shift3_detik'],
+                    'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / max($menit_shift3, 1) : 0,
+                ]
+            ];
+        }
+
+        return response()->json([
+            "result" => $hasil
+        ]);
+    }
+
 }

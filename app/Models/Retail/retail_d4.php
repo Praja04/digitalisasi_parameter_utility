@@ -1149,66 +1149,66 @@ class retail_d4 extends Model
     }
 
     //performance output
-    public static function getPerformanceOutput($tanggal = null)
-    {
-        // Set timezone ke Asia/Jakarta
-        $timezone = 'Asia/Jakarta';
-        $now = Carbon::now($timezone);
+    // public static function getPerformanceOutput($tanggal = null)
+    // {
+    //     // Set timezone ke Asia/Jakarta
+    //     $timezone = 'Asia/Jakarta';
+    //     $now = Carbon::now($timezone);
 
-        // Gunakan waktu saat ini jika tidak diberikan tanggal
-        if (!$tanggal) {
-            $carbonDate = $now->copy();
-        } else {
-            $carbonDate = Carbon::parse($tanggal, $timezone)->setTimeFrom($now);
-        }
+    //     // Gunakan waktu saat ini jika tidak diberikan tanggal
+    //     if (!$tanggal) {
+    //         $carbonDate = $now->copy();
+    //     } else {
+    //         $carbonDate = Carbon::parse($tanggal, $timezone)->setTimeFrom($now);
+    //     }
 
-        $currentTime = $carbonDate->format('H:i:s');
-        $shift = '';
-        $start = null;
+    //     $currentTime = $carbonDate->format('H:i:s');
+    //     $shift = '';
+    //     $start = null;
 
-        // Tentukan shift dan waktu awal shift
-        if ($currentTime >= '06:00:00' && $currentTime <= '14:00:00') {
-            $shift = 'Shift 1';
-            $start = $carbonDate->copy()->setTime(6, 0, 0);
-        } elseif ($currentTime > '14:00:00' && $currentTime <= '22:00:00') {
-            $shift = 'Shift 2';
-            $start = $carbonDate->copy()->setTime(14, 1, 0);
-        } else {
-            $shift = 'Shift 3';
-            $start = $carbonDate->copy()->setTime(22, 1, 0);
-            if ($currentTime <= '05:59:59') {
-                // Pukul 00:00–05:59 → tanggal sebelumnya, shift mulai hari kemarin jam 22:01
-                $start = $carbonDate->copy()->subDay()->setTime(22, 1, 0);
-            }
-        }
+    //     // Tentukan shift dan waktu awal shift
+    //     if ($currentTime >= '06:00:00' && $currentTime <= '14:00:00') {
+    //         $shift = 'Shift 1';
+    //         $start = $carbonDate->copy()->setTime(6, 0, 0);
+    //     } elseif ($currentTime > '14:00:00' && $currentTime <= '22:00:00') {
+    //         $shift = 'Shift 2';
+    //         $start = $carbonDate->copy()->setTime(14, 1, 0);
+    //     } else {
+    //         $shift = 'Shift 3';
+    //         $start = $carbonDate->copy()->setTime(22, 1, 0);
+    //         if ($currentTime <= '05:59:59') {
+    //             // Pukul 00:00–05:59 → tanggal sebelumnya, shift mulai hari kemarin jam 22:01
+    //             $start = $carbonDate->copy()->subDay()->setTime(22, 1, 0);
+    //         }
+    //     }
 
-        // Hitung durasi shift time dalam menit
-        $shiftTimeMinutes = ($carbonDate->diffInMinutes($start)) * (-1);
+    //     // Hitung durasi shift time dalam menit
+    //     $shiftTimeMinutes = ($carbonDate->diffInMinutes($start)) * (-1);
 
-        // Hitung nozzle aktif (nozzle_1 atau nozzle_2 = 1) dari start hingga now
-        $totalNozzleAktif = self::whereBetween('waktu', [$start, $carbonDate])
-            ->where(function ($query) {
-                $query->where('nozzle_1', 1)->orWhere('nozzle_2', 1);
-            })
-            ->get()
-            ->reduce(function ($carry, $item) {
-                return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
-            }, 0);
+    //     // Hitung nozzle aktif (nozzle_1 atau nozzle_2 = 1) dari start hingga now
+    //     $totalNozzleAktif = self::whereBetween('waktu', [$start, $carbonDate])
+    //         ->where(function ($query) {
+    //             $query->where('nozzle_1', 1)->orWhere('nozzle_2', 1);
+    //         })
+    //         ->get()
+    //         ->reduce(function ($carry, $item) {
+    //             return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
+    //         }, 0);
 
-        $performance = $shiftTimeMinutes > 0
-            ? ($totalNozzleAktif / ($shiftTimeMinutes * 40 * 2)) * 100
-            : 0;
+    //     $performance = $shiftTimeMinutes > 0
+    //         ? ($totalNozzleAktif / ($shiftTimeMinutes * 40 * 2)) * 100
+    //         : 0;
 
-        return [
-            'shift' => $shift,
-            'tanggal' => $carbonDate->toDateString(),
-            'waktu_awal_shift' => $start->toDateTimeString(),
-            'waktu_sekarang' => $carbonDate->toDateTimeString(),
-            'durasi_menit' => $shiftTimeMinutes,
-            'total_nozzle_aktif' => $totalNozzleAktif,
-            'performance_output_percent' => round($performance, 2),
-        ];
-    }
+    //     return [
+    //         'shift' => $shift,
+    //         'tanggal' => $carbonDate->toDateString(),
+    //         'waktu_awal_shift' => $start->toDateTimeString(),
+    //         'waktu_sekarang' => $carbonDate->toDateTimeString(),
+    //         'durasi_menit' => $shiftTimeMinutes,
+    //         'total_nozzle_aktif' => $totalNozzleAktif,
+    //         'performance_output_percent' => round($performance, 2),
+    //     ];
+    // }
 
     public static function getAllShiftPerformanceOutput($tanggal = null)
     {
@@ -1420,6 +1420,124 @@ class retail_d4 extends Model
         }
 
         return $results;
+    }
+
+
+
+    //test
+    public static function getStartMesinDurasiPerShift($tanggal)
+    {
+        $besok = Carbon::parse($tanggal)->addDay()->toDateString();
+
+        $shift1 = DB::table('retail_d4')
+            ->whereBetween('waktu', ["$tanggal 06:00:00", "$tanggal 14:00:00"])
+            ->where('Start_Mesin', 1)
+            ->count();
+
+        $shift2 = DB::table('retail_d4')
+            ->whereBetween('waktu', ["$tanggal 14:01:00", "$tanggal 22:00:00"])
+            ->where('Start_Mesin', 1)
+            ->count();
+
+        $shift3 = DB::table('retail_d4')
+            ->whereBetween('waktu', ["$tanggal 22:01:00", "$besok 05:59:59"])
+            ->where('Start_Mesin', 1)
+            ->count();
+
+        return [
+            'shift1_detik' => $shift1,
+            'shift2_detik' => $shift2,
+            'shift3_detik' => $shift3,
+        ];
+    }
+
+    public static function getOffMesinDurasiPerShift($tanggal)
+    {
+        $besok = Carbon::parse($tanggal)->addDay()->toDateString();
+
+        $shift1 = DB::table('retail_d4')
+        ->whereBetween('waktu', ["$tanggal 06:00:00", "$tanggal 14:00:00"])
+        ->where('Start_Mesin', 0)
+        ->count();
+
+        $shift2 = DB::table('retail_d4')
+        ->whereBetween('waktu', ["$tanggal 14:01:00", "$tanggal 22:00:00"])
+        ->where('Start_Mesin', 0)
+        ->count();
+
+        $shift3 = DB::table('retail_d4')
+        ->whereBetween('waktu', ["$tanggal 22:01:00", "$besok 05:59:59"])
+        ->where('Start_Mesin', 0)
+        ->count();
+
+        return [
+            'shift1_detik' => $shift1,
+            'shift2_detik' => $shift2,
+            'shift3_detik' => $shift3,
+        ];
+    }
+
+    public static function getPerformanceOutput($tanggal = null)
+    {
+        $timezone = 'Asia/Jakarta';
+        $now = Carbon::now($timezone);
+
+        // Gunakan waktu saat ini jika tanggal tidak diberikan
+        if (!$tanggal) {
+            $carbonDate = $now->copy();
+        } else {
+            $carbonDate = Carbon::parse($tanggal, $timezone);
+            if (strlen($tanggal) <= 10) {
+                // Tambahkan waktu dari now jika hanya berupa tanggal
+                $carbonDate->setTimeFrom($now);
+            }
+        }
+
+        $currentTime = $carbonDate->format('H:i:s');
+        $shift = '';
+        $start = null;
+
+        if ($currentTime >= '06:00:00' && $currentTime <= '14:00:00') {
+            $shift = 'Shift 1';
+            $start = $carbonDate->copy()->setTime(6, 0, 0);
+        } elseif ($currentTime > '14:00:00' && $currentTime <= '22:00:00') {
+            $shift = 'Shift 2';
+            $start = $carbonDate->copy()->setTime(14, 1, 0);
+        } else {
+            $shift = 'Shift 3';
+            if ($currentTime >= '22:01:00') {
+                $start = $carbonDate->copy()->setTime(22, 1, 0);
+            } else {
+                // Misal sekarang 2025-05-07 02:00 → Shift 3 dari tanggal 2025-05-06 jam 22:01
+                $start = $carbonDate->copy()->subDay()->setTime(22, 1, 0);
+            }
+        }
+
+        // Hitung durasi shift
+        $durasiMenit = $start->diffInMinutes($carbonDate);
+
+        $totalNozzleAktif = self::whereBetween('waktu', [$start, $carbonDate])
+            ->where(function ($query) {
+                $query->where('nozzle_1', 1)->orWhere('nozzle_2', 1);
+            })
+            ->get()
+            ->reduce(function ($carry, $item) {
+                return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
+            }, 0);
+
+        $performance = $durasiMenit > 0
+            ? ($totalNozzleAktif / ($durasiMenit * 40 * 2)) * 100
+            : 0;
+
+        return [
+            'shift' => $shift,
+            'tanggal' => $carbonDate->toDateString(),
+            'waktu_awal_shift' => $start->toDateTimeString(),
+            'waktu_sekarang' => $carbonDate->toDateTimeString(),
+            'durasi_menit' => $durasiMenit,
+            'total_nozzle_aktif' => $totalNozzleAktif,
+            'performance_output_percent' => round($performance, 2),
+        ];
     }
 
 

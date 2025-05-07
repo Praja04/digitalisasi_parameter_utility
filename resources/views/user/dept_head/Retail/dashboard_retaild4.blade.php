@@ -773,14 +773,24 @@
             });
 
             $.ajax({
-                url: "{{url('retail/d4/mesin/uptime')}}",
+                url: "{{url('retail/d4/mesin/start')}}",
                 method: 'GET',
                 data: data,
                 success: function(response) {
-                    response.forEach(item => {
-                        const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
-                        const text = item.mesin_uptime + ' %';
-                        $(`#uptime_${shiftId}`).text(text);
+                    // response.forEach(item => {
+                    //     // const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
+                    //     // const text = item.mesin_uptime + ' %';
+                    //     // const shiftData = result[shiftKey];
+                    //     // const detik = shiftData[`${shiftKey}_detik`];
+                    //     // const hasil = shiftData.hasil;
+                    //     // $(`#uptime_${shiftData}`).text(hasil + ' %');
+                    // });
+                    const result = response.result;
+
+                    Object.keys(result).forEach(shiftKey => {
+                        const shiftData = result[shiftKey];
+                        const hasil = (shiftData.hasil * 100).toFixed(2); // Konversi ke persen jika perlu
+                        $(`#uptime_${shiftKey}`).text(hasil + ' %');
                     });
 
                     //console.log(response);
@@ -791,14 +801,22 @@
             });
 
             $.ajax({
-                url: "{{url('retail/d4/mesin/downtime')}}",
+                // url: "{{url('retail/d4/mesin/downtime')}}",
+                url: "{{url('retail/d4/mesin/stop')}}",
                 method: 'GET',
                 data: data,
                 success: function(response) {
-                    response.forEach(item => {
-                        const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
-                        const text = item.mesin_downtime + ' %';
-                        $(`#downtime_${shiftId}`).text(text);
+                    // response.forEach(item => {
+                    //     const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
+                    //     const text = item.mesin_downtime + ' %';
+                    //     $(`#downtime_${shiftId}`).text(text);
+                    // });
+                    const result = response.result;
+
+                    Object.keys(result).forEach(shiftKey => {
+                        const shiftData = result[shiftKey];
+                        const hasil = (shiftData.hasil * 100).toFixed(2); // Konversi ke persen jika perlu
+                        $(`#downtime_${shiftKey}`).text(hasil + ' %');
                     });
 
                     //console.log(response);
