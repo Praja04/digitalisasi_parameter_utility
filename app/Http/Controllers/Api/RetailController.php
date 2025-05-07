@@ -67,7 +67,7 @@ class RetailController extends Controller
 
         // Filter berdasarkan waktu
         // if ($request->filter == 'realtime') {
-            $query->whereDate('waktu', now());
+        $query->whereDate('waktu', now());
         // } elseif ($request->filter == 'tanggal') {
         //     $query->whereDate('waktu', $request->tanggal);
         // } elseif ($request->filter == 'range') {
@@ -373,27 +373,28 @@ class RetailController extends Controller
 
     /////test
 
-    
+
 
     public function durasiStartMesinPerShift(Request $request)
     {
         $request->validate([
             'filter' => 'nullable|in:realtime,tanggal,range',
-            'start' => 'nullable|date',
-            'end' => 'nullable|date',
+            'tanggal' => 'nullable|date',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
         ]);
 
         $filter = $request->input('filter', 'realtime');
-        $start = $request->input('start');
-        $end = $request->input('end');
+        $tanggal = $request->input('tanggal');
+        $start = $request->input('start_date');
+        $end = $request->input('end_date');
 
         $hasil = [];
 
         if ($filter === 'realtime') {
-            $tanggal = Carbon::now()->toDateString(); // hari ini
-            $durasi = retail_d4::getStartMesinDurasiPerShift($tanggal);
+            $today = Carbon::now()->toDateString();
+            $durasi = retail_d4::getStartMesinDurasiPerShift($today);
 
-            // Menghitung hasil per shift langsung dalam controller
             $hasil = [
                 'shift1' => [
                     'shift1_detik' => $durasi['shift1_detik'],
@@ -408,11 +409,10 @@ class RetailController extends Controller
                     'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 420 : 0,
                 ]
             ];
-        } elseif ($filter === 'tanggal' && $start) {
-            $tanggal = Carbon::parse($start)->toDateString();
-            $durasi = retail_d4::getStartMesinDurasiPerShift($tanggal);
+        } elseif ($filter === 'tanggal' && $tanggal) {
+            $date = Carbon::parse($tanggal)->toDateString();
+            $durasi = retail_d4::getStartMesinDurasiPerShift($date);
 
-            // Menghitung hasil per shift langsung dalam controller
             $hasil = [
                 'shift1' => [
                     'shift1_detik' => $durasi['shift1_detik'],
@@ -436,7 +436,6 @@ class RetailController extends Controller
                 $tanggal = $mulai->toDateString();
                 $durasi = retail_d4::getStartMesinDurasiPerShift($tanggal);
 
-                // Menghitung hasil per shift langsung dalam controller
                 $periode[$tanggal] = [
                     'shift1' => [
                         'shift1_detik' => $durasi['shift1_detik'],
@@ -459,9 +458,10 @@ class RetailController extends Controller
         }
 
         return response()->json([
-            "result"=> $hasil
+            'result' => $hasil
         ]);
     }
+
 
 
 
@@ -469,21 +469,22 @@ class RetailController extends Controller
     {
         $request->validate([
             'filter' => 'nullable|in:realtime,tanggal,range',
-            'start' => 'nullable|date',
-            'end' => 'nullable|date',
+            'tanggal' => 'nullable|date',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
         ]);
 
         $filter = $request->input('filter', 'realtime');
-        $start = $request->input('start');
-        $end = $request->input('end');
+        $tanggal = $request->input('tanggal');
+        $start = $request->input('start_date');
+        $end = $request->input('end_date');
 
         $hasil = [];
 
         if ($filter === 'realtime') {
-            $tanggal = Carbon::now()->toDateString(); // hari ini
-            $durasi = retail_d4::getOffMesinDurasiPerShift($tanggal);
+            $hariIni = Carbon::now()->toDateString();
+            $durasi = retail_d4::getOffMesinDurasiPerShift($hariIni);
 
-            // Menghitung hasil per shift langsung dalam controller
             $hasil = [
                 'shift1' => [
                     'shift1_detik' => $durasi['shift1_detik'],
@@ -498,11 +499,10 @@ class RetailController extends Controller
                     'hasil' => $durasi['shift3_detik'] > 0 ? ($durasi['shift3_detik'] / 60) / 420 : 0,
                 ]
             ];
-        } elseif ($filter === 'tanggal' && $start) {
-            $tanggal = Carbon::parse($start)->toDateString();
-            $durasi = retail_d4::getOffMesinDurasiPerShift($tanggal);
+        } elseif ($filter === 'tanggal' && $tanggal) {
+            $tgl = Carbon::parse($tanggal)->toDateString();
+            $durasi = retail_d4::getOffMesinDurasiPerShift($tgl);
 
-            // Menghitung hasil per shift langsung dalam controller
             $hasil = [
                 'shift1' => [
                     'shift1_detik' => $durasi['shift1_detik'],
@@ -523,11 +523,10 @@ class RetailController extends Controller
             $selesai = Carbon::parse($end);
 
             while ($mulai->lte($selesai)) {
-                $tanggal = $mulai->toDateString();
-                $durasi = retail_d4::getOffMesinDurasiPerShift($tanggal);
+                $tgl = $mulai->toDateString();
+                $durasi = retail_d4::getOffMesinDurasiPerShift($tgl);
 
-                // Menghitung hasil per shift langsung dalam controller
-                $periode[$tanggal] = [
+                $periode[$tgl] = [
                     'shift1' => [
                         'shift1_detik' => $durasi['shift1_detik'],
                         'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
@@ -549,12 +548,13 @@ class RetailController extends Controller
         }
 
         return response()->json([
-           "result"=> $hasil
+            'result' => $hasil
         ]);
     }
 
 
-   
+
+
     public function durasiStartMesinPerShiftRealtime(Request $request)
     {
         $request->validate([
@@ -608,5 +608,4 @@ class RetailController extends Controller
             "result" => $hasil
         ]);
     }
-
 }
