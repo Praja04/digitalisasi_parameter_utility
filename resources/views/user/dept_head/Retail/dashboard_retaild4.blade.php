@@ -738,19 +738,31 @@
         });
 
         function fetchdataFilter() {
-            let filter = $('#filter').val() || 'today'; // default ke 'today' jika kosong
+            let filter = $('#filter').val() || 'today'; // default ke 'today'
             let data = {};
+            let today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
+            let useRealtimeUrl = false;
 
             if (filter === 'today') {
                 data.filter = 'realtime';
+                useRealtimeUrl = true;
             } else if (filter === 'date') {
+                let selectedDate = $('#start-date').val();
                 data.filter = 'tanggal';
-                data.tanggal = $('#start-date').val();
+                data.tanggal = selectedDate;
+
+                if (selectedDate === today) {
+                    useRealtimeUrl = true;
+                }
             } else if (filter === 'range') {
                 data.filter = 'range';
                 data.start_date = $('#start-date').val();
                 data.end_date = $('#end-date').val();
             }
+
+            let startUrl = useRealtimeUrl ? "{{ url('retail/d4/mesin/start/realtime') }}" : "{{ url('retail/d4/mesin/start') }}";
+            let stopUrl = useRealtimeUrl ? "{{ url('retail/d4/mesin/stop/realtime') }}" : "{{ url('retail/d4/mesin/stop') }}";
+
 
             $.ajax({
                 url: "{{url('retail/d4/nozzle-count')}}",
@@ -773,56 +785,42 @@
             });
 
             $.ajax({
-                url: "{{url('retail/d4/mesin/start')}}",
+                url: startUrl,
                 method: 'GET',
-                data: data,
+                data: useRealtimeUrl ? {} : data,
                 success: function(response) {
-                    // response.forEach(item => {
-                    //     // const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
-                    //     // const text = item.mesin_uptime + ' %';
-                    //     // const shiftData = result[shiftKey];
-                    //     // const detik = shiftData[`${shiftKey}_detik`];
-                    //     // const hasil = shiftData.hasil;
-                    //     // $(`#uptime_${shiftData}`).text(hasil + ' %');
-                    // });
+                    //console.log('Start Mesin:', response);
+                    console.log(startUrl);
                     const result = response.result;
 
                     Object.keys(result).forEach(shiftKey => {
                         const shiftData = result[shiftKey];
-                        const hasil = (shiftData.hasil * 100).toFixed(2); // Konversi ke persen jika perlu
+                        const hasil = (shiftData.hasil * 100).toFixed(2);
                         $(`#uptime_${shiftKey}`).text(hasil + ' %');
                     });
-
-                    //console.log(response);
                 },
                 error: function(xhr) {
-                    console.error('Error:', xhr.responseJSON);
+                    console.error('Start Mesin Error:', xhr.responseJSON);
                 }
             });
 
             $.ajax({
-                // url: "{{url('retail/d4/mesin/downtime')}}",
-                url: "{{url('retail/d4/mesin/stop')}}",
+                url: stopUrl,
                 method: 'GET',
-                data: data,
+                data: useRealtimeUrl ? {} : data,
                 success: function(response) {
-                    // response.forEach(item => {
-                    //     const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
-                    //     const text = item.mesin_downtime + ' %';
-                    //     $(`#downtime_${shiftId}`).text(text);
-                    // });
+                    //console.log('Stop Mesin:', response);
+                    console.log(stopUrl);
                     const result = response.result;
 
                     Object.keys(result).forEach(shiftKey => {
                         const shiftData = result[shiftKey];
-                        const hasil = (shiftData.hasil * 100).toFixed(2); // Konversi ke persen jika perlu
+                        const hasil = (shiftData.hasil * 100).toFixed(2);
                         $(`#downtime_${shiftKey}`).text(hasil + ' %');
                     });
-
-                    //console.log(response);
                 },
                 error: function(xhr) {
-                    console.error('Error:', xhr.responseJSON);
+                    console.error('Stop Mesin Error:', xhr.responseJSON);
                 }
             });
 
