@@ -112,11 +112,11 @@ class retail_d4 extends Model
             $start1 = $carbonDate->copy()->setTime(6, 0, 0);
             $end1 = $carbonDate->copy()->setTime(14, 0, 0);
 
-            $start2 = $carbonDate->copy()->setTime(14, 1, 0);
+            $start2 = $carbonDate->copy()->setTime(14, 0, 1);
             $end2 = $carbonDate->copy()->setTime(22, 0, 0);
 
             // 🔥 Shift 3: Mulai dari hari sebelumnya jam 22:01 sampai hari ini jam 05:59
-            $start3 = $carbonDate->copy()->subDay()->setTime(22, 1, 0);
+            $start3 = $carbonDate->copy()->subDay()->setTime(22, 0, 1);
             $end3 = $carbonDate->copy()->setTime(5, 59, 59);
 
             $totalShift1 += self::whereBetween('waktu', [$start1, $end1])->sum('total_counter');
@@ -151,11 +151,11 @@ class retail_d4 extends Model
             $end1 = $carbonDate->copy()->setTime(14, 0, 0);
 
             // Shift 2: 14:01 - 22:00
-            $start2 = $carbonDate->copy()->setTime(14, 1, 0);
+            $start2 = $carbonDate->copy()->setTime(14, 0, 1);
             $end2 = $carbonDate->copy()->setTime(22, 0, 0);
 
             // Shift 3: 22:01 (hari sebelumnya) - 05:59 (hari ini)
-            $start3 = $carbonDate->copy()->setTime(22, 1, 0);
+            $start3 = $carbonDate->copy()->setTime(22, 0, 1);
             $end3 = $carbonDate->copy()->addDay()->setTime(5, 59, 59);
 
             // Hitung setiap shift
@@ -287,7 +287,7 @@ class retail_d4 extends Model
                 if ($currentTime->between(\Carbon\Carbon::parse('06:00:00'), \Carbon\Carbon::parse('14:00:00'))) {
                     // Shift 1 (06:00 - 14:00)
                     $shift1 += 1;
-                } elseif ($currentTime->between(\Carbon\Carbon::parse('14:01:00'), \Carbon\Carbon::parse('22:00:00'))) {
+                } elseif ($currentTime->between(\Carbon\Carbon::parse('14:00:01'), \Carbon\Carbon::parse('22:00:00'))) {
                     // Shift 2 (14:01 - 22:00)
                     $shift2 += 1;
                 } else {
@@ -370,7 +370,7 @@ class retail_d4 extends Model
                 if ($currentTime->between(\Carbon\Carbon::parse('06:00:00'), \Carbon\Carbon::parse('14:00:00'))) {
                     // Shift 1 (06:00 - 14:00)
                     $shift1 += 1;
-                } elseif ($currentTime->between(\Carbon\Carbon::parse('14:01:00'), \Carbon\Carbon::parse('22:00:00'))) {
+                } elseif ($currentTime->between(\Carbon\Carbon::parse('14:00:01'), \Carbon\Carbon::parse('22:00:00'))) {
                     // Shift 2 (14:01 - 22:00)
                     $shift2 += 1;
                 } else {
@@ -507,16 +507,16 @@ class retail_d4 extends Model
                 Start_Mesin,
                 CASE
                     WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                    WHEN TIME(waktu) BETWEEN '14:01:00' AND '22:00:00' THEN 'Shift 2'
-                    WHEN TIME(waktu) >= '22:01:00' THEN 'Shift 3'
+                    WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                    WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
                     WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
                 END AS shift,
                 LAG(Start_Mesin) OVER (
                     PARTITION BY 
                         CASE
                             WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                            WHEN TIME(waktu) BETWEEN '14:01:00' AND '22:00:00' THEN 'Shift 2'
-                            WHEN TIME(waktu) >= '22:01:00' THEN 'Shift 3'
+                            WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                            WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
                             WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
                         END
                     ORDER BY waktu
@@ -658,15 +658,15 @@ class retail_d4 extends Model
                 Start_Mesin,
                 CASE
                     WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                    WHEN TIME(waktu) BETWEEN '14:01:00' AND '22:00:00' THEN 'Shift 2'
-                    WHEN TIME(waktu) >= '22:01:00' THEN 'Shift 3'
+                    WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                    WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
                     WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
                 END AS shift,
                 LAG(Start_Mesin) OVER (PARTITION BY 
                     CASE
                         WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                        WHEN TIME(waktu) BETWEEN '14:01:00' AND '22:00:00' THEN 'Shift 2'
-                        WHEN TIME(waktu) >= '22:01:00' THEN 'Shift 3'
+                        WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                        WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
                         WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
                     END
                     ORDER BY waktu) AS prev_status
@@ -834,16 +834,16 @@ class retail_d4 extends Model
                 Start_Mesin,
                 CASE
                     WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                    WHEN TIME(waktu) BETWEEN '14:01:00' AND '22:00:00' THEN 'Shift 2'
-                    WHEN TIME(waktu) >= '22:01:00' THEN 'Shift 3'
+                    WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                    WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
                     WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
                 END AS shift,
                 LAG(Start_Mesin) OVER (
                     PARTITION BY 
                         CASE
                             WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                            WHEN TIME(waktu) BETWEEN '14:01:00' AND '22:00:00' THEN 'Shift 2'
-                            WHEN TIME(waktu) >= '22:01:00' THEN 'Shift 3'
+                            WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                            WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
                             WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
                         END
                     ORDER BY waktu
@@ -1065,15 +1065,15 @@ class retail_d4 extends Model
                 Start_Mesin,
                 CASE
                     WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                    WHEN TIME(waktu) BETWEEN '14:01:00' AND '22:00:00' THEN 'Shift 2'
-                    WHEN TIME(waktu) >= '22:01:00' THEN 'Shift 3'
+                    WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                    WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
                     WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
                 END AS shift,
                 LAG(Start_Mesin) OVER (
                     PARTITION BY CASE
                         WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                        WHEN TIME(waktu) BETWEEN '14:01:00' AND '22:00:00' THEN 'Shift 2'
-                        WHEN TIME(waktu) >= '22:01:00' THEN 'Shift 3'
+                        WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                        WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
                         WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
                     END
                     ORDER BY waktu
@@ -1123,9 +1123,9 @@ class retail_d4 extends Model
             if ($shift == 'Shift 1') {
                 $shiftStart = Carbon::createFromTimeString("$tanggal 06:00:00", 'Asia/Jakarta'); // Set timezone WIB
             } elseif ($shift == 'Shift 2') {
-                $shiftStart = Carbon::createFromTimeString("$tanggal 14:01:00", 'Asia/Jakarta');
+                $shiftStart = Carbon::createFromTimeString("$tanggal 14:00:01", 'Asia/Jakarta');
             } elseif ($shift == 'Shift 3') {
-                $shiftStart = Carbon::createFromTimeString("$tanggal 22:01:00", 'Asia/Jakarta');
+                $shiftStart = Carbon::createFromTimeString("$tanggal 22:00:01", 'Asia/Jakarta');
             }
 
             // Jika waktu sekarang lebih kecil dari waktu mulai shift, set durasi berjalan ke 0
@@ -1228,12 +1228,12 @@ class retail_d4 extends Model
             ],
             [
                 'name' => 'Shift 2',
-                'start' => $carbonDate->copy()->setTime(14, 1, 0),
+                'start' => $carbonDate->copy()->setTime(14, 0, 1),
                 'end'   => $carbonDate->copy()->setTime(22, 0, 0),
             ],
             [
                 'name' => 'Shift 3',
-                'start' => $carbonDate->copy()->setTime(22, 1, 0),
+                'start' => $carbonDate->copy()->setTime(22, 0, 1),
                 'end'   => $carbonDate->copy()->addDay()->setTime(5, 59, 59),
             ],
         ];
@@ -1360,12 +1360,12 @@ class retail_d4 extends Model
                 ],
                 [
                     'name' => 'Shift 2',
-                    'start' => $date->copy()->setTime(14, 1, 0),
+                    'start' => $date->copy()->setTime(14, 0, 1),
                     'end'   => $date->copy()->setTime(22, 0, 0),
                 ],
                 [
                     'name' => 'Shift 3',
-                    'start' => $date->copy()->setTime(22, 1, 0),
+                    'start' => $date->copy()->setTime(22, 0, 1),
                     'end'   => $date->copy()->addDay()->setTime(5, 59, 59),
                 ],
             ];
@@ -1438,12 +1438,12 @@ class retail_d4 extends Model
                 ],
                 [
                     'name' => 'Shift 2',
-                    'start' => $carbonDate->copy()->setTime(14, 1, 0),
+                    'start' => $carbonDate->copy()->setTime(14, 0, 1),
                     'end'   => $carbonDate->copy()->setTime(22, 0, 0),
                 ],
                 [
                     'name' => 'Shift 3',
-                    'start' => $carbonDate->copy()->setTime(22, 1, 0),
+                    'start' => $carbonDate->copy()->setTime(22, 0, 1),
                     'end'   => $carbonDate->copy()->addDay()->setTime(5, 59, 59),
                 ],
             ];
@@ -1504,12 +1504,12 @@ class retail_d4 extends Model
             ->count();
 
         $shift2 = DB::table('retail_d4')
-            ->whereBetween('waktu', ["$tanggal 14:01:00", "$tanggal 22:00:00"])
+            ->whereBetween('waktu', ["$tanggal 14:00:01", "$tanggal 22:00:00"])
             ->where('Start_Mesin', 1)
             ->count();
 
         $shift3 = DB::table('retail_d4')
-            ->whereBetween('waktu', ["$tanggal 22:01:00", "$besok 05:59:59"])
+            ->whereBetween('waktu', ["$tanggal 22:00:01", "$besok 05:59:59"])
             ->where('Start_Mesin', 1)
             ->count();
 
@@ -1530,12 +1530,12 @@ class retail_d4 extends Model
         ->count();
 
         $shift2 = DB::table('retail_d4')
-        ->whereBetween('waktu', ["$tanggal 14:01:00", "$tanggal 22:00:00"])
+        ->whereBetween('waktu', ["$tanggal 14:00:01", "$tanggal 22:00:00"])
         ->where('Start_Mesin', 0)
         ->count();
 
         $shift3 = DB::table('retail_d4')
-        ->whereBetween('waktu', ["$tanggal 22:01:00", "$besok 05:59:59"])
+        ->whereBetween('waktu', ["$tanggal 22:00:01", "$besok 05:59:59"])
         ->where('Start_Mesin', 0)
         ->count();
 
@@ -1574,7 +1574,7 @@ class retail_d4 extends Model
             $start = $carbonDate->copy()->setTime(14, 1, 0);
         } else {
             $shift = 'Shift 3';
-            if ($currentTime >= '22:01:00') {
+            if ($currentTime >= '22:00:01') {
                 $start = $carbonDate->copy()->setTime(22, 1, 0);
             } else {
                 // Misal sekarang 2025-05-07 02:00 → Shift 3 dari tanggal 2025-05-06 jam 22:01
