@@ -649,7 +649,7 @@
                     $('#total_counter').text(data.total_counter);
                     // const totalCounter = data.total_counter;
                     // animateCounter($('#total_counter'), totalCounter, 1000);
-                    let startMesin = data.Start_Mesin;
+                    let startMesin = data.start_mesin;
                     let imagePath = '';
 
                     if (startMesin == 1) {
