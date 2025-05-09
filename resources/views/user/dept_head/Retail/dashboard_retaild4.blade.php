@@ -891,8 +891,8 @@
                         <li class="list-group-item">
                             <strong>${index + 1}.</strong>
                             <br>Mesin: Retail D4
-                            <br>Start: ${item.waktu_mulai ?? '-'}
-                            <br>End: ${item.waktu_akhir ?? '-'}
+                            <br>Start: ${item.ts_mulai ?? '-'}
+                            <br>End: ${item.ts_akhir ?? '-'}
                             
                         </li>
                     `;
