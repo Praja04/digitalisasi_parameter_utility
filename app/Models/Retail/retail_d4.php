@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Carbon\Carbon;
+use App\Models\Retail\retail_d4_nozzle;
 
 class retail_d4 extends Model
 {
@@ -14,10 +15,10 @@ class retail_d4 extends Model
 
     protected $table = 'retail_d4';
     protected $primaryKey = 'id';
-    public $timestamps = false; // Karena sudah ada kolom `waktu` yang otomatis
+    public $timestamps = false; // Karena sudah ada kolom `ts` yang otomatis
 
     protected $fillable = [
-        'waktu', 'main_speed', 'total_counter', 'nozzle_1', 'nozzle_2', 'Start_Mesin'
+        'ts', 'main_speed', 'total_counter', 'start_mesin'
     ];
 
     public static function getMesinStartPeriods($filterType = 'realtime', $startDate = null, $endDate = null)
@@ -33,12 +34,12 @@ class retail_d4 extends Model
 
         // Bangun WHERE clause berdasarkan filter
         if ($filterType === 'realtime') {
-            $whereClause = "WHERE DATE(waktu) = CURDATE()";
+            $whereClause = "WHERE DATE(ts) = CURDATE()";
         } elseif ($filterType === 'date' && $startDate) {
-            $whereClause = "WHERE DATE(waktu) = ?";
+            $whereClause = "WHERE DATE(ts) = ?";
             $bindings[] = $startDate;
         } elseif ($filterType === 'range' && $startDate && $endDate) {
-            $whereClause = "WHERE DATE(waktu) BETWEEN ? AND ?";
+            $whereClause = "WHERE DATE(ts) BETWEEN ? AND ?";
             $bindings[] = $startDate;
             $bindings[] = $endDate;
         }
@@ -46,27 +47,27 @@ class retail_d4 extends Model
         $query = "
         WITH flagged_status AS (
             SELECT 
-                waktu,
-                Start_Mesin,
+                ts,
+                start_mesin,
                 CASE 
-                    WHEN Start_Mesin = 1 THEN 1 ELSE 0
+                    WHEN start_mesin = 1 THEN 1 ELSE 0
                 END AS is_running
             FROM retail_d4
             {$whereClause}
         ),
         grouped_blocks AS (
             SELECT *,
-                ROW_NUMBER() OVER (ORDER BY waktu)
-              - ROW_NUMBER() OVER (PARTITION BY is_running ORDER BY waktu) AS group_id
+                ROW_NUMBER() OVER (ORDER BY ts)
+              - ROW_NUMBER() OVER (PARTITION BY is_running ORDER BY ts) AS group_id
             FROM flagged_status
         )
         SELECT 
-            MIN(waktu) AS Waktu_mulai,
-            MAX(waktu) AS Waktu_akhir
+            MIN(ts) AS ts_mulai,
+            MAX(ts) AS ts_akhir
         FROM grouped_blocks
         WHERE is_running = 1
         GROUP BY group_id
-        ORDER BY Waktu_mulai
+        ORDER BY ts_mulai
      ";
 
         return DB::select($query, $bindings);
@@ -119,9 +120,9 @@ class retail_d4 extends Model
             $start3 = $carbonDate->copy()->subDay()->setTime(22, 0, 1);
             $end3 = $carbonDate->copy()->setTime(5, 59, 59);
 
-            $totalShift1 += self::whereBetween('waktu', [$start1, $end1])->sum('total_counter');
-            $totalShift2 += self::whereBetween('waktu', [$start2, $end2])->sum('total_counter');
-            $totalShift3 += self::whereBetween('waktu', [$start3, $end3])->sum('total_counter');
+            $totalShift1 += self::whereBetween('ts', [$start1, $end1])->sum('total_counter');
+            $totalShift2 += self::whereBetween('ts', [$start2, $end2])->sum('total_counter');
+            $totalShift3 += self::whereBetween('ts', [$start3, $end3])->sum('total_counter');
         }
 
 
@@ -159,75 +160,20 @@ class retail_d4 extends Model
             $end3 = $carbonDate->copy()->addDay()->setTime(5, 59, 59);
 
             // Hitung setiap shift
-            $result['shift_1']['nozzle_1'] += self::whereBetween('waktu', [$start1, $end1])->sum('nozzle_1');
-            $result['shift_1']['nozzle_2'] += self::whereBetween('waktu', [$start1, $end1])->sum('nozzle_2');
+            $result['shift_1']['nozzle_1'] += self::whereBetween('ts', [$start1, $end1])->sum('nozzle_1');
+            $result['shift_1']['nozzle_2'] += self::whereBetween('ts', [$start1, $end1])->sum('nozzle_2');
 
-            $result['shift_2']['nozzle_1'] += self::whereBetween('waktu', [$start2, $end2])->sum('nozzle_1');
-            $result['shift_2']['nozzle_2'] += self::whereBetween('waktu', [$start2, $end2])->sum('nozzle_2');
+            $result['shift_2']['nozzle_1'] += self::whereBetween('ts', [$start2, $end2])->sum('nozzle_1');
+            $result['shift_2']['nozzle_2'] += self::whereBetween('ts', [$start2, $end2])->sum('nozzle_2');
 
-            $result['shift_3']['nozzle_1'] += self::whereBetween('waktu', [$start3, $end3])->sum('nozzle_1');
-            $result['shift_3']['nozzle_2'] += self::whereBetween('waktu', [$start3, $end3])->sum('nozzle_2');
+            $result['shift_3']['nozzle_1'] += self::whereBetween('ts', [$start3, $end3])->sum('nozzle_1');
+            $result['shift_3']['nozzle_2'] += self::whereBetween('ts', [$start3, $end3])->sum('nozzle_2');
         }
 
         return $result;
     }
 
-    //performance mesin
-    // public static function getTotalMesinRunningMinutes($filterType = 'realtime', $startDate = null, $endDate = null)
-    // {
-    //     $bindings = [];
-    //     $whereClause = "";
-
-    //     if ($filterType === 'realtime') {
-    //         $whereClause = "WHERE DATE(waktu) = CURDATE()";
-    //     } elseif ($filterType === 'date' && $startDate) {
-    //         $whereClause = "WHERE DATE(waktu) = ?";
-    //         $bindings[] = $startDate;
-    //     } elseif ($filterType === 'range' && $startDate && $endDate) {
-    //         $whereClause = "WHERE DATE(waktu) BETWEEN ? AND ?";
-    //         $bindings[] = $startDate;
-    //         $bindings[] = $endDate;
-    //     }
-
-    //     $query = "
-    // WITH flagged_status AS (
-    //     SELECT 
-    //         waktu,
-    //         Start_Mesin,
-    //         CASE 
-    //             WHEN Start_Mesin = 1 THEN 1 ELSE 0
-    //         END AS is_running
-    //     FROM retail_d4
-    //     {$whereClause}
-    // ),
-    // grouped_blocks AS (
-    //     SELECT * ,
-    //         ROW_NUMBER() OVER (ORDER BY waktu)
-    //       - ROW_NUMBER() OVER (PARTITION BY is_running ORDER BY waktu) AS group_id
-    //     FROM flagged_status
-    // )
-    // SELECT 
-    //     MIN(waktu) AS Waktu_mulai,
-    //     MAX(waktu) AS Waktu_akhir
-    // FROM grouped_blocks
-    // WHERE is_running = 1
-    // GROUP BY group_id
-    // ORDER BY Waktu_mulai
-    // ";
-
-    //     $periods = DB::select($query, $bindings);
-
-    //     // Menghitung total menit
-    //     $totalMinutes = 0;
-
-    //     foreach ($periods as $period) {
-    //         $start = \Carbon\Carbon::parse($period->Waktu_mulai);
-    //         $end = \Carbon\Carbon::parse($period->Waktu_akhir);
-    //         $totalMinutes += $start->diffInMinutes($end); // Menghitung selisih dalam menit
-    //     }
-
-    //     return $totalMinutes; // Total menit mesin berjalan
-    // }
+    
 
     public static function getTotalMesinRunningMinutesByShift($filterType = 'realtime', $startDate = null, $endDate = null)
     {
@@ -235,12 +181,12 @@ class retail_d4 extends Model
         $whereClause = "";
 
         if ($filterType === 'realtime') {
-            $whereClause = "WHERE DATE(waktu) = CURDATE()";
+            $whereClause = "WHERE DATE(ts) = CURDATE()";
         } elseif ($filterType === 'date' && $startDate) {
-            $whereClause = "WHERE DATE(waktu) = ?";
+            $whereClause = "WHERE DATE(ts) = ?";
             $bindings[] = $startDate;
         } elseif ($filterType === 'range' && $startDate && $endDate) {
-            $whereClause = "WHERE DATE(waktu) BETWEEN ? AND ?";
+            $whereClause = "WHERE DATE(ts) BETWEEN ? AND ?";
             $bindings[] = $startDate;
             $bindings[] = $endDate;
         }
@@ -248,27 +194,27 @@ class retail_d4 extends Model
         $query = "
             WITH flagged_status AS (
                 SELECT 
-                    waktu,
-                    Start_Mesin,
+                    ts,
+                    start_mesin,
                     CASE 
-                        WHEN Start_Mesin = 1 THEN 1 ELSE 0
+                        WHEN start_mesin = 1 THEN 1 ELSE 0
                     END AS is_running
                 FROM retail_d4
                 {$whereClause}
             ),
             grouped_blocks AS (
                 SELECT *,
-                    ROW_NUMBER() OVER (ORDER BY waktu)
-                    - ROW_NUMBER() OVER (PARTITION BY is_running ORDER BY waktu) AS group_id
+                    ROW_NUMBER() OVER (ORDER BY ts)
+                    - ROW_NUMBER() OVER (PARTITION BY is_running ORDER BY ts) AS group_id
                 FROM flagged_status
             )
             SELECT 
-                MIN(waktu) AS Waktu_mulai,
-                MAX(waktu) AS Waktu_akhir
+                MIN(ts) AS ts_mulai,
+                MAX(ts) AS ts_akhir
             FROM grouped_blocks
             WHERE is_running = 1
             GROUP BY group_id
-            ORDER BY Waktu_mulai
+            ORDER BY ts_mulai
             ";
 
         $periods = DB::select($query, $bindings);
@@ -277,8 +223,8 @@ class retail_d4 extends Model
         $shift1 = $shift2 = $shift3 = 0;
 
         foreach ($periods as $period) {
-            $start = \Carbon\Carbon::parse($period->Waktu_mulai);
-            $end = \Carbon\Carbon::parse($period->Waktu_akhir);
+            $start = \Carbon\Carbon::parse($period->ts_mulai);
+            $end = \Carbon\Carbon::parse($period->ts_akhir);
             $minutes = $start->diffInMinutes($end); // Menghitung selisih dalam menit
 
             // Menghitung durasi mesin menyala dalam setiap shift
@@ -318,12 +264,12 @@ class retail_d4 extends Model
         $whereClause = "";
 
         if ($filterType === 'realtime') {
-            $whereClause = "WHERE DATE(waktu) = CURDATE()";
+            $whereClause = "WHERE DATE(ts) = CURDATE()";
         } elseif ($filterType === 'date' && $startDate) {
-            $whereClause = "WHERE DATE(waktu) = ?";
+            $whereClause = "WHERE DATE(ts) = ?";
             $bindings[] = $startDate;
         } elseif ($filterType === 'range' && $startDate && $endDate) {
-            $whereClause = "WHERE DATE(waktu) BETWEEN ? AND ?";
+            $whereClause = "WHERE DATE(ts) BETWEEN ? AND ?";
             $bindings[] = $startDate;
             $bindings[] = $endDate;
         }
@@ -331,27 +277,27 @@ class retail_d4 extends Model
         $query = "
         WITH flagged_status AS (
             SELECT 
-                waktu,
-                Start_Mesin,
+                ts,
+                start_mesin,
                 CASE 
-                    WHEN Start_Mesin = 0 THEN 1 ELSE 0
+                    WHEN start_mesin = 0 THEN 1 ELSE 0
                 END AS is_down
             FROM retail_d4
             {$whereClause}
         ),
         grouped_blocks AS (
             SELECT * ,
-                ROW_NUMBER() OVER (ORDER BY waktu)
-                - ROW_NUMBER() OVER (PARTITION BY is_down ORDER BY waktu) AS group_id
+                ROW_NUMBER() OVER (ORDER BY ts)
+                - ROW_NUMBER() OVER (PARTITION BY is_down ORDER BY ts) AS group_id
             FROM flagged_status
         )
         SELECT 
-            MIN(waktu) AS Waktu_mulai,
-            MAX(waktu) AS Waktu_akhir
+            MIN(ts) AS ts_mulai,
+            MAX(ts) AS ts_akhir
         FROM grouped_blocks
         WHERE is_down = 1
         GROUP BY group_id
-        ORDER BY Waktu_mulai
+        ORDER BY ts_mulai
         ";
 
         $periods = DB::select($query, $bindings);
@@ -360,11 +306,11 @@ class retail_d4 extends Model
         $shift1 = $shift2 = $shift3 = 0; // Variabel untuk menyimpan menit downtime per shift
 
         foreach ($periods as $period) {
-            $start = \Carbon\Carbon::parse($period->Waktu_mulai);
-            $end = \Carbon\Carbon::parse($period->Waktu_akhir);
+            $start = \Carbon\Carbon::parse($period->ts_mulai);
+            $end = \Carbon\Carbon::parse($period->ts_akhir);
             $minutes = $start->diffInMinutes($end); // Menghitung selisih dalam menit
 
-            // Memecah waktu downtime ke dalam 3 shift
+            // Memecah ts downtime ke dalam 3 shift
             while ($start < $end) {
                 $currentTime = \Carbon\Carbon::parse($start);
                 if ($currentTime->between(\Carbon\Carbon::parse('06:00:00'), \Carbon\Carbon::parse('14:00:00'))) {
@@ -398,102 +344,43 @@ class retail_d4 extends Model
         // Mendapatkan data periode start mesin
         $data = self::getMesinStartPeriods($filterType, $startDate, $endDate);
 
-        // Variabel untuk menyimpan total waktu
-        $totalWaktu = 0;
+        // Variabel untuk menyimpan total ts
+        $totalts = 0;
 
         // Menjumlahkan durasi untuk setiap periode
         foreach ($data as $item) {
-            $waktuMulai = \Carbon\Carbon::parse($item->Waktu_mulai);
-            $waktuAkhir = \Carbon\Carbon::parse($item->Waktu_akhir);
+            $tsMulai = \Carbon\Carbon::parse($item->ts_mulai);
+            $tsAkhir = \Carbon\Carbon::parse($item->ts_akhir);
 
-            // Pastikan waktu akhir selalu lebih besar dari waktu mulai
-            if ($waktuAkhir < $waktuMulai) {
-                // Tukar posisi jika waktu akhir lebih kecil
-                $temp = $waktuMulai;
-                $waktuMulai = $waktuAkhir;
-                $waktuAkhir = $temp;
+            // Pastikan ts akhir selalu lebih besar dari ts mulai
+            if ($tsAkhir < $tsMulai) {
+                // Tukar posisi jika ts akhir lebih kecil
+                $temp = $tsMulai;
+                $tsMulai = $tsAkhir;
+                $tsAkhir = $temp;
             }
 
-            // Menghitung selisih waktu dalam menit
-            $durasi = Carbon::parse($waktuMulai)->diffInMinutes($waktuAkhir);
+            // Menghitung selisih ts dalam menit
+            $durasi = Carbon::parse($tsMulai)->diffInMinutes($tsAkhir);
 
-            // Menambahkan durasi ke total waktu
-            $totalWaktu += $durasi;
+            // Menambahkan durasi ke total ts
+            $totalts += $durasi;
 
             // Optional: return data per item untuk debugging
             // Bisa mengembalikan detail setiap item dan durasi per item
             $item->durasi = $durasi; // Menyimpan durasi di item untuk debugging
         }
 
-        // Return array data beserta total waktu untuk debugging
+        // Return array data beserta total ts untuk debugging
         return [
-            'totalWaktu' => $totalWaktu,
+            'totalts' => $totalts,
             'data' => $data // Mengembalikan data yang diproses
         ];
     }
 
     //berhasil
 
-    // public static function getDurasiMesinPerShift($tanggal = null)
-    // {
-    //     // Jika tidak ada tanggal yang diberikan, gunakan tanggal hari ini
-    //     if (!$tanggal) {
-    //         $tanggal = Carbon::now()->toDateString();
-    //     }
-
-    //     return DB::select("
-    //     SELECT
-    //         shift,
-    //         tanggal_shift,
-    //         COUNT(*) AS total_detik_menyala,
-    //         SEC_TO_TIME(COUNT(*)) AS durasi_menyala
-    //     FROM (
-    //         -- Shift 1
-    //         SELECT 'Shift 1' AS shift,
-    //                DATE(waktu) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) BETWEEN '06:00:00' AND '14:00:00'
-    //           AND Start_Mesin = 1
-    //           AND DATE(waktu) = ?
-
-    //         UNION ALL
-
-    //         -- Shift 2
-    //         SELECT 'Shift 2' AS shift,
-    //                DATE(waktu) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) BETWEEN '14:01:00' AND '22:00:00'
-    //           AND Start_Mesin = 1
-    //           AND DATE(waktu) = ?
-
-    //         UNION ALL
-
-    //         -- Shift 3 Malam
-    //         SELECT 'Shift 3' AS shift,
-    //                DATE(waktu) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) >= '22:01:00'
-    //           AND Start_Mesin = 1
-    //           AND DATE(waktu) = ?
-
-    //         UNION ALL
-
-    //         -- Shift 3 Dini Hari (tanggal sebelumnya)
-    //         SELECT 'Shift 3' AS shift,
-    //                DATE(waktu - INTERVAL 1 DAY) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) <= '05:59:59'
-    //           AND Start_Mesin = 1
-    //           AND DATE(waktu - INTERVAL 1 DAY) = ?
-    //     ) AS shifts
-    //     GROUP BY shift, tanggal_shift
-    //     ORDER BY tanggal_shift, FIELD(shift, 'Shift 1', 'Shift 2', 'Shift 3')
-    // ", [$tanggal, $tanggal, $tanggal, $tanggal]);
-    // }
+   
     public static function getDurasiMesinPerShift($tanggal = null)
     {
         if (!$tanggal) {
@@ -503,38 +390,38 @@ class retail_d4 extends Model
         return DB::select("
         WITH status_dengan_shift AS (
             SELECT 
-                waktu,
-                Start_Mesin,
+                ts,
+                start_mesin,
                 CASE
-                    WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                    WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
-                    WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
-                    WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
+                    WHEN TIME(ts) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
+                    WHEN TIME(ts) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                    WHEN TIME(ts) >= '22:00:01' THEN 'Shift 3'
+                    WHEN TIME(ts) <= '05:59:59' THEN 'Shift 3'
                 END AS shift,
-                LAG(Start_Mesin) OVER (
+                LAG(start_mesin) OVER (
                     PARTITION BY 
                         CASE
-                            WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                            WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
-                            WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
-                            WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
+                            WHEN TIME(ts) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
+                            WHEN TIME(ts) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                            WHEN TIME(ts) >= '22:00:01' THEN 'Shift 3'
+                            WHEN TIME(ts) <= '05:59:59' THEN 'Shift 3'
                         END
-                    ORDER BY waktu
+                    ORDER BY ts
                 ) AS prev_status
             FROM retail_d4
-            WHERE DATE(waktu) = ? OR DATE(waktu) = DATE_SUB(?, INTERVAL 1 DAY)
+            WHERE DATE(ts) = ? OR DATE(ts) = DATE_SUB(?, INTERVAL 1 DAY)
         ),
         blok AS (
             SELECT 
-                waktu,
+                ts,
                 shift,
-                Start_Mesin,
+                start_mesin,
                 SUM(CASE 
-                    WHEN Start_Mesin = 1 AND (prev_status = 0 OR prev_status IS NULL) THEN 1 
+                    WHEN start_mesin = 1 AND (prev_status = 0 OR prev_status IS NULL) THEN 1 
                     ELSE 0 
                 END) OVER (
                     PARTITION BY shift 
-                    ORDER BY waktu 
+                    ORDER BY ts 
                     ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
                 ) AS group_id
             FROM status_dengan_shift
@@ -542,11 +429,11 @@ class retail_d4 extends Model
         durasi_per_shift AS (
             SELECT 
                 shift,
-                MIN(waktu) AS waktu_mulai,
-                MAX(waktu) AS waktu_akhir,
-                TIMESTAMPDIFF(SECOND, MIN(waktu), MAX(waktu)) AS durasi_detik
+                MIN(ts) AS ts_mulai,
+                MAX(ts) AS ts_akhir,
+                TIMESTAMPDIFF(SECOND, MIN(ts), MAX(ts)) AS durasi_detik
             FROM blok
-            WHERE Start_Mesin = 1
+            WHERE start_mesin = 1
             GROUP BY shift, group_id
         )
         SELECT 
@@ -559,91 +446,7 @@ class retail_d4 extends Model
     }
 
 
-    //uptime mesin
-    // public static function getUptime($tanggal = null)
-    // {
-    //     // Jika tidak ada tanggal yang diberikan, gunakan tanggal hari ini
-    //     if (!$tanggal) {
-    //         $tanggal = Carbon::now()->toDateString();
-    //     }
-
-    //     // Mendapatkan data dari database sesuai dengan query sebelumnya
-    //     $data = DB::select("
-    //     SELECT
-    //         shift,
-    //         tanggal_shift,
-    //         COUNT(*) AS total_detik_menyala,
-    //         SEC_TO_TIME(COUNT(*)) AS durasi_menyala
-    //     FROM (
-    //         -- Shift 1
-    //         SELECT 'Shift 1' AS shift,
-    //                DATE(waktu) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) BETWEEN '06:00:00' AND '14:00:00'
-    //           AND Start_Mesin = 1
-    //           AND DATE(waktu) = ?
-
-    //         UNION ALL
-
-    //         -- Shift 2
-    //         SELECT 'Shift 2' AS shift,
-    //                DATE(waktu) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) BETWEEN '14:01:00' AND '22:00:00'
-    //           AND Start_Mesin = 1
-    //           AND DATE(waktu) = ?
-
-    //         UNION ALL
-
-    //         -- Shift 3 Malam
-    //         SELECT 'Shift 3' AS shift,
-    //                DATE(waktu) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) >= '22:01:00'
-    //           AND Start_Mesin = 1
-    //           AND DATE(waktu) = ?
-
-    //         UNION ALL
-
-    //         -- Shift 3 Dini Hari (tanggal sebelumnya)
-    //         SELECT 'Shift 3' AS shift,
-    //                DATE(waktu - INTERVAL 1 DAY) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) <= '05:59:59'
-    //           AND Start_Mesin = 1
-    //           AND DATE(waktu - INTERVAL 1 DAY) = ?
-    //     ) AS shifts
-    //     GROUP BY shift, tanggal_shift
-    //     ORDER BY tanggal_shift, FIELD(shift, 'Shift 1', 'Shift 2', 'Shift 3')
-    //  ", [$tanggal, $tanggal, $tanggal, $tanggal]);
-
-    //     // Menghitung mesin yang berjalan dalam menit per shift, dibagi dengan total menit dalam 7 jam (420 menit)
-    //     $result = [];
-    //     foreach ($data as $item) {
-    //         // Hitung total detik menyala per shift
-    //         $detikMenyala = $item->total_detik_menyala;
-
-    //         // Ubah detik ke menit
-    //         $menitMenyala = $detikMenyala / 60;
-
-    //         // Hitung mesin run dalam menit dibagi dengan 420 menit
-    //         $mesinRunPerShift = $menitMenyala / 420;
-
-    //         // Simpan hasil dalam array dengan format yang diinginkan
-    //         $result[] = [
-    //             'shift' => $item->shift,
-    //             'durasi' => $menitMenyala,
-    //             'tanggal_shift' => $item->tanggal_shift,
-    //             'mesin_uptime' => $mesinRunPerShift * 100, // Mesin run dalam perbandingan dengan 7 jam
-    //         ];
-    //     }
-
-    //     return $result;
-    // }
+   
 
     public static function getUptime($tanggal = null)
     {
@@ -654,44 +457,44 @@ class retail_d4 extends Model
         $data = DB::select("
         WITH status_dengan_shift AS (
             SELECT 
-                waktu,
-                Start_Mesin,
+                ts,
+                start_mesin,
                 CASE
-                    WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                    WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
-                    WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
-                    WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
+                    WHEN TIME(ts) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
+                    WHEN TIME(ts) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                    WHEN TIME(ts) >= '22:00:01' THEN 'Shift 3'
+                    WHEN TIME(ts) <= '05:59:59' THEN 'Shift 3'
                 END AS shift,
-                LAG(Start_Mesin) OVER (PARTITION BY 
+                LAG(start_mesin) OVER (PARTITION BY 
                     CASE
-                        WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                        WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
-                        WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
-                        WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
+                        WHEN TIME(ts) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
+                        WHEN TIME(ts) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                        WHEN TIME(ts) >= '22:00:01' THEN 'Shift 3'
+                        WHEN TIME(ts) <= '05:59:59' THEN 'Shift 3'
                     END
-                    ORDER BY waktu) AS prev_status
+                    ORDER BY ts) AS prev_status
             FROM retail_d4
-            WHERE DATE(waktu) = ? OR DATE(waktu) = DATE_SUB(?, INTERVAL 1 DAY)
+            WHERE DATE(ts) = ? OR DATE(ts) = DATE_SUB(?, INTERVAL 1 DAY)
         ),
         blok AS (
             SELECT 
-                waktu,
+                ts,
                 shift,
-                Start_Mesin,
+                start_mesin,
                 SUM(CASE 
-                    WHEN Start_Mesin = 1 AND (prev_status = 0 OR prev_status IS NULL) THEN 1 
+                    WHEN start_mesin = 1 AND (prev_status = 0 OR prev_status IS NULL) THEN 1 
                     ELSE 0 
-                END) OVER (PARTITION BY shift ORDER BY waktu ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS group_id
+                END) OVER (PARTITION BY shift ORDER BY ts ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS group_id
             FROM status_dengan_shift
         ),
         durasi_per_shift AS (
             SELECT 
                 shift,
-                MIN(waktu) AS waktu_mulai,
-                MAX(waktu) AS waktu_akhir,
-                TIMESTAMPDIFF(SECOND, MIN(waktu), MAX(waktu)) AS durasi_detik
+                MIN(ts) AS ts_mulai,
+                MAX(ts) AS ts_akhir,
+                TIMESTAMPDIFF(SECOND, MIN(ts), MAX(ts)) AS durasi_detik
             FROM blok
-            WHERE Start_Mesin = 1
+            WHERE start_mesin = 1
             GROUP BY shift, group_id
         )
         SELECT 
@@ -701,7 +504,7 @@ class retail_d4 extends Model
         FROM durasi_per_shift
         GROUP BY shift
         ORDER BY FIELD(shift, 'Shift 1', 'Shift 2', 'Shift 3')
-    ", [$tanggal, $tanggal]);
+        ", [$tanggal, $tanggal]);
 
         // Siapkan struktur default untuk semua shift
         $allShifts = ['Shift 1', 'Shift 2', 'Shift 3'];
@@ -735,91 +538,7 @@ class retail_d4 extends Model
 
 
 
-    //downtime mesin
-    // public static function getDownTime($tanggal = null)
-    // {
-    //     // Jika tidak ada tanggal yang diberikan, gunakan tanggal hari ini
-    //     if (!$tanggal) {
-    //         $tanggal = Carbon::now()->toDateString();
-    //     }
-
-    //     // Mendapatkan data dari database sesuai dengan query sebelumnya
-    //     $data = DB::select("
-    //     SELECT
-    //         shift,
-    //         tanggal_shift,
-    //         COUNT(*) AS total_detik_mati,
-    //         SEC_TO_TIME(COUNT(*)) AS durasi_mati
-    //     FROM (
-    //         -- Shift 1
-    //         SELECT 'Shift 1' AS shift,
-    //                DATE(waktu) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) BETWEEN '06:00:00' AND '14:00:00'
-    //           AND Start_Mesin = 0
-    //           AND DATE(waktu) = ?
-
-    //         UNION ALL
-
-    //         -- Shift 2
-    //         SELECT 'Shift 2' AS shift,
-    //                DATE(waktu) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) BETWEEN '14:01:00' AND '22:00:00'
-    //           AND Start_Mesin = 0
-    //           AND DATE(waktu) = ?
-
-    //         UNION ALL
-
-    //         -- Shift 3 Malam
-    //         SELECT 'Shift 3' AS shift,
-    //                DATE(waktu) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) >= '22:01:00'
-    //           AND Start_Mesin = 0
-    //           AND DATE(waktu) = ?
-
-    //         UNION ALL
-
-    //         -- Shift 3 Dini Hari (tanggal sebelumnya)
-    //         SELECT 'Shift 3' AS shift,
-    //                DATE(waktu - INTERVAL 1 DAY) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) <= '05:59:59'
-    //           AND Start_Mesin = 0
-    //           AND DATE(waktu - INTERVAL 1 DAY) = ?
-    //     ) AS shifts
-    //     GROUP BY shift, tanggal_shift
-    //     ORDER BY tanggal_shift, FIELD(shift, 'Shift 1', 'Shift 2', 'Shift 3')
-    //  ", [$tanggal, $tanggal, $tanggal, $tanggal]);
-
-    //     // Menghitung mesin yang berjalan dalam menit per shift, dibagi dengan total menit dalam 7 jam (420 menit)
-    //     $result = [];
-    //     foreach ($data as $item) {
-    //         // Hitung total detik menyala per shift
-    //         $detikMati = $item->total_detik_mati;
-
-    //         // Ubah detik ke menit
-    //         $menitMati = $detikMati / 60;
-
-    //         // Hitung mesin run dalam menit dibagi dengan 420 menit
-    //         $mesinRunPerShift = $menitMati / 420;
-
-    //         // Simpan hasil dalam array dengan format yang diinginkan
-    //         $result[] = [
-    //             'shift' => $item->shift,
-    //             'durasi' => $menitMati,
-    //             'tanggal_shift' => $item->tanggal_shift,
-    //             'mesin_downtime' => $mesinRunPerShift * 100, // Mesin run dalam perbandingan dengan 7 jam
-    //         ];
-    //     }
-
-    //     return $result;
-    // }
+   
 
     public static function getDownTime($tanggal = null)
     {
@@ -830,38 +549,38 @@ class retail_d4 extends Model
         $data = DB::select("
         WITH status_dengan_shift AS (
             SELECT 
-                waktu,
-                Start_Mesin,
+                ts,
+                start_mesin,
                 CASE
-                    WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                    WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
-                    WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
-                    WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
+                    WHEN TIME(ts) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
+                    WHEN TIME(ts) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                    WHEN TIME(ts) >= '22:00:01' THEN 'Shift 3'
+                    WHEN TIME(ts) <= '05:59:59' THEN 'Shift 3'
                 END AS shift,
-                LAG(Start_Mesin) OVER (
+                LAG(start_mesin) OVER (
                     PARTITION BY 
                         CASE
-                            WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                            WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
-                            WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
-                            WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
+                            WHEN TIME(ts) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
+                            WHEN TIME(ts) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                            WHEN TIME(ts) >= '22:00:01' THEN 'Shift 3'
+                            WHEN TIME(ts) <= '05:59:59' THEN 'Shift 3'
                         END
-                    ORDER BY waktu
+                    ORDER BY ts
                 ) AS prev_status
             FROM retail_d4
-            WHERE DATE(waktu) = ? OR DATE(waktu) = DATE_SUB(?, INTERVAL 1 DAY)
+            WHERE DATE(ts) = ? OR DATE(ts) = DATE_SUB(?, INTERVAL 1 DAY)
         ),
         blok AS (
             SELECT 
-                waktu,
+                ts,
                 shift,
-                Start_Mesin,
+                start_mesin,
                 SUM(CASE 
-                    WHEN Start_Mesin = 0 AND (prev_status = 1 OR prev_status IS NULL) THEN 1 
+                    WHEN start_mesin = 0 AND (prev_status = 1 OR prev_status IS NULL) THEN 1 
                     ELSE 0 
                 END) OVER (
                     PARTITION BY shift 
-                    ORDER BY waktu 
+                    ORDER BY ts 
                     ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
                 ) AS group_id
             FROM status_dengan_shift
@@ -869,11 +588,11 @@ class retail_d4 extends Model
         durasi_per_shift AS (
             SELECT 
                 shift,
-                MIN(waktu) AS waktu_mulai,
-                MAX(waktu) AS waktu_akhir,
-                TIMESTAMPDIFF(SECOND, MIN(waktu), MAX(waktu)) AS durasi_detik
+                MIN(ts) AS ts_mulai,
+                MAX(ts) AS ts_akhir,
+                TIMESTAMPDIFF(SECOND, MIN(ts), MAX(ts)) AS durasi_detik
             FROM blok
-            WHERE Start_Mesin = 0
+            WHERE start_mesin = 0
             GROUP BY shift, group_id
         )
         SELECT 
@@ -883,7 +602,7 @@ class retail_d4 extends Model
         FROM durasi_per_shift
         GROUP BY shift
         ORDER BY FIELD(shift, 'Shift 1', 'Shift 2', 'Shift 3')
-    ", [$tanggal, $tanggal]);
+     ", [$tanggal, $tanggal]);
 
         // Default untuk ketiga shift
         $default = [
@@ -916,139 +635,12 @@ class retail_d4 extends Model
 
         return $result;
     }
-
-
-
-
-    // public static function getUptimeWithRealtime($tanggal = null)
-    // {
-    //     // Jika tidak ada tanggal yang diberikan, gunakan tanggal hari ini
-    //     if (!$tanggal) {
-    //         $tanggal = Carbon::now()->toDateString();
-    //     }
-
-    //     // Mendapatkan data dari database sesuai dengan query sebelumnya
-    //     $data = DB::select("
-    //     SELECT
-    //         shift,
-    //         tanggal_shift,
-    //         COUNT(*) AS total_detik_menyala,
-    //         SEC_TO_TIME(COUNT(*)) AS durasi_menyala
-    //     FROM (
-    //         -- Shift 1
-    //         SELECT 'Shift 1' AS shift,
-    //                DATE(waktu) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) BETWEEN '06:00:00' AND '14:00:00'
-    //           AND Start_Mesin = 1
-    //           AND DATE(waktu) = ?
-
-    //         UNION ALL
-
-    //         -- Shift 2
-    //         SELECT 'Shift 2' AS shift,
-    //                DATE(waktu) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) BETWEEN '14:01:00' AND '22:00:00'
-    //           AND Start_Mesin = 1
-    //           AND DATE(waktu) = ?
-
-    //         UNION ALL
-
-    //         -- Shift 3 Malam
-    //         SELECT 'Shift 3' AS shift,
-    //                DATE(waktu) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) >= '22:01:00'
-    //           AND Start_Mesin = 1
-    //           AND DATE(waktu) = ?
-
-    //         UNION ALL
-
-    //         -- Shift 3 Dini Hari (tanggal sebelumnya)
-    //         SELECT 'Shift 3' AS shift,
-    //                DATE(waktu - INTERVAL 1 DAY) AS tanggal_shift,
-    //                waktu
-    //         FROM retail_d4
-    //         WHERE TIME(waktu) <= '05:59:59'
-    //           AND Start_Mesin = 1
-    //           AND DATE(waktu - INTERVAL 1 DAY) = ?
-    //     ) AS shifts
-    //     GROUP BY shift, tanggal_shift
-    //     ORDER BY tanggal_shift, FIELD(shift, 'Shift 1', 'Shift 2', 'Shift 3')
-    //   ", [$tanggal, $tanggal, $tanggal, $tanggal]);
-
-    //     // Ambil waktu sekarang
-    //     $currentTime = Carbon::now();
-
-    //     // Menghitung mesin yang berjalan dalam menit per shift, dibagi dengan waktu yang telah berlalu dari awal shift
-    //     $result = [];
-    //     foreach ($data as $item) {
-    //         // Hitung total detik menyala per shift
-    //         $detikMenyala = $item->total_detik_menyala;
-
-    //         // Ubah detik ke menit
-    //         $menitMenyala = $detikMenyala / 60;
-
-    //         // Tentukan durasi shift
-    //         $shiftStartTime = Carbon::createFromFormat('H:i:s', '06:00:00'); // Default shift 1 start time
-    //         $shiftEndTime = Carbon::createFromFormat('H:i:s', '14:00:00'); // Default shift 1 end time
-
-    //         if ($item->shift == 'Shift 2') {
-    //             $shiftStartTime = Carbon::createFromFormat('H:i:s', '14:01:00');
-    //             $shiftEndTime = Carbon::createFromFormat('H:i:s', '22:00:00');
-    //         } elseif ($item->shift == 'Shift 3') {
-    //             $shiftStartTime = Carbon::createFromFormat('H:i:s', '22:01:00');
-    //             $shiftEndTime = Carbon::createFromFormat('H:i:s', '06:00:00');
-    //         }
-
-    //         // Periksa apakah shift saat ini sedang aktif
-    //         // Untuk Shift 3, kita perlu menangani logika waktu yang melintasi tengah malam.
-    //         if ($item->shift == 'Shift 3') {
-    //             if ($currentTime->between($shiftStartTime, Carbon::createFromFormat('H:i:s', '23:59:59'))) {
-    //                 // Shift 3 pada malam hari
-    //                 $shiftDurationInMinutes = $currentTime->diffInMinutes($shiftStartTime);
-    //             } elseif ($currentTime->between(Carbon::createFromFormat('H:i:s', '00:00:00'), $shiftEndTime)) {
-    //                 // Shift 3 pada dini hari (melalui tengah malam)
-    //                 $shiftDurationInMinutes = $currentTime->diffInMinutes(Carbon::createFromFormat('H:i:s', '00:00:00'));
-    //             } else {
-    //                 // Jika waktu sudah lewat shift, gunakan durasi shift standar
-    //                 $shiftDurationInMinutes = 420;
-    //             }
-    //         } else {
-    //             // Untuk Shift 1 dan Shift 2, langsung hitung durasi sesuai dengan waktu sekarang
-    //             if ($currentTime->between($shiftStartTime, $shiftEndTime)) {
-    //                 $shiftDurationInMinutes = $currentTime->diffInMinutes($shiftStartTime);
-    //             } else {
-    //                 $shiftDurationInMinutes = 420; // Shift selesai, gunakan durasi penuh
-    //             }
-    //         }
-
-    //         // Jika shift saat ini aktif, hitung uptime mesin
-    //         if ($shiftDurationInMinutes > 0) {
-    //             // Hitung mesin run dalam menit dibagi dengan durasi shift yang berlalu
-    //             $mesinRunPerShift = $menitMenyala / $shiftDurationInMinutes;
-
-    //             // Simpan hasil dalam array dengan format yang diinginkan
-    //             $result[] = [
-    //                 'shift' => $item->shift,
-    //                 'durasi' => $menitMenyala,
-    //                 'tanggal_shift' => $item->tanggal_shift,
-    //                 'mesin_uptime' => $mesinRunPerShift * 100, // Mesin run dalam perbandingan dengan durasi shift yang telah berlalu
-    //             ];
-    //         }
-    //     }
-
-    //     return $result;
-    // }
+  
 
     public static function getUptimeWithRealtime($tanggal = null)
     {
-        // Pastikan menggunakan zona waktu Asia/Jakarta (WIB)
-        $currentTime = Carbon::now('Asia/Jakarta');  // Menggunakan WIB untuk waktu sekarang
+        // Pastikan menggunakan zona ts Asia/Jakarta (WIB)
+        $currentTime = Carbon::now('Asia/Jakarta');  // Menggunakan WIB untuk ts sekarang
 
         // Jika tidak ada tanggal diberikan, gunakan hari ini
         if (!$tanggal) {
@@ -1061,47 +653,47 @@ class retail_d4 extends Model
         $data = DB::select(" 
         WITH status_dengan_shift AS (
             SELECT 
-                waktu,
-                Start_Mesin,
+                ts,
+                start_mesin,
                 CASE
-                    WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                    WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
-                    WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
-                    WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
+                    WHEN TIME(ts) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
+                    WHEN TIME(ts) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                    WHEN TIME(ts) >= '22:00:01' THEN 'Shift 3'
+                    WHEN TIME(ts) <= '05:59:59' THEN 'Shift 3'
                 END AS shift,
-                LAG(Start_Mesin) OVER (
+                LAG(start_mesin) OVER (
                     PARTITION BY CASE
-                        WHEN TIME(waktu) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
-                        WHEN TIME(waktu) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
-                        WHEN TIME(waktu) >= '22:00:01' THEN 'Shift 3'
-                        WHEN TIME(waktu) <= '05:59:59' THEN 'Shift 3'
+                        WHEN TIME(ts) BETWEEN '06:00:00' AND '14:00:00' THEN 'Shift 1'
+                        WHEN TIME(ts) BETWEEN '14:00:01' AND '22:00:00' THEN 'Shift 2'
+                        WHEN TIME(ts) >= '22:00:01' THEN 'Shift 3'
+                        WHEN TIME(ts) <= '05:59:59' THEN 'Shift 3'
                     END
-                    ORDER BY waktu
+                    ORDER BY ts
                 ) AS prev_status
             FROM retail_d4
-            WHERE DATE(waktu) IN (?, ?)
+            WHERE DATE(ts) IN (?, ?)
         ),
         blok AS (
             SELECT 
-                waktu,
+                ts,
                 shift,
-                Start_Mesin,
+                start_mesin,
                 SUM(
                     CASE 
-                        WHEN Start_Mesin = 1 AND (prev_status = 0 OR prev_status IS NULL) THEN 1 
+                        WHEN start_mesin = 1 AND (prev_status = 0 OR prev_status IS NULL) THEN 1 
                         ELSE 0 
                     END
-                ) OVER (PARTITION BY shift ORDER BY waktu ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS group_id
+                ) OVER (PARTITION BY shift ORDER BY ts ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS group_id
             FROM status_dengan_shift
         ),
         durasi_per_shift AS (
             SELECT 
                 shift,
-                MIN(waktu) AS waktu_mulai,
-                MAX(waktu) AS waktu_akhir,
-                TIMESTAMPDIFF(SECOND, MIN(waktu), MAX(waktu)) AS durasi_detik
+                MIN(ts) AS ts_mulai,
+                MAX(ts) AS ts_akhir,
+                TIMESTAMPDIFF(SECOND, MIN(ts), MAX(ts)) AS durasi_detik
             FROM blok
-            WHERE Start_Mesin = 1
+            WHERE start_mesin = 1
             GROUP BY shift, group_id
         )
         SELECT 
@@ -1128,7 +720,7 @@ class retail_d4 extends Model
                 $shiftStart = Carbon::createFromTimeString("$tanggal 22:00:01", 'Asia/Jakarta');
             }
 
-            // Jika waktu sekarang lebih kecil dari waktu mulai shift, set durasi berjalan ke 0
+            // Jika ts sekarang lebih kecil dari ts mulai shift, set durasi berjalan ke 0
             $durasiBerjalan = $currentTime->greaterThanOrEqualTo($shiftStart)
                 ? $currentTime->diffInMinutes($shiftStart)  // Jika shift sudah dimulai
                 : 0;  // Jika shift belum dimulai
@@ -1148,201 +740,11 @@ class retail_d4 extends Model
         return $result;
     }
 
-    //performance output
-    // public static function getPerformanceOutput($tanggal = null)
-    // {
-    //     // Set timezone ke Asia/Jakarta
-    //     $timezone = 'Asia/Jakarta';
-    //     $now = Carbon::now($timezone);
+   
 
-    //     // Gunakan waktu saat ini jika tidak diberikan tanggal
-    //     if (!$tanggal) {
-    //         $carbonDate = $now->copy();
-    //     } else {
-    //         $carbonDate = Carbon::parse($tanggal, $timezone)->setTimeFrom($now);
-    //     }
+   
 
-    //     $currentTime = $carbonDate->format('H:i:s');
-    //     $shift = '';
-    //     $start = null;
-
-    //     // Tentukan shift dan waktu awal shift
-    //     if ($currentTime >= '06:00:00' && $currentTime <= '14:00:00') {
-    //         $shift = 'Shift 1';
-    //         $start = $carbonDate->copy()->setTime(6, 0, 0);
-    //     } elseif ($currentTime > '14:00:00' && $currentTime <= '22:00:00') {
-    //         $shift = 'Shift 2';
-    //         $start = $carbonDate->copy()->setTime(14, 1, 0);
-    //     } else {
-    //         $shift = 'Shift 3';
-    //         $start = $carbonDate->copy()->setTime(22, 1, 0);
-    //         if ($currentTime <= '05:59:59') {
-    //             // Pukul 00:00–05:59 → tanggal sebelumnya, shift mulai hari kemarin jam 22:01
-    //             $start = $carbonDate->copy()->subDay()->setTime(22, 1, 0);
-    //         }
-    //     }
-
-    //     // Hitung durasi shift time dalam menit
-    //     $shiftTimeMinutes = ($carbonDate->diffInMinutes($start)) * (-1);
-
-    //     // Hitung nozzle aktif (nozzle_1 atau nozzle_2 = 1) dari start hingga now
-    //     $totalNozzleAktif = self::whereBetween('waktu', [$start, $carbonDate])
-    //         ->where(function ($query) {
-    //             $query->where('nozzle_1', 1)->orWhere('nozzle_2', 1);
-    //         })
-    //         ->get()
-    //         ->reduce(function ($carry, $item) {
-    //             return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
-    //         }, 0);
-
-    //     $performance = $shiftTimeMinutes > 0
-    //         ? ($totalNozzleAktif / ($shiftTimeMinutes * 40 * 2)) * 100
-    //         : 0;
-
-    //     return [
-    //         'shift' => $shift,
-    //         'tanggal' => $carbonDate->toDateString(),
-    //         'waktu_awal_shift' => $start->toDateTimeString(),
-    //         'waktu_sekarang' => $carbonDate->toDateTimeString(),
-    //         'durasi_menit' => $shiftTimeMinutes,
-    //         'total_nozzle_aktif' => $totalNozzleAktif,
-    //         'performance_output_percent' => round($performance, 2),
-    //     ];
-    // }
-
-    public static function getAllShiftPerformanceOutput($tanggal = null)
-    {
-        $timezone = 'Asia/Jakarta';
-        $now = Carbon::now($timezone);
-
-        $carbonDate = $tanggal
-            ? Carbon::parse($tanggal, $timezone)
-            : $now->copy();
-
-        // Definisi shift
-        $shifts = [
-            [
-                'name' => 'Shift 1',
-                'start' => $carbonDate->copy()->setTime(6, 0, 0),
-                'end'   => $carbonDate->copy()->setTime(14, 0, 0),
-            ],
-            [
-                'name' => 'Shift 2',
-                'start' => $carbonDate->copy()->setTime(14, 0, 1),
-                'end'   => $carbonDate->copy()->setTime(22, 0, 0),
-            ],
-            [
-                'name' => 'Shift 3',
-                'start' => $carbonDate->copy()->setTime(22, 0, 1),
-                'end'   => $carbonDate->copy()->addDay()->setTime(5, 59, 59),
-            ],
-        ];
-
-        $results = [];
-
-        foreach ($shifts as $shift) {
-            $totalNozzleAktif = self::whereBetween('waktu', [$shift['start'], $shift['end']])
-                ->where(function ($query) {
-                    $query->where('nozzle_1', 1)->orWhere('nozzle_2', 1);
-                })
-                ->get()
-                ->reduce(function ($carry, $item) {
-                    return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
-                }, 0);
-
-            $durasiMenit = 420; // Shift tetap 7 jam = 420 menit
-            $performance = ($totalNozzleAktif / ($durasiMenit * 40*2)) * 100;
-
-            $results[] = [
-                'shift' => $shift['name'],
-                'tanggal' => $carbonDate->toDateString(),
-                'waktu_awal_shift' => $shift['start']->toDateTimeString(),
-                'waktu_akhir_shift' => $shift['end']->toDateTimeString(),
-                'durasi_menit' => $durasiMenit,
-                'total_nozzle_aktif' => $totalNozzleAktif,
-                'performance_output_percent' => round($performance, 2),
-            ];
-        }
-
-        return $results;
-    }
-
-    // public static function getPerformanceGagalFilling($tanggal = null)
-    // {
-    //     $timezone = 'Asia/Jakarta';
-    //     $now = Carbon::now($timezone);
-    //     $carbonDate = $tanggal
-    //         ? Carbon::parse($tanggal, $timezone)
-    //         : $now->copy();
-
-    //     $shifts = [
-    //         [
-    //             'name' => 'Shift 1',
-    //             'start' => $carbonDate->copy()->setTime(6, 0, 0),
-    //             'end'   => $carbonDate->copy()->setTime(14, 0, 0),
-    //         ],
-    //         [
-    //             'name' => 'Shift 2',
-    //             'start' => $carbonDate->copy()->setTime(14, 1, 0),
-    //             'end'   => $carbonDate->copy()->setTime(22, 0, 0),
-    //         ],
-    //         [
-    //             'name' => 'Shift 3',
-    //             'start' => $carbonDate->copy()->setTime(22, 1, 0),
-    //             'end'   => $carbonDate->copy()->addDay()->setTime(5, 59, 59),
-    //         ],
-    //     ];
-
-    //     $results = [];
-
-    //     foreach ($shifts as $shift) {
-    //         $data = self::whereBetween('waktu', [$shift['start'], $shift['end']])
-    //             ->orderBy('waktu')
-    //             ->get();
-
-    //         // 1️⃣ Hitung durasi mesin menyala (Start_Mesin = 1)
-    //         $runningTimeMinutes = 0;
-    //         $previousTime = null;
-    //         foreach ($data as $row) {
-    //             if ($row->Start_Mesin == 1) {
-    //                 if ($previousTime) {
-    //                     $diff = Carbon::parse($row->waktu)->diffInMinutes($previousTime);
-    //                     $runningTimeMinutes += $diff;
-    //                 }
-    //                 $previousTime = Carbon::parse($row->waktu);
-    //             } else {
-    //                 $previousTime = null;
-    //             }
-    //         }
-
-    //         // 2️⃣ Hitung total nozzle aktif
-    //         $totalNozzleAktif = $data->reduce(function ($carry, $item) {
-    //             return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
-    //         }, 0);
-
-    //         // 3️⃣ Ambil nilai actual speed terakhir
-    //         $actualSpeed = optional($data->last())->main_speed ?? 0;
-    //         $hasilrunningtime = $runningTimeMinutes * (-1);
-    //         // 4️⃣ Hitung performance gagal filling
-    //         $denominator = $hasilrunningtime * $actualSpeed * 2;
-    //         $performanceGoodFilling = $denominator > 0
-    //             ? ($totalNozzleAktif / $denominator) * 100
-    //             : 0;
-    //         $performanceGagalFilling= $performanceGoodFilling > 0 ? (100 - $performanceGoodFilling) : 0;
-    //         $results[] = [
-    //             'shift' => $shift['name'],
-    //             'tanggal' => $carbonDate->toDateString(),
-    //             'waktu_awal_shift' => $shift['start']->toDateTimeString(),
-    //             'waktu_akhir_shift' => $shift['end']->toDateTimeString(),
-    //             'akumulasi_menit_mesin_menyala' => $hasilrunningtime,
-    //             'actual_speed' => $actualSpeed,
-    //             'total_nozzle_aktif' => $totalNozzleAktif,
-    //             'performance_gagal_filling_percent' => round($performanceGagalFilling, 2),
-    //         ];
-    //     }
-
-    //     return $results;
-    // }
+    
 
     public static function getPerformanceGagalFillingRange($startDate, $endDate)
     {
@@ -1371,20 +773,20 @@ class retail_d4 extends Model
             ];
 
             foreach ($shifts as $shift) {
-                $data = self::whereBetween('waktu', [$shift['start'], $shift['end']])
-                    ->orderBy('waktu')
+                $data = self::whereBetween('ts', [$shift['start'], $shift['end']])
+                    ->orderBy('ts')
                     ->get();
 
-                // Hitung running time (Start_Mesin = 1)
+                // Hitung running time (start_mesin = 1)
                 $runningTimeMinutes = 0;
                 $previousTime = null;
                 foreach ($data as $row) {
-                    if ($row->Start_Mesin == 1) {
+                    if ($row->start_mesin == 1) {
                         if ($previousTime) {
-                            $diff = Carbon::parse($row->waktu)->diffInMinutes($previousTime);
+                            $diff = Carbon::parse($row->ts)->diffInMinutes($previousTime);
                             $runningTimeMinutes += $diff;
                         }
-                        $previousTime = Carbon::parse($row->waktu);
+                        $previousTime = Carbon::parse($row->ts);
                     } else {
                         $previousTime = null;
                     }
@@ -1409,8 +811,8 @@ class retail_d4 extends Model
                 $results[] = [
                     'shift' => $shift['name'],
                     'tanggal' => $date->toDateString(),
-                    'waktu_awal_shift' => $shift['start']->toDateTimeString(),
-                    'waktu_akhir_shift' => $shift['end']->toDateTimeString(),
+                    'ts_awal_shift' => $shift['start']->toDateTimeString(),
+                    'ts_akhir_shift' => $shift['end']->toDateTimeString(),
                     'akumulasi_menit_mesin_menyala' => $hasilrunningtime,
                     'actual_speed' => $actualSpeed,
                     'total_nozzle_aktif' => $totalNozzleAktif,
@@ -1451,16 +853,20 @@ class retail_d4 extends Model
         $results = [];
 
         foreach ($shifts as $shift) {
-            $data = self::whereBetween('waktu', [$shift['start'], $shift['end']])
-                ->orderBy('waktu')
+            $data = self::whereBetween('ts', [$shift['start'], $shift['end']])
+                ->orderBy('ts')
                 ->get();
 
-            // 1️⃣ Hitung jumlah Start_Mesin == 1
-            $runningTimeMinutes = $data->where('Start_Mesin', 1)->count();
+            $data_nozzle = retail_d4_nozzle::whereBetween('ts', [$shift['start'], $shift['end']])
+            ->orderBy('ts')
+            ->get();
+
+            // 1️⃣ Hitung jumlah start_mesin == 1
+            $runningTimeMinutes = $data->where('start_mesin', 1)->count();
             $runningTimeMinutescount = $runningTimeMinutes / 60; // Ubah detik ke menit
 
             // 2️⃣ Hitung total nozzle aktif
-            $totalNozzleAktif = $data->reduce(function ($carry, $item) {
+            $totalNozzleAktif = $data_nozzle->reduce(function ($carry, $item) {
                 return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
             }, 0);
 
@@ -1479,8 +885,8 @@ class retail_d4 extends Model
                 'dominator' => $denominator,
                 'goodfilling' => $performanceGoodFilling,
                 'tanggal' => $carbonDate->toDateString(),
-                'waktu_awal_shift' => $shift['start']->toDateTimeString(),
-                'waktu_akhir_shift' => $shift['end']->toDateTimeString(),
+                'ts_awal_shift' => $shift['start']->toDateTimeString(),
+                'ts_akhir_shift' => $shift['end']->toDateTimeString(),
                 'jumlah_start_mesin' => $runningTimeMinutescount,
                 'actual_speed' => $actualSpeed,
                 'total_nozzle_aktif' => $totalNozzleAktif,
@@ -1499,18 +905,18 @@ class retail_d4 extends Model
         $besok = Carbon::parse($tanggal)->addDay()->toDateString();
 
         $shift1 = DB::table('retail_d4')
-            ->whereBetween('waktu', ["$tanggal 06:00:00", "$tanggal 14:00:00"])
-            ->where('Start_Mesin', 1)
+            ->whereBetween('ts', ["$tanggal 06:00:00", "$tanggal 14:00:00"])
+            ->where('start_mesin', 1)
             ->count();
 
         $shift2 = DB::table('retail_d4')
-            ->whereBetween('waktu', ["$tanggal 14:00:01", "$tanggal 22:00:00"])
-            ->where('Start_Mesin', 1)
+            ->whereBetween('ts', ["$tanggal 14:00:01", "$tanggal 22:00:00"])
+            ->where('start_mesin', 1)
             ->count();
 
         $shift3 = DB::table('retail_d4')
-            ->whereBetween('waktu', ["$tanggal 22:00:01", "$besok 05:59:59"])
-            ->where('Start_Mesin', 1)
+            ->whereBetween('ts', ["$tanggal 22:00:01", "$besok 05:59:59"])
+            ->where('start_mesin', 1)
             ->count();
 
         return [
@@ -1525,18 +931,18 @@ class retail_d4 extends Model
         $besok = Carbon::parse($tanggal)->addDay()->toDateString();
 
         $shift1 = DB::table('retail_d4')
-        ->whereBetween('waktu', ["$tanggal 06:00:00", "$tanggal 14:00:00"])
-        ->where('Start_Mesin', 0)
+        ->whereBetween('ts', ["$tanggal 06:00:00", "$tanggal 14:00:00"])
+        ->where('start_mesin', 0)
         ->count();
 
         $shift2 = DB::table('retail_d4')
-        ->whereBetween('waktu', ["$tanggal 14:00:01", "$tanggal 22:00:00"])
-        ->where('Start_Mesin', 0)
+        ->whereBetween('ts', ["$tanggal 14:00:01", "$tanggal 22:00:00"])
+        ->where('start_mesin', 0)
         ->count();
 
         $shift3 = DB::table('retail_d4')
-        ->whereBetween('waktu', ["$tanggal 22:00:01", "$besok 05:59:59"])
-        ->where('Start_Mesin', 0)
+        ->whereBetween('ts', ["$tanggal 22:00:01", "$besok 05:59:59"])
+        ->where('start_mesin', 0)
         ->count();
 
         return [
@@ -1551,13 +957,11 @@ class retail_d4 extends Model
         $timezone = 'Asia/Jakarta';
         $now = Carbon::now($timezone);
 
-        // Gunakan waktu saat ini jika tanggal tidak diberikan
         if (!$tanggal) {
             $carbonDate = $now->copy();
         } else {
             $carbonDate = Carbon::parse($tanggal, $timezone);
             if (strlen($tanggal) <= 10) {
-                // Tambahkan waktu dari now jika hanya berupa tanggal
                 $carbonDate->setTimeFrom($now);
             }
         }
@@ -1577,23 +981,20 @@ class retail_d4 extends Model
             if ($currentTime >= '22:00:01') {
                 $start = $carbonDate->copy()->setTime(22, 1, 0);
             } else {
-                // Misal sekarang 2025-05-07 02:00 → Shift 3 dari tanggal 2025-05-06 jam 22:01
                 $start = $carbonDate->copy()->subDay()->setTime(22, 1, 0);
             }
         }
 
-        // Hitung durasi shift
         $durasiMenit = $start->diffInMinutes($carbonDate);
 
-        $totalNozzleAktif = self::whereBetween('waktu', [$start, $carbonDate])
-            ->where(function ($query) {
-                $query->where('nozzle_1', 1)->orWhere('nozzle_2', 1);
-            })
+        // Ambil data dari tabel retail_d4_nozzle
+        $totalNozzleAktif = retail_d4_nozzle::whereBetween('ts', [$start, $carbonDate])
             ->get()
             ->reduce(function ($carry, $item) {
                 return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
             }, 0);
 
+        // Asumsi total maksimal nozzle adalah 40 unit per menit per nozzle (×2 karena nozzle_1 & nozzle_2)
         $performance = $durasiMenit > 0
             ? ($totalNozzleAktif / ($durasiMenit * 40 * 2)) * 100
             : 0;
@@ -1601,13 +1002,67 @@ class retail_d4 extends Model
         return [
             'shift' => $shift,
             'tanggal' => $carbonDate->toDateString(),
-            'waktu_awal_shift' => $start->toDateTimeString(),
-            'waktu_sekarang' => $carbonDate->toDateTimeString(),
+            'ts_awal_shift' => $start->toDateTimeString(),
+            'ts_sekarang' => $carbonDate->toDateTimeString(),
             'durasi_menit' => $durasiMenit,
             'total_nozzle_aktif' => $totalNozzleAktif,
             'performance_output_percent' => round($performance, 2),
         ];
     }
 
+    public static function getAllShiftPerformanceOutput($tanggal = null)
+    {
+        $timezone = 'Asia/Jakarta';
+        $now = Carbon::now($timezone);
 
+        $carbonDate = $tanggal
+            ? Carbon::parse($tanggal, $timezone)
+            : $now->copy();
+
+        // Definisi shift
+        $shifts = [
+            [
+                'name' => 'Shift 1',
+                'start' => $carbonDate->copy()->setTime(6, 0, 0),
+                'end'   => $carbonDate->copy()->setTime(14, 0, 0),
+            ],
+            [
+                'name' => 'Shift 2',
+                'start' => $carbonDate->copy()->setTime(14, 0, 1),
+                'end'   => $carbonDate->copy()->setTime(22, 0, 0),
+            ],
+            [
+                'name' => 'Shift 3',
+                'start' => $carbonDate->copy()->setTime(22, 0, 1),
+                'end'   => $carbonDate->copy()->addDay()->setTime(5, 59, 59),
+            ],
+        ];
+
+        $results = [];
+
+        foreach ($shifts as $shift) {
+            $totalNozzleAktif = retail_d4_nozzle::whereBetween('ts', [$shift['start'], $shift['end']])
+            ->get()
+                ->reduce(function ($carry, $item) {
+                    return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
+                }, 0);
+
+            $durasiMenit = 420; // 7 jam shift
+            $performance = ($durasiMenit > 0)
+                ? ($totalNozzleAktif / ($durasiMenit * 40 * 2)) * 100
+                : 0;
+
+            $results[] = [
+                'shift' => $shift['name'],
+                'tanggal' => $carbonDate->toDateString(),
+                'ts_awal_shift' => $shift['start']->toDateTimeString(),
+                'ts_akhir_shift' => $shift['end']->toDateTimeString(),
+                'durasi_menit' => $durasiMenit,
+                'total_nozzle_aktif' => $totalNozzleAktif,
+                'performance_output_percent' => round($performance, 2),
+            ];
+        }
+
+        return $results;
+    }
 }

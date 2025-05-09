@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Retail\retail_d4;
+use App\Models\Retail\retail_d4_nozzle;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -13,13 +14,13 @@ class RetailController extends Controller
     public function getLastData()
     {
         // Ambil data terakhir dari tabel retail_d4
-        $data = retail_d4::orderBy('waktu', 'desc')->first();
+        $data = retail_d4::orderBy('ts', 'desc')->first();
 
         // Jika tidak ada data, set nilai default ke 0
         if (!$data) {
             $data = [
                 "id" => 0,
-                "waktu" => now()->toDateTimeString(),
+                "ts" => now()->toDateTimeString(),
                 "main_speed" => 0,
                 "total_counter" => 0,
                 "nozzle_1" => 0,
@@ -31,17 +32,17 @@ class RetailController extends Controller
         return response()->json($data);
     }
 
-    //ambil data dari tabel retail_d4 berdasarkan waktu sebanyak 100 data
+    //ambil data dari tabel retail_d4 berdasarkan ts sebanyak 100 data
     public function getData()
     {
-        // Ambil data dari tabel retail_d4 berdasarkan waktu sebanyak 100 data
-        $data = retail_d4::orderBy('waktu', 'desc')->take(100)->get();
+        // Ambil data dari tabel retail_d4 berdasarkan ts sebanyak 100 data
+        $data = retail_d4::orderBy('ts', 'desc')->take(100)->get();
 
         // Jika tidak ada data, set nilai default ke 0
         if ($data->isEmpty()) {
             $data = [
                 "id" => 0,
-                "waktu" => now()->toDateTimeString(),
+                "ts" => now()->toDateTimeString(),
                 "main_speed" => 0,
                 "total_counter" => 0,
                 "nozzle_1" => 0,
@@ -52,7 +53,7 @@ class RetailController extends Controller
 
         return response()->json($data);
     }
-    // buatkan fungsi menghitung rata-rata dari main_speed saja berdasarkan waktu, dengan 3 filter yaitu realtime hari ini, lalu pilih tanggal, dan range tanggal
+    // buatkan fungsi menghitung rata-rata dari main_speed saja berdasarkan ts, dengan 3 filter yaitu realtime hari ini, lalu pilih tanggal, dan range tanggal
     public function getAverageMainSpeed(Request $request)
     {
         // Validasi input
@@ -65,13 +66,13 @@ class RetailController extends Controller
 
         $query = retail_d4::query();
 
-        // Filter berdasarkan waktu
+        // Filter berdasarkan ts
         // if ($request->filter == 'realtime') {
-        $query->whereDate('waktu', now());
+        $query->whereDate('ts', now());
         // } elseif ($request->filter == 'tanggal') {
-        //     $query->whereDate('waktu', $request->tanggal);
+        //     $query->whereDate('ts', $request->tanggal);
         // } elseif ($request->filter == 'range') {
-        //     $query->whereBetween('waktu', [$request->start_date, $request->end_date]);
+        //     $query->whereBetween('ts', [$request->start_date, $request->end_date]);
         // }
 
         // Hitung rata-rata main_speed, kembalikan 0 jika null
@@ -80,7 +81,7 @@ class RetailController extends Controller
         return response()->json(['average_main_speed' => $average]);
     }
 
-    // buatkan fungsi menghitung jumlah keseluruhan dari total_counter saja berdasarkan waktu, dengan 3 filter yaitu realtime hari ini, lalu pilih tanggal, dan range tanggal. dan juga dibagi menjadi 3 shift, shift 1 dari 06.00 sampai 14.00, shift 2 dari 14.01 sampai 22.00,dan shift 3 dari 22.01 sampai 05.59 tanggal berikutnya
+    // buatkan fungsi menghitung jumlah keseluruhan dari total_counter saja berdasarkan ts, dengan 3 filter yaitu realtime hari ini, lalu pilih tanggal, dan range tanggal. dan juga dibagi menjadi 3 shift, shift 1 dari 06.00 sampai 14.00, shift 2 dari 14.01 sampai 22.00,dan shift 3 dari 22.01 sampai 05.59 tanggal berikutnya
     public function getTotalCounter(Request $request)
     {
         $request->validate([
@@ -127,7 +128,7 @@ class RetailController extends Controller
             }
         }
 
-        $shiftCounts = retail_d4::getNozzleCountPerShift($dates);
+        $shiftCounts = retail_d4_nozzle::getNozzleCountPerShift($dates);
 
         return response()->json([
             'total_nozzle_1' => $shiftCounts['shift_1']['nozzle_1'] + $shiftCounts['shift_2']['nozzle_1'] + $shiftCounts['shift_3']['nozzle_1'],
@@ -155,8 +156,8 @@ class RetailController extends Controller
 
         $data = array_map(function ($item) {
             return [
-                'waktu_mulai' => $item->Waktu_mulai,
-                'waktu_akhir' => $item->Waktu_akhir,
+                'ts_mulai' => $item->ts_mulai,
+                'ts_akhir' => $item->ts_akhir,
             ];
         }, $periods);
 
