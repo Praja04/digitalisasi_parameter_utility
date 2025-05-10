@@ -829,10 +829,33 @@
                 method: 'GET',
                 data: data,
                 success: function(response) {
+                    // response.forEach(item => {
+                    //     const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
+                    //     const text = item.performance_output_percent + ' %';
+                    //     $(`#performance_${shiftId}`).text(text);
+                    // });
+                    let currentHour = new Date().getHours();
+
                     response.forEach(item => {
                         const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
                         const text = item.performance_output_percent + ' %';
-                        $(`#performance_${shiftId}`).text(text);
+
+                        if (filter === 'today') {
+                            // Cek waktu saat ini dan tampilkan shift yang relevan
+                            if (currentHour >= 6 && currentHour < 14 && item.shift === 'Shift 1') {
+                                $(`#performance_${shiftId}`).text(text);
+                            } else if (currentHour >= 14 && currentHour < 22 && item.shift === 'Shift 2') {
+                                $(`#performance_${shiftId}`).text(text);
+                            } else if (currentHour >= 22 || currentHour < 6 && item.shift === 'Shift 3') {
+                                $(`#performance_${shiftId}`).text(text);
+                            } else {
+                                // Untuk shift yang tidak relevan, set ke 0
+                                $(`#performance_${shiftId}`).text('0 %');
+                            }
+                        } else {
+                            // Untuk filter tanggal atau range, tampilkan semua shift
+                            $(`#performance_${shiftId}`).text(text);
+                        }
                     });
 
                     // console.log(response);
