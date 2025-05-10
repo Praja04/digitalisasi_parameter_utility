@@ -847,13 +847,37 @@
                 method: 'GET',
                 data: data,
                 success: function(response) {
+                    // response.forEach(item => {
+                    //     const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
+                    //     const text = item.performance_gagal_filling_percent + ' %';
+                    //     $(`#gagal_filling_${shiftId}`).text(text);
+                    // });
+
+                    //console.log(response);
+                    // Ambil waktu sekarang
+                    let currentHour = new Date().getHours();
+
                     response.forEach(item => {
                         const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
                         const text = item.performance_gagal_filling_percent + ' %';
-                        $(`#gagal_filling_${shiftId}`).text(text);
-                    });
 
-                    //console.log(response);
+                        if (filter === 'today') {
+                            // Cek waktu saat ini dan tampilkan shift yang relevan
+                            if (currentHour >= 6 && currentHour < 14 && item.shift === 'Shift 1') {
+                                $(`#gagal_filling_${shiftId}`).text(text);
+                            } else if (currentHour >= 14 && currentHour < 22 && item.shift === 'Shift 2') {
+                                $(`#gagal_filling_${shiftId}`).text(text);
+                            } else if (currentHour >= 22 || currentHour < 6 && item.shift === 'Shift 3') {
+                                $(`#gagal_filling_${shiftId}`).text(text);
+                            } else {
+                                // Untuk shift yang tidak relevan, set ke 0
+                                $(`#gagal_filling_${shiftId}`).text('0 %');
+                            }
+                        } else {
+                            // Untuk filter tanggal atau range, tampilkan semua shift
+                            $(`#gagal_filling_${shiftId}`).text(text);
+                        }
+                    });
                 },
                 error: function(xhr) {
                     console.error('Error:', xhr.responseJSON);

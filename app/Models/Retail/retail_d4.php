@@ -173,7 +173,7 @@ class retail_d4 extends Model
         return $result;
     }
 
-    
+
 
     public static function getTotalMesinRunningMinutesByShift($filterType = 'realtime', $startDate = null, $endDate = null)
     {
@@ -380,7 +380,7 @@ class retail_d4 extends Model
 
     //berhasil
 
-   
+
     public static function getDurasiMesinPerShift($tanggal = null)
     {
         if (!$tanggal) {
@@ -446,7 +446,7 @@ class retail_d4 extends Model
     }
 
 
-   
+
 
     public static function getUptime($tanggal = null)
     {
@@ -538,7 +538,7 @@ class retail_d4 extends Model
 
 
 
-   
+
 
     public static function getDownTime($tanggal = null)
     {
@@ -635,7 +635,7 @@ class retail_d4 extends Model
 
         return $result;
     }
-  
+
 
     public static function getUptimeWithRealtime($tanggal = null)
     {
@@ -740,11 +740,11 @@ class retail_d4 extends Model
         return $result;
     }
 
-   
 
-   
 
-    
+
+
+
 
     public static function getPerformanceGagalFillingRange($startDate, $endDate)
     {
@@ -824,6 +824,79 @@ class retail_d4 extends Model
         return $results;
     }
 
+    // public static function getPerformanceGagalFilling($tanggal = null)
+    // {
+    //     $timezone = 'Asia/Jakarta';
+    //     $now = Carbon::now($timezone);
+    //     $carbonDate = $tanggal
+    //     ? Carbon::parse($tanggal, $timezone)
+    //     : $now->copy();
+
+    //     $shifts = [
+    //             [
+    //                 'name' => 'Shift 1',
+    //                 'start' => $carbonDate->copy()->setTime(6, 0, 0),
+    //                 'end'   => $carbonDate->copy()->setTime(14, 0, 0),
+    //             ],
+    //             [
+    //                 'name' => 'Shift 2',
+    //                 'start' => $carbonDate->copy()->setTime(14, 0, 1),
+    //                 'end'   => $carbonDate->copy()->setTime(22, 0, 0),
+    //             ],
+    //             [
+    //                 'name' => 'Shift 3',
+    //                 'start' => $carbonDate->copy()->setTime(22, 0, 1),
+    //                 'end'   => $carbonDate->copy()->addDay()->setTime(5, 59, 59),
+    //             ],
+    //         ];
+
+    //     $results = [];
+
+    //     foreach ($shifts as $shift) {
+    //         $data = self::whereBetween('ts', [$shift['start'], $shift['end']])
+    //             ->orderBy('ts')
+    //             ->get();
+
+    //         $data_nozzle = retail_d4_nozzle::whereBetween('ts', [$shift['start'], $shift['end']])
+    //         ->orderBy('ts')
+    //         ->get();
+
+    //         // 1️⃣ Hitung jumlah start_mesin == 1
+    //         $runningTimeMinutes = $data->where('start_mesin', 1)->count();
+    //         $runningTimeMinutescount = $runningTimeMinutes / 60; // Ubah detik ke menit
+
+    //         // 2️⃣ Hitung total nozzle aktif
+    //         $totalNozzleAktif = $data_nozzle->reduce(function ($carry, $item) {
+    //             return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
+    //         }, 0);
+
+    //         // 3️⃣ Ambil nilai actual speed terakhir
+    //         $actualSpeed = optional($data->last())->main_speed ?? 0;
+
+    //         // 4️⃣ Hitung performance gagal filling
+    //         $denominator = $runningTimeMinutescount * $actualSpeed * 2;
+    //         $performanceGoodFilling = $denominator > 0
+    //             ? (($totalNozzleAktif / $denominator)*100 )
+    //             : 0;
+    //         $performanceGagalFilling = $performanceGoodFilling > 0 ? (100 - $performanceGoodFilling) : 0;
+
+    //         $results[] = [
+    //             'shift' => $shift['name'],
+    //             'dominator' => $denominator,
+    //             'goodfilling' => $performanceGoodFilling,
+    //             'tanggal' => $carbonDate->toDateString(),
+    //             'ts_awal_shift' => $shift['start']->toDateTimeString(),
+    //             'ts_akhir_shift' => $shift['end']->toDateTimeString(),
+    //             'jumlah_start_mesin' => $runningTimeMinutescount,
+    //             'actual_speed' => $actualSpeed,
+    //             'total_nozzle_aktif' => $totalNozzleAktif,
+    //             'performance_gagal_filling_percent' => round($performanceGagalFilling, 2),
+    //         ];
+    //     }
+
+    //     return $results;
+    // }
+
     public static function getPerformanceGagalFilling($tanggal = null)
     {
         $timezone = 'Asia/Jakarta';
@@ -850,6 +923,45 @@ class retail_d4 extends Model
                 ],
             ];
 
+        // Generate target timestamps
+        $target14 = $carbonDate->copy()->setTime(14, 0, 0)->toDateTimeString();
+        $target22 = $carbonDate->copy()->setTime(22, 0, 0)->toDateTimeString();
+        $target06 = $carbonDate->copy()->addDay()->setTime(6, 0, 0)->toDateTimeString();
+
+        // Ambil total_counter terdekat dengan target waktu
+        $totalCounterData = DB::select("
+        WITH all_targets AS (
+            SELECT ? AS target_ts
+            UNION ALL
+            SELECT ?
+            UNION ALL
+            SELECT ?
+        ),
+        closest_valid AS (
+            SELECT 
+                t.target_ts,
+                r.ts,
+                r.total_counter,
+                ROW_NUMBER() OVER (
+                    PARTITION BY t.target_ts 
+                    ORDER BY ABS(TIMESTAMPDIFF(SECOND, r.ts, t.target_ts))
+                ) AS rn
+            FROM all_targets t
+            JOIN retail_d4 r ON r.ts <= t.target_ts
+            WHERE r.total_counter != 0
+        )
+        SELECT 
+            target_ts,
+            ts AS actual_ts,
+            total_counter
+        FROM closest_valid
+        WHERE rn = 1
+        ORDER BY target_ts
+    ", [$target14, $target22, $target06]);
+
+        // Konversi hasil query ke associative array
+        $countersByTarget = collect($totalCounterData)->keyBy('target_ts');
+
         $results = [];
 
         foreach ($shifts as $shift) {
@@ -857,26 +969,21 @@ class retail_d4 extends Model
                 ->orderBy('ts')
                 ->get();
 
-            $data_nozzle = retail_d4_nozzle::whereBetween('ts', [$shift['start'], $shift['end']])
-            ->orderBy('ts')
-            ->get();
-
-            // 1️⃣ Hitung jumlah start_mesin == 1
             $runningTimeMinutes = $data->where('start_mesin', 1)->count();
-            $runningTimeMinutescount = $runningTimeMinutes / 60; // Ubah detik ke menit
+            $runningTimeMinutescount = $runningTimeMinutes / 60;
 
-            // 2️⃣ Hitung total nozzle aktif
-            $totalNozzleAktif = $data_nozzle->reduce(function ($carry, $item) {
-                return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
-            }, 0);
+            // Ambil total_counter dari target timestamp setelah shift ini
+            $targetKey = $shift['name'] === 'Shift 1' ? $target14
+                : ($shift['name'] === 'Shift 2' ? $target22 : $target06);
+            $totalNozzleAktif = isset($countersByTarget[$targetKey])
+                ? $countersByTarget[$targetKey]->total_counter
+                : 0;
 
-            // 3️⃣ Ambil nilai actual speed terakhir
             $actualSpeed = optional($data->last())->main_speed ?? 0;
 
-            // 4️⃣ Hitung performance gagal filling
             $denominator = $runningTimeMinutescount * $actualSpeed * 2;
             $performanceGoodFilling = $denominator > 0
-                ? (($totalNozzleAktif / $denominator)*100 )
+                ? (($totalNozzleAktif / $denominator) * 100)
                 : 0;
             $performanceGagalFilling = $performanceGoodFilling > 0 ? (100 - $performanceGoodFilling) : 0;
 
@@ -891,11 +998,18 @@ class retail_d4 extends Model
                 'actual_speed' => $actualSpeed,
                 'total_nozzle_aktif' => $totalNozzleAktif,
                 'performance_gagal_filling_percent' => round($performanceGagalFilling, 2),
+                'target_ts' => $targetKey,
+                'actual_ts' => isset($countersByTarget[$targetKey])
+                ? $countersByTarget[$targetKey]->actual_ts
+                : null,
+                'total_counter_per_shift' => isset($countersByTarget[$targetKey]) ? $countersByTarget[$targetKey]->total_counter : 0, // Total counter per shift
+            
             ];
         }
 
         return $results;
     }
+
 
 
 
@@ -931,19 +1045,19 @@ class retail_d4 extends Model
         $besok = Carbon::parse($tanggal)->addDay()->toDateString();
 
         $shift1 = DB::table('retail_d4')
-        ->whereBetween('ts', ["$tanggal 06:00:00", "$tanggal 14:00:00"])
-        ->where('start_mesin', 0)
-        ->count();
+            ->whereBetween('ts', ["$tanggal 06:00:00", "$tanggal 14:00:00"])
+            ->where('start_mesin', 0)
+            ->count();
 
         $shift2 = DB::table('retail_d4')
-        ->whereBetween('ts', ["$tanggal 14:00:01", "$tanggal 22:00:00"])
-        ->where('start_mesin', 0)
-        ->count();
+            ->whereBetween('ts', ["$tanggal 14:00:01", "$tanggal 22:00:00"])
+            ->where('start_mesin', 0)
+            ->count();
 
         $shift3 = DB::table('retail_d4')
-        ->whereBetween('ts', ["$tanggal 22:00:01", "$besok 05:59:59"])
-        ->where('start_mesin', 0)
-        ->count();
+            ->whereBetween('ts', ["$tanggal 22:00:01", "$besok 05:59:59"])
+            ->where('start_mesin', 0)
+            ->count();
 
         return [
             'shift1_detik' => $shift1,
@@ -1042,7 +1156,7 @@ class retail_d4 extends Model
 
         foreach ($shifts as $shift) {
             $totalNozzleAktif = retail_d4_nozzle::whereBetween('ts', [$shift['start'], $shift['end']])
-            ->get()
+                ->get()
                 ->reduce(function ($carry, $item) {
                     return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
                 }, 0);
