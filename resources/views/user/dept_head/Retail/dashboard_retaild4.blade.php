@@ -114,19 +114,19 @@
 
             <div class="col-xl-3 col-md-6">
                 <!-- card -->
-                <div class="card card-animate total-start-mesin">
+                <div class="card card-animate total_stop_mesin">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div class="flex-grow-1 overflow-hidden">
-                                <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Start Periods Mesin</p>
+                                <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Stop Periods Mesin</p>
                             </div>
 
                         </div>
                         <div class="d-flex align-items-end justify-content-between mt-4">
                             <div>
-                                <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" id="total_start_mesin"></span></h4>
+                                <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" id="total_stop_mesin"></span></h4>
 
-                                <p>See details Uptime Mesin</p>
+                                <p>See details Downtime Mesin</p>
 
                             </div>
                             <div class="avatar-sm flex-shrink-0" data-aos="flip-up">
@@ -689,14 +689,14 @@
             });
 
             $.ajax({
-                url: "{{url('retail/d4/mesin-start-periods')}}",
+                url: "{{url('retail/d4/mesin-stop-periods')}}",
                 method: 'GET',
                 // data: data,
                 dataType: "json",
                 success: function(response) {
-                    $('#total_start_mesin').text(response.total);
+                    $('#total_stop_mesin').text(response.total);
                     // const total = parseInt(response.total) || 0;
-                    // animateCounter($('#total_start_mesin'), total, 1000);
+                    // animateCounter($('#total_stop_mesin'), total, 1000);
                     //  console.log(response);
                 },
                 error: function(xhr) {
@@ -907,7 +907,7 @@
                 }
             });
 
-            $(document).on('click', '.total-start-mesin', function() {
+            $(document).on('click', '.total_stop_mesin', function() {
                 let filter = $('#filter').val() || 'today';
                 let data = {};
 
@@ -924,7 +924,7 @@
 
                 // Ambil ulang data dan tampilkan ke modal
                 $.ajax({
-                    url: "{{url('retail/d4/mesin-start-periods')}}",
+                    url: "{{url('retail/d4/mesin-stop-periods')}}",
                     method: 'GET',
                     data: data,
                     success: function(response) {
@@ -938,18 +938,18 @@
                         <li class="list-group-item">
                             <strong>${index + 1}.</strong>
                             <br>Mesin: Retail D4
-                            <br>Start: ${item.ts_mulai ?? '-'}
-                            <br>End: ${item.ts_akhir ?? '-'}
+                            <br>Start Downtime: ${item.ts_mulai ?? '-'}
+                            <br>End Downtime: ${item.ts_akhir ?? '-'}
                             
                         </li>
                     `;
                             });
                             html += '</ul>';
                         } else {
-                            html = '<p class="text-muted">Tidak ada data start periods untuk periode ini.</p>';
+                            html = '<p class="text-muted">Tidak ada data stop periods untuk periode ini.</p>';
                         }
 
-                        $('#abnormalModalLabel').text('Detail Start Periods Mesin');
+                        $('#abnormalModalLabel').text('Detail Stop Periods Mesin');
                         $('#abnormalModalBody').html(html);
                         $('#abnormalModal').modal('show');
                     },

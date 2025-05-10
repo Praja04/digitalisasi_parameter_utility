@@ -278,6 +278,7 @@ Route::prefix('retail')->group(function () {
     Route::get('/d4/nozzle-count', [RetailController::class, 'getNozzleCount']);
 
     Route::get('/d4/mesin-start-periods', [RetailController::class, 'getMesinStartPeriods']);
+    Route::get('/d4/mesin-stop-periods', [RetailController::class, 'getMesinStopPeriods']);
     Route::get('/d4/mesin/performance', [RetailController::class, 'getperformanceActual']);
     Route::get('/d4/output/performance', [RetailController::class, 'getperformanceOutput']);
     Route::get('/d4/output/performance/all_shift', [RetailController::class, 'getperformanceOutputAllShift']);

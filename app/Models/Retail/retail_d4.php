@@ -132,6 +132,66 @@ class retail_d4 extends Model
 
         return DB::select($query, $bindings);
     }
+
+    public static function getMesinStopPeriods($filterType = 'realtime', $startDate = null, $endDate = null)
+    {
+        $bindings = [];
+        $whereClause = "";
+
+        $filterType = strtolower($filterType);
+        if ($filterType === 'tanggal') {
+            $filterType = 'date';
+        }
+
+        // Generate time boundaries based on shift definition (06:00 to 05:59 next day)
+        if ($filterType === 'realtime') {
+            $start = Carbon::now('Asia/Jakarta')->startOfDay()->addHours(6);
+            $end = (clone $start)->addDay()->subSecond();
+            $whereClause = "WHERE ts BETWEEN ? AND ?";
+            $bindings[] = $start->toDateTimeString();
+            $bindings[] = $end->toDateTimeString();
+        } elseif ($filterType === 'date' && $startDate) {
+            $start = Carbon::parse($startDate)->startOfDay()->addHours(6);
+            $end = (clone $start)->addDay()->subSecond();
+            $whereClause = "WHERE ts BETWEEN ? AND ?";
+            $bindings[] = $start->toDateTimeString();
+            $bindings[] = $end->toDateTimeString();
+        } elseif ($filterType === 'range' && $startDate && $endDate) {
+            $start = Carbon::parse($startDate)->startOfDay()->addHours(6);
+            $end = Carbon::parse($endDate)->startOfDay()->addDays(1)->addHours(5)->addMinutes(59)->addSeconds(59);
+            $whereClause = "WHERE ts BETWEEN ? AND ?";
+            $bindings[] = $start->toDateTimeString();
+            $bindings[] = $end->toDateTimeString();
+        }
+
+        $query = "
+            WITH flagged_status AS (
+                SELECT 
+                    ts,
+                    start_mesin,
+                    CASE 
+                        WHEN start_mesin = 1 THEN 1 ELSE 0
+                    END AS is_running
+                FROM retail_d4
+                {$whereClause}
+            ),
+            grouped_blocks AS (
+                SELECT *,
+                    ROW_NUMBER() OVER (ORDER BY ts)
+                  - ROW_NUMBER() OVER (PARTITION BY is_running ORDER BY ts) AS group_id
+                FROM flagged_status
+            )
+            SELECT 
+                MIN(ts) AS ts_mulai,
+                MAX(ts) AS ts_akhir
+            FROM grouped_blocks
+            WHERE is_running = 0
+            GROUP BY group_id
+            ORDER BY ts_mulai
+        ";
+
+        return DB::select($query, $bindings);
+    }
     
 
 

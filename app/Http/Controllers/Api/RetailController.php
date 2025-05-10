@@ -167,6 +167,34 @@ class RetailController extends Controller
         ]);
     }
 
+    public function getMesinStopPeriods(Request $request)
+    {
+        // Ambil parameter langsung dari query string
+        $filter = $request->query('filter', 'realtime');
+        $tanggal = $request->query('tanggal'); // untuk filter 'tanggal'
+        $start = $request->query('start_date');
+        $end = $request->query('end_date');
+
+        // Mapping untuk model
+        if ($filter === 'tanggal') {
+            $start = $tanggal;
+        }
+
+        $periods = retail_d4::getMesinStopPeriods($filter, $start, $end);
+
+        $data = array_map(function ($item) {
+            return [
+                'ts_mulai' => $item->ts_mulai,
+                'ts_akhir' => $item->ts_akhir,
+            ];
+        }, $periods);
+
+        return response()->json([
+            'total' => count($data),
+            'data' => $data
+        ]);
+    }
+
 
     //performance mesin
 
