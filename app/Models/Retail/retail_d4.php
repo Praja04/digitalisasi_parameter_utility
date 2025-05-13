@@ -1328,63 +1328,65 @@ class retail_d4 extends Model
         $now = Carbon::now($timezone);
 
         $carbonDate = $tanggal
-        ? Carbon::parse($tanggal, $timezone)
-        : $now->copy();
+            ? Carbon::parse($tanggal, $timezone)
+            : $now->copy();
 
         $shifts = [
-                [
-                    'name' => 'Shift 1',
-                    'start' => $carbonDate->copy()->setTime(6, 0, 0),
-                    'end'   => $carbonDate->copy()->setTime(14, 0, 0),
-                ],
-                [
-                    'name' => 'Shift 2',
-                    'start' => $carbonDate->copy()->setTime(14, 0, 1),
-                    'end'   => $carbonDate->copy()->setTime(22, 0, 0),
-                ],
-                [
-                    'name' => 'Shift 3',
-                    'start' => $carbonDate->copy()->setTime(22, 0, 1),
-                    'end'   => $carbonDate->copy()->addDay()->setTime(5, 59, 59),
-                ],
-            ];
+            [
+                'name' => 'Shift 1',
+                'start' => $carbonDate->copy()->setTime(6, 0, 0),
+                'end'   => $carbonDate->copy()->setTime(14, 0, 0),
+            ],
+            [
+                'name' => 'Shift 2',
+                'start' => $carbonDate->copy()->setTime(14, 0, 1),
+                'end'   => $carbonDate->copy()->setTime(22, 0, 0),
+            ],
+            [
+                'name' => 'Shift 3',
+                'start' => $carbonDate->copy()->setTime(22, 0, 1),
+                'end'   => $carbonDate->copy()->addDay()->setTime(5, 59, 59),
+            ],
+        ];
 
         $results = [];
 
         foreach ($shifts as $shift) {
             $data = DB::selectOne("
-            WITH shift_data AS (
-                SELECT ts, total_counter
-                FROM retail_d4
-                WHERE ts BETWEEN ? AND ?
-                ORDER BY ts
-            ),
-            with_next AS (
-                SELECT 
-                    ts,
-                    total_counter,
-                    LEAD(total_counter) OVER (ORDER BY ts) AS next_counter
-                FROM shift_data
-            )
-            SELECT 
-                ts,
-                total_counter
-            FROM with_next
-            WHERE next_counter = 0
-            ORDER BY ts DESC
-            LIMIT 1
-        ", [$shift['start']->toDateTimeString(), $shift['end']->toDateTimeString()]);
-
-            if (!$data) {
-                // fallback: ambil data tepat di akhir shift jika tidak ada perubahan ke 0
-                $data = DB::selectOne("
-                SELECT ts, total_counter
-                FROM retail_d4
-                WHERE ts <= ?
-                ORDER BY ts DESC
+                WITH shift_data AS (
+                    SELECT ts, total_counter
+                    FROM retail_d4
+                    WHERE ts BETWEEN ? AND ?
+                ),
+                zero_ts AS (
+                    SELECT ts
+                    FROM shift_data
+                    WHERE total_counter = 0
+                    ORDER BY ts
+                    LIMIT 1
+                ),
+                before_zero AS (
+                    SELECT *
+                    FROM shift_data
+                    WHERE ts < (SELECT ts FROM zero_ts)
+                    ORDER BY ts DESC
+                    LIMIT 1
+                ),
+                fallback AS (
+                    SELECT *
+                    FROM shift_data
+                    WHERE ts = ?
+                )
+                SELECT * FROM before_zero
+                UNION ALL
+                SELECT * FROM fallback
+                WHERE NOT EXISTS (SELECT 1 FROM before_zero)
                 LIMIT 1
-            ", [$shift['end']->toDateTimeString()]);
-            }
+            ", [
+                $shift['start']->toDateTimeString(),
+                $shift['end']->toDateTimeString(),
+                $shift['end']->toDateTimeString()
+            ]);
 
             $totalCounter = $data ? $data->total_counter : 0;
             $actualTs = $data ? $data->ts : null;
@@ -1408,6 +1410,7 @@ class retail_d4 extends Model
 
         return $results;
     }
+
 
 
     public static function getPerformanceOutput($tanggal = null)
@@ -1454,35 +1457,39 @@ class retail_d4 extends Model
             SELECT ts, total_counter
             FROM retail_d4
             WHERE ts BETWEEN ? AND ?
-            ORDER BY ts
         ),
-        with_next AS (
-            SELECT 
-                ts,
-                total_counter,
-                LEAD(total_counter) OVER (ORDER BY ts) AS next_counter
+        zero_ts AS (
+            SELECT ts
             FROM shift_data
-        )
-        SELECT 
-            ts,
-            total_counter
-        FROM with_next
-        WHERE next_counter = 0
-        ORDER BY ts DESC
-        LIMIT 1
-    ", [$start->toDateTimeString(), $carbonDate->toDateTimeString()]);
-
-        if (!$data) {
-            $data = DB::selectOne("
-            SELECT ts, total_counter
-            FROM retail_d4
-            WHERE ts <= ?
+            WHERE total_counter = 0
+            ORDER BY ts
+            LIMIT 1
+        ),
+        before_zero AS (
+            SELECT *
+            FROM shift_data
+            WHERE ts < (SELECT ts FROM zero_ts)
             ORDER BY ts DESC
             LIMIT 1
-        ", [$carbonDate->toDateTimeString()]);
-        }
+        ),
+        fallback AS (
+            SELECT *
+            FROM shift_data
+            WHERE ts = ?
+        )
+        SELECT * FROM before_zero
+        UNION ALL
+        SELECT * FROM fallback
+        WHERE NOT EXISTS (SELECT 1 FROM before_zero)
+        LIMIT 1
+    ", [
+            $start->toDateTimeString(),
+            $carbonDate->toDateTimeString(),
+            $carbonDate->toDateTimeString()
+        ]);
 
         $totalCounter = $data ? $data->total_counter : 0;
+        $actualTs = $data ? $data->ts : null;
 
         $performance = $durasiMenit > 0
             ? ($totalCounter / ($durasiMenit * 40 * 2)) * 100
@@ -1493,10 +1500,12 @@ class retail_d4 extends Model
             'tanggal' => $carbonDate->toDateString(),
             'ts_awal_shift' => $start->toDateTimeString(),
             'ts_sekarang' => $carbonDate->toDateTimeString(),
+            'actual_ts' => $actualTs,
             'durasi_menit' => $durasiMenit,
             'total_counter' => $totalCounter,
             'performance_output_percent' => round($performance, 2),
         ];
     }
+
 
 }
