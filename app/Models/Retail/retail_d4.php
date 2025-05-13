@@ -943,31 +943,71 @@ class retail_d4 extends Model
         return $results;
     }
 
+
     // public static function getPerformanceGagalFilling($tanggal = null)
     // {
     //     $timezone = 'Asia/Jakarta';
     //     $now = Carbon::now($timezone);
     //     $carbonDate = $tanggal
-    //     ? Carbon::parse($tanggal, $timezone)
-    //     : $now->copy();
+    //         ? Carbon::parse($tanggal, $timezone)
+    //         : $now->copy();
 
     //     $shifts = [
-    //             [
-    //                 'name' => 'Shift 1',
-    //                 'start' => $carbonDate->copy()->setTime(6, 0, 0),
-    //                 'end'   => $carbonDate->copy()->setTime(14, 0, 0),
-    //             ],
-    //             [
-    //                 'name' => 'Shift 2',
-    //                 'start' => $carbonDate->copy()->setTime(14, 0, 1),
-    //                 'end'   => $carbonDate->copy()->setTime(22, 0, 0),
-    //             ],
-    //             [
-    //                 'name' => 'Shift 3',
-    //                 'start' => $carbonDate->copy()->setTime(22, 0, 1),
-    //                 'end'   => $carbonDate->copy()->addDay()->setTime(5, 59, 59),
-    //             ],
-    //         ];
+    //         [
+    //             'name' => 'Shift 1',
+    //             'start' => $carbonDate->copy()->setTime(6, 0, 0),
+    //             'end'   => $carbonDate->copy()->setTime(14, 0, 0),
+    //         ],
+    //         [
+    //             'name' => 'Shift 2',
+    //             'start' => $carbonDate->copy()->setTime(14, 0, 1),
+    //             'end'   => $carbonDate->copy()->setTime(22, 0, 0),
+    //         ],
+    //         [
+    //             'name' => 'Shift 3',
+    //             'start' => $carbonDate->copy()->setTime(22, 0, 1),
+    //             'end'   => $carbonDate->copy()->addDay()->setTime(5, 59, 59),
+    //         ],
+    //     ];
+
+    //     // Generate target timestamps
+    //     $target14 = $carbonDate->copy()->setTime(14, 0, 0)->toDateTimeString();
+    //     $target22 = $carbonDate->copy()->setTime(22, 0, 0)->toDateTimeString();
+    //     $target06 = $carbonDate->copy()->addDay()->setTime(6, 0, 0)->toDateTimeString();
+
+    //     // Ambil total_counter terdekat dengan target waktu
+    //     $totalCounterData = DB::select("
+    //     WITH all_targets AS (
+    //         SELECT ? AS target_ts
+    //         UNION ALL
+    //         SELECT ?
+    //         UNION ALL
+    //         SELECT ?
+    //     ),
+    //     closest_valid AS (
+    //         SELECT 
+    //             t.target_ts,
+    //             r.ts,
+    //             r.total_counter,
+    //             ROW_NUMBER() OVER (
+    //                 PARTITION BY t.target_ts 
+    //                 ORDER BY ABS(TIMESTAMPDIFF(SECOND, r.ts, t.target_ts))
+    //             ) AS rn
+    //         FROM all_targets t
+    //         JOIN retail_d4 r ON r.ts <= t.target_ts
+    //         WHERE r.total_counter != 0
+    //     )
+    //     SELECT 
+    //         target_ts,
+    //         ts AS actual_ts,
+    //         total_counter
+    //     FROM closest_valid
+    //     WHERE rn = 1
+    //     ORDER BY target_ts
+    //   ", [$target14, $target22, $target06]);
+
+    //     // Konversi hasil query ke associative array
+    //     $countersByTarget = collect($totalCounterData)->keyBy('target_ts');
 
     //     $results = [];
 
@@ -976,26 +1016,21 @@ class retail_d4 extends Model
     //             ->orderBy('ts')
     //             ->get();
 
-    //         $data_nozzle = retail_d4_nozzle::whereBetween('ts', [$shift['start'], $shift['end']])
-    //         ->orderBy('ts')
-    //         ->get();
-
-    //         // 1️⃣ Hitung jumlah start_mesin == 1
     //         $runningTimeMinutes = $data->where('start_mesin', 1)->count();
-    //         $runningTimeMinutescount = $runningTimeMinutes / 60; // Ubah detik ke menit
+    //         $runningTimeMinutescount = $runningTimeMinutes / 60;
 
-    //         // 2️⃣ Hitung total nozzle aktif
-    //         $totalNozzleAktif = $data_nozzle->reduce(function ($carry, $item) {
-    //             return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
-    //         }, 0);
+    //         // Ambil total_counter dari target timestamp setelah shift ini
+    //         $targetKey = $shift['name'] === 'Shift 1' ? $target14
+    //             : ($shift['name'] === 'Shift 2' ? $target22 : $target06);
+    //         $totalNozzleAktif = isset($countersByTarget[$targetKey])
+    //             ? $countersByTarget[$targetKey]->total_counter
+    //             : 0;
 
-    //         // 3️⃣ Ambil nilai actual speed terakhir
     //         $actualSpeed = optional($data->last())->main_speed ?? 0;
 
-    //         // 4️⃣ Hitung performance gagal filling
     //         $denominator = $runningTimeMinutescount * $actualSpeed * 2;
     //         $performanceGoodFilling = $denominator > 0
-    //             ? (($totalNozzleAktif / $denominator)*100 )
+    //             ? (($totalNozzleAktif / $denominator) * 100)
     //             : 0;
     //         $performanceGagalFilling = $performanceGoodFilling > 0 ? (100 - $performanceGoodFilling) : 0;
 
@@ -1010,6 +1045,12 @@ class retail_d4 extends Model
     //             'actual_speed' => $actualSpeed,
     //             'total_nozzle_aktif' => $totalNozzleAktif,
     //             'performance_gagal_filling_percent' => round($performanceGagalFilling, 2),
+    //             'target_ts' => $targetKey,
+    //             'actual_ts' => isset($countersByTarget[$targetKey])
+    //                 ? $countersByTarget[$targetKey]->actual_ts
+    //                 : null,
+    //             'total_counter_per_shift' => isset($countersByTarget[$targetKey]) ? $countersByTarget[$targetKey]->total_counter : 0, // Total counter per shift
+
     //         ];
     //     }
 
@@ -1042,45 +1083,6 @@ class retail_d4 extends Model
             ],
         ];
 
-        // Generate target timestamps
-        $target14 = $carbonDate->copy()->setTime(14, 0, 0)->toDateTimeString();
-        $target22 = $carbonDate->copy()->setTime(22, 0, 0)->toDateTimeString();
-        $target06 = $carbonDate->copy()->addDay()->setTime(6, 0, 0)->toDateTimeString();
-
-        // Ambil total_counter terdekat dengan target waktu
-        $totalCounterData = DB::select("
-        WITH all_targets AS (
-            SELECT ? AS target_ts
-            UNION ALL
-            SELECT ?
-            UNION ALL
-            SELECT ?
-        ),
-        closest_valid AS (
-            SELECT 
-                t.target_ts,
-                r.ts,
-                r.total_counter,
-                ROW_NUMBER() OVER (
-                    PARTITION BY t.target_ts 
-                    ORDER BY ABS(TIMESTAMPDIFF(SECOND, r.ts, t.target_ts))
-                ) AS rn
-            FROM all_targets t
-            JOIN retail_d4 r ON r.ts <= t.target_ts
-            WHERE r.total_counter != 0
-        )
-        SELECT 
-            target_ts,
-            ts AS actual_ts,
-            total_counter
-        FROM closest_valid
-        WHERE rn = 1
-        ORDER BY target_ts
-      ", [$target14, $target22, $target06]);
-
-        // Konversi hasil query ke associative array
-        $countersByTarget = collect($totalCounterData)->keyBy('target_ts');
-
         $results = [];
 
         foreach ($shifts as $shift) {
@@ -1089,18 +1091,43 @@ class retail_d4 extends Model
                 ->get();
 
             $runningTimeMinutes = $data->where('start_mesin', 1)->count();
-            $runningTimeMinutescount = $runningTimeMinutes / 60;
-
-            // Ambil total_counter dari target timestamp setelah shift ini
-            $targetKey = $shift['name'] === 'Shift 1' ? $target14
-                : ($shift['name'] === 'Shift 2' ? $target22 : $target06);
-            $totalNozzleAktif = isset($countersByTarget[$targetKey])
-                ? $countersByTarget[$targetKey]->total_counter
-                : 0;
-
+            $runningTimeMinutesCount = $runningTimeMinutes / 60;
             $actualSpeed = optional($data->last())->main_speed ?? 0;
 
-            $denominator = $runningTimeMinutescount * $actualSpeed * 2;
+            // Dapatkan total_counter terakhir sebelum 0
+            $row = DB::selectOne("
+                WITH shift_data AS (
+                    SELECT * FROM retail_d4
+                    WHERE ts BETWEEN ? AND ?
+                ),
+                zero_ts AS (
+                    SELECT ts FROM shift_data WHERE total_counter = 0 ORDER BY ts LIMIT 1
+                ),
+                before_zero AS (
+                    SELECT * FROM shift_data
+                    WHERE ts < (SELECT ts FROM zero_ts)
+                    ORDER BY ts DESC
+                    LIMIT 1
+                ),
+                fallback AS (
+                    SELECT * FROM shift_data
+                    ORDER BY ts DESC
+                    LIMIT 1
+                )
+                SELECT * FROM before_zero
+                UNION ALL
+                SELECT * FROM fallback
+                WHERE NOT EXISTS (SELECT 1 FROM before_zero)
+                LIMIT 1
+            ", [
+                $shift['start']->toDateTimeString(),
+                $shift['end']->toDateTimeString(),
+            ]);
+
+            $totalNozzleAktif = $row ? $row->total_counter : 0;
+            $actualTS = $row ? $row->ts : null;
+
+            $denominator = $runningTimeMinutesCount * $actualSpeed * 2;
             $performanceGoodFilling = $denominator > 0
                 ? (($totalNozzleAktif / $denominator) * 100)
                 : 0;
@@ -1108,28 +1135,23 @@ class retail_d4 extends Model
 
             $results[] = [
                 'shift' => $shift['name'],
-                'dominator' => $denominator,
-                'goodfilling' => $performanceGoodFilling,
                 'tanggal' => $carbonDate->toDateString(),
                 'ts_awal_shift' => $shift['start']->toDateTimeString(),
                 'ts_akhir_shift' => $shift['end']->toDateTimeString(),
-                'jumlah_start_mesin' => $runningTimeMinutescount,
+                'jumlah_start_mesin' => round($runningTimeMinutesCount, 2),
                 'actual_speed' => $actualSpeed,
                 'total_nozzle_aktif' => $totalNozzleAktif,
                 'performance_gagal_filling_percent' => round($performanceGagalFilling, 2),
-                'target_ts' => $targetKey,
-                'actual_ts' => isset($countersByTarget[$targetKey])
-                    ? $countersByTarget[$targetKey]->actual_ts
-                    : null,
-                'total_counter_per_shift' => isset($countersByTarget[$targetKey]) ? $countersByTarget[$targetKey]->total_counter : 0, // Total counter per shift
-
+                'actual_ts' => $actualTS,
+                'total_counter_per_shift' => $totalNozzleAktif,
+                'denominator' => round($denominator, 2),
+                'goodfilling' => round($performanceGoodFilling, 2),
             ];
         }
 
         return $results;
     }
-
-
+    
 
 
     //test
@@ -1299,84 +1321,76 @@ class retail_d4 extends Model
     //     return $results;
     // }
 
+    //make total counter
     public static function getAllShiftPerformanceOutput($tanggal = null)
     {
         $timezone = 'Asia/Jakarta';
         $now = Carbon::now($timezone);
 
         $carbonDate = $tanggal
-            ? Carbon::parse($tanggal, $timezone)
-            : $now->copy();
+        ? Carbon::parse($tanggal, $timezone)
+        : $now->copy();
 
-        // Definisi shift
         $shifts = [
-            [
-                'name' => 'Shift 1',
-                'start' => $carbonDate->copy()->setTime(6, 0, 0),
-                'end'   => $carbonDate->copy()->setTime(14, 0, 0),
-                'target' => $carbonDate->copy()->setTime(14, 0, 0)->toDateTimeString(),
-            ],
-            [
-                'name' => 'Shift 2',
-                'start' => $carbonDate->copy()->setTime(14, 0, 1),
-                'end'   => $carbonDate->copy()->setTime(22, 0, 0),
-                'target' => $carbonDate->copy()->setTime(22, 0, 0)->toDateTimeString(),
-            ],
-            [
-                'name' => 'Shift 3',
-                'start' => $carbonDate->copy()->setTime(22, 0, 1),
-                'end'   => $carbonDate->copy()->addDay()->setTime(5, 59, 59),
-                'target' => $carbonDate->copy()->addDay()->setTime(6, 0, 0)->toDateTimeString(),
-            ],
-        ];
-
-        // Ambil semua target timestamp
-        $targetTimes = array_column($shifts, 'target');
-
-        // Query total_counter terdekat ke target timestamp
-        $bindings = implode(',', array_fill(0, count($targetTimes), '?'));
-
-        $query = "
-            WITH all_targets AS (
-                " . implode(' UNION ALL ', array_map(fn ($i) => "SELECT ? AS target_ts", $targetTimes)) . "
-            ),
-            closest_valid AS (
-                SELECT 
-                    t.target_ts,
-                    r.ts,
-                    r.total_counter,
-                    ROW_NUMBER() OVER (
-                        PARTITION BY t.target_ts 
-                        ORDER BY ABS(TIMESTAMPDIFF(SECOND, r.ts, t.target_ts))
-                    ) AS rn
-                FROM all_targets t
-                JOIN retail_d4 r ON r.ts <= t.target_ts
-                WHERE r.total_counter != 0
-            )
-            SELECT 
-                target_ts,
-                ts AS actual_ts,
-                total_counter
-            FROM closest_valid
-            WHERE rn = 1
-            ORDER BY target_ts
-        ";
-
-        $counterData = DB::select($query, $targetTimes);
-        $countersByTarget = collect($counterData)->keyBy('target_ts');
+                [
+                    'name' => 'Shift 1',
+                    'start' => $carbonDate->copy()->setTime(6, 0, 0),
+                    'end'   => $carbonDate->copy()->setTime(14, 0, 0),
+                ],
+                [
+                    'name' => 'Shift 2',
+                    'start' => $carbonDate->copy()->setTime(14, 0, 1),
+                    'end'   => $carbonDate->copy()->setTime(22, 0, 0),
+                ],
+                [
+                    'name' => 'Shift 3',
+                    'start' => $carbonDate->copy()->setTime(22, 0, 1),
+                    'end'   => $carbonDate->copy()->addDay()->setTime(5, 59, 59),
+                ],
+            ];
 
         $results = [];
 
         foreach ($shifts as $shift) {
-            $durasiMenit = 420;
+            $data = DB::selectOne("
+            WITH shift_data AS (
+                SELECT ts, total_counter
+                FROM retail_d4
+                WHERE ts BETWEEN ? AND ?
+                ORDER BY ts
+            ),
+            with_next AS (
+                SELECT 
+                    ts,
+                    total_counter,
+                    LEAD(total_counter) OVER (ORDER BY ts) AS next_counter
+                FROM shift_data
+            )
+            SELECT 
+                ts,
+                total_counter
+            FROM with_next
+            WHERE next_counter = 0
+            ORDER BY ts DESC
+            LIMIT 1
+        ", [$shift['start']->toDateTimeString(), $shift['end']->toDateTimeString()]);
 
-            $targetKey = $shift['target'];
-            $data = $countersByTarget->get($targetKey);
+            if (!$data) {
+                // fallback: ambil data tepat di akhir shift jika tidak ada perubahan ke 0
+                $data = DB::selectOne("
+                SELECT ts, total_counter
+                FROM retail_d4
+                WHERE ts <= ?
+                ORDER BY ts DESC
+                LIMIT 1
+            ", [$shift['end']->toDateTimeString()]);
+            }
 
             $totalCounter = $data ? $data->total_counter : 0;
-            $actualTs = $data ? $data->actual_ts : null;
+            $actualTs = $data ? $data->ts : null;
+            $durasiMenit = 420;
 
-            $performance = ($durasiMenit > 0)
+            $performance = $durasiMenit > 0
                 ? ($totalCounter / ($durasiMenit * 40 * 2)) * 100
                 : 0;
 
@@ -1385,7 +1399,6 @@ class retail_d4 extends Model
                 'tanggal' => $carbonDate->toDateString(),
                 'ts_awal_shift' => $shift['start']->toDateTimeString(),
                 'ts_akhir_shift' => $shift['end']->toDateTimeString(),
-                'target_ts' => $targetKey,
                 'actual_ts' => $actualTs,
                 'durasi_menit' => $durasiMenit,
                 'total_counter' => $totalCounter,
@@ -1396,58 +1409,80 @@ class retail_d4 extends Model
         return $results;
     }
 
+
     public static function getPerformanceOutput($tanggal = null)
     {
         $timezone = 'Asia/Jakarta';
         $now = Carbon::now($timezone);
 
-        if (!$tanggal) {
-            $carbonDate = $now->copy();
-        } else {
-            $carbonDate = Carbon::parse($tanggal, $timezone);
-            if (strlen($tanggal) <= 10) {
-                $carbonDate->setTimeFrom($now);
-            }
+        $carbonDate = $tanggal
+            ? Carbon::parse($tanggal, $timezone)
+            : $now->copy();
+
+        if ($tanggal && strlen($tanggal) <= 10) {
+            $carbonDate->setTimeFrom($now);
         }
 
         $currentTime = $carbonDate->format('H:i:s');
         $shift = '';
         $start = null;
+        $end = null;
 
         if ($currentTime >= '06:00:00' && $currentTime <= '14:00:00') {
             $shift = 'Shift 1';
             $start = $carbonDate->copy()->setTime(6, 0, 0);
+            $end = $carbonDate->copy()->setTime(14, 0, 0);
         } elseif ($currentTime > '14:00:00' && $currentTime <= '22:00:00') {
             $shift = 'Shift 2';
-            $start = $carbonDate->copy()->setTime(14, 1, 0);
+            $start = $carbonDate->copy()->setTime(14, 0, 1);
+            $end = $carbonDate->copy()->setTime(22, 0, 0);
         } else {
             $shift = 'Shift 3';
             if ($currentTime >= '22:00:01') {
-                $start = $carbonDate->copy()->setTime(22, 1, 0);
+                $start = $carbonDate->copy()->setTime(22, 0, 1);
+                $end = $carbonDate->copy()->addDay()->setTime(5, 59, 59);
             } else {
-                $start = $carbonDate->copy()->subDay()->setTime(22, 1, 0);
+                $start = $carbonDate->copy()->subDay()->setTime(22, 0, 1);
+                $end = $carbonDate->copy()->setTime(5, 59, 59);
             }
         }
 
         $durasiMenit = $start->diffInMinutes($carbonDate);
 
-        // Ambil total_counter terdekat untuk waktu awal shift
-        $awalCounter = DB::table('retail_d4')
-            ->where('ts', '<=', $start)
-            ->where('total_counter', '!=', 0)
-            ->orderByDesc('ts')
-            ->limit(1)
-            ->value('total_counter');
+        $data = DB::selectOne("
+        WITH shift_data AS (
+            SELECT ts, total_counter
+            FROM retail_d4
+            WHERE ts BETWEEN ? AND ?
+            ORDER BY ts
+        ),
+        with_next AS (
+            SELECT 
+                ts,
+                total_counter,
+                LEAD(total_counter) OVER (ORDER BY ts) AS next_counter
+            FROM shift_data
+        )
+        SELECT 
+            ts,
+            total_counter
+        FROM with_next
+        WHERE next_counter = 0
+        ORDER BY ts DESC
+        LIMIT 1
+    ", [$start->toDateTimeString(), $carbonDate->toDateTimeString()]);
 
-        // Ambil total_counter terdekat untuk waktu sekarang
-        $akhirCounter = DB::table('retail_d4')
-            ->where('ts', '<=', $carbonDate)
-            ->where('total_counter', '!=', 0)
-            ->orderByDesc('ts')
-            ->limit(1)
-            ->value('total_counter');
+        if (!$data) {
+            $data = DB::selectOne("
+            SELECT ts, total_counter
+            FROM retail_d4
+            WHERE ts <= ?
+            ORDER BY ts DESC
+            LIMIT 1
+        ", [$carbonDate->toDateTimeString()]);
+        }
 
-        $totalCounter = $akhirCounter;
+        $totalCounter = $data ? $data->total_counter : 0;
 
         $performance = $durasiMenit > 0
             ? ($totalCounter / ($durasiMenit * 40 * 2)) * 100
@@ -1463,4 +1498,5 @@ class retail_d4 extends Model
             'performance_output_percent' => round($performance, 2),
         ];
     }
+
 }
