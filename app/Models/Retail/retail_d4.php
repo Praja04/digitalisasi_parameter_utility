@@ -1359,32 +1359,28 @@ class retail_d4 extends Model
                     WHERE ts BETWEEN ? AND ?
                 ),
                 zero_ts AS (
-                    SELECT ts
-                    FROM shift_data
+                    SELECT ts FROM shift_data
                     WHERE total_counter = 0
                     ORDER BY ts
                     LIMIT 1
                 ),
                 before_zero AS (
-                    SELECT *
-                    FROM shift_data
+                    SELECT * FROM shift_data
                     WHERE ts < (SELECT ts FROM zero_ts)
                     ORDER BY ts DESC
                     LIMIT 1
                 ),
                 fallback AS (
-                    SELECT *
-                    FROM shift_data
-                    WHERE ts = ?
+                    SELECT * FROM shift_data
+                    ORDER BY ts DESC
+                    LIMIT 1
                 )
                 SELECT * FROM before_zero
                 UNION ALL
                 SELECT * FROM fallback
                 WHERE NOT EXISTS (SELECT 1 FROM before_zero)
-                LIMIT 1
             ", [
                 $shift['start']->toDateTimeString(),
-                $shift['end']->toDateTimeString(),
                 $shift['end']->toDateTimeString()
             ]);
 
@@ -1413,83 +1409,60 @@ class retail_d4 extends Model
 
 
 
+
+
     public static function getPerformanceOutput($tanggal = null)
     {
         $timezone = 'Asia/Jakarta';
         $now = Carbon::now($timezone);
 
-        $carbonDate = $tanggal
-            ? Carbon::parse($tanggal, $timezone)
-            : $now->copy();
-
-        if ($tanggal && strlen($tanggal) <= 10) {
-            $carbonDate->setTimeFrom($now);
+        if (!$tanggal) {
+            $carbonDate = $now->copy();
+        } else {
+            $carbonDate = Carbon::parse($tanggal, $timezone);
+            if (strlen($tanggal) <= 10) {
+                $carbonDate->setTimeFrom($now);
+            }
         }
 
         $currentTime = $carbonDate->format('H:i:s');
         $shift = '';
         $start = null;
-        $end = null;
 
         if ($currentTime >= '06:00:00' && $currentTime <= '14:00:00') {
             $shift = 'Shift 1';
             $start = $carbonDate->copy()->setTime(6, 0, 0);
-            $end = $carbonDate->copy()->setTime(14, 0, 0);
         } elseif ($currentTime > '14:00:00' && $currentTime <= '22:00:00') {
             $shift = 'Shift 2';
-            $start = $carbonDate->copy()->setTime(14, 0, 1);
-            $end = $carbonDate->copy()->setTime(22, 0, 0);
+            $start = $carbonDate->copy()->setTime(14, 1, 0);
         } else {
             $shift = 'Shift 3';
             if ($currentTime >= '22:00:01') {
-                $start = $carbonDate->copy()->setTime(22, 0, 1);
-                $end = $carbonDate->copy()->addDay()->setTime(5, 59, 59);
+                $start = $carbonDate->copy()->setTime(22, 1, 0);
             } else {
-                $start = $carbonDate->copy()->subDay()->setTime(22, 0, 1);
-                $end = $carbonDate->copy()->setTime(5, 59, 59);
+                $start = $carbonDate->copy()->subDay()->setTime(22, 1, 0);
             }
         }
 
         $durasiMenit = $start->diffInMinutes($carbonDate);
 
-        $data = DB::selectOne("
-        WITH shift_data AS (
-            SELECT ts, total_counter
-            FROM retail_d4
-            WHERE ts BETWEEN ? AND ?
-        ),
-        zero_ts AS (
-            SELECT ts
-            FROM shift_data
-            WHERE total_counter = 0
-            ORDER BY ts
-            LIMIT 1
-        ),
-        before_zero AS (
-            SELECT *
-            FROM shift_data
-            WHERE ts < (SELECT ts FROM zero_ts)
-            ORDER BY ts DESC
-            LIMIT 1
-        ),
-        fallback AS (
-            SELECT *
-            FROM shift_data
-            WHERE ts = ?
-        )
-        SELECT * FROM before_zero
-        UNION ALL
-        SELECT * FROM fallback
-        WHERE NOT EXISTS (SELECT 1 FROM before_zero)
-        LIMIT 1
-    ", [
-            $start->toDateTimeString(),
-            $carbonDate->toDateTimeString(),
-            $carbonDate->toDateTimeString()
-        ]);
+        // Ambil total_counter terdekat untuk waktu awal shift
+        $awalCounter = DB::table('retail_d4')
+            ->where('ts', '<=', $start)
+            ->where('total_counter', '!=', 0)
+            ->orderByDesc('ts')
+            ->limit(1)
+            ->value('total_counter');
 
-        $totalCounter = $data ? $data->total_counter : 0;
-        $actualTs = $data ? $data->ts : null;
+        // Ambil total_counter terdekat untuk waktu sekarang
+        $akhirCounter = DB::table('retail_d4')
+            ->where('ts', '<=', $carbonDate)
+            ->where('total_counter', '!=', 0)
+            ->orderByDesc('ts')
+            ->limit(1)
+            ->value('total_counter');
+
+        $totalCounter = $akhirCounter;
 
         $performance = $durasiMenit > 0
             ? ($totalCounter / ($durasiMenit * 40 * 2)) * 100
@@ -1500,12 +1473,12 @@ class retail_d4 extends Model
             'tanggal' => $carbonDate->toDateString(),
             'ts_awal_shift' => $start->toDateTimeString(),
             'ts_sekarang' => $carbonDate->toDateTimeString(),
-            'actual_ts' => $actualTs,
             'durasi_menit' => $durasiMenit,
             'total_counter' => $totalCounter,
             'performance_output_percent' => round($performance, 2),
         ];
     }
-
-
 }
+
+
+
