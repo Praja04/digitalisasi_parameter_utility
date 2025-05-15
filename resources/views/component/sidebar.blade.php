@@ -103,7 +103,7 @@
                                 <a href="{{ url('prd/dept_head/dashboard') }}" class="nav-link" data-key="t-analytics"> Analytics Pasteurisasi 1</a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ url('prd/dept_head/dashboard_retaild4') }}" class="nav-link" data-key="t-analytics"> Analytics Retail D4</a>
+                                <a href="{{ url('prd/dept_head/menu_retail') }}" class="nav-link" data-key="t-analytics"> Analytics Retail</a>
                             </li>
 
                         </ul>

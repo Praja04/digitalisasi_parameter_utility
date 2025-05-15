@@ -3,7 +3,9 @@
 use App\Http\Controllers\ProduksiController;
 use App\Http\Controllers\QCController;
 use App\Http\Controllers\EngineeringController;
-use App\Http\Controllers\Api\RetailController;
+use App\Http\Controllers\Api\RetailD4Controller;
+use App\Http\Controllers\Api\RetailD3Controller;
+use App\Http\Controllers\Api\RetailD5Controller;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SensorBoilerController;
 use App\Http\Controllers\Api\SensorDailyTankController;
@@ -34,7 +36,10 @@ Route::get('form', function () {
 Route::prefix('prd')->middleware('auth')->group(function () {
     // Dashboard
     Route::get('/dept_head/dashboard', [ProduksiController::class, 'dashboardProduksi']);
-    Route::get('/dept_head/dashboard_retaild4', [ProduksiController::class, 'dashboardProduksi_retail']);
+    Route::get('/dept_head/dashboard_retaild4', [ProduksiController::class, 'dashboardProduksi_retaild4']);
+    Route::get('/dept_head/dashboard_retaild3', [ProduksiController::class, 'dashboardProduksi_retaild3']);
+    Route::get('/dept_head/dashboard_retaild5', [ProduksiController::class, 'dashboardProduksi_retaild5']);
+    Route::get('/dept_head/menu_retail', [ProduksiController::class, 'Menu_retail']);
     Route::get('/supervisor/dashboard', [ProduksiController::class, 'dashboardSupervisorProduksi']);
     Route::get('/foreman/dashboard', [ProduksiController::class, 'dashboardForemanProduksi']);
     Route::get('/operator/dashboard', [ProduksiController::class, 'dashboardOperatorProduksi']);
@@ -270,26 +275,42 @@ Route::prefix('dissolver')->group(function () {
 //retail
 Route::prefix('retail')->group(function () {
     //retail d4
-    Route::get('/d4/data', [RetailController::class, 'getData']);
+    Route::get('/d4/last', [RetailD4Controller::class, 'getLastData']);
+    Route::get('/d4/output/performance', [RetailD4Controller::class, 'getperformanceOutput']);
+    Route::get('/d4/output/performance/all_shift', [RetailD4Controller::class, 'getperformanceOutputAllShift']);
+    Route::get('/d4/mesin-stop-periods', [RetailD4Controller::class, 'getMesinStopPeriods']);
+    Route::get('/d4/average-main-speed', [RetailD4Controller::class, 'getAverageMainSpeed']);
+    Route::get('/d4/mesin/start/realtime', [RetailD4Controller::class, 'durasiStartMesinPerShiftRealtime']);
+    Route::get('/d4/mesin/start', [RetailD4Controller::class, 'durasiStartMesinPerShift']);
+    Route::get('/d4/mesin/stop/realtime', [RetailD4Controller::class, 'durasiStopMesinPerShiftRealtime']);
+    Route::get('/d4/mesin/stop', [RetailD4Controller::class, 'durasiOffMesinPerShift']);
+    Route::get('/d4/nozzle-count', [RetailD4Controller::class, 'getNozzleCount']);
+    Route::get('/d4/output/gagal/filling', [RetailD4Controller::class, 'getGagalFilling']);
 
-    Route::get('/d4/last', [RetailController::class, 'getLastData']);
-    Route::get('/d4/average-main-speed', [RetailController::class, 'getAverageMainSpeed']);
-    Route::get('/d4/total-counter', [RetailController::class, 'getTotalCounter']);
-    Route::get('/d4/nozzle-count', [RetailController::class, 'getNozzleCount']);
 
-    Route::get('/d4/mesin-start-periods', [RetailController::class, 'getMesinStartPeriods']);
-    Route::get('/d4/mesin-stop-periods', [RetailController::class, 'getMesinStopPeriods']);
-    Route::get('/d4/mesin/performance', [RetailController::class, 'getperformanceActual']);
-    Route::get('/d4/output/performance', [RetailController::class, 'getperformanceOutput']);
-    Route::get('/d4/output/performance/all_shift', [RetailController::class, 'getperformanceOutputAllShift']);
-    Route::get('/d4/output/gagal/filling', [RetailController::class, 'getGagalFilling']);
-    Route::get('/d4/mesin/uptime', [RetailController::class, 'getuptime']);
-    Route::get('/d4/mesin/downtime', [RetailController::class, 'getdowntime']);
-    Route::get('/d4/mesin', [RetailController::class, 'getStartPeriods']);
+    //retaill d3
+    Route::get('/d3/last', [RetailD3Controller::class, 'getLastData']);
+    Route::get('/d3/output/performance', [RetailD3Controller::class, 'getperformanceOutput']);
+    Route::get('/d3/output/performance/all_shift', [RetailD3Controller::class, 'getperformanceOutputAllShift']);
+    Route::get('/d3/mesin-stop-periods', [RetailD3Controller::class, 'getMesinStopPeriods']);
+    Route::get('/d3/average-main-speed', [RetailD3Controller::class, 'getAverageMainSpeed']);
+    Route::get('/d3/mesin/start/realtime', [RetailD3Controller::class, 'durasiStartMesinPerShiftRealtime']);
+    Route::get('/d3/mesin/start', [RetailD3Controller::class, 'durasiStartMesinPerShift']);
+    Route::get('/d3/mesin/stop/realtime', [RetailD3Controller::class, 'durasiStopMesinPerShiftRealtime']);
+    Route::get('/d3/mesin/stop', [RetailD3Controller::class, 'durasiOffMesinPerShift']);
+    Route::get('/d3/nozzle-count', [RetailD3Controller::class, 'getNozzleCount']);
+    Route::get('/d3/output/gagal/filling', [RetailD3Controller::class, 'getGagalFilling']);
 
-    Route::get('/d4/mesin/start', [RetailController::class, 'durasiStartMesinPerShift']);
-    Route::get('/d4/mesin/start/realtime', [RetailController::class, 'durasiStartMesinPerShiftRealtime']);
-    Route::get('/d4/mesin/stop/realtime', [RetailController::class, 'durasiStopMesinPerShiftRealtime']);
-    Route::get('/d4/mesin/stop', [RetailController::class, 'durasiOffMesinPerShift']);
-   
+    //retail d5
+    Route::get('/d5/last', [RetailD5Controller::class, 'getLastData']);
+    Route::get('/d5/output/performance', [RetailD5Controller::class, 'getperformanceOutput']);
+    Route::get('/d5/output/performance/all_shift', [RetailD5Controller::class, 'getperformanceOutputAllShift']);
+    Route::get('/d5/mesin-stop-periods', [RetailD5Controller::class, 'getMesinStopPeriods']);
+    Route::get('/d5/average-main-speed', [RetailD5Controller::class, 'getAverageMainSpeed']);
+    Route::get('/d5/mesin/start/realtime', [RetailD5Controller::class, 'durasiStartMesinPerShiftRealtime']);
+    Route::get('/d5/mesin/start', [RetailD5Controller::class, 'durasiStartMesinPerShift']);
+    Route::get('/d5/mesin/stop/realtime', [RetailD5Controller::class, 'durasiStopMesinPerShiftRealtime']);
+    Route::get('/d5/mesin/stop', [RetailD5Controller::class, 'durasiOffMesinPerShift']);
+    Route::get('/d5/nozzle-count', [RetailD5Controller::class, 'getNozzleCount']);
+    Route::get('/d5/output/gagal/filling', [RetailD5Controller::class, 'getGagalFilling']);
 });

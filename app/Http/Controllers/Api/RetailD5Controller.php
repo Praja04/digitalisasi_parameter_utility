@@ -3,18 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Retail\retail_d4;
-use App\Models\Retail\retail_d4_nozzle;
+use App\Models\Retail\retail_d5;
+use App\Models\Retail\retail_d5_nozzle1;
+use App\Models\Retail\retail_d5_nozzle2;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
-class RetailController extends Controller
+class RetailD5Controller extends Controller
 {
-    // buatkan fungsi ambil 1 data terakhir dari tabel retail_d4
+    //
+    // buatkan fungsi ambil 1 data terakhir dari tabel retail_d5
     public function getLastData()
     {
-        // Ambil data terakhir dari tabel retail_d4
-        $data = retail_d4::orderBy('ts', 'desc')->first();
+        // Ambil data terakhir dari tabel retail_d5
+        $data = retail_d5::orderBy('ts', 'desc')->first();
 
         // Jika tidak ada data, set nilai default ke 0
         if (!$data) {
@@ -32,27 +34,7 @@ class RetailController extends Controller
         return response()->json($data);
     }
 
-    //ambil data dari tabel retail_d4 berdasarkan ts sebanyak 100 data
-    public function getData()
-    {
-        // Ambil data dari tabel retail_d4 berdasarkan ts sebanyak 100 data
-        $data = retail_d4::orderBy('ts', 'desc')->take(100)->get();
 
-        // Jika tidak ada data, set nilai default ke 0
-        if ($data->isEmpty()) {
-            $data = [
-                "id" => 0,
-                "ts" => now()->toDateTimeString(),
-                "main_speed" => 0,
-                "total_counter" => 0,
-                "nozzle_1" => 0,
-                "nozzle_2" => 0,
-                "Start_Mesin" => 0
-            ];
-        }
-
-        return response()->json($data);
-    }
     // buatkan fungsi menghitung rata-rata dari main_speed saja berdasarkan ts, dengan 3 filter yaitu realtime hari ini, lalu pilih tanggal, dan range tanggal
     public function getAverageMainSpeed(Request $request)
     {
@@ -64,7 +46,7 @@ class RetailController extends Controller
         //     'end_date' => 'nullable|date'
         // ]);
 
-        $query = retail_d4::query();
+        $query = retail_d5::query();
 
         // Filter berdasarkan ts
         // if ($request->filter == 'realtime') {
@@ -81,25 +63,7 @@ class RetailController extends Controller
         return response()->json(['average_main_speed' => $average]);
     }
 
-    // buatkan fungsi menghitung jumlah keseluruhan dari total_counter saja berdasarkan ts, dengan 3 filter yaitu realtime hari ini, lalu pilih tanggal, dan range tanggal. dan juga dibagi menjadi 3 shift, shift 1 dari 06.00 sampai 14.00, shift 2 dari 14.01 sampai 22.00,dan shift 3 dari 22.01 sampai 05.59 tanggal berikutnya
-    public function getTotalCounter(Request $request)
-    {
-        $request->validate([
-            'filter' => 'required|in:realtime,tanggal,range',
-            'tanggal' => 'nullable|date',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date'
-        ]);
 
-        $data = retail_d4::getTotalCounterWithShifts(
-            $request->filter,
-            $request->tanggal,
-            $request->start_date,
-            $request->end_date
-        );
-
-        return response()->json($data);
-    }
 
     public function getNozzleCount(Request $request)
     {
@@ -128,44 +92,28 @@ class RetailController extends Controller
             }
         }
 
-        $shiftCounts = retail_d4_nozzle::getNozzleCountPerShift($dates);
+        $shiftCounts = retail_d5_nozzle1::getNozzleCountPerShift($dates);
+        $shiftCounts2 = retail_d5_nozzle2::getNozzleCountPerShift($dates);
 
         return response()->json([
             'total_nozzle_1' => $shiftCounts['shift_1']['nozzle_1'] + $shiftCounts['shift_2']['nozzle_1'] + $shiftCounts['shift_3']['nozzle_1'],
-            'total_nozzle_2' => $shiftCounts['shift_1']['nozzle_2'] + $shiftCounts['shift_2']['nozzle_2'] + $shiftCounts['shift_3']['nozzle_2'],
-            'shift_1' => $shiftCounts['shift_1'],
-            'shift_2' => $shiftCounts['shift_2'],
-            'shift_3' => $shiftCounts['shift_3'],
+            'total_nozzle_2' => $shiftCounts2['shift_1']['nozzle_2'] + $shiftCounts2['shift_2']['nozzle_2'] + $shiftCounts2['shift_3']['nozzle_2'],
+            'shift_1' => [
+                'nozzle_1' => $shiftCounts['shift_1']['nozzle_1'],
+                'nozzle_2' => $shiftCounts2['shift_1']['nozzle_2'],
+            ],
+            'shift_2' => [
+                'nozzle_1' => $shiftCounts['shift_2']['nozzle_1'],
+                'nozzle_2' => $shiftCounts2['shift_2']['nozzle_2'],
+            ],
+            'shift_3' => [
+                'nozzle_1' => $shiftCounts['shift_3']['nozzle_1'],
+                'nozzle_2' => $shiftCounts2['shift_3']['nozzle_2'],
+            ],
         ]);
     }
 
-    public function getMesinStartPeriods(Request $request)
-    {
-        // Ambil parameter langsung dari query string
-        $filter = $request->query('filter', 'realtime');
-        $tanggal = $request->query('tanggal'); // untuk filter 'tanggal'
-        $start = $request->query('start_date');
-        $end = $request->query('end_date');
 
-        // Mapping untuk model
-        if ($filter === 'tanggal') {
-            $start = $tanggal;
-        }
-
-        $periods = retail_d4::getMesinStartPeriods($filter, $start, $end);
-
-        $data = array_map(function ($item) {
-            return [
-                'ts_mulai' => $item->ts_mulai,
-                'ts_akhir' => $item->ts_akhir,
-            ];
-        }, $periods);
-
-        return response()->json([
-            'total' => count($data),
-            'data' => $data
-        ]);
-    }
 
     public function getMesinStopPeriods(Request $request)
     {
@@ -180,7 +128,7 @@ class RetailController extends Controller
             $start = $tanggal;
         }
 
-        $periods = retail_d4::getMesinStopPeriods($filter, $start, $end);
+        $periods = retail_d5::getMesinStopPeriods($filter, $start, $end);
 
         $data = array_map(function ($item) {
             return [
@@ -211,7 +159,7 @@ class RetailController extends Controller
         $end = $request->input('end');
 
         // Ambil total menit dan uptime untuk masing-masing shift
-        $uptime = retail_d4::getTotalMesinRunningMinutesByShift($filter, $start, $end);
+        $uptime = retail_d5::getTotalMesinRunningMinutesByShift($filter, $start, $end);
 
         return response()->json([
             'shift1_uptime' => $uptime['shift1_uptime'],
@@ -233,7 +181,7 @@ class RetailController extends Controller
         $end = $request->input('end');
 
         // Ambil total menit dan uptime untuk masing-masing shift
-        $uptime = retail_d4::getTotalMesinDowntimeByShift($filter, $start, $end);
+        $uptime = retail_d5::getTotalMesinDowntimeByShift($filter, $start, $end);
 
         return response()->json([
             'shift1_downtime' => $uptime['shift1_downtime'],
@@ -242,96 +190,7 @@ class RetailController extends Controller
         ]);
     }
 
-    public function getStartPeriods(Request $request)
-    {
-        $request->validate([
-            'filter' => 'nullable|in:realtime,tanggal',  // Filter yang dapat berisi 'realtime' atau 'tanggal'
-            'tanggal' => 'nullable|date',                // Validasi input tanggal jika ada
-        ]);
 
-        // Ambil nilai filter dari request, default 'realtime' jika tidak ada
-        $filter = $request->input('filter', 'realtime');
-
-        // Ambil nilai tanggal dari request, jika tidak ada, set null
-        $tanggal = $request->input('tanggal', null);
-
-        // Menentukan logika berdasarkan filter yang dipilih
-        if ($filter == 'realtime') {
-            // Set tanggal ke hari ini menggunakan fungsi PHP `date`
-            $tanggal = date('Y-m-d');  // Tanggal hari ini dalam format Y-m-d
-        }
-
-        // Ambil data berdasarkan tanggal yang sudah diset
-        $data = retail_d4::getDurasiMesinPerShift($tanggal);
-
-        // Kembalikan hasil dalam format JSON
-        return response()->json($data);
-    }
-
-    public function getuptime(Request $request)
-    {
-        $request->validate([
-            'filter' => 'nullable|in:realtime,tanggal',  // Filter yang dapat berisi 'realtime' atau 'tanggal'
-            'tanggal' => 'nullable|date',                // Validasi input tanggal jika ada
-        ]);
-
-        // Ambil nilai filter dari request, default 'realtime' jika tidak ada
-        $filter = $request->input('filter', 'realtime');
-
-        // Ambil nilai tanggal dari request, jika tidak ada, set null
-        $tanggal = $request->input('tanggal', null);
-
-        // Menentukan logika berdasarkan filter yang dipilih
-        if ($filter == 'realtime') {
-            // Set tanggal ke hari ini menggunakan fungsi PHP `date`
-            $tanggal = date('Y-m-d');  // Tanggal hari ini dalam format Y-m-d
-        }
-
-        // Ambil data berdasarkan tanggal yang sudah diset
-        $data = retail_d4::getUptime($tanggal);
-
-        // Kembalikan hasil dalam format JSON
-        return response()->json($data);
-    }
-
-    public function getdowntime(Request $request)
-    {
-        $request->validate([
-            'filter' => 'nullable|in:realtime,tanggal',  // Filter yang dapat berisi 'realtime' atau 'tanggal'
-            'tanggal' => 'nullable|date',                // Validasi input tanggal jika ada
-        ]);
-
-        // Ambil nilai filter dari request, default 'realtime' jika tidak ada
-        $filter = $request->input('filter', 'realtime');
-
-        // Ambil nilai tanggal dari request, jika tidak ada, set null
-        $tanggal = $request->input('tanggal', null);
-
-        // Menentukan logika berdasarkan filter yang dipilih
-        if ($filter == 'realtime') {
-            // Set tanggal ke hari ini menggunakan fungsi PHP `date`
-            $tanggal = date('Y-m-d');  // Tanggal hari ini dalam format Y-m-d
-        }
-
-        // Ambil data berdasarkan tanggal yang sudah diset
-        $data = retail_d4::getDownTime($tanggal);
-
-        // Kembalikan hasil dalam format JSON
-        return response()->json($data);
-    }
-
-    public function getperformanceActual(Request $request)
-    {
-
-        $tanggal = date('Y-m-d');
-
-
-        // Ambil data berdasarkan tanggal yang sudah diset
-        $data = retail_d4::getUptimeWithRealtime($tanggal);
-
-        // Kembalikan hasil dalam format JSON
-        return response()->json($data);
-    }
 
     public function getperformanceOutput(Request $request)
     {
@@ -340,7 +199,7 @@ class RetailController extends Controller
         $tanggal = Carbon::now('Asia/Jakarta')->format('Y-m-d');
 
         // Ambil data berdasarkan tanggal yang sudah diset
-        $data = retail_d4::getPerformanceOutput($tanggal);
+        $data = retail_d5::getPerformanceOutput($tanggal);
 
         // Kembalikan hasil dalam format JSON
         return response()->json($data);
@@ -366,7 +225,7 @@ class RetailController extends Controller
         }
 
         // Ambil data berdasarkan tanggal yang sudah diset
-        $data = retail_d4::getAllShiftPerformanceOutput($tanggal);
+        $data = retail_d5::getAllShiftPerformanceOutput($tanggal);
 
         // Kembalikan hasil dalam format JSON
         return response()->json($data);
@@ -392,7 +251,7 @@ class RetailController extends Controller
         }
 
         // Ambil data berdasarkan tanggal yang sudah diset
-        $data = retail_d4::getPerformanceGagalFilling($tanggal);
+        $data = retail_d5::getPerformanceGagalFilling($tanggal);
 
         // Kembalikan hasil dalam format JSON
         return response()->json($data);
@@ -422,7 +281,7 @@ class RetailController extends Controller
 
         if ($filter === 'realtime') {
             $today = Carbon::now()->toDateString();
-            $durasi = retail_d4::getStartMesinDurasiPerShift($today);
+            $durasi = retail_d5::getStartMesinDurasiPerShift($today);
 
             $hasil = [
                 'shift1' => [
@@ -440,7 +299,7 @@ class RetailController extends Controller
             ];
         } elseif ($filter === 'tanggal' && $tanggal) {
             $date = Carbon::parse($tanggal)->toDateString();
-            $durasi = retail_d4::getStartMesinDurasiPerShift($date);
+            $durasi = retail_d5::getStartMesinDurasiPerShift($date);
 
             $hasil = [
                 'shift1' => [
@@ -463,7 +322,7 @@ class RetailController extends Controller
 
             while ($mulai->lte($selesai)) {
                 $tanggal = $mulai->toDateString();
-                $durasi = retail_d4::getStartMesinDurasiPerShift($tanggal);
+                $durasi = retail_d5::getStartMesinDurasiPerShift($tanggal);
 
                 $periode[$tanggal] = [
                     'shift1' => [
@@ -512,7 +371,7 @@ class RetailController extends Controller
 
         if ($filter === 'realtime') {
             $hariIni = Carbon::now()->toDateString();
-            $durasi = retail_d4::getOffMesinDurasiPerShift($hariIni);
+            $durasi = retail_d5::getOffMesinDurasiPerShift($hariIni);
 
             $hasil = [
                 'shift1' => [
@@ -530,7 +389,7 @@ class RetailController extends Controller
             ];
         } elseif ($filter === 'tanggal' && $tanggal) {
             $tgl = Carbon::parse($tanggal)->toDateString();
-            $durasi = retail_d4::getOffMesinDurasiPerShift($tgl);
+            $durasi = retail_d5::getOffMesinDurasiPerShift($tgl);
 
             $hasil = [
                 'shift1' => [
@@ -553,7 +412,7 @@ class RetailController extends Controller
 
             while ($mulai->lte($selesai)) {
                 $tgl = $mulai->toDateString();
-                $durasi = retail_d4::getOffMesinDurasiPerShift($tgl);
+                $durasi = retail_d5::getOffMesinDurasiPerShift($tgl);
 
                 $periode[$tgl] = [
                     'shift1' => [
@@ -603,7 +462,7 @@ class RetailController extends Controller
         if ($filter === 'realtime') {
             $now = Carbon::now('Asia/Jakarta');
             $tanggal = $now->toDateString(); // hari ini WIB
-            $durasi = retail_d4::getStartMesinDurasiPerShift($tanggal);
+            $durasi = retail_d5::getStartMesinDurasiPerShift($tanggal);
 
             // Tentukan awal dan akhir shift dalam WIB
             $shift1_awal = Carbon::createFromFormat('Y-m-d H:i:s', "$tanggal 06:00:00", 'Asia/Jakarta');
@@ -657,7 +516,7 @@ class RetailController extends Controller
         if ($filter === 'realtime') {
             $now = Carbon::now('Asia/Jakarta');
             $tanggal = $now->toDateString(); // hari ini WIB
-            $durasi = retail_d4::getOffMesinDurasiPerShift($tanggal);
+            $durasi = retail_d5::getOffMesinDurasiPerShift($tanggal);
 
             // Tentukan awal dan akhir shift dalam WIB
             $shift1_awal = Carbon::createFromFormat('Y-m-d H:i:s', "$tanggal 06:00:00", 'Asia/Jakarta');
@@ -692,5 +551,5 @@ class RetailController extends Controller
         return response()->json([
             "result" => $hasil
         ]);
-    }
+      }
 }

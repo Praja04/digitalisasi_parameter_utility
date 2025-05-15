@@ -21,14 +21,35 @@ class ProduksiController extends Controller
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
 
-    public function dashboardProduksi_retail()
+    public function dashboardProduksi_retaild4()
     {
         if (Session::get('jabatan') == 'dept_head') {
             return view('user.dept_head.Retail.dashboard_retaild4');  
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
+    public function dashboardProduksi_retaild3()
+    {
+        if (Session::get('jabatan') == 'dept_head') {
+            return view('user.dept_head.Retail.dashboard_retaild3');  
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+    public function dashboardProduksi_retaild5()
+    {
+        if (Session::get('jabatan') == 'dept_head') {
+            return view('user.dept_head.Retail.dashboard_retaild5');  
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
 
+    public function Menu_retail()
+    {
+        if (Session::get('jabatan') == 'dept_head') {
+            return view('user.dept_head.Retail.menu');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
 
     ///////////End View Dept Head ///////////////////
 
