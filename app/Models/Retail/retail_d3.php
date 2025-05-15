@@ -526,8 +526,8 @@ class retail_d3 extends Model
         $timezone = 'Asia/Jakarta';
         $now = Carbon::now($timezone);
         $carbonDate = $tanggal
-            ? Carbon::parse($tanggal, $timezone)
-            : $now->copy();
+        ? Carbon::parse($tanggal, $timezone)
+        : $now->copy();
 
         $shifts = [
             [
@@ -558,23 +558,36 @@ class retail_d3 extends Model
             $runningTimeMinutesCount = $runningTimeMinutes / 60;
             $actualSpeed = optional($data->last())->main_speed ?? 0;
 
-            // Dapatkan total_counter terakhir sebelum 0
-            $row = DB::selectOne("
-                WITH shift_data AS (
-                    SELECT * FROM retail_d3
+            // Tentukan batas waktu untuk logika custom
+            $oneHourBeforeEnd = $shift['end']->copy()->subHour();
+            $useLatestOnly = $now->lt($oneHourBeforeEnd);
+
+            if ($useLatestOnly) {
+                // Ambil data terakhir
+                $row = self::whereBetween('ts', [$shift['start'], $shift['end']])
+                    ->orderByDesc('ts')
+                    ->first();
+            } else {
+                // Coba cari data sebelum counter = 0 dalam 1 jam terakhir shift
+                $rangeStart = $oneHourBeforeEnd;
+                $rangeEnd = $shift['end'];
+
+                $row = DB::selectOne("
+                WITH range_data AS (
+                    SELECT * FROM retail_d4
                     WHERE ts BETWEEN ? AND ?
                 ),
                 zero_ts AS (
-                    SELECT ts FROM shift_data WHERE total_counter = 0 ORDER BY ts LIMIT 1
+                    SELECT ts FROM range_data WHERE total_counter = 0 ORDER BY ts LIMIT 1
                 ),
                 before_zero AS (
-                    SELECT * FROM shift_data
+                    SELECT * FROM range_data
                     WHERE ts < (SELECT ts FROM zero_ts)
                     ORDER BY ts DESC
                     LIMIT 1
                 ),
                 fallback AS (
-                    SELECT * FROM shift_data
+                    SELECT * FROM range_data
                     ORDER BY ts DESC
                     LIMIT 1
                 )
@@ -584,16 +597,17 @@ class retail_d3 extends Model
                 WHERE NOT EXISTS (SELECT 1 FROM before_zero)
                 LIMIT 1
             ", [
-                $shift['start']->toDateTimeString(),
-                $shift['end']->toDateTimeString(),
-            ]);
+                    $rangeStart->toDateTimeString(),
+                    $rangeEnd->toDateTimeString(),
+                ]);
+            }
 
             $totalNozzleAktif = $row ? $row->total_counter : 0;
             $actualTS = $row ? $row->ts : null;
 
             $denominator = $runningTimeMinutesCount * $actualSpeed * 2;
             $performanceGoodFilling = $denominator > 0
-                ? (($totalNozzleAktif / $denominator) * 100)
+            ? (($totalNozzleAktif / $denominator) * 100)
                 : 0;
             $performanceGagalFilling = $performanceGoodFilling > 0 ? (100 - $performanceGoodFilling) : 0;
 
@@ -816,42 +830,59 @@ class retail_d3 extends Model
         $results = [];
 
         foreach ($shifts as $shift) {
-            $data = DB::selectOne("
-                WITH shift_data AS (
-                    SELECT ts, total_counter
-                    FROM retail_d3
-                    WHERE ts BETWEEN ? AND ?
-                ),
-                zero_ts AS (
-                    SELECT ts FROM shift_data
-                    WHERE total_counter = 0
-                    ORDER BY ts
+            $oneHourBeforeEnd = $shift['end']->copy()->subHour();
+            $useLatestOnly = $now->lt($oneHourBeforeEnd);
+
+            if ($useLatestOnly) {
+                // Ambil data terakhir dari rentang shift
+                $data = DB::table('retail_d3')
+                    ->whereBetween('ts', [$shift['start'], $shift['end']])
+                    ->orderByDesc('ts')
+                    ->limit(1)
+                    ->first();
+            } else {
+                // Ambil data terakhir sebelum total_counter = 0 dari 1 jam terakhir shift
+                $rangeStart = $oneHourBeforeEnd;
+                $rangeEnd = $shift['end'];
+
+                $data = DB::selectOne("
+                    WITH range_data AS (
+                        SELECT ts, total_counter
+                        FROM retail_d3
+                        WHERE ts BETWEEN ? AND ?
+                    ),
+                    zero_ts AS (
+                        SELECT ts FROM range_data
+                        WHERE total_counter = 0
+                        ORDER BY ts
+                        LIMIT 1
+                    ),
+                    before_zero AS (
+                        SELECT * FROM range_data
+                        WHERE ts < (SELECT ts FROM zero_ts)
+                        ORDER BY ts DESC
+                        LIMIT 1
+                    ),
+                    fallback AS (
+                        SELECT * FROM range_data
+                        ORDER BY ts DESC
+                        LIMIT 1
+                    )
+                    SELECT * FROM before_zero
+                    UNION ALL
+                    SELECT * FROM fallback
+                    WHERE NOT EXISTS (SELECT 1 FROM before_zero)
                     LIMIT 1
-                ),
-                before_zero AS (
-                    SELECT * FROM shift_data
-                    WHERE ts < (SELECT ts FROM zero_ts)
-                    ORDER BY ts DESC
-                    LIMIT 1
-                ),
-                fallback AS (
-                    SELECT * FROM shift_data
-                    ORDER BY ts DESC
-                    LIMIT 1
-                )
-                SELECT * FROM before_zero
-                UNION ALL
-                SELECT * FROM fallback
-                WHERE NOT EXISTS (SELECT 1 FROM before_zero)
-            ", [
-                $shift['start']->toDateTimeString(),
-                $shift['end']->toDateTimeString()
-            ]);
+                ", [
+                    $rangeStart->toDateTimeString(),
+                    $rangeEnd->toDateTimeString(),
+                ]);
+            }
 
             $totalCounter = $data ? $data->total_counter : 0;
             $actualTs = $data ? $data->ts : null;
-            $durasiMenit = 420;
 
+            $durasiMenit = 420; // 7 jam, tetap seperti semula
             $performance = $durasiMenit > 0
                 ? ($totalCounter / ($durasiMenit * 40 * 2)) * 100
                 : 0;
