@@ -7,25 +7,25 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Carbon\Carbon;
 
-class retail_d4_nozzle extends Model
+class retail_d4_nozzle1 extends Model
 {
     //
     use HasFactory;
 
-    protected $table = 'retail_d4_nozzle';
+    protected $table = 'retail_d4_nozzle1';
     protected $primaryKey = 'id';
     public $timestamps = false; // Karena sudah ada kolom `ts` yang otomatis
 
     protected $fillable = [
-        'nozzle_1','nozzle_2','ts'
+        'nozzle_1','ts'
     ];
 
     public static function getNozzleCountPerShift($dates)
     {
         $result = [
-            'shift_1' => ['nozzle_1' => 0, 'nozzle_2' => 0],
-            'shift_2' => ['nozzle_1' => 0, 'nozzle_2' => 0],
-            'shift_3' => ['nozzle_1' => 0, 'nozzle_2' => 0],
+            'shift_1' => ['nozzle_1' => 0],
+            'shift_2' => ['nozzle_1' => 0],
+            'shift_3' => ['nozzle_1' => 0],
         ];
 
         foreach ($dates as $date) {
@@ -45,13 +45,11 @@ class retail_d4_nozzle extends Model
 
             // Hitung setiap shift
             $result['shift_1']['nozzle_1'] += self::whereBetween('ts', [$start1, $end1])->sum('nozzle_1');
-            $result['shift_1']['nozzle_2'] += self::whereBetween('ts', [$start1, $end1])->sum('nozzle_2');
-
+           
             $result['shift_2']['nozzle_1'] += self::whereBetween('ts', [$start2, $end2])->sum('nozzle_1');
-            $result['shift_2']['nozzle_2'] += self::whereBetween('ts', [$start2, $end2])->sum('nozzle_2');
+           
 
             $result['shift_3']['nozzle_1'] += self::whereBetween('ts', [$start3, $end3])->sum('nozzle_1');
-            $result['shift_3']['nozzle_2'] += self::whereBetween('ts', [$start3, $end3])->sum('nozzle_2');
         }
 
         return $result;

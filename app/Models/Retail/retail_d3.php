@@ -6,74 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Carbon\Carbon;
-use App\Models\Retail\retail_d4_nozzle1;
+use App\Models\Retail\retail_d3_nozzle1;
 
-class retail_d4 extends Model
+class retail_d3 extends Model
 {
     //
     use HasFactory;
 
-    protected $table = 'retail_d4';
+    protected $table = 'retail_d3';
     protected $primaryKey = 'id';
     public $timestamps = false; // Karena sudah ada kolom `ts` yang otomatis
 
     protected $fillable = [
         'ts', 'main_speed', 'total_counter', 'start_mesin'
     ];
-
-    // public static function getMesinStartPeriods($filterType = 'realtime', $startDate = null, $endDate = null)
-    // {
-    //     $bindings = [];
-    //     $whereClause = "";
-
-    //     // Normalisasi nilai filter agar lebih fleksibel
-    //     $filterType = strtolower($filterType);
-    //     if ($filterType === 'tanggal') {
-    //         $filterType = 'date';
-    //     }
-
-    //     // Bangun WHERE clause berdasarkan filter
-    //     if ($filterType === 'realtime') {
-    //         $whereClause = "WHERE DATE(ts) = CURDATE()";
-    //     } elseif ($filterType === 'date' && $startDate) {
-    //         $whereClause = "WHERE DATE(ts) = ?";
-    //         $bindings[] = $startDate;
-    //     } elseif ($filterType === 'range' && $startDate && $endDate) {
-    //         $whereClause = "WHERE DATE(ts) BETWEEN ? AND ?";
-    //         $bindings[] = $startDate;
-    //         $bindings[] = $endDate;
-    //     }
-
-    //     $query = "
-    //     WITH flagged_status AS (
-    //         SELECT 
-    //             ts,
-    //             start_mesin,
-    //             CASE 
-    //                 WHEN start_mesin = 1 THEN 1 ELSE 0
-    //             END AS is_running
-    //         FROM retail_d4
-    //         {$whereClause}
-    //     ),
-    //     grouped_blocks AS (
-    //         SELECT *,
-    //             ROW_NUMBER() OVER (ORDER BY ts)
-    //           - ROW_NUMBER() OVER (PARTITION BY is_running ORDER BY ts) AS group_id
-    //         FROM flagged_status
-    //     )
-    //     SELECT 
-    //         MIN(ts) AS ts_mulai,
-    //         MAX(ts) AS ts_akhir
-    //     FROM grouped_blocks
-    //     WHERE is_running = 1
-    //     GROUP BY group_id
-    //     ORDER BY ts_mulai
-    //  ";
-
-    //     return DB::select($query, $bindings);
-    // }
-
-    
 
     public static function getMesinStopPeriods($filterType = 'realtime', $startDate = null, $endDate = null)
     {
@@ -114,7 +60,7 @@ class retail_d4 extends Model
                     CASE 
                         WHEN start_mesin = 1 THEN 1 ELSE 0
                     END AS is_running
-                FROM retail_d4
+                FROM retail_d3
                 {$whereClause}
             ),
             grouped_blocks AS (
@@ -134,10 +80,10 @@ class retail_d4 extends Model
 
         return DB::select($query, $bindings);
     }
-    
 
 
-    
+
+
 
     public static function getNozzleCountPerShift($dates)
     {
@@ -202,7 +148,7 @@ class retail_d4 extends Model
                     CASE 
                         WHEN start_mesin = 1 THEN 1 ELSE 0
                     END AS is_running
-                FROM retail_d4
+                FROM retail_d3
                 {$whereClause}
             ),
             grouped_blocks AS (
@@ -285,7 +231,7 @@ class retail_d4 extends Model
                 CASE 
                     WHEN start_mesin = 0 THEN 1 ELSE 0
                 END AS is_down
-            FROM retail_d4
+            FROM retail_d3
             {$whereClause}
         ),
         grouped_blocks AS (
@@ -512,7 +458,7 @@ class retail_d4 extends Model
     //                 ORDER BY ABS(TIMESTAMPDIFF(SECOND, r.ts, t.target_ts))
     //             ) AS rn
     //         FROM all_targets t
-    //         JOIN retail_d4 r ON r.ts <= t.target_ts
+    //         JOIN retail_d3 r ON r.ts <= t.target_ts
     //         WHERE r.total_counter != 0
     //     )
     //     SELECT 
@@ -615,7 +561,7 @@ class retail_d4 extends Model
             // Dapatkan total_counter terakhir sebelum 0
             $row = DB::selectOne("
                 WITH shift_data AS (
-                    SELECT * FROM retail_d4
+                    SELECT * FROM retail_d3
                     WHERE ts BETWEEN ? AND ?
                 ),
                 zero_ts AS (
@@ -669,7 +615,7 @@ class retail_d4 extends Model
 
         return $results;
     }
-    
+
 
 
     //test
@@ -677,17 +623,17 @@ class retail_d4 extends Model
     {
         $besok = Carbon::parse($tanggal)->addDay()->toDateString();
 
-        $shift1 = DB::table('retail_d4')
+        $shift1 = DB::table('retail_d3')
             ->whereBetween('ts', ["$tanggal 06:00:00", "$tanggal 14:00:00"])
             ->where('start_mesin', 1)
             ->count();
 
-        $shift2 = DB::table('retail_d4')
+        $shift2 = DB::table('retail_d3')
             ->whereBetween('ts', ["$tanggal 14:00:01", "$tanggal 22:00:00"])
             ->where('start_mesin', 1)
             ->count();
 
-        $shift3 = DB::table('retail_d4')
+        $shift3 = DB::table('retail_d3')
             ->whereBetween('ts', ["$tanggal 22:00:01", "$besok 05:59:59"])
             ->where('start_mesin', 1)
             ->count();
@@ -703,17 +649,17 @@ class retail_d4 extends Model
     {
         $besok = Carbon::parse($tanggal)->addDay()->toDateString();
 
-        $shift1 = DB::table('retail_d4')
+        $shift1 = DB::table('retail_d3')
             ->whereBetween('ts', ["$tanggal 06:00:00", "$tanggal 14:00:00"])
             ->where('start_mesin', 0)
             ->count();
 
-        $shift2 = DB::table('retail_d4')
+        $shift2 = DB::table('retail_d3')
             ->whereBetween('ts', ["$tanggal 14:00:01", "$tanggal 22:00:00"])
             ->where('start_mesin', 0)
             ->count();
 
-        $shift3 = DB::table('retail_d4')
+        $shift3 = DB::table('retail_d3')
             ->whereBetween('ts', ["$tanggal 22:00:01", "$besok 05:59:59"])
             ->where('start_mesin', 0)
             ->count();
@@ -760,8 +706,8 @@ class retail_d4 extends Model
 
     //     $durasiMenit = $start->diffInMinutes($carbonDate);
 
-    //     // Ambil data dari tabel retail_d4_nozzle1
-    //     $totalNozzleAktif = retail_d4_nozzle1::whereBetween('ts', [$start, $carbonDate])
+    //     // Ambil data dari tabel retail_d3_nozzle1
+    //     $totalNozzleAktif = retail_d3_nozzle1::whereBetween('ts', [$start, $carbonDate])
     //         ->get()
     //         ->reduce(function ($carry, $item) {
     //             return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
@@ -814,7 +760,7 @@ class retail_d4 extends Model
     //     $results = [];
 
     //     foreach ($shifts as $shift) {
-    //         $totalNozzleAktif = retail_d4_nozzle1::whereBetween('ts', [$shift['start'], $shift['end']])
+    //         $totalNozzleAktif = retail_d3_nozzle1::whereBetween('ts', [$shift['start'], $shift['end']])
     //             ->get()
     //             ->reduce(function ($carry, $item) {
     //                 return $carry + ($item->nozzle_1 == 1 ? 1 : 0) + ($item->nozzle_2 == 1 ? 1 : 0);
@@ -873,7 +819,7 @@ class retail_d4 extends Model
             $data = DB::selectOne("
                 WITH shift_data AS (
                     SELECT ts, total_counter
-                    FROM retail_d4
+                    FROM retail_d3
                     WHERE ts BETWEEN ? AND ?
                 ),
                 zero_ts AS (
@@ -965,7 +911,7 @@ class retail_d4 extends Model
         $durasiMenit = $start->diffInMinutes($carbonDate);
 
         // Ambil total_counter terdekat untuk waktu awal shift
-        $awalCounter = DB::table('retail_d4')
+        $awalCounter = DB::table('retail_d3')
             ->where('ts', '<=', $start)
             ->where('total_counter', '!=', 0)
             ->orderByDesc('ts')
@@ -973,7 +919,7 @@ class retail_d4 extends Model
             ->value('total_counter');
 
         // Ambil total_counter terdekat untuk waktu sekarang
-        $akhirCounter = DB::table('retail_d4')
+        $akhirCounter = DB::table('retail_d3')
             ->where('ts', '<=', $carbonDate)
             ->where('total_counter', '!=', 0)
             ->orderByDesc('ts')
@@ -997,6 +943,3 @@ class retail_d4 extends Model
         ];
     }
 }
-
-
-
