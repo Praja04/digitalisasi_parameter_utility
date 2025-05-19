@@ -1032,7 +1032,7 @@
                 url: '{{ url("pasteurisasi1") }}/' + type, // asumsi endpoint sama
                 method: 'GET',
                 data: {
-                    filter: $('#filter_abnormal').val(),
+                    filter: $('#filter').val(),
                     start: $('#start-date').val(),
                     end: $('#end-date').val()
                 },
@@ -1068,14 +1068,14 @@
         updateDateTime();
 
         function fetchAchievement(filter = 'today', startDate = null, endDate = null) {
-            Swal.fire({
-                title: 'Loading data...',
-                text: 'Harap tunggu',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
+            // Swal.fire({
+            //     title: 'Loading data...',
+            //     text: 'Harap tunggu',
+            //     allowOutsideClick: false,
+            //     didOpen: () => {
+            //         Swal.showLoading();
+            //     }
+            // });
             $.ajax({
                 url: "{{url('/prd/achievement')}}",
                 type: 'GET',
@@ -1116,6 +1116,7 @@
             }
         });
 
+        
         $('#apply-filter').on('click', function() {
 
             const filter = $('#filter').val();
