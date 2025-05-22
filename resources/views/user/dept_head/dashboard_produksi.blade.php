@@ -592,12 +592,16 @@
 
 <script>
     $(document).ready(function() {
-        let chart = null;
-        let chart_flowrate = null;
-        let chart_gauge = null;
-        let chart_gauge_BT1 = null;
-        let chart_gauge_BT2 = null;
-        let chart_gauge_VD = null;
+        let charts = {
+            main: null,
+            flowrate: null,
+            gauges: {
+                mixing: null,
+                BT1: null,
+                BT2: null,
+                VD: null
+            }
+        };
 
         function fetchData(url, params = {}) {
             return $.ajax({
@@ -618,7 +622,8 @@
 
         function updateChart(selector, config, chartInstance) {
             if (chartInstance) {
-                chartInstance.updateOptions(config);
+                chartInstance.updateOptions(config, false, true); // animate enabled
+                return chartInstance;
             } else {
                 const chart = new ApexCharts(document.querySelector(selector), config);
                 chart.render();
@@ -626,17 +631,67 @@
             }
         }
 
+        function createLineChartOptions(data, seriesArray, colors, yAxisTitle) {
+            const categories = data.map(item => item.Waktu);
+            return {
+                chart: {
+                    type: "line",
+                    height: 350,
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 800,
+                        animateGradually: {
+                            enabled: true,
+                            delay: 150
+                        },
+                        dynamicAnimation: {
+                            enabled: true,
+                            speed: 350
+                        }
+                    },
+                    toolbar: {
+                        show: false
+                    }
+                },
+                stroke: {
+                    width: 2,
+                    curve: "smooth"
+                },
+                series: seriesArray,
+                colors,
+                xaxis: {
+                    categories,
+                    title: {
+                        text: "Waktu"
+                    },
+                    labels: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: yAxisTitle
+                    }
+                },
+                tooltip: {
+                    x: {
+                        format: "dd MMM HH:mm"
+                    }
+                }
+            };
+        }
+
         function updateChartSuhu(data) {
             if (data.length === 0) {
-                if (chart) chart.updateSeries([{
+                if (charts.main) charts.main.updateSeries([{
                     data: []
                 }, {
                     data: []
-                }]);
+                }], true);
                 return showWarning("Data Tidak Ditemukan", "Tidak ada data suhu untuk rentang waktu yang dipilih.");
             }
 
-            const categories = data.map(item => item.Waktu);
             const series = [{
                     name: "Suhu Heating",
                     data: data.map(item => item.SuhuHeating)
@@ -646,200 +701,81 @@
                     data: data.map(item => item.SuhuHolding)
                 }
             ];
+            const colors = ["#0acf97", "#fa5c7c"];
 
-            const options = {
-                chart: {
-                    type: "line",
-                    height: 350
-                },
-                stroke: {
-                    width: 2,
-                    curve: "smooth"
-                },
-                series,
-                colors: ["#0acf97", "#fa5c7c"],
-                xaxis: {
-                    categories,
-                    title: {
-                        text: "Waktu"
-                    },
-                    labels: {
-                        show: false
-                    }
-                },
-                yaxis: {
-                    title: {
-                        text: "CCP"
-                    }
-                },
-                tooltip: {
-                    x: {
-                        format: "dd MMM HH:mm"
-                    }
-                }
-            };
+            const options = createLineChartOptions(data, series, colors, "CCP");
 
-            chart = updateChart("#ccp_chart", options, chart);
+            charts.main = updateChart("#ccp_chart", options, charts.main);
         }
 
         function updateChartFlowrate(data) {
             if (data.length === 0) {
-                if (chart_flowrate) chart_flowrate.updateSeries([{
+                if (charts.flowrate) charts.flowrate.updateSeries([{
                     data: []
-                }]);
+                }], true);
                 return showWarning("Data Tidak Ditemukan", "Tidak ada data flowrate untuk rentang waktu yang dipilih.");
             }
 
-            const categories = data.map(item => item.Waktu);
             const series = [{
                 name: "Flowrate",
                 data: data.map(item => item.Flowrate)
             }];
+            const colors = ["#39afd1"];
 
-            const options = {
+            const options = createLineChartOptions(data, series, colors, "Flowrate");
+
+            charts.flowrate = updateChart("#flowrate_chart", options, charts.flowrate);
+        }
+
+        function createGaugeOptions(value) {
+            return {
                 chart: {
-                    type: "line",
-                    height: 350
-                },
-                stroke: {
-                    width: 2,
-                    curve: "smooth"
-                },
-                series,
-                colors: ["#39afd1"],
-                xaxis: {
-                    categories,
-                    title: {
-                        text: "Waktu"
+                    height: 150,
+                    type: "radialBar",
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 800,
+                        animateGradually: {
+                            enabled: true,
+                            delay: 50
+                        },
+                        dynamicAnimation: {
+                            enabled: true,
+                            speed: 350
+                        }
                     },
-                    labels: {
+                    toolbar: {
                         show: false
                     }
                 },
-                yaxis: {
-                    title: {
-                        text: "Flowrate"
+                series: [parseFloat(value)],
+                labels: [""],
+                plotOptions: {
+                    radialBar: {
+                        hollow: {
+                            size: "50%"
+                        },
+                        dataLabels: {
+                            name: {
+                                show: false
+                            },
+                            value: {
+                                show: true,
+                                fontSize: "16px"
+                            }
+                        }
                     }
                 },
-                tooltip: {
-                    x: {
-                        format: "dd MMM HH:mm"
-                    }
-                }
+                colors: ["#00E396"]
             };
-
-            chart_flowrate = updateChart("#flowrate_chart", options, chart_flowrate);
         }
 
-        function updateGaugeChart(value = 0) {
-            const options = {
-                chart: {
-                    height: 150,
-                    type: "radialBar"
-                },
-                series: [parseFloat(value.SpeedPompaMixing)],
-                labels: [""], // kosongkan label agar tidak muncul
-                plotOptions: {
-                    radialBar: {
-                        hollow: {
-                            size: "50%"
-                        },
-                        dataLabels: {
-                            name: {
-                                show: false // sembunyikan label "Speed Pompa HW"
-                            },
-                            value: {
-                                show: true,
-                                fontSize: "16px"
-                            }
-                        }
-                    }
-                },
-                colors: ["#00E396"]
-            };
-
-            const options2 = {
-                chart: {
-                    height: 150,
-                    type: "radialBar"
-                },
-                series: [parseFloat(value.SpeedPumpBT1)],
-                labels: [""], // kosongkan label agar tidak muncul
-                plotOptions: {
-                    radialBar: {
-                        hollow: {
-                            size: "50%"
-                        },
-                        dataLabels: {
-                            name: {
-                                show: false // sembunyikan label "Speed Pompa HW"
-                            },
-                            value: {
-                                show: true,
-                                fontSize: "16px"
-                            }
-                        }
-                    }
-                },
-                colors: ["#00E396"]
-            };
-
-            const options3 = {
-                chart: {
-                    height: 150,
-                    type: "radialBar"
-                },
-                series: [parseFloat(value.SpeedPumpBT2)],
-                labels: [""], // kosongkan label agar tidak muncul
-                plotOptions: {
-                    radialBar: {
-                        hollow: {
-                            size: "50%"
-                        },
-                        dataLabels: {
-                            name: {
-                                show: false // sembunyikan label "Speed Pompa HW"
-                            },
-                            value: {
-                                show: true,
-                                fontSize: "16px"
-                            }
-                        }
-                    }
-                },
-                colors: ["#00E396"]
-            };
-            const options4 = {
-                chart: {
-                    height: 150,
-                    type: "radialBar"
-                },
-                series: [parseFloat(value.SpeedPumpVD)],
-                labels: [""], // kosongkan label agar tidak muncul
-                plotOptions: {
-                    radialBar: {
-                        hollow: {
-                            size: "50%"
-                        },
-                        dataLabels: {
-                            name: {
-                                show: false // sembunyikan label "Speed Pompa HW"
-                            },
-                            value: {
-                                show: true,
-                                fontSize: "16px"
-                            }
-                        }
-                    }
-                },
-                colors: ["#00E396"]
-            };
-
-
-            chart_gauge = updateChart("#gauge_chart_pompa_mixing", options, chart_gauge);
-            chart_gauge_BT1 = updateChart("#gauge_chart_bt1", options2, chart_gauge_BT1);
-            chart_gauge_BT2 = updateChart("#gauge_chart_bt2", options3, chart_gauge_BT2);
-            chart_gauge_VD = updateChart("#gauge_chart_vd", options4, chart_gauge_VD);
+        function updateGaugeChart(value) {
+            charts.gauges.mixing = updateChart("#gauge_chart_pompa_mixing", createGaugeOptions(value.SpeedPompaMixing), charts.gauges.mixing);
+            charts.gauges.BT1 = updateChart("#gauge_chart_bt1", createGaugeOptions(value.SpeedPumpBT1), charts.gauges.BT1);
+            charts.gauges.BT2 = updateChart("#gauge_chart_bt2", createGaugeOptions(value.SpeedPumpBT2), charts.gauges.BT2);
+            charts.gauges.VD = updateChart("#gauge_chart_vd", createGaugeOptions(value.SpeedPumpVD), charts.gauges.VD);
         }
 
         function updateInputFields(prefix = "") {
@@ -888,56 +824,23 @@
         }
 
         function updateRealtimeInfo() {
-            $.ajax({
-                url: "{{ url('pasteurisasi1/data-realtime') }}",
-                dataType: "json",
-                success: function(res) {
-
-
-                    // Update gauge dari suhu holding realtime
-                    if (res.SpeedPompaMixing !== undefined && res.SpeedPompaMixing !== null) {
-                        updateGaugeChart(res);
-                    }
-                },
-                error: function(_xhr, status, error) {
-                    console.error('AJAX Error:', status, error);
+            fetchData("{{ url('pasteurisasi1/data-realtime') }}").done(res => {
+                if (res.SpeedPompaMixing !== undefined && res.SpeedPompaMixing !== null) {
+                    updateGaugeChart(res);
                 }
-            });
+            }).fail(handleAjaxError);
 
-            $.ajax({
-                url: "{{ url('prd/data/status-running') }}",
-                dataType: "json",
-                success: function(res) {
-                    console.log(res);
-                    $('#varian_status_running').text(res.varian);
-                    $('#mode_status_running').text(res.mode);
-                    $('#batch_status_running').text(res.batch);
-                    $('#storage_status_running').text(res.storage);
-                },
-                error: function(_xhr, status, error) {
-                    console.error('AJAX Error:', status, error);
-                }
-            });
+            fetchData("{{ url('prd/data/status-running') }}").done(res => {
+                $('#varian_status_running').text(res.varian);
+                $('#mode_status_running').text(res.mode);
+                $('#batch_status_running').text(res.batch);
+                $('#storage_status_running').text(res.storage);
+            }).fail(handleAjaxError);
         }
 
-        // Inisialisasi
-        updateInputFields();
-        updateInputFields("Flowrate");
-
-        $("#filterData, #filterDataFlowrate").on("change", function() {
-            const id = $(this).attr("id");
-            const prefix = id.includes("Flowrate") ? "Flowrate" : "";
-            updateInputFields(prefix);
-        });
-
-        $("#applyFilter").on("click", () => handleFilterClick());
-        $("#applyFilterFlowrate").on("click", () => handleFilterClick("Flowrate"));
-
-        // Load awal
-        $("#applyFilter").trigger("click");
-        $("#applyFilterFlowrate").trigger("click");
-        updateRealtimeInfo();
-        setInterval(updateRealtimeInfo, 10000); // Update setiap 10 detik
+        function handleAjaxError(_xhr, status, error) {
+            console.error('AJAX Error:', status, error);
+        }
 
         function getShift(now) {
             let hours = now.getHours();
@@ -963,146 +866,89 @@
             });
 
             let shift = getShift(now);
-
-            // Set nilai tanggal dan shift ke elemen yang sesuai
             $('#date-picker').val(formattedDate);
             $('#shift').val(shift);
         }
 
-
-        function fetchData_abnormal(filter = 'today', start = '', end = '') {
-            $.ajax({
-                url: '{{ url("pasteurisasi1/suhuholding") }}',
-                method: 'GET',
-                data: {
-                    filter: filter,
-                    start: start,
-                    end: end
+        function fetchDataAbnormal(filter = 'today', start = '', end = '') {
+            const endpoints = [{
+                    url: '{{ url("pasteurisasi1/suhuholding") }}',
+                    target: '#suhuholding_abnormal'
                 },
-                success: function(res) {
-                    console.log(res);
-                    $('#suhuholding_abnormal').text(res.total).attr('data-target', res.total);
+                {
+                    url: '{{ url("pasteurisasi1/suhuheating") }}',
+                    target: '#suhuheating_abnormal'
                 },
-                error: function() {
-                    alert("Gagal mengambil data.");
+                {
+                    url: '{{ url("pasteurisasi1/flowrate") }}',
+                    target: '#flowrate_abnormal'
                 }
+            ];
+
+            endpoints.forEach(endpoint => {
+                fetchData(endpoint.url, {
+                        filter,
+                        start,
+                        end
+                    })
+                    .done(res => {
+                        $(endpoint.target).text(res.total).attr('data-target', res.total);
+                    })
+                    .fail(() => {
+                        alert(`Gagal mengambil data dari ${endpoint.url}.`);
+                    });
             });
-
-            $.ajax({
-                url: '{{ url("pasteurisasi1/suhuheating") }}',
-                method: 'GET',
-                data: {
-                    filter,
-                    start,
-                    end
-                },
-                success: function(res) {
-                    console.log(res);
-                    $('#suhuheating_abnormal').text(res.total).attr('data-target', res.total);
-                },
-                error: function() {
-                    alert("Gagal mengambil data LH Temp.");
-                }
-            });
-
-            $.ajax({
-                url: '{{ url("pasteurisasi1/flowrate") }}',
-                method: 'GET',
-                data: {
-                    filter,
-                    start,
-                    end
-                },
-                success: function(res) {
-                    console.log(res);
-                    $('#flowrate_abnormal').text(res.total).attr('data-target', res.total);
-                },
-                error: function() {
-                    alert("Gagal mengambil data PV Steam.");
-                }
-            });
-
-
         }
-
 
         $('.abnormal-card').on('click', function() {
             const type = $(this).data('type');
-            $.ajax({
-                url: '{{ url("pasteurisasi1") }}/' + type, // asumsi endpoint sama
-                method: 'GET',
-                data: {
-                    filter: $('#filter_abnormal').val(),
-                    start: $('#start-date').val(),
-                    end: $('#end-date').val()
-                },
-                success: function(res) {
-                    let html = '<p>Total: <strong>' + res.total + '</strong></p>';
-
-                    // Tambahkan detail jika ada
-                    if (res.data && Array.isArray(res.data)) {
-                        html += '<ul class="list-group">';
-                        res.data.forEach(item => {
-                            html += `
-                <li class="list-group-item">
-                    <strong>Waktu Mulai:</strong> ${item.waktu_mulai}<br>
-                    <strong>Waktu Akhir:</strong> ${item.waktu_akhir}
-                </li>
-            `;
-                        });
-                        html += '</ul>';
-                    }
-
-                    $('#abnormalModalBody').html(html);
-                    $('#abnormalModal').modal('show');
-                },
-                error: function() {
-                    alert('Gagal mengambil detail data!');
+            fetchData(`{{ url("pasteurisasi1") }}/${type}`, {
+                filter: $('#filter').val(),
+                start: $('#start-date').val(),
+                end: $('#end-date').val()
+            }).done(res => {
+                let html = `<p>Total: <strong>${res.total}</strong></p>`;
+                if (res.data && Array.isArray(res.data)) {
+                    html += '<ul class="list-group">';
+                    res.data.forEach(item => {
+                        html += `
+                            <li class="list-group-item">
+                                <strong>Waktu Mulai:</strong> ${item.waktu_mulai}<br>
+                                <strong>Waktu Akhir:</strong> ${item.waktu_akhir}
+                            </li>
+                        `;
+                    });
+                    html += '</ul>';
                 }
+                $('#abnormalModalBody').html(html);
+                $('#abnormalModal').modal('show');
+            }).fail(() => {
+                alert('Gagal mengambil detail data!');
             });
         });
 
-        // Panggil fungsi pertama kali
-        // Load data awal (today)
-        fetchData_abnormal();
-        updateDateTime();
-
         function fetchAchievement(filter = 'today', startDate = null, endDate = null) {
-            Swal.fire({
-                title: 'Loading data...',
-                text: 'Harap tunggu',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-            $.ajax({
-                url: "{{url('/prd/achievement')}}",
-                type: 'GET',
-                data: {
-                    filter: filter,
+            fetchData("{{url('/prd/achievement')}}", {
+                    filter,
                     start_date: startDate,
                     end_date: endDate
-                },
-                success: function(res) {
-                    console.log(res);
+                })
+                .done(res => {
                     $('#output_batch').attr('data-target', res.total_batch_count).text(res.total_batch_count + ' ton');
                     $('#output_batch_shift1').attr('data-target', res.shift_counts.shift_1).text(res.shift_counts.shift_1 + ' ton');
                     $('#output_batch_shift2').attr('data-target', res.shift_counts.shift_2).text(res.shift_counts.shift_2 + ' ton');
                     $('#output_batch_shift3').attr('data-target', res.shift_counts.shift_3).text(res.shift_counts.shift_3 + ' ton');
                     $('#achievement_output_batch').attr('data-target', res.achievement_percentage).text(res.achievement_percentage);
                     $('#target_batch').text(res.total_target_batch + ' ton');
-                    Swal.close();
-                },
-                error: function(xhr) {
+                })
+                .fail(xhr => {
                     Swal.fire({
                         icon: 'error',
                         title: 'Gagal!',
                         text: 'Gagal mengambil data. Coba lagi nanti.',
                     });
                     console.error(xhr.responseText);
-                }
-            });
+                });
         }
 
         $('#filter').on('change', function() {
@@ -1117,12 +963,11 @@
         });
 
         $('#apply-filter').on('click', function() {
-
             const filter = $('#filter').val();
-            // const filter = $('#filter_abnormal').val();
             const start = $('#start-date').val();
             const end = $('#end-date').val();
-            fetchData_abnormal(filter, start, end);
+            fetchDataAbnormal(filter, start, end);
+
             let startDate = null;
             let endDate = null;
 
@@ -1136,11 +981,32 @@
             fetchAchievement(filter, startDate, endDate);
         });
 
-        // First trigger
-        fetchAchievement();
+        // Initialization
+        updateInputFields();
+        updateInputFields("Flowrate");
 
+        $("#filterData, #filterDataFlowrate").on("change", function() {
+            const id = $(this).attr("id");
+            const prefix = id.includes("Flowrate") ? "Flowrate" : "";
+            updateInputFields(prefix);
+        });
+
+        $("#applyFilter").on("click", () => handleFilterClick());
+        $("#applyFilterFlowrate").on("click", () => handleFilterClick("Flowrate"));
+
+        // Load initial data
+        $("#applyFilter").trigger("click");
+        $("#applyFilterFlowrate").trigger("click");
+        fetchDataAbnormal();
+        updateDateTime();
+        updateRealtimeInfo();
+        setInterval(updateRealtimeInfo, 10000);
+        fetchAchievement();
     });
 </script>
+
+
+
 
 
 @endsection
