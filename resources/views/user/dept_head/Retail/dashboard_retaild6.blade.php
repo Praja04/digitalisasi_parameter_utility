@@ -75,7 +75,7 @@
                         <div class="d-flex align-items-end justify-content-between mt-4">
                             <div>
                                 <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" id="total_counter"></span></h4>
-                                <p>Retail D5</p>
+                                <p>Retail D6</p>
                             </div>
                             <div class="avatar-sm flex-shrink-0" data-aos="flip-up">
                                 <span class=" avatar-title bg-success rounded fs-3">
@@ -100,7 +100,7 @@
                         <div class="d-flex align-items-end justify-content-between mt-4">
                             <div>
                                 <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" id="average_main_speed"></span></h4>
-                                <p>Retail D3</p>
+                                <p>Retail D6</p>
                             </div>
                             <div class="avatar-sm flex-shrink-0" data-aos="flip-up">
                                 <span class=" avatar-title bg-info rounded fs-3">
