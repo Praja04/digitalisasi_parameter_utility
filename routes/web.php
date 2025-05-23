@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\ProduksiController;
+use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\QCController;
 use App\Http\Controllers\EngineeringController;
 use App\Http\Controllers\Api\RetailD4Controller;
 use App\Http\Controllers\Api\RetailD3Controller;
 use App\Http\Controllers\Api\RetailD5Controller;
+use App\Http\Controllers\Api\RetailD6Controller;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SensorBoilerController;
 use App\Http\Controllers\Api\SensorDailyTankController;
@@ -39,6 +41,7 @@ Route::prefix('prd')->middleware('auth')->group(function () {
     Route::get('/dept_head/dashboard_retaild4', [ProduksiController::class, 'dashboardProduksi_retaild4']);
     Route::get('/dept_head/dashboard_retaild3', [ProduksiController::class, 'dashboardProduksi_retaild3']);
     Route::get('/dept_head/dashboard_retaild5', [ProduksiController::class, 'dashboardProduksi_retaild5']);
+    Route::get('/dept_head/dashboard_retaild6', [ProduksiController::class, 'dashboardProduksi_retaild6']);
     Route::get('/dept_head/menu_retail', [ProduksiController::class, 'Menu_retail']);
     Route::get('/supervisor/dashboard', [ProduksiController::class, 'dashboardSupervisorProduksi']);
     Route::get('/foreman/dashboard', [ProduksiController::class, 'dashboardForemanProduksi']);
@@ -121,6 +124,8 @@ Route::prefix('eng')->middleware('auth')->group(function () {
     Route::get('/foreman/data_chemical', [EngineeringController::class, 'dataPemakaianChemicalForemanEng']);
 
 
+    Route::get('/operator/menu/air', [EngineeringController::class, 'menu_PemakaianAir']);
+    Route::get('/operator/data_air', [EngineeringController::class, 'dataPemakaianAir']);
     Route::get('/operator/pemakaian_air', [EngineeringController::class, 'formPemakaianAir']);
     Route::get('/operator/pemakaian_listrik', [EngineeringController::class, 'formPemakaianListrik']);
     Route::get('/operator/pemakaian_chemical', [EngineeringController::class, 'formPemakaianChemical']);
@@ -157,6 +162,21 @@ Route::prefix('eng')->middleware('auth')->group(function () {
 });
 //End eng
 
+
+//Warehouse
+Route::prefix('wh')->group(function () {
+    Route::get('/operator/dashboard', [WarehouseController::class, 'DashboardOperatorWarehouse']);
+    Route::get('/operator/detail/p2h/{id}', [WarehouseController::class, 'DetailP2HOperatorWarehouse']);
+
+
+    Route::get('/check-forms', [WarehouseController::class, 'index']);
+    Route::get('/check-forms/form-data', [WarehouseController::class, 'fetchFormData']);
+    Route::post('/check-forms', [WarehouseController::class, 'store']);
+    Route::get('/check-forms/{checkForm}', [WarehouseController::class, 'show']);
+    Route::put('/check-forms/{checkForm}', [WarehouseController::class, 'update']);
+    Route::delete('/check-forms/{checkForm}', [WarehouseController::class, 'destroy']);
+});
+//end Warehouse
 
 Route::prefix('dept_head')->group(function () {
     Route::view('/manajemen_user', 'user.dept_head.manage_user');
@@ -313,4 +333,17 @@ Route::prefix('retail')->group(function () {
     Route::get('/d5/mesin/stop', [RetailD5Controller::class, 'durasiOffMesinPerShift']);
     Route::get('/d5/nozzle-count', [RetailD5Controller::class, 'getNozzleCount']);
     Route::get('/d5/output/gagal/filling', [RetailD5Controller::class, 'getGagalFilling']);
+
+    //retail d6
+    Route::get('/d6/last', [RetailD6Controller::class, 'getLastData']);
+    Route::get('/d6/output/performance', [RetailD6Controller::class, 'getperformanceOutput']);
+    Route::get('/d6/output/performance/all_shift', [RetailD6Controller::class, 'getperformanceOutputAllShift']);
+    Route::get('/d6/mesin-stop-periods', [RetailD6Controller::class, 'getMesinStopPeriods']);
+    Route::get('/d6/average-main-speed', [RetailD6Controller::class, 'getAverageMainSpeed']);
+    Route::get('/d6/mesin/start/realtime', [RetailD6Controller::class, 'durasiStartMesinPerShiftRealtime']);
+    Route::get('/d6/mesin/start', [RetailD6Controller::class, 'durasiStartMesinPerShift']);
+    Route::get('/d6/mesin/stop/realtime', [RetailD6Controller::class, 'durasiStopMesinPerShiftRealtime']);
+    Route::get('/d6/mesin/stop', [RetailD6Controller::class, 'durasiOffMesinPerShift']);
+    Route::get('/d6/nozzle-count', [RetailD6Controller::class, 'getNozzleCount']);
+    Route::get('/d6/output/gagal/filling', [RetailD6Controller::class, 'getGagalFilling']);
 });
