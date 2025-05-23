@@ -42,6 +42,13 @@ class ProduksiController extends Controller
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
+    public function dashboardProduksi_retaild6()
+    {
+        if (Session::get('jabatan') == 'dept_head') {
+            return view('user.dept_head.Retail.dashboard_retaild6');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
 
     public function Menu_retail()
     {
@@ -69,25 +76,25 @@ class ProduksiController extends Controller
     public function dashboardForemanProduksi()
     {
         if (Session::get('jabatan') == 'foreman') {
-            return view('user.foreman.dashboard_produksi');
+            return view('user.foreman.prd.dashboard_prd');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
 
-    ///////////End View Supervisor ///////////////////
+    ///////////End View foreman ///////////////////
 
     /////////////// 🔹 Dashboard untuk Operator //////////////////
     public function dashboardOperatorProduksi()
     {
-        if (Session::get('jabatan') !== 'operator') {
-            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        if (Session::get('jabatan') == 'operator') {
+            return view('user.operator.prd.dashboard_prd');
         }
-        return view('user.operator.prd.dashboard_prd');
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
 
     public function showOperatorProduksi($id)
     {
-        if (Session::get('jabatan') !== 'operator') {
+        if (Session::get('jabatan') !== 'operator' || Session::get('jabatan') !== 'foreman') {
             return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
         $batch = AchievementBatch::with('details')->findOrFail($id);

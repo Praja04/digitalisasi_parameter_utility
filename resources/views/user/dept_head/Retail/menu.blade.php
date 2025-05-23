@@ -53,7 +53,7 @@
 
         <div class="row mt-4">
 
-            <div class="col-xl-4 col-lg-6">
+            <div class="col-xl-3 col-lg-6">
                 <div class="card ribbon-box right overflow-hidden">
                     <div class="card-body text-center p-4">
                         <div class="ribbon ribbon-success ribbon-shape trending-ribbon" id="ribbon_d3">
@@ -76,7 +76,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xl-4 col-lg-6">
+            <div class="col-xl-3 col-lg-6">
                 <div class="card ribbon-box right overflow-hidden">
                     <div class="card-body text-center p-4">
                         <div class="ribbon ribbon-success ribbon-shape trending-ribbon" id="ribbon_d4">
@@ -99,7 +99,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xl-4 col-lg-6">
+            <div class="col-xl-3 col-lg-6">
                 <div class="card ribbon-box right overflow-hidden">
                     <div class="card-body text-center p-4">
                         <div class="ribbon ribbon-success ribbon-shape trending-ribbon" id="ribbon_d5">
@@ -118,6 +118,29 @@
 
                         <div class="mt-4">
                             <a href="{{url('prd/dept_head/dashboard_retaild5')}}" class="btn btn-light w-100">Lihat Detail</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-6">
+                <div class="card ribbon-box right overflow-hidden">
+                    <div class="card-body text-center p-4">
+                        <div class="ribbon ribbon-success ribbon-shape trending-ribbon" id="ribbon_d6">
+                            <i class="ri-hand-heart-fill text-white align-bottom"></i>
+                            <span class="trending-ribbon-text" id="mesin_status_d6"></span>
+                        </div>
+                        <img src="{{asset('/assets/images/retail.png')}}" alt="" height="90">
+                        <h5 class="mb-1 mt-4"><a href="" class="link-primary">Retail Filling</a></h5>
+                        <p class="text-muted mb-4">Retail D6</p>
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <div>Performance Output : <p id="retail_d6_mesin"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <a href="{{url('prd/dept_head/dashboard_retaild6')}}" class="btn btn-light w-100">Lihat Detail</a>
                         </div>
                     </div>
                 </div>
@@ -218,6 +241,33 @@
                 dataType: "json",
                 success: function(data) {
                     $('#retail_d5_mesin').text(data.performance_output_percent + '%');
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching data:", error);
+                }
+            });
+
+            //Retail D6
+            $.ajax({
+                url: "{{ url('retail/d6/last') }}",
+                type: "GET",
+                dataType: "json",
+                success: function(data) {
+                    let status_mesin_d6 = data.start_mesin == 1 ? 'On' : 'Off';
+                    $('#ribbon_d6').removeClass('ribbon-success ribbon-danger').addClass(status_mesin_d6 === 'On' ? 'ribbon-success' : 'ribbon-danger');
+                    $('#mesin_status_d6').text(status_mesin_d6);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching data:", error);
+                }
+            });
+
+            $.ajax({
+                url: "{{ url('retail/d6/output/performance') }}",
+                type: "GET",
+                dataType: "json",
+                success: function(data) {
+                    $('#retail_d6_mesin').text(data.performance_output_percent + '%');
                 },
                 error: function(xhr, status, error) {
                     console.error("Error fetching data:", error);
