@@ -14,7 +14,13 @@ class PemakaianAirModel extends Model
     protected $primaryKey = 'id';
     public $timestamps = true;
 
-    protected $fillable = ['tanggal','pemakaian_liter','created_by','updated_at','created_at','notes'];
-
+    protected $fillable = [
+        'tanggal',
+        'pemakaian_liter_awal',
+        'pemakaian_liter_akhir',
+        'jenis_pemakaian',
+        'created_by',
+        'notes'
+    ];
 
 }

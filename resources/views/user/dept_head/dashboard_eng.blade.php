@@ -892,7 +892,7 @@
             data.forEach((item, i) => {
                 const iconList = ['btc', 'eth', 'ltc', 'aave', 'bnb', 'doge', 'usdt'];
                 const icon = iconList[i % iconList.length];
-
+                let total_pemakaian = item.pemakaian_awal - item.pemakaian_akhir;
                 list.append(`
                     <li class="list-group-item d-flex align-items-center">
                        
@@ -901,8 +901,8 @@
                             <p class="text-muted mb-0">${item.tanggal}</p>
                         </div>
                         <div class="flex-shrink-0 text-end">
-                            <h6 class="fs-14 mb-1">${parseFloat(item.pemakaian_liter).toLocaleString()} L</h6>
-                            <p class="text-success fs-12 mb-0">${item.notes ?? ''}</p>
+                            <h6 class="fs-14 mb-1">${total_pemakaian} L</h6>
+                            
                         </div>
                     </li>
                 `);

@@ -94,11 +94,11 @@ class ProduksiController extends Controller
 
     public function showOperatorProduksi($id)
     {
-        if (Session::get('jabatan') !== 'operator' || Session::get('jabatan') !== 'foreman') {
-            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        if (Session::get('jabatan') == 'operator' || Session::get('jabatan') == 'foreman') {
+            $batch = AchievementBatch::with('details')->findOrFail($id);
+            return view('user.operator.prd.show_prd', compact('batch'));
         }
-        $batch = AchievementBatch::with('details')->findOrFail($id);
-        return view('user.operator.prd.show_prd', compact('batch'));
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
 
     ////////////End View Operator /////////////////

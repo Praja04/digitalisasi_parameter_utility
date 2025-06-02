@@ -82,6 +82,13 @@ class EngineeringController extends Controller
 
     //operator
     // 🔹 Form untuk Operator
+    public function menu_PemakaianAir()
+    {
+        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        }
+        return view('user.operator.eng.menu_pemakaian_air');
+    }
     public function formPemakaianAir()
     {
         if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
@@ -89,6 +96,14 @@ class EngineeringController extends Controller
         }
         return view('user.operator.eng.form_pemakaian_air');
     }
+    public function dataPemakaianAir()
+    {
+        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        }
+        return view('user.operator.eng.data_pemakaian_air');
+    }
+
     public function formPemakaianListrik()
     {
         if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
@@ -118,7 +133,9 @@ class EngineeringController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'tanggal' => 'required|date',
-            'pemakaian_liter' => 'required|numeric',
+            'pemakaian_liter_awal' => 'required|numeric',
+            'pemakaian_liter_akhir' => 'required|numeric',
+            'jenis_pemakaian' => 'required|in:Outlet Storage RO,Outlet Storage RO Reject,Outlet Fresh Water 1,Outlet Fresh Water 2,WWTP - Boiler - Fasum3',
             'notes' => 'nullable|string|max:255',
         ]);
 
@@ -132,7 +149,9 @@ class EngineeringController extends Controller
         try {
             $air = new PemakaianAirModel();
             $air->tanggal = $request->input('tanggal');
-            $air->pemakaian_liter = $request->input('pemakaian_liter');
+            $air->pemakaian_awal = $request->input('pemakaian_liter_awal');
+            $air->pemakaian_akhir = $request->input('pemakaian_liter_akhir');
+            $air->jenis_pemakaian = $request->input('jenis_pemakaian');
             $air->created_by = Session::get('username');
             $air->notes = $request->input('notes');
             $air->save();
@@ -150,11 +169,14 @@ class EngineeringController extends Controller
     }
 
 
+
     public function updateAir(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'tanggal' => 'required|date',
-            'pemakaian_liter' => 'required|numeric',
+            'pemakaian_liter_awal' => 'required|numeric',
+            'pemakaian_liter_akhir' => 'required|numeric',
+            'jenis_pemakaian' => 'required|in:Outlet Storage RO,Outlet Storage RO Reject,Outlet Fresh Water 1,Outlet Fresh Water 2,WWTP - Boiler - Fasum3',
             'notes' => 'nullable|string|max:255',
         ]);
 
@@ -174,7 +196,9 @@ class EngineeringController extends Controller
             }
 
             $air->tanggal = $request->input('tanggal');
-            $air->pemakaian_liter = $request->input('pemakaian_liter');
+            $air->pemakaian_awal = $request->input('pemakaian_liter_awal');
+            $air->pemakaian_akhir = $request->input('pemakaian_liter_akhir');
+            $air->jenis_pemakaian = $request->input('jenis_pemakaian');
             $air->created_by = Session::get('username');
             $air->notes = $request->input('notes');
             $air->save();
@@ -190,6 +214,7 @@ class EngineeringController extends Controller
             ], 500);
         }
     }
+
 
 
     public function destroyAir($id)
