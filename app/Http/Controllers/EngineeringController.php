@@ -7,10 +7,12 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use App\Models\eng\PemakaianAirModel;
 use App\Models\eng\PemakaianListrikModel;
+use App\Models\eng\ListrikDetailModel;
 use App\Models\eng\PemakaianChemicalModel;
 use Illuminate\Support\Carbon;
 use App\Services\TelegramService;
 use App\Models\Boiler\ReadSensors_Boiler;
+use Illuminate\Support\Facades\DB;
 
 class EngineeringController extends Controller
 {
@@ -21,8 +23,8 @@ class EngineeringController extends Controller
     }
 
 
-   //View
-   ///depthead
+    //View
+    ///depthead
     public function dashboardEng()
     {
         if (Session::get('jabatan') == 'dept_head') {
@@ -111,6 +113,14 @@ class EngineeringController extends Controller
         }
         return view('user.operator.eng.form_pemakaian_listrik');
     }
+    public function DetailPemakaianListrik($id)
+    {
+        if (Session::get('jabatan') == 'operator' || Session::get('jabatan') == 'foreman') {
+            $listrik = PemakaianListrikModel::findOrFail($id);
+            return view('user.operator.eng.detail_pemakaian_listrik', compact('listrik'));
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
     public function formPemakaianChemical()
     {
         if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
@@ -168,8 +178,6 @@ class EngineeringController extends Controller
         }
     }
 
-
-
     public function updateAir(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -215,8 +223,6 @@ class EngineeringController extends Controller
         }
     }
 
-
-
     public function destroyAir($id)
     {
         try {
@@ -231,115 +237,6 @@ class EngineeringController extends Controller
 
             return response()->json([
                 'message' => 'Data pemakaian air berhasil dihapus.',
-                'id' => $id,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Gagal menghapus data.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    // buatkan crud untuk pemakaian listrik api nya
-    public function indexListrik()
-    {
-        $data = PemakaianListrikModel::orderBy('tanggal', 'desc')->get();
-        return response()->json($data);
-    }
-
-    public function storeListrik(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'tanggal' => 'required|date',
-            'pemakaian_kwh' => 'required|numeric',
-            'notes' => 'nullable|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validasi gagal.',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        try {
-            $data = new PemakaianListrikModel();
-            $data->tanggal = $request->input('tanggal');
-            $data->pemakaian_kwh = $request->input('pemakaian_kwh');
-            $data->created_by = Session::get('username');
-            $data->notes = $request->input('notes');
-            $data->save();
-
-            return response()->json([
-                'message' => 'Data pemakaian listrik berhasil ditambahkan.',
-                'data' => $data,
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Gagal menyimpan data.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-
-    public function updateListrik(Request $request, $id)
-    {
-        $validator = Validator::make($request->all(), [
-            'tanggal' => 'required|date',
-            'pemakaian_kwh' => 'required|numeric',
-            'notes' => 'nullable|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validasi gagal.',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        try {
-            $data = PemakaianListrikModel::find($id);
-            if (!$data) {
-                return response()->json([
-                    'message' => 'Data tidak ditemukan.',
-                ], 404);
-            }
-
-            $data->tanggal = $request->input('tanggal');
-            $data->pemakaian_kwh = $request->input('pemakaian_kwh');
-            $data->created_by = Session::get('username');
-            $data->notes = $request->input('notes');
-            $data->save();
-
-            return response()->json([
-                'message' => 'Data pemakaian listrik berhasil diupdate.',
-                'data' => $data,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Gagal mengupdate data.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-
-    public function destroyListrik($id)
-    {
-        try {
-            $data = PemakaianListrikModel::find($id);
-            if (!$data) {
-                return response()->json([
-                    'message' => 'Data tidak ditemukan.',
-                ], 404);
-            }
-
-            $data->delete();
-
-            return response()->json([
-                'message' => 'Data pemakaian listrik berhasil dihapus.',
                 'id' => $id,
             ]);
         } catch (\Exception $e) {
@@ -556,32 +453,6 @@ class EngineeringController extends Controller
         return response()->json($data);
     }
 
-    //api listrik
-
-    public function getPemakaianListrik($mode)
-    {
-        $query = PemakaianListrikModel::query();
-
-        if ($mode == 'harian') {
-            $query->whereDate('tanggal', Carbon::today());
-        } elseif ($mode == 'mingguan') {
-            $query->whereBetween('tanggal', [
-                Carbon::now()->subDays(7)->startOfDay(),
-                Carbon::now()->endOfDay()
-            ]);
-        } elseif ($mode == 'bulanan') {
-            $query->whereMonth('tanggal', Carbon::now()->month);
-        } elseif ($mode === 'terakhir') {
-            $data = PemakaianListrikModel::orderBy('tanggal', 'desc')->limit(7)->get();
-            return response()->json($data);
-        }
-
-
-        $data = $query->orderBy('tanggal', 'desc')->limit(7)->get();
-
-        return response()->json($data);
-    }
-
 
     public function Notif_boiler()
     {
@@ -610,5 +481,152 @@ class EngineeringController extends Controller
         $this->telegramService->sendMessage($message);
 
         return response()->json(['message' => 'send success'], 200);
+    }
+
+    // crud listrik
+    public function data_listrik()
+    {
+
+        $data = PemakaianListrikModel::orderBy('waktu', 'desc')
+            ->get();
+
+        return response()->json($data);
+    }
+
+
+    public function storeListrik(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'waktu' => 'required',
+            'operator' => 'required',
+        ]);
+
+        try {
+            // Simpan batch baru
+            $nama_user = Session::get('username');
+            $batch = PemakaianListrikModel::create([
+                'waktu' => $request->waktu,
+                'operator' => $request->operator,
+                // 'operator' => $nama_user, 
+            ]);
+
+            return response()->json(['success' => true, 'data' => $batch]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function updateListrik(Request $request, $id)
+    {
+        $data = PemakaianListrikModel::findOrFail($id);
+
+        $request->validate([
+            'waktu' => 'required',
+            'operator' => 'required',
+
+        ]);
+
+        $data->update([
+            'waktu' => $request->waktu,
+            'operator' => $request->operator,
+
+        ]);
+
+        return response()->json([
+            'message' => 'Data berhasil diperbarui!',
+        ]);
+    }
+
+    public function data_listrik_detail($id)
+    {
+
+        $data = PemakaianListrikModel::with('details')->findOrFail($id);
+        $data_detail = $data->details;
+        return response()->json($data_detail);
+    }
+
+    public function storeListrikDetail(Request $request, $id)
+    {
+
+        $listrik = PemakaianListrikModel::findOrFail($id);
+
+        $request->validate([
+            'panel_type' => 'required',
+            'volt' => 'required',
+            'a' => 'required',
+            'kw' => 'required',
+            'mwh' => 'required',
+        ]);
+
+        // Cek apakah shift sudah ada
+        $existingpanel = ListrikDetailModel::where('id_listrik', $listrik->id)
+            ->where('panel_type', $request->panel_type)
+            ->exists();
+
+        if ($existingpanel) {
+            return response()->json([
+                'message' => 'Type panel sudah ada datanya untuk tanggal ini!',
+                'status' => 'error'
+            ], 400);
+        }
+
+        $listrikDetail = ListrikDetailModel::create([
+            'id_listrik' => $id,
+            'panel_type' => $request->panel_type,
+            'volt' => $request->volt,
+            'a' => $request->a,
+            'kw' => $request->kw,
+            'mwh' => $request->mwh,
+        ]);
+
+        $totalDetail = ListrikDetailModel::where('id_listrik', $id)->count();
+
+        if ($totalDetail === 16) {
+            // Update status batch menjadi completed
+            PemakaianListrikModel::where('id', $id)->update(['status' => 'completed']);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data pemakaian berhasil ditambahkan!',
+            'data' => $listrikDetail
+        ]);
+    }
+
+    public function deletelistrikDetail($id)
+    {
+        $data = ListrikDetailModel::findOrFail($id);
+        $data->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data listrik ini berhasil dihapus!'
+        ]);
+    }
+
+    // update shift
+    public function updatelistrikDetail(Request $request, $id)
+    {
+        $data = ListrikDetailModel::findOrFail($id);
+
+        $request->validate([
+            'panel_type' => 'required',
+            'volt' => 'required',
+            'a' => 'required',
+            'kw' => 'required',
+            'mwh' => 'required',
+        ]);
+
+        $data->update([
+            'panel_type' => $request->panel_type,
+            'volt' => $request->volt,
+            'a' => $request->a,
+            'kw' => $request->kw,
+            'mwh' => $request->mwh,
+        ]);
+
+        return response()->json([
+            'message' => 'Data berhasil diperbarui!',
+        ]);
     }
 }

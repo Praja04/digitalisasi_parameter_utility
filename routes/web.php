@@ -43,6 +43,7 @@ Route::prefix('prd')->middleware('auth')->group(function () {
     Route::get('/dept_head/dashboard_retaild5', [ProduksiController::class, 'dashboardProduksi_retaild5']);
     Route::get('/dept_head/dashboard_retaild6', [ProduksiController::class, 'dashboardProduksi_retaild6']);
     Route::get('/dept_head/menu_retail', [ProduksiController::class, 'Menu_retail']);
+    Route::get('/dept_head/all/retail', [ProduksiController::class, 'Dashboard_all_retail']);
     Route::get('/supervisor/dashboard', [ProduksiController::class, 'dashboardSupervisorProduksi']);
     Route::get('/foreman/dashboard', [ProduksiController::class, 'dashboardForemanProduksi']);
     Route::get('/operator/dashboard', [ProduksiController::class, 'dashboardOperatorProduksi']);
@@ -136,18 +137,22 @@ Route::prefix('eng')->middleware('auth')->group(function () {
     Route::put('/data/air/{id}/update', [EngineeringController::class, 'updateAir'])->name('air.update'); // Update status
     Route::delete('/data/air/{id}', [EngineeringController::class, 'destroyAir'])->name('air.destroy'); // Hapus data
 
-    // CRUD listrik
-    Route::get('/data/listrik', [EngineeringController::class, 'indexListrik'])->name('listrik.index'); // Ambil semua data
-    Route::post('/data/listrik/store', [EngineeringController::class, 'storeListrik'])->name('listrik.store'); // Simpan data baru
-    Route::put('/data/listrik/{id}/update', [EngineeringController::class, 'updateListrik'])->name('listrik.update'); // Update status
-    Route::delete('/data/listrik/{id}', [EngineeringController::class, 'destroyListrik'])->name('listrik.destroy'); // Hapus data
-
     // CRUD chemical
     Route::get('/data/chemical', [EngineeringController::class, 'indexChemical'])->name('chemical.index'); // Ambil semua data
     Route::post('/data/chemical/store', [EngineeringController::class, 'storeChemical'])->name('chemical.store'); // Simpan data baru
     Route::put('/data/chemical/{id}/update', [EngineeringController::class, 'updateChemical'])->name('chemical.update'); // Update status
     Route::delete('/data/chemical/{id}', [EngineeringController::class, 'destroyChemical'])->name('chemical.destroy'); // Hapus data
 
+    // CRUD listrik
+    Route::get('/data/listrik', [EngineeringController::class, 'data_listrik'])->name('listrik.data'); // Ambil semua data
+    Route::post('/data/listrik/store', [EngineeringController::class, 'storeListrik'])->name('listrik.store'); // Simpan data baru
+    Route::put('/data/listrik/update/{id}', [EngineeringController::class, 'updateListrik'])->name('listrik.update');
+    Route::get('/data/listrik/detail/{id}', [EngineeringController::class, 'DetailPemakaianListrik'])->name('listrik.data_detail'); // Ambil semua data
+    Route::get('/api/listrik/detail/{id}', [EngineeringController::class, 'data_listrik_detail'])->name('listrik.data_detail_api'); // Ambil semua data
+    Route::post('/data/listrik/store/detail/{id}', [EngineeringController::class, 'storeListrikDetail'])->name('listrik.store_detail'); // Simpan data baru
+    Route::post('/data/listrik/update/detail/{id}', [EngineeringController::class, 'updatelistrikDetail'])->name('listrik.update_detail'); // Update status
+    Route::delete('/data/listrik/delete/detail/{id}', [EngineeringController::class, 'deletelistrikDetail'])->name('listrik.destroy_detail'); // Hapus data
+    
     // api pemakaian chemical
     Route::get('/api/chemical/harian', [EngineeringController::class, 'ApiChemicalPerHari']);
     Route::get('/api/chemical/mingguan', [EngineeringController::class, 'ApiChemicalPerMinggu']);
@@ -159,6 +164,8 @@ Route::prefix('eng')->middleware('auth')->group(function () {
 
     //send tele bot
     Route::get('send/tele', [EngineeringController::class, 'Notif_boiler']);
+
+    
 });
 //End eng
 

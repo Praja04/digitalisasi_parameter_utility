@@ -20,5 +20,19 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
+        if (!function_exists('getSatuan')) {
+            function getSatuan($type)
+            {
+                return match ($type) {
+                    'V-AVG' => 'Volt',
+                    'I-Avg' => 'A',
+                    'P-Tol' => 'kW',
+                    'E-Del' => 'MWh',
+                    default => '',
+                };
+            }
+        }
     }
+
+    
 }
