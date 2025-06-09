@@ -57,6 +57,13 @@ class ProduksiController extends Controller
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
+    public function Dashboard_all_retail()
+    {
+        if (Session::get('jabatan') == 'dept_head') {
+            return view('user.dept_head.Retail.dashboard_all_mesin');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
 
     ///////////End View Dept Head ///////////////////
 
@@ -94,11 +101,11 @@ class ProduksiController extends Controller
 
     public function showOperatorProduksi($id)
     {
-        if (Session::get('jabatan') !== 'operator' || Session::get('jabatan') !== 'foreman') {
-            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        if (Session::get('jabatan') == 'operator' || Session::get('jabatan') == 'foreman') {
+            $batch = AchievementBatch::with('details')->findOrFail($id);
+            return view('user.operator.prd.show_prd', compact('batch'));
         }
-        $batch = AchievementBatch::with('details')->findOrFail($id);
-        return view('user.operator.prd.show_prd', compact('batch'));
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
 
     ////////////End View Operator /////////////////

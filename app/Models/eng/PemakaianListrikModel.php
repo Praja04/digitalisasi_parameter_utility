@@ -14,7 +14,10 @@ class PemakaianListrikModel extends Model
     protected $primaryKey = 'id';
     public $timestamps = true;
 
-    protected $fillable = ['tanggal', 'pemakaian_kwh', 'created_by', 'updated_at', 'created_at', 'notes'];
+    protected $fillable = [ 'waktu', 'operator','status'];
 
-
+    public function details()
+    {
+        return $this->hasMany(ListrikDetailModel::class,'id_listrik' );
+    }
 }

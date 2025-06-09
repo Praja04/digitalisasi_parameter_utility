@@ -36,7 +36,7 @@ class QCController extends Controller
     public function dashboardForemanQC()
     {
         if (Session::get('jabatan') == 'foreman' && Session::get('departemen') == 'qc') {
-            return view('user.foreman.dashboard_qc');
+            return view('user.foreman.qc.dashboard_qc');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }

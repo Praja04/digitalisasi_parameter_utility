@@ -61,11 +61,31 @@
                             <span class="trending-ribbon-text" id="mesin_status_d3"></span>
                         </div>
                         <img src="{{asset('/assets/images/retail.png')}}" alt="" height="90">
-                        <h5 class="mb-1 mt-4"><a href="" class="link-primary">Retail Filling</a></h5>
-                        <p class="text-muted mb-4">Retail D3</p>
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8">
-                                <div>Performance Output : <p id="retail_d3_mesin"></p>
+                        <h5 class="mb-1 mt-4"><a href="" class="link-primary">Retail Filling D3</a></h5>
+                        <p class="text-muted mb-4">Performance Output</p>
+                        <div class="px-2 py-2 mt-1">
+                            <p class="mb-1">Shift 1 :
+                                <span id="total_counter_d3_shift1"></span> <span class="float-end" id="retail_d3_mesin_shift1"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" id="progress_d3_shift1" role="progressbar">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 2 :
+                                <span id="total_counter_d3_shift2"></span>
+                                <span class="float-end" id="retail_d3_mesin_shift2"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d3_shift2">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 3 :
+                                <span id="total_counter_d3_shift3"></span> <span class="float-end" id="retail_d3_mesin_shift3"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d3_shift3">
                                 </div>
                             </div>
                         </div>
@@ -84,15 +104,34 @@
                             <span class="trending-ribbon-text" id="mesin_status"></span>
                         </div>
                         <img src="{{asset('/assets/images/retail.png')}}" alt="" height="90">
-                        <h5 class="mb-1 mt-4"><a href="" class="link-primary">Retail Filling</a></h5>
-                        <p class="text-muted mb-4">Retail D4</p>
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8">
-                                <div>Performance Output : <p id="retail_d4_mesin"></p>
+                        <h5 class="mb-1 mt-4"><a href="" class="link-primary">Retail Filling D4</a></h5>
+                        <p class="text-muted mb-4">Performance Output</p>
+                        <div class="px-2 py-2 mt-1">
+                            <p class="mb-1">Shift 1 :
+                                <span id="total_counter_d4_shift1"></span> <span class="float-end" id="retail_d4_mesin_shift1"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d4_shift1">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 2 :
+                                <span id="total_counter_d4_shift2"></span>
+                                <span class="float-end" id="retail_d4_mesin_shift2"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d4_shift2">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 3 :
+                                <span id="total_counter_d4_shift3"></span> <span class="float-end" id="retail_d4_mesin_shift3"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d4_shift3">
                                 </div>
                             </div>
                         </div>
-
                         <div class="mt-4">
                             <a href="{{url('prd/dept_head/dashboard_retaild4')}}" class="btn btn-light w-100">Lihat Detail</a>
                         </div>
@@ -107,11 +146,31 @@
                             <span class="trending-ribbon-text" id="mesin_status_d5"></span>
                         </div>
                         <img src="{{asset('/assets/images/retail.png')}}" alt="" height="90">
-                        <h5 class="mb-1 mt-4"><a href="" class="link-primary">Retail Filling</a></h5>
-                        <p class="text-muted mb-4">Retail D5</p>
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8">
-                                <div>Performance Output : <p id="retail_d5_mesin"></p>
+                        <h5 class="mb-1 mt-4"><a href="" class="link-primary">Retail Filling D5</a></h5>
+                        <p class="text-muted mb-4">Performance Output</p>
+                        <div class="px-2 py-2 mt-1">
+                            <p class="mb-1">Shift 1 :
+                                <span id="total_counter_d5_shift1"></span> <span class="float-end" id="retail_d5_mesin_shift1"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d5_shift1">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 2 :
+                                <span id="total_counter_d5_shift2"></span>
+                                <span class="float-end" id="retail_d5_mesin_shift2"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d5_shift2">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 3 :
+                                <span id="total_counter_d5_shift3"></span> <span class="float-end" id="retail_d5_mesin_shift3"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d5_shift3">
                                 </div>
                             </div>
                         </div>
@@ -130,11 +189,31 @@
                             <span class="trending-ribbon-text" id="mesin_status_d6"></span>
                         </div>
                         <img src="{{asset('/assets/images/retail.png')}}" alt="" height="90">
-                        <h5 class="mb-1 mt-4"><a href="" class="link-primary">Retail Filling</a></h5>
-                        <p class="text-muted mb-4">Retail D6</p>
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8">
-                                <div>Performance Output : <p id="retail_d6_mesin"></p>
+                        <h5 class="mb-1 mt-4"><a href="" class="link-primary">Retail Filling D6</a></h5>
+                        <p class="text-muted mb-4">Performance Output</p>
+                        <div class="px-2 py-2 mt-1">
+                            <p class="mb-1">Shift 1 :
+                                <span id="total_counter_d6_shift1"></span> <span class="float-end" id="retail_d6_mesin_shift1"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d6_shift1">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 2 :
+                                <span id="total_counter_d6_shift2"></span>
+                                <span class="float-end" id="retail_d6_mesin_shift2"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d6_shift2">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 3 :
+                                <span id="total_counter_d6_shift3"></span> <span class="float-end" id="retail_d6_mesin_shift3"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d6_shift3">
                                 </div>
                             </div>
                         </div>
@@ -154,7 +233,19 @@
 <script>
     $(document).ready(function() {
 
-        function updateDateData() {
+        async function fetchJSON(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                return null;
+            }
+        }
+
+        async function updateDateData() {
+            // Format tanggal
             let now = new Date();
             let formattedDate = now.toLocaleDateString("en-GB", {
                 day: "2-digit",
@@ -163,120 +254,57 @@
                 hour: "2-digit",
                 minute: "2-digit"
             });
-
             $('#date-picker').val(formattedDate);
 
-            // Retail D3
-            $.ajax({
-                url: "{{ url('retail/d3/last') }}",
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    let status_mesin_d3 = data.start_mesin == 1 ? 'On' : 'Off';
-                    $('#ribbon_d3').removeClass('ribbon-success ribbon-danger').addClass(status_mesin_d3 === 'On' ? 'ribbon-success' : 'ribbon-danger');
-                    $('#mesin_status_d3').text(status_mesin_d3);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching data:", error);
-                }
-            });
+            // Array mesin
+            const mesinList = ['d3', 'd4', 'd5', 'd6'];
 
-            $.ajax({
-                url: "{{ url('retail/d3/output/performance') }}",
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    $('#retail_d3_mesin').text(data.performance_output_percent + '%');
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching data:", error);
-                }
-            });
+            for (const mesin of mesinList) {
+                // Ambil status mesin
+                const statusData = await fetchJSON(`{{ url('retail/${mesin}/last') }}`.replace('${mesin}', mesin));
+                if (statusData) {
+                    const status = statusData.start_mesin == 1 ? 'On' : 'Off';
+                    $(`#ribbon_${mesin}`).removeClass('ribbon-success ribbon-danger').addClass(status === 'On' ? 'ribbon-success' : 'ribbon-danger');
 
-            // Retail D4
-            $.ajax({
-                url: "{{ url('retail/d4/last') }}",
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    let status_mesin_d4 = data.start_mesin == 1 ? 'On' : 'Off';
-                    $('#ribbon_d4').removeClass('ribbon-success ribbon-danger').addClass(status_mesin_d4 === 'On' ? 'ribbon-success' : 'ribbon-danger');
-                    $('#mesin_status').text(status_mesin_d4);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching data:", error);
+                    // Penyesuaian id mesin_status
+                    if (mesin === 'd4') {
+                        $('#mesin_status').text(status); // khusus d4 pakai id ini
+                    } else {
+                        $(`#mesin_status_${mesin}`).text(status);
+                    }
                 }
-            });
 
-            $.ajax({
-                url: "{{ url('retail/d4/output/performance') }}",
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    $('#retail_d4_mesin').text(data.performance_output_percent + '%');
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching data:", error);
-                }
-            });
+                // Ambil performance mesin
+                const perfData = await fetchJSON(`{{ url('retail/${mesin}/output/performance/all_shift?filter=realtime') }}`.replace('${mesin}', mesin));
+                if (perfData && Array.isArray(perfData)) {
+                    perfData.forEach(item => {
+                        let shiftNum = '';
+                        if (item.shift.includes('1')) shiftNum = 'shift1';
+                        else if (item.shift.includes('2')) shiftNum = 'shift2';
+                        else if (item.shift.includes('3')) shiftNum = 'shift3';
+                        else return;
 
-            //Retail D5
-            $.ajax({
-                url: "{{ url('retail/d5/last') }}",
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    let status_mesin_d4 = data.start_mesin == 1 ? 'On' : 'Off';
-                    $('#ribbon_d5').removeClass('ribbon-success ribbon-danger').addClass(status_mesin_d4 === 'On' ? 'ribbon-success' : 'ribbon-danger');
-                    $('#mesin_status_d5').text(status_mesin_d4);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching data:", error);
-                }
-            });
+                        // Total Counter
+                        $(`#total_counter_${mesin}_${shiftNum}`).text(item.total_counter ?? '-');
 
-            $.ajax({
-                url: "{{ url('retail/d5/output/performance') }}",
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    $('#retail_d5_mesin').text(data.performance_output_percent + '%');
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching data:", error);
+                        // Nama Mesin (jika tersedia di item)
+                        $(`#retail_${mesin}_mesin_${shiftNum}`).text((item.performance_output_percent + '%') ?? '');
+                        const progress = item.performance_output_percent ?? 0;
+                        $(`#progress_${mesin}_${shiftNum}`)
+                            .css('width', `${progress}%`)
+                            .attr('aria-valuenow', progress)
+                            .attr('aria-valuemax', 100); // max selalu 100%
+                    });
                 }
-            });
 
-            //Retail D6
-            $.ajax({
-                url: "{{ url('retail/d6/last') }}",
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    let status_mesin_d6 = data.start_mesin == 1 ? 'On' : 'Off';
-                    $('#ribbon_d6').removeClass('ribbon-success ribbon-danger').addClass(status_mesin_d6 === 'On' ? 'ribbon-success' : 'ribbon-danger');
-                    $('#mesin_status_d6').text(status_mesin_d6);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching data:", error);
-                }
-            });
 
-            $.ajax({
-                url: "{{ url('retail/d6/output/performance') }}",
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    $('#retail_d6_mesin').text(data.performance_output_percent + '%');
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching data:", error);
-                }
-            });
+            }
         }
 
         updateDateData();
     });
 </script>
+
+
 
 @endsection

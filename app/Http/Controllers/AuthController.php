@@ -17,18 +17,18 @@ class AuthController extends Controller
             'dept_head' => '/eng/dept_head/dashboard',
             'supervisor' => '/eng/supervisor/dashboard',
             'foreman' => '/eng/foreman/dashboard', // <-- sesuaikan
-            'operator' => '/eng/operator/pemakaian_air',
+            'operator' => '/eng/operator/menu/air',
         ],
         'qc' => [
             'dept_head' => '/qc/dept_head/dashboard',
             'supervisor' => '/qc/supervisor/dashboard',
-            'foreman' => '/qc/operator/dashboard',
+            'foreman' => '/qc/foreman/dashboard',
             'operator' => '/qc/operator/dashboard',
         ],
         'produksi' => [
             'dept_head' => '/prd/dept_head/dashboard',
             'supervisor' => '/prd/supervisor/dashboard',
-            'foreman' => '/prd/operator/dashboard',
+            'foreman' => '/prd/foreman/dashboard',
             'operator' => '/prd/operator/dashboard',
         ],
         'warehouse' => [
