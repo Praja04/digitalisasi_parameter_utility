@@ -19,12 +19,8 @@
             <div class="col-lg-12">
                 <div class="card" id="apiKeyList">
                     <div class="card-header d-flex align-items-center">
-                        <h5 class="card-title flex-grow-1 mb-0">Form Pemakaian Air</h5>
-                        <div class="d-flex gap-1 flex-wrap">
-                            <button type="button" class="btn btn-info create-btn" data-bs-toggle="modal" data-bs-target="#pemakaian-modal">
-                                <i class="ri-add-line align-bottom me-1"></i> Catat Pemakaian Air
-                            </button>
-                        </div>
+                        <h5 class="card-title flex-grow-1 mb-0">Data Pemakaian Air</h5>
+                       
                     </div>
                     <div class="card-body">
                         <div>
@@ -41,10 +37,12 @@
                                                     <button id="apply-filter" class="btn btn-sm btn-primary mt-2 w-100">Terapkan</button>
                                                 </div>
                                             </th>
-                                            <th scope="col">Pemakaian Air (Liter)</th>
+                                            <th scope="col">Pemakaian Air Awal (liter)</th>
+                                            <th scope="col">Pemakaian Air Akhir (liter)</th>
+                                            <th scope="col">Area</th>
                                             <th scope="col">Notes</th>
                                             <th scope="col">Created By</th>
-                                            <th scope="col">Aksi</th>
+                                            <!-- <th scope="col">Aksi</th> -->
                                         </tr>
                                     </thead>
                                     <tbody class="list form-check-all text-center" id="airList"></tbody>
@@ -69,40 +67,6 @@
     </div>
 </div>
 
-<div class="modal fade" id="pemakaian-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Tambahkan Data Pemakaian Air</h5>
-                <button type="button" class="btn-close" id="close-modal" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formTambahPemakaianAir" autocomplete="off">
-                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    <div id="api-key-error-msg" class="alert alert-danger py-2 d-none"></div>
-
-                    <div class="mb-3">
-                        <label for="tanggal" class="form-label">Tanggal <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control" id="tanggal">
-                    </div>
-                    <div class="mb-3">
-                        <label for="pemakaian_liter" class="form-label">Pemakaian Air (Liter)<span class="text-danger">*</span></label>
-                        <input class="form-control" type="number" step="0.01" id="pemakaian_liter" placeholder="Masukkan nilai dalam liter...">
-                    </div>
-                    <div class="mb-3">
-                        <label for="notes" class="form-label">Notes <span class="text-danger">*</span></label>
-                        <input class="form-control" type="text" id="notes" placeholder="opsional...">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <div class="hstack gap-2 justify-content-end">
-                    <button type="button" class="btn btn-primary" id="save-button">Save Changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script>
     $(document).ready(function() {
@@ -115,19 +79,7 @@
 
         let currentEditId = null;
 
-        $(document).on("click", ".update-button", function() {
-            currentEditId = $(this).data("id");
-            const item = allData.find((x) => x.id === currentEditId);
-
-            if (item) {
-                $("#tanggal").val(item.tanggal);
-                $("#pemakaian_liter").val(item.pemakaian_liter);
-                $("#notes").val(item.notes);
-                $("#pemakaian-modal").modal("show");
-            }
-        });
-
-
+       
         // 🔹 Ambil Data dari Server
         function loadData() {
             $.ajax({
@@ -146,98 +98,10 @@
             });
         }
 
-        // 🔹 Simpan Data Baru
-        $("#save-button").on("click", function() {
-            let formData = {
-                _token: csrfToken,
-                tanggal: $("#tanggal").val(),
-                pemakaian_liter: $("#pemakaian_liter").val(),
-                notes: $("#notes").val() || "-"
-            };
-
-            let method = currentEditId ? "PUT" : "POST";
-            let url = currentEditId ?
-                `${baseUrl}/${currentEditId}/update` :
-                `${baseUrl}/store`;
-
-            $.ajax({
-                url: url,
-                type: method,
-                data: JSON.stringify(formData),
-                contentType: "application/json",
-                headers: {
-                    "X-CSRF-TOKEN": csrfToken,
-                },
-                success: function(response) {
-                    $("#pemakaian-modal").modal("hide");
-                    currentEditId = null;
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: response.message || 'Data berhasil disimpan.',
-                        timer: 2000,
-                        showConfirmButton: false
-                    }).then(() => {
-                        location.reload();
-                    });
-                },
-                error: function(xhr) {
-                    console.error("Gagal:", xhr.responseJSON);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal!',
-                        text: response.message || 'Data gagal disimpan.',
-                    });
-
-                },
-            });
-        });
+       
 
 
-        // 🔹 Hapus Data
-        $(document).on("click", ".delete-button", function() {
-            let id = $(this).data("id");
-            Swal.fire({
-                title: 'Yakin ingin hapus data ini?',
-                text: "Data tidak bisa dikembalikan!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Lanjut hapus
-                    $.ajax({
-                        url: baseUrl + "/" + id,
-                        type: "DELETE",
-                        headers: {
-                            "X-CSRF-TOKEN": csrfToken,
-                        },
-                        success: function(response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Dihapus!',
-                                text: response.message || 'Data berhasil dihapus.',
-                                timer: 2000,
-                                showConfirmButton: false
-                            });
-                            loadData();
-                        },
-                        error: function(xhr, response) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal!',
-                                text: response.message || 'Data gagal dihapus.',
-                            });
-                        },
-                    });
-                }
-            });
-
-        });
-
+       
         // 🔹 Update Tampilan Tabel
         function updateTable() {
             let tbody = $("#airList");
@@ -257,17 +121,17 @@
                   <tr>
                      <td>${rowNumber}</td>
                      <td>${new Date(item.created_at).toLocaleDateString()}</td>
-                     <td>${item.pemakaian_liter} </td>
+                     <td>${item.pemakaian_awal} </td>
+                     <td>${item.pemakaian_akhir} </td>
+                     <td>${item.jenis_pemakaian} </td>
                      <td>${item.notes} </td>
                      <td>${item.created_by} </td>
-                     <td>
-                        <button class="btn btn-danger btn-sm delete-button" data-id="${item.id}">Hapus</button>
-                        <button class="btn btn-warning btn-sm update-button" data-id="${item.id}">Edit</button>
-                     </td>
+                     
                   </tr>
                `;
                     tbody.append(row);
                 });
+
             }
         }
 
@@ -354,12 +218,6 @@
             applyFilter();
             $("#filter-date-container").addClass("d-none");
         });
-
-        $("#pemakaian-modal").on("hidden.bs.modal", function() {
-            $("#formTambahPemakaianAir")[0].reset();
-            currentEditId = null;
-        });
-
 
         // 🔹 Load Data Saat Halaman Dibuka
         loadData();

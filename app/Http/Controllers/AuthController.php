@@ -32,10 +32,10 @@ class AuthController extends Controller
             'operator' => '/prd/operator/dashboard',
         ],
         'warehouse' => [
-            'dept_head' => '/warehouse/dept_head/dashboard',
-            'supervisor' => '/warehouse/supervisor/dashboard',
-            'foreman' => '/warehouse/operator/dashboard',
-            'operator' => '/warehouse/operator/dashboard',
+            'dept_head' => '/wh/dept_head/dashboard',
+            'supervisor' => '/wh/supervisor/dashboard',
+            'foreman' => '/wh/foreman/dashboard',
+            'operator' => '/wh/operator/dashboard',
         ],
     ];
 

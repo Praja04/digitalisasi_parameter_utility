@@ -920,17 +920,23 @@
         // api pemakaian listrik
         function loadListrikData(mode = 'terakhir') {
             let apiUrl = mode === 'terakhir' ?
-                "{{url('eng/api/listrik/terakhir')}}" :
-                "{{url('eng/api/listrik/')}}" + $mode;
+                "{{ url('eng/api/listrik/terakhir') }}" :
+                "{{ url('eng/api/listrik') }}/" + mode;
 
             $.ajax({
                 url: apiUrl,
                 dataType: 'json',
-                success: function(data) {
-                    renderListrikList(data);
+                success: function(response) {
+                    if (response.success) {
+                        renderListrikList(response.data);
+                    } else {
+                        console.warn('Respon gagal:', response);
+                        renderListrikList([]);
+                    }
                 },
                 error: function(_xhr, status, error) {
                     console.error('Gagal load data listrik:', status, error);
+                    renderListrikList([]);
                 }
             });
         }
@@ -939,27 +945,37 @@
             let list = $('#list-listrik-pemakaian');
             list.empty();
 
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
                 list.append(`<li class="list-group-item text-center text-muted">Tidak ada data.</li>`);
                 return;
             }
 
-            data.forEach((item, i) => {
+            data.forEach(item => {
+                // Hitung total mwh dari relasi details
+                let totalMwh = 0;
+                if (item.details && item.details.length > 0) {
+                    item.details.forEach(detail => {
+                        totalMwh += parseFloat(detail.mwh) || 0;
+                    });
+                }
 
+                // Gunakan item.tanggal, bukan item.waktu
+                let tanggal = item.tanggal;
+
+                let operator = item.operator ?? '-';
 
                 list.append(`
-                    <li class="list-group-item d-flex align-items-center">
-                       
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="fs-14 mb-1">Pemakaian Lsitrik</h6>
-                            <p class="text-muted mb-0">${item.tanggal}</p>
-                        </div>
-                        <div class="flex-shrink-0 text-end">
-                            <h6 class="fs-14 mb-1">${parseFloat(item.pemakaian_kwh).toLocaleString()} Kwh</h6>
-                            <p class="text-success fs-12 mb-0">${item.notes ?? ''}</p>
-                        </div>
-                    </li>
-                `);
+            <li class="list-group-item d-flex align-items-center">
+                <div class="flex-grow-1 ms-3">
+                    <h6 class="fs-14 mb-1">Pemakaian Listrik - Operator: ${operator}</h6>
+                    <p class="text-muted mb-0">${tanggal}</p>
+                </div>
+                <div class="flex-shrink-0 text-end">
+                    <h6 class="fs-14 mb-1">${totalMwh.toLocaleString()} Kwh</h6>
+                    <p class="text-success fs-12 mb-0">Total Panel: ${item.details.length}</p>
+                </div>
+            </li>
+        `);
             });
         }
 
@@ -973,14 +989,7 @@
 
 
         function fetchData_abnormal(filter = 'today', start = '', end = '') {
-            // Swal.fire({
-            //     title: 'Loading data...',
-            //     text: 'Harap tunggu',
-            //     allowOutsideClick: false,
-            //     didOpen: () => {
-            //         Swal.showLoading();
-            //     }
-            // });
+
 
             $.ajax({
                 url: '{{ url("sensor/rhtemp") }}',
