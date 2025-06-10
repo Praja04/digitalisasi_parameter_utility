@@ -161,7 +161,7 @@
                         <td>${item.dept}</td>
                         <td>${item.status}</td>
                         <td>
-                          <a href="{{url('/wh/p2h/${item.id}/detail')}}" class="btn btn-success btn-sm">Detail</a>
+                          <a href="{{url('wh/foreman/detail/p2h/${item.id}')}}" class="btn btn-success btn-sm">Detail</a>
                           <button class="btn btn-warning btn-sm edit-btn" data-id="${item.id}">Edit</button>
                             <button class="btn btn-danger btn-sm delete-btn" data-id="${item.id}">Hapus</button>
                         </td>

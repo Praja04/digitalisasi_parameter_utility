@@ -90,7 +90,7 @@
     <script src="{{ asset('material/assets/libs/aos/aos.js') }}"></script>
     <script src="{{ asset('material/assets/js/pages/animation-aos.init.js') }}"></script>
     <script src="{{ asset('material/assets/js/app.js') }}"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         $(document).ready(function() {
             // Logout button handler

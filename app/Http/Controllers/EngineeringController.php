@@ -56,30 +56,50 @@ class EngineeringController extends Controller
 
     //foreman
 
-    public function dashboardForemanEng()
+    public function menu_PemakaianAirforeman()
     {
-        if (Session::get('jabatan') == 'foreman') {
-            return view('user.foreman.eng.data_pemakaian_air');
+        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        }
+        return view('user.operator.eng.menu_pemakaian_air');
+    }
+    public function formPemakaianAirforeman()
+    {
+        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        }
+        return view('user.operator.eng.form_pemakaian_air');
+    }
+    public function dataPemakaianAirforeman()
+    {
+        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        }
+        return view('user.operator.eng.data_pemakaian_air');
+    }
+
+    public function formPemakaianListrikforeman()
+    {
+        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        }
+        return view('user.operator.eng.form_pemakaian_listrik');
+    }
+    public function DetailPemakaianListrikforeman($id)
+    {
+        if (Session::get('jabatan') == 'operator' || Session::get('jabatan') == 'foreman') {
+            $listrik = PemakaianListrikModel::findOrFail($id);
+            return view('user.operator.eng.detail_pemakaian_listrik', compact('listrik'));
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
-
-    public function dataPemakaianListrikForemanEng()
+    public function formPemakaianChemicalforeman()
     {
-        if (Session::get('jabatan') == 'foreman') {
-            return view('user.foreman.eng.data_pemakaian_listrik');
+        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
-        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        return view('user.operator.eng.form_pemakaian_chemical');
     }
-
-    public function dataPemakaianChemicalForemanEng()
-    {
-        if (Session::get('jabatan') == 'foreman') {
-            return view('user.foreman.eng.data_pemakaian_chemical');
-        }
-        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
-    }
-
     ////End View Foreman ///////////
 
     //operator
@@ -627,6 +647,61 @@ class EngineeringController extends Controller
 
         return response()->json([
             'message' => 'Data berhasil diperbarui!',
+        ]);
+    }
+
+
+    // Api Pemakaian Listrik
+    public function ApiListrikPerHari($mode){
+        if ($mode === 'terakhir') {
+            $data = PemakaianListrikModel::with('details')
+                ->orderBy('waktu', 'desc')
+                ->limit(7)
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'tanggal' => optional($item->waktu)->format('Y-m-d'),
+                        'operator' => $item->operator,
+                        'status' => $item->status,
+                        'details' => $item->details,
+                    ];
+                });
+        } else {
+            $query = PemakaianListrikModel::selectRaw('DATE(waktu) as tanggal, SUM(pemakaian_listrik_detail.mwh) as total_mwh')
+                ->join('pemakaian_listrik_detail', 'pemakaian_listrik_eng.id', '=', 'pemakaian_listrik_detail.id_listrik');
+
+            if ($mode === 'harian') {
+                $query->whereDate('waktu', Carbon::today());
+            } elseif ($mode === 'mingguan') {
+                $query->whereBetween('waktu', [
+                    Carbon::now()->subDays(7)->startOfDay(),
+                    Carbon::now()->endOfDay()
+                ]);
+            } elseif ($mode === 'bulanan') {
+                $query->whereMonth('waktu', Carbon::now()->month)
+                    ->whereYear('waktu', Carbon::now()->year);
+            }
+
+            $raw = $query->groupBy(DB::raw('DATE(waktu)'))
+                ->orderBy('tanggal', 'desc')
+                ->get();
+
+            // Map agar strukturnya mirip dengan 'terakhir'
+            $data = $raw->map(function ($row) {
+                return [
+                    'tanggal' => $row->tanggal,
+                    'total_mwh' => (float) $row->total_mwh,
+                    'operator' => null,
+                    'status' => null,
+                    'details' => [], // atau bisa fetch detail panel jika perlu
+                ];
+            });
+        }
+
+        return response()->json([
+            'success' => true,
+            'mode' => $mode,
+            'data' => $data,
         ]);
     }
 }

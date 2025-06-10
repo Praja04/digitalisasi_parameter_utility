@@ -124,7 +124,13 @@ Route::prefix('eng')->middleware('auth')->group(function () {
     Route::get('/foreman/data_listrik', [EngineeringController::class, 'dataPemakaianListrikForemanEng']);
     Route::get('/foreman/data_chemical', [EngineeringController::class, 'dataPemakaianChemicalForemanEng']);
 
-
+    //foreman
+    Route::get('/foreman/menu/air', [EngineeringController::class, 'menu_PemakaianAirforeman']);
+    Route::get('/foreman/data_air', [EngineeringController::class, 'dataPemakaianAirforeman']);
+    Route::get('/foreman/pemakaian_air', [EngineeringController::class, 'formPemakaianAirforeman']);
+    Route::get('/foreman/pemakaian_listrik', [EngineeringController::class, 'formPemakaianListrikforeman']);
+    Route::get('/foreman/pemakaian_chemical', [EngineeringController::class, 'formPemakaianChemicalforeman']);
+    //operato
     Route::get('/operator/menu/air', [EngineeringController::class, 'menu_PemakaianAir']);
     Route::get('/operator/data_air', [EngineeringController::class, 'dataPemakaianAir']);
     Route::get('/operator/pemakaian_air', [EngineeringController::class, 'formPemakaianAir']);
@@ -152,7 +158,7 @@ Route::prefix('eng')->middleware('auth')->group(function () {
     Route::post('/data/listrik/store/detail/{id}', [EngineeringController::class, 'storeListrikDetail'])->name('listrik.store_detail'); // Simpan data baru
     Route::post('/data/listrik/update/detail/{id}', [EngineeringController::class, 'updatelistrikDetail'])->name('listrik.update_detail'); // Update status
     Route::delete('/data/listrik/delete/detail/{id}', [EngineeringController::class, 'deletelistrikDetail'])->name('listrik.destroy_detail'); // Hapus data
-    
+
     // api pemakaian chemical
     Route::get('/api/chemical/harian', [EngineeringController::class, 'ApiChemicalPerHari']);
     Route::get('/api/chemical/mingguan', [EngineeringController::class, 'ApiChemicalPerMinggu']);
@@ -160,18 +166,45 @@ Route::prefix('eng')->middleware('auth')->group(function () {
 
     //api pemakaian air
     Route::get('api/air/{mode}', [EngineeringController::class, 'getPemakaianAir']);
-    Route::get('api/listrik/{mode}', [EngineeringController::class, 'getPemakaianListrik']);
+    //api pemakaian listrik
+    Route::get('api/listrik/{mode}', [EngineeringController::class, 'ApiListrikPerHari']);
 
     //send tele bot
     Route::get('send/tele', [EngineeringController::class, 'Notif_boiler']);
-
-    
 });
 //End eng
 
 
 //Warehouse
 Route::prefix('wh')->group(function () {
+    //dept head
+    Route::get('/dept_head/dashboard', [WarehouseController::class, 'DashboardDeptHeadWarehouse']);
+    //Supervisor
+    Route::get('/supervisor/dashboard', [WarehouseController::class, 'DashboardSupervisorWarehouse']);
+    //Foreman
+    Route::get('/foreman/dashboard', [WarehouseController::class, 'DashboardForemanWarehouse']);
+    Route::get('/foreman/form/p2h', [WarehouseController::class, 'FormP2HForeman']);
+    Route::get('/foreman/detail/p2h/{id}', [WarehouseController::class, 'DetailP2HForeman']);
+
+    Route::get('/p2h', [WarehouseController::class, 'data_master']);
+    Route::post('/p2h/store', [WarehouseController::class, 'storeP2h']);
+    Route::put('/p2h/update/{id}', [WarehouseController::class, 'updateP2h']);
+    Route::delete('/p2h/delete/{id}', [WarehouseController::class, 'destroyP2h']);
+    Route::get('/p2h/{id}/detail', [WarehouseController::class, 'formDetailP2h'])->name('p2h.detail.form');
+    Route::post('/p2h/{id}/detail', [WarehouseController::class, 'storeDetailP2h'])->name('p2h.detail.store');
+
+    //api
+    Route::get('/p2h/summary', [WarehouseController::class, 'summary']);
+    Route::get('/p2h/kelayakan', [WarehouseController::class, 'kelayakanSummary']);
+    Route::get('/p2h/masalah-terbanyak', [WarehouseController::class, 'topMasalah']);
+    Route::get('/p2h/operator', [WarehouseController::class, 'operatorStat']);
+    Route::get('/p2h/shift', [WarehouseController::class, 'shiftDistribusi']);
+    Route::get('/p2h/unit-progress', [WarehouseController::class, 'unitProgress']);
+    Route::get('/p2h/masalah-berulang', [WarehouseController::class, 'masalahBerulang']);
+    Route::get('/p2h/hari-ini', [WarehouseController::class, 'pemeriksaanHariIni']);
+
+
+
     Route::get('/operator/dashboard', [WarehouseController::class, 'DashboardOperatorWarehouse']);
     Route::get('/operator/detail/p2h/{id}', [WarehouseController::class, 'DetailP2HOperatorWarehouse']);
 
@@ -182,6 +215,8 @@ Route::prefix('wh')->group(function () {
     Route::get('/check-forms/{checkForm}', [WarehouseController::class, 'show']);
     Route::put('/check-forms/{checkForm}', [WarehouseController::class, 'update']);
     Route::delete('/check-forms/{checkForm}', [WarehouseController::class, 'destroy']);
+    //
+
 });
 //end Warehouse
 
