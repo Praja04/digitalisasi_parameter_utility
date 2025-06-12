@@ -187,14 +187,16 @@ Route::prefix('wh')->group(function () {
     Route::get('/dept_head/dashboard', [WarehouseController::class, 'DashboardDeptHeadWarehouse']);
     //Supervisor
     Route::get('/supervisor/dashboard', [WarehouseController::class, 'DashboardSupervisorWarehouse']);
+    Route::get('/supervisor/detail/p2h', [WarehouseController::class, 'DetailP2HSupervisorWarehouse']);
     //Foreman
     Route::get('/foreman/dashboard', [WarehouseController::class, 'DashboardForemanWarehouse']);
     Route::get('/foreman/form/p2h', [WarehouseController::class, 'FormP2HForeman']);
+    Route::get('/foreman/detail/p2h', [WarehouseController::class, 'DetailP2HForemanWarehouse']);
     Route::get('/foreman/detail/p2h/{id}', [WarehouseController::class, 'DetailP2HForeman']);
 
     Route::get('/p2h', [WarehouseController::class, 'data_master']);
     Route::post('/p2h/store', [WarehouseController::class, 'storeP2h']);
-    Route::put('/p2h/update/{id}', [WarehouseController::class, 'updateP2h']);
+    Route::put('/p2h/update-detail/{id}', [WarehouseController::class, 'updateDetail']);
     Route::delete('/p2h/delete/{id}', [WarehouseController::class, 'destroyP2h']);
     Route::get('/p2h/{id}/detail', [WarehouseController::class, 'formDetailP2h'])->name('p2h.detail.form');
     Route::post('/p2h/{id}/detail', [WarehouseController::class, 'storeDetailP2h'])->name('p2h.detail.store');
@@ -208,11 +210,12 @@ Route::prefix('wh')->group(function () {
     Route::get('/p2h/unit-progress', [WarehouseController::class, 'unitProgress']);
     Route::get('/p2h/masalah-berulang', [WarehouseController::class, 'masalahBerulang']);
     Route::get('/p2h/hari-ini', [WarehouseController::class, 'pemeriksaanHariIni']);
+    Route::get('/p2h/data', [WarehouseController::class, 'getP2HGroupedDetail']);
 
 
 
     Route::get('/operator/dashboard', [WarehouseController::class, 'DashboardOperatorWarehouse']);
-    Route::get('/operator/detail/p2h/{id}', [WarehouseController::class, 'DetailP2HOperatorWarehouse']);
+    Route::get('/operator/detail/p2h', [WarehouseController::class, 'DetailP2HOperatorWarehouse']);
 
 
     Route::get('/check-forms', [WarehouseController::class, 'index']);
