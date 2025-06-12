@@ -190,7 +190,9 @@
                     });
                     $('#formP2H')[0].reset();
                     $('#form-container').slideUp();
-                    location.reload();
+                    setInterval(() => {
+                        location.reload();
+                    }, 3000);
                 },
                 error: function(xhr) {
                     let msg = 'Terjadi kesalahan.';
