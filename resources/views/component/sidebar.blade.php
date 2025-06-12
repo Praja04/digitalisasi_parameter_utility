@@ -617,6 +617,11 @@
                         </ul>
                     </div>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('wh/supervisor/detail/p2h') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Data P2H</span>
+                    </a>
+                </li>
                 <!-- end supervisor -->
 
                 <!-- foreman -->
@@ -679,6 +684,11 @@
                         <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form P2H</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('wh/foreman/detail/p2h') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Data P2H</span>
+                    </a>
+                </li>
                 <!-- end foreman -->
 
                 <!-- operator -->
@@ -734,6 +744,11 @@
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ url('wh/operator/dashboard') }}">
                         <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form P2H</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('wh/operator/detail/p2h') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Data P2H</span>
                     </a>
                 </li>
                 @endif

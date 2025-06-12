@@ -90,9 +90,13 @@
                         type: 'donut',
                         height: 350
                     },
-                    labels: ['< 60%', '60-80%', '> 80%'],
-                    series: [res.less_than_60, res.between_60_80, res.above_80],
-                    colors: ['#dc3545', '#ffc107', '#28a745'],
+                    labels: [
+                        'Layak (> 80%)',
+                        'Perlu Perhatian (70–80%)',
+                        'Tidak Layak (< 70%)'
+                    ],
+                    series: [res.layak, res.perlu_perhatian, res.tidak_layak],
+                    colors: ['#28a745', '#ffc107', '#dc3545'],
                     legend: {
                         position: 'bottom'
                     },
@@ -108,6 +112,7 @@
                         }
                     }]
                 };
+
                 var chart = new ApexCharts(document.querySelector("#chartKelayakan"), options);
                 chart.render();
             },
@@ -165,8 +170,8 @@
             method: 'GET',
             dataType: 'json',
             success: function(res) {
-                var labels = res.map(x => x.operator);
-                var data = res.map(x => x.total);
+                var labels = res.map(x => x.operator ?? 'Tidak Diketahui');
+                var data = res.map(x => x.jumlah);
 
                 var options = {
                     chart: {
@@ -194,6 +199,7 @@
                     },
                     colors: ['#007bff']
                 };
+
                 var chart = new ApexCharts(document.querySelector("#chartOperator"), options);
                 chart.render();
             },
@@ -202,13 +208,15 @@
             }
         });
 
+
         // Shift - Pie Chart
         $.ajax({
             url: "{{url('/wh/p2h/shift')}}",
             method: 'GET',
             dataType: 'json',
             success: function(res) {
-                var labels = res.map(x => x.shift);
+                // Ganti null jadi 'Tidak Diisi' dan tambahkan label "Shift x"
+                var labels = res.map(x => x.shift === null ? 'Tidak Diisi' : 'Shift ' + x.shift);
                 var data = res.map(x => x.total);
 
                 var options = {
@@ -218,7 +226,7 @@
                     },
                     labels: labels,
                     series: data,
-                    colors: ['#007bff', '#28a745', '#ffc107'],
+                    colors: ['#007bff', '#28a745', '#ffc107', '#dc3545'], // Tambah warna kalau perlu
                     legend: {
                         position: 'bottom'
                     },
@@ -241,6 +249,7 @@
                 console.error('Gagal load shift:', error);
             }
         });
+
     });
 </script>
 @endsection

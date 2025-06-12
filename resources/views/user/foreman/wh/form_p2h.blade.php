@@ -1,271 +1,268 @@
 @extends('layout')
 
 @section('content')
+
 <div class="page-content">
     <div class="container-fluid">
+
+        <!-- Header -->
         <div class="row">
             <div class="col-xxl-12">
-                <div class="d-flex flex-column h-100">
-                    <div class="row h-100">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body p-0">
-
-
-                                    <div class="row align-items-end">
-                                        <div class="col-sm-10">
-                                            <div class="p-3">
-                                                <h1>P2H Online Form</h1>
-                                                <div class="mt-3">
-                                                    <p class="fs-16 lh-base">
-                                                        Periksa Kendaraan Anda!
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-2">
-                                            <div class="px-3">
-                                                <img src="{{asset('/material/assets/images/user-illustarator-2.png')}}" class="img-fluid" alt="">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> <!-- end card-body-->
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="row align-items-end">
+                            <div class="col-sm-10">
+                                <div class="p-3">
+                                    <h1>P2H Online Form</h1>
+                                    <p class="fs-16 lh-base">Periksa Forklift Anda dengan Teliti</p>
+                                </div>
                             </div>
-                        </div> <!-- end col-->
-                    </div> <!-- end row-->
-
+                            <div class="col-sm-2 text-end">
+                                <img src="{{ asset('assets/images/gudang.png') }}" class="img-fluid" alt="" style="max-height: 100px;">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div> <!-- end col-->
+            </div>
         </div>
 
+        <!-- Card Unit -->
         <div class="row">
-            <div class="col-lg-12">
-                <div class="card" id="tasksList">
-                    <div class="card-header border-0">
-                        <div class="d-flex align-items-center">
-                            <h5 class="card-title mb-0 flex-grow-1">Pemeriksaan Forklift</h5>
-                            <div class="flex-shrink-0">
-                                <div class="d-flex flex-wrap gap-2">
-                                    <button class="btn btn-primary mb-3" id="btnTambah">Tambah Unit Pemeriksaan</button>
-                                    <button class="btn btn-success" id="remove-actions" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button>
-                                </div>
-                            </div>
-                        </div>
+            <div class="col-md-6">
+                <div class="card clickable card-unit forklift-card" data-unit="Forklift">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">Forklift</h4>
+                        <img src="{{ asset('assets/images/forklift.jpg') }}" alt="gambar" height="150" style="border-radius: 20px;">
+                        <p class="text-muted">Klik untuk pemeriksaan</p>
                     </div>
-                    <!--end card-body-->
-                    <div class="card-body">
-                        <div class="table-responsive table-card mb-4">
-                            <table class="table align-middle table-nowrap mb-0" id="tasksTable">
-                                <thead class="table-light text-muted">
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Tanggal</th>
-                                        <th>Nomor Unit</th>
-                                        <th>Departemen</th>
-                                        <th>Status</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="list form-check-all" id="batchList">
-
-                                </tbody>
-                            </table>
-                            <!--end table-->
-                            <div class="noresult" style="display: none">
-                                <div class="text-center">
-                                    <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
-                                    <h5 class="mt-2">Sorry! No Result Found</h5>
-                                    <p class="text-muted mb-0">We've searched more than 200k+ tasks We did not find any tasks for you search.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--end card-body-->
                 </div>
-                <!--end card-->
             </div>
-            <!--end col-->
+            <div class="col-md-6">
+                <div class="card clickable card-unit pallet-card" data-unit="Pallet Mover">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">Pallet Mover</h4>
+                        <img src="{{ asset('assets/images/pallet.jpg') }}" alt="gambar" height="150" style="border-radius: 20px;">
+                        <p class="text-muted">Klik untuk pemeriksaan</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
+        <!-- Form -->
+        <div class="row mt-4" id="form-container" style="display: none;">
+            <div class="col-md-10 offset-md-1">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 id="form-title">Form Pemeriksaan</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="formP2H">
+                            @csrf
+                            <input type="hidden" id="jenis_p2h" name="jenis_p2h" />
 
-    </div>
-</div>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label>Tanggal</label>
+                                    <input type="date" class="form-control" name="tanggal" value="{{ date('Y-m-d') }}" readonly>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label>Nomor Unit</label>
+                                    <input type="text" class="form-control" name="nomor_unit">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label>Departemen</label>
+                                    <input type="text" class="form-control" name="dept" required>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label>Shift</label>
+                                    <select class="form-control" name="shift" required>
+                                        <option value="">-- Pilih Shift --</option>
+                                        <option value="1">Shift 1</option>
+                                        <option value="2">Shift 2</option>
+                                        <option value="3">Shift 3</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label>Jam Operasional</label>
+                                    <input type="text" class="form-control" name="jam_operasional" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label>Nama Operator</label>
+                                    <input type="text" class="form-control" value="{{ Session::get('username') }}" name="operator_name" readonly>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label>Catatan</label>
+                                    <textarea class="form-control" name="catatan"></textarea>
+                                </div>
+                            </div>
 
-<!-- Modal Form Tambah -->
-<div class="modal fade" id="modalForm" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <form id="formCheck">
-            @csrf
-            <input type="hidden" id="p2h_id" name="id" />
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Tambah Pemeriksaan</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-2">
-                        <label for="tanggal" class="form-label">Tanggal</label>
-                        <input type="date" class="form-control" id="tanggal" name="tanggal" required>
+                            <hr>
+                            <h5>Pemeriksaan Item</h5>
+                            <div class="row">
+                                @php
+                                $checks = [
+                                'cek_baterai' => 'Baterai',
+                                'cek_fork' => 'Fork',
+                                'kondisi_body_kebersihan' => 'Body & Kebersihan',
+                                'lampu_kiri' => 'Lampu Kiri',
+                                'lampu_kanan' => 'Lampu Kanan',
+                                'lampu_sorot' => 'Lampu Sorot',
+                                'lampu_sign_depan_kanan' => 'Sign Depan Kanan',
+                                'lampu_sign_depan_kiri' => 'Sign Depan Kiri',
+                                'kipas_belakang' => 'Kipas Belakang',
+                                'rantai_lift' => 'Rantai Lift',
+                                'sistem_hidrolik' => 'Sistem Hidrolik',
+                                'kondisi_axle' => 'Axle',
+                                'sistem_kemudi' => 'Sistem Kemudi',
+                                'panel_display' => 'Panel Display',
+                                'air_aki' => 'Air Aki',
+                                'klakson' => 'Klakson',
+                                'buzzer_mundur' => 'Buzzer Mundur',
+                                'kaca_spion' => 'Kaca Spion',
+                                'kondisi_ban' => 'Ban',
+                                'fungsi_rem' => 'Rem',
+                                ];
+                                @endphp
+                                @foreach ($checks as $key => $label)
+                                <div class="col-md-4 mb-3">
+                                    <label>{{ $label }}</label>
+                                    <div>
+                                        <label class="me-2 radio-label" data-type="ok">
+                                            <input type="radio" name="{{ $key }}" value="1" required> OK
+                                        </label>
+                                        <label class="radio-label" data-type="nok">
+                                            <input type="radio" name="{{ $key }}" value="0"> NOK
+                                        </label>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+
+                            <div class="text-end mt-4">
+                                <button type="submit" class="btn btn-success">Simpan</button>
+                                <button type="button" class="btn btn-secondary" id="cancelForm">Batal</button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="mb-2">
-                        <label for="nomor_unit" class="form-label">Nomor Unit</label>
-                        <input type="text" class="form-control" id="nomor_unit" name="nomor_unit" required>
-                    </div>
-                    <div class="mb-2">
-                        <label for="dept" class="form-label">Departemen</label>
-                        <input type="text" class="form-control" id="dept" name="dept" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Simpan</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                 </div>
             </div>
-        </form>
+        </div>
+
     </div>
 </div>
 
+<!-- Script -->
 <script>
     $(document).ready(function() {
-        let p2hData = [];
+        $('.card-unit').on('click', function() {
+            let unit = $(this).data('unit');
 
-        function loadP2H() {
-            $.get("{{ url('wh/p2h') }}", function(response) {
-                p2hData = response;
-                renderTable();
+            // Sembunyikan form dulu
+            $('#form-container').slideUp(600, function() {
+                // Setelah tertutup, set data baru dan tampilkan kembali
+                $('#jenis_p2h').val(unit);
+                $('#form-title').text(`Form Pemeriksaan - ${unit}`);
+                $('#formP2H')[0].reset();
+                $('#form-container').slideDown();
             });
-        }
-        $(document).on('click', '.edit-btn', function() {
-            let id = $(this).data('id');
-            let item = p2hData.find(x => x.id == id);
-
-            if (!item) return alert('Data tidak ditemukan!');
-
-            // Isi form
-            $('#p2h_id').val(item.id);
-            $('#tanggal').val(item.tanggal);
-            $('#nomor_unit').val(item.nomor_unit);
-            $('#dept').val(item.dept);
-
-            $('#modalForm').modal('show');
-        });
-
-        function renderTable() {
-            let rows = '';
-            p2hData.forEach((item, index) => {
-                rows += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${item.tanggal}</td>
-                        <td>${item.nomor_unit}</td>
-                        <td>${item.dept}</td>
-                        <td>${item.status}</td>
-                        <td>
-                          <a href="{{url('wh/foreman/detail/p2h/${item.id}')}}" class="btn btn-success btn-sm">Detail</a>
-                          <button class="btn btn-warning btn-sm edit-btn" data-id="${item.id}">Edit</button>
-                            <button class="btn btn-danger btn-sm delete-btn" data-id="${item.id}">Hapus</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            $('#batchList').html(rows);
-        }
-
-        // Tampilkan modal
-        $('#btnTambah').click(function() {
-            $('#formCheck')[0].reset();
-            $('#p2h_id').val('');
-            $('#modalForm').modal('show');
         });
 
 
-        // Submit form
-        $('#formCheck').submit(function(e) {
+        $('#cancelForm').on('click', function() {
+            $('#formP2H')[0].reset();
+            $('#form-container').slideUp();
+        });
+
+        $('#formP2H').submit(function(e) {
             e.preventDefault();
 
-            let id = $('#p2h_id').val();
-            let url = '';
-            let method = '';
-
-            if (id) {
-                // Update
-                url = `{{ url('wh/p2h/update') }}/${id}`;
-                method = 'PUT';
-            } else {
-                // Create
-                url = "{{ url('wh/p2h/store') }}";
-                method = 'POST';
-            }
-
             $.ajax({
-                url: url,
-                type: method,
+                url: "{{ url('wh/p2h/store') }}",
+                method: "POST",
                 data: $(this).serialize(),
-                success: function(res) {
-                    $('#modalForm').modal('hide');
-                    loadP2H();
-
+                success: function(response) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Sukses',
-                        text: res.message || 'Data berhasil disimpan!',
+                        title: 'Berhasil',
+                        text: response.message ?? 'Data P2H disimpan!',
                         timer: 2000,
                         showConfirmButton: false
                     });
+                    $('#formP2H')[0].reset();
+                    $('#form-container').slideUp();
+                    location.reload();
                 },
                 error: function(xhr) {
-                    let message = 'Terjadi kesalahan';
-
-                    if (xhr.responseJSON) {
-                        if (xhr.responseJSON.message) {
-                            message = xhr.responseJSON.message;
-                        } else if (xhr.responseJSON.errors) {
-                            // Jika validasi error
-                            message = Object.values(xhr.responseJSON.errors).flat().join('\n');
-                        }
+                    let msg = 'Terjadi kesalahan.';
+                    if (xhr.responseJSON?.errors) {
+                        msg = Object.values(xhr.responseJSON.errors).flat().join('\n');
+                    } else if (xhr.responseJSON?.message) {
+                        msg = xhr.responseJSON.message;
                     }
-
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal',
-                        text: message,
-                    });
+                    Swal.fire('Gagal', msg, 'error');
                 }
+
             });
         });
 
+        $('input[type=radio]').on('change', function() {
+            const name = $(this).attr('name');
+            const isOk = $(this).val() === '1';
 
-        // Hapus data
-        $(document).on('click', '.delete-btn', function() {
-            let id = $(this).data('id');
+            const group = $(`input[name="${name}"]`);
 
-            Swal.fire({
-                title: 'Yakin hapus data ini?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, hapus',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "{{ url('wh/p2h/delete') }}/" + id,
-                        type: 'DELETE',
-                        data: {
-                            _token: "{{ csrf_token() }}"
-                        },
-                        success: function(res) {
-                            loadP2H();
-                            Swal.fire('Berhasil!', res.message, 'success');
-                        },
-                        error: function() {
-                            Swal.fire('Gagal!', 'Gagal menghapus data.', 'error');
-                        }
-                    });
-                }
+            group.each(function() {
+                $(this).closest('.radio-label').removeClass('ok-selected nok-selected');
             });
-        });
 
-        loadP2H();
+            if (isOk) {
+                $(this).closest('.radio-label').addClass('ok-selected');
+            } else {
+                $(this).closest('.radio-label').addClass('nok-selected');
+            }
+        });
     });
 </script>
+
+<style>
+    .clickable {
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+
+    .clickable:hover {
+        transform: scale(1.03);
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .forklift-card:hover {
+        background-color: #ffe5e5;
+        border: 1px solid #dc3545;
+    }
+
+    .pallet-card:hover {
+        background-color: #e0f0ff;
+        border: 1px solid #0d6efd;
+    }
+
+    .radio-label {
+        padding: 5px 10px;
+        border-radius: 6px;
+        border: 1px solid transparent;
+        display: inline-block;
+    }
+
+    .radio-label.ok-selected {
+        background-color: #d1f7d6;
+        color: #0f5132;
+        border-color: #198754;
+    }
+
+    .radio-label.nok-selected {
+        background-color: #f8d7da;
+        color: #842029;
+        border-color: #dc3545;
+    }
+</style>
+
 @endsection

@@ -33,6 +33,17 @@ class WarehouseController extends Controller
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
+
+    public function DetailP2HSupervisorWarehouse()
+    {
+        if (Session::get('jabatan') == 'supervisor') {
+            return view('user.supervisor.wh.data');
+        }
+        return redirect('/')->with(
+            'error',
+            'Anda tidak memiliki akses ke halaman ini.'
+        );
+    }
     ///////////End View Supervisor///////////////////
 
     /////////////// 🔹 Dashboard untuk Operator //////////////////
@@ -44,10 +55,10 @@ class WarehouseController extends Controller
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
 
-    public function DetailP2HOperatorWarehouse($id)
+    public function DetailP2HOperatorWarehouse()
     {
         if (Session::get('jabatan') == 'operator') {
-            return view('user.operator.wh.detail_p2h', ['id' => $id]);
+            return view('user.operator.wh.data');
         }
         return redirect('/')->with(
             'error',
@@ -77,16 +88,10 @@ class WarehouseController extends Controller
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
 
-    public function DetailP2HForeman($id)
+    public function DetailP2HForemanWarehouse()
     {
         if (Session::get('jabatan') == 'foreman') {
-            $p2h = P2HModel::with('details')->findOrFail($id);
-
-            // Hitung persentase kelayakan untuk setiap detail
-            foreach ($p2h->details as $detail) {
-                $detail->persentase_kelayakan = $detail->calculateKelayakan();
-            }
-            return view('user.foreman.wh.detail_p2h', compact('p2h'));
+            return view('user.foreman.wh.data');
         }
         return redirect('/')->with(
             'error',
@@ -95,189 +100,19 @@ class WarehouseController extends Controller
     }
     /////////// End View Foreman /////////////////
 
-    public function index()
-    {
-        $checkForms = CheckForm::with('forklift')->latest()->get();
-        return response()->json($checkForms);
-    }
-
-    public function fetchFormData()
-    {
-        $forklifts = Forklift::all();
-        $checkItems = CheckItem::all();
-        return response()->json(compact('forklifts', 'checkItems'));
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'forklift_id' => 'required|exists:forklifts,id',
-            'shift' => 'required|in:Shift 1,Shift 2,Shift 3',
-            'tanggal' => 'required|date',
-            'operator_name' => 'required|string',
-            'check_items' => 'required|array',
-            'check_items.*.item_id' => 'required|exists:check_items,id',
-            'check_items.*.condition_value' => 'required|string',
-        ]);
-
-        $checkForm = CheckForm::create($request->only(['forklift_id', 'shift', 'tanggal', 'operator_name']));
-
-        foreach ($request->check_items as $item) {
-            CheckFormItem::create([
-                'check_form_id' => $checkForm->id,
-                'check_item_id' => $item['item_id'],
-                'condition_value' => $item['condition_value'],
-                'remarks' => $item['remarks'] ?? null,
-            ]);
-        }
-
-        return response()->json(['message' => 'Pemeriksaan berhasil disimpan.']);
-    }
-
-    public function show(CheckForm $checkForm)
-    {
-        $checkForm->load(['forklift', 'checkFormItems.checkItem']);
-        return response()->json($checkForm);
-    }
-
-    public function update(Request $request, CheckForm $checkForm)
-    {
-        $request->validate([
-            'forklift_id' => 'required|exists:forklifts,id',
-            'shift' => 'required|in:Shift 1,Shift 2,Shift 3',
-            'tanggal' => 'required|date',
-            'operator_name' => 'required|string',
-            'check_items' => 'required|array',
-            'check_items.*.item_id' => 'required|exists:check_items,id',
-            'check_items.*.condition_value' => 'required|string',
-        ]);
-
-        $checkForm->update($request->only(['forklift_id', 'shift', 'tanggal', 'operator_name']));
-
-        $checkForm->checkFormItems()->delete();
-
-        foreach ($request->check_items as $item) {
-            CheckFormItem::create([
-                'check_form_id' => $checkForm->id,
-                'check_item_id' => $item['item_id'],
-                'condition_value' => $item['condition_value'],
-                'remarks' => $item['remarks'] ?? null,
-            ]);
-        }
-
-        return response()->json(['message' => 'Data berhasil diperbarui.']);
-    }
-
-    public function destroy(CheckForm $checkForm)
-    {
-        $checkForm->checkFormItems()->delete();
-        $checkForm->delete();
-
-        return response()->json(['message' => 'Data berhasil dihapus.']);
-    }
-
-    //////
-    public function data_master()
-    {
-
-        $data = P2HModel::with('details')->where('status', !'completed')->orderBy('tanggal', 'DESC')->get();
-        return response()->json($data);
-    }
-
+ 
     public function storeP2h(Request $request)
     {
         // Validasi input
         $request->validate([
             'tanggal' => 'required|date',
+            'jenis_p2h' => 'nullable|string|max:50',
             'nomor_unit' => 'required|string|max:50',
             'dept'  => 'required|string|max:50',
-        ]);
-
-        try {
-            $batch = P2HModel::create([
-                'tanggal' => $request->tanggal,
-                'status' => 'pending',
-                'nomor_unit' => $request->nomor_unit,
-                'dept' => $request->dept,
-            ]);
-
-            return response()->json(['success' => true, 'data' => $batch]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function destroyP2h($id)
-    {
-        $data = P2HModel::findOrFail($id);
-        $data->details()->delete();
-        $data->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'data berhasil dihapus!'
-        ]);
-    }
-
-    public function updateP2h(Request $request, $id)
-    {
-        $data = P2HModel::findOrFail($id);
-
-        // Validasi input
-        $request->validate([
-            'tanggal' => 'required|date',
-            'nomor_unit' => 'required|string|max:50',
-            'dept'  => 'required|string|max:50',
-        ]);
-
-        $data->update([
-            'tanggal' => $request->tanggal,
-            'nomor_unit' => $request->nomor_unit,
-            'dept' => $request->dept,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Data berhasil diperbarui!'
-        ]);
-    }
-
-    public function formDetailP2h($id)
-    {
-        $p2h = P2HModel::with('details')->findOrFail($id);
-
-        // Hitung persentase kelayakan untuk setiap detail
-        foreach ($p2h->details as $detail) {
-            $detail->persentase_kelayakan = $detail->calculateKelayakan();
-        }
-        return view('user.operator.wh.detail_p2h', compact('p2h'));
-    }
-
-    public function storeDetailP2h(Request $request, $id)
-    {
-        $p2h = P2HModel::findOrFail($id);
-
-        $existingCount = $p2h->details()->count();
-        if ($existingCount >= 3) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Maksimal 3 shift telah diisi untuk data ini.'
-            ], 400);
-        }
-
-        // Cek apakah shift yang sama sudah ada
-        $shiftExists = $p2h->details()->where('shift', $request->shift)->exists();
-        if ($shiftExists) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $request->shift . ' sudah diisi sebelumnya.'
-            ], 400);
-        }
-
-        $validated = $request->validate([
             'shift' => 'required',
             'operator_name' => 'required|string|max:100',
             'catatan' => 'nullable|string',
+            'jam_operasional' => 'required',
             // validasi semua kolom boolean (OK/NOK)
             'cek_baterai' => 'required|in:1,0',
             'cek_fork' => 'required|in:1,0',
@@ -293,7 +128,6 @@ class WarehouseController extends Controller
             'kondisi_axle' => 'required|in:1,0',
             'sistem_kemudi' => 'required|in:1,0',
             'panel_display' => 'required|in:1,0',
-            'jam_operasional' => 'required|in:1,0',
             'air_aki' => 'required|in:1,0',
             'klakson' => 'required|in:1,0',
             'buzzer_mundur' => 'required|in:1,0',
@@ -301,19 +135,80 @@ class WarehouseController extends Controller
             'kondisi_ban' => 'required|in:1,0',
             'fungsi_rem' => 'required|in:1,0',
         ]);
+        // Cek apakah data dengan tanggal + shift + nomor_unit sudah ada
+        $exists = P2HModel::whereDate('tanggal', $request->tanggal)
+            ->where('shift', $request->shift)
+            ->where('nomor_unit', $request->nomor_unit)
+            ->where('jenis_p2h', $request->jenis_p2h)
+            ->exists();
 
-        $validated['id_p2h'] = $id;
+        if ($exists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data untuk tanggal, shift,jenis p2h, dan nomor unit ini sudah ada.'
+            ], 422);
+        }
+        try {
+            $batch = P2HModel::create([
+                'tanggal' => $request->tanggal,
+                'jenis_p2h' => $request->jenis_p2h,
+                'nomor_unit' => $request->nomor_unit,
+                'dept' => $request->dept,
+                'shift' => $request->shift,
+                'operator_name' => $request->operator_name,
+                'catatan' => $request->catatan,
+                'cek_baterai' => $request->cek_baterai,
+                'cek_fork' => $request->cek_fork,
+                'kondisi_body_kebersihan' => $request->kondisi_body_kebersihan,
+                'lampu_kiri' => $request->lampu_kiri,
+                'lampu_kanan' => $request->lampu_kanan,
+                'lampu_sorot' => $request->lampu_sorot,
+                'lampu_sign_depan_kanan' => $request->lampu_sign_depan_kanan,
+                'lampu_sign_depan_kiri' => $request->lampu_sign_depan_kiri,
+                'kipas_belakang' => $request->kipas_belakang,
+                'rantai_lift' => $request->rantai_lift,
+                'sistem_hidrolik' => $request->sistem_hidrolik,
+                'kondisi_axle' => $request->kondisi_axle,
+                'sistem_kemudi' => $request->sistem_kemudi,
+                'panel_display' => $request->panel_display,
+                'jam_operasional' => $request->jam_operasional,
+                'air_aki' => $request->air_aki,
+                'klakson' => $request->klakson,
+                'buzzer_mundur' => $request->buzzer_mundur,
+                'kaca_spion' => $request->kaca_spion,
+                'kondisi_ban' => $request->kondisi_ban,
+                'fungsi_rem' => $request->fungsi_rem,
+            ]);
 
-        $newDetail = detailP2HModel::create($validated);
+            return response()->json(['success' => true, 'data' => $batch]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
-        // Hitung persentase kelayakan langsung dari model
-        $persentase = $newDetail->calculateKelayakan();
+    public function destroyP2h($id)
+    {
+        $data = P2HModel::findOrFail($id);
+        $data->delete();
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Data shift berhasil disimpan. Persentase kelayakan: ' . $persentase . '%'
+            'success' => true,
+            'message' => 'data berhasil dihapus!'
         ]);
     }
+
+    public function updateDetail(Request $request , $id)
+    {
+        $detail = P2HModel::findOrFail($id);
+
+        $exclude = ['id', 'created_at', 'updated_at', 'p2h_model_id', 'shift', 'jenis_p2h', 'tanggal', 'nomor_unit', 'dept'];
+        $fillable = collect($request->all())->except($exclude)->toArray();
+
+        $detail->update($fillable);
+
+        return response()->json(['status' => 'success']);
+    }
+    
 
 
     //api
@@ -323,158 +218,207 @@ class WarehouseController extends Controller
     {
         $today = Carbon::today();
 
+        // Total semua entri
+        $total = P2HModel::count();
+
+        // Total entri hari ini
+        $todayCount = P2HModel::whereDate('tanggal', $today)->count();
+
+        // Completed: nomor_unit + tanggal yang sudah ada 3 shift
+        $completed = P2HModel::select('nomor_unit', 'tanggal')
+            ->groupBy('nomor_unit', 'tanggal')
+            ->havingRaw('COUNT(DISTINCT shift) = 3')
+            ->get()
+            ->count();
+
+        // Pending: nomor_unit + tanggal yang belum lengkap 3 shift
+        $pending = P2HModel::select('nomor_unit', 'tanggal')
+            ->groupBy('nomor_unit', 'tanggal')
+            ->havingRaw('COUNT(DISTINCT shift) < 3')
+            ->get()
+            ->count();
+
         return response()->json([
-            'total' => P2HModel::count(),
-            'today' => P2HModel::whereDate('tanggal', $today)->count(),
-            'pending' => P2HModel::where('status', 'pending')->count(),
-            'completed' => P2HModel::where(
-                'status',
-                'completed'
-            )->count(),
+            'total' => $total,
+            'today' => $todayCount,
+            'completed' => $completed,
+            'pending' => $pending,
         ]);
     }
-
+ 
     // 2. Persentase kelayakan rata-rata dan kategori
     public function kelayakanSummary()
     {
-        $details = detailP2HModel::all();
-        $total = $details->count();
+        $data = P2HModel::all();
+        $total = $data->count();
 
-        $kelayakan = [
-            'less_than_60' => 0,
-            'between_60_80' => 0,
-            'above_80' => 0,
-            'avg' => 0,
+        $kategori = [
+            'layak' => 0,
+            'perlu_perhatian' => 0,
+            'tidak_layak' => 0,
+           
         ];
 
         if ($total > 0) {
-            $kelayakanTotal = 0;
+            $totalPersen = 0;
 
-            foreach ($details as $d) {
-                $k = $d->calculateKelayakan();
-                $kelayakanTotal += $k;
+            foreach ($data as $item) {
+                $result = $item->calculateKelayakan();
+                $persen = $result['persentase'];
+                $totalPersen += $persen;
 
-                if ($k < 60) $kelayakan['less_than_60']++;
-                elseif ($k < 80) $kelayakan['between_60_80']++;
-                else $kelayakan['above_80']++;
+                if ($persen >= 95) $kategori['layak']++;
+                elseif ($persen >= 85) $kategori['perlu_perhatian']++;
+                else $kategori['tidak_layak']++;
             }
 
-            $kelayakan['avg'] = round($kelayakanTotal / $total);
+           
         }
 
-        return response()->json($kelayakan);
+        return response()->json($kategori);
     }
 
-    // 3. Komponen paling sering rusak (nilai 0)
+    // 3. Komponen paling sering rusak (nilai ≠ OK)
     public function topMasalah()
     {
-        $fields = [
+        $komponen = [
             'cek_baterai', 'cek_fork', 'kondisi_body_kebersihan', 'lampu_kiri', 'lampu_kanan',
             'lampu_sorot', 'lampu_sign_depan_kanan', 'lampu_sign_depan_kiri', 'kipas_belakang',
             'rantai_lift', 'sistem_hidrolik', 'kondisi_axle', 'sistem_kemudi', 'panel_display',
-            'jam_operasional', 'air_aki', 'klakson', 'buzzer_mundur', 'kaca_spion', 'kondisi_ban',
+             'air_aki', 'klakson', 'buzzer_mundur', 'kaca_spion', 'kondisi_ban',
             'fungsi_rem'
         ];
 
-        $data = [];
-        foreach ($fields as $field) {
-            $data[$field] = detailP2HModel::where($field, 0)->count();
+        $rusak = [];
+
+        foreach ($komponen as $item) {
+            $rusak[$item] = P2HModel::where($item, '!=', 'OK')->count();
         }
 
-        arsort($data); // sort desc
-        $top5 = array_slice($data, 0, 5);
+        arsort($rusak); // urutkan dari terbanyak
+        $top = array_slice($rusak, 0, 5); // ambil 5 teratas
 
-        return response()->json($top5);
+        return response()->json($top);
     }
 
     // 4. Operator terbanyak + avg kelayakan
     public function operatorStat()
     {
-        $operatorData = detailP2HModel::select('operator_name', DB::raw('COUNT(*) as total'))
+        $data = P2HModel::select('operator_name', DB::raw('COUNT(*) as jumlah'))
             ->groupBy('operator_name')
-            ->orderByDesc('total')
+            ->orderByDesc('jumlah')
             ->take(5)
             ->get();
 
-        $data = $operatorData->map(function ($op) {
-            $details = detailP2HModel::where('operator_name', $op->operator_name)->get();
-            $avg = $details->avg(fn ($d) => $d->calculateKelayakan());
+        $hasil = $data->map(function ($item) {
+            $records = P2HModel::where('operator_name', $item->operator_name)->get();
+            $avg = $records->avg(fn ($r) => $r->calculateKelayakan()['persentase']);
+
             return [
-                'operator' => $op->operator_name,
-                'total' => $op->total,
-                'avg_kelayakan' => round($avg),
+                'operator' => $item->operator_name,
+                'jumlah' => $item->jumlah,
+                'rata_kelayakan' => round($avg, 2)
             ];
         });
 
-        return response()->json($data);
+        return response()->json($hasil);
     }
 
     // 5. Distribusi shift
     public function shiftDistribusi()
     {
-        $shifts = detailP2HModel::select('shift', DB::raw('count(*) as total'))
+        $data = P2HModel::select('shift', DB::raw('COUNT(*) as total'))
             ->groupBy('shift')
             ->orderBy('shift')
             ->get();
 
-        return response()->json($shifts);
+        return response()->json($data);
     }
+
 
     // 6. Progress pemeriksaan per unit
     public function unitProgress()
     {
         $units = P2HModel::select('nomor_unit')
-            ->distinct()
-            ->get()
-            ->pluck('nomor_unit');
+        ->distinct()
+        ->pluck('nomor_unit');
 
         $data = $units->map(function ($unit) {
-            $p2h_ids = P2HModel::where('nomor_unit', $unit)->pluck('id');
-            $details = detailP2HModel::whereIn('id_p2h', $p2h_ids)->get();
+            $records = P2HModel::where('nomor_unit', $unit)->get();
+            $avg = $records->count() ? round($records->avg(fn ($r) => $r->calculateKelayakan()['persentase'])) : 0;
             return [
                 'unit' => $unit,
-                'count' => $p2h_ids->count(),
-                'avg_kelayakan' => $details->count() ? round($details->avg(fn ($d) => $d->calculateKelayakan())) : 0
+                'count' => $records->count(),
+                'avg_kelayakan' => $avg
             ];
         });
 
         return response()->json($data);
     }
 
+
     // 7. Masalah berulang per unit
     public function masalahBerulang()
     {
-        $fields = ['cek_fork', 'klakson', 'lampu_kiri', 'lampu_kanan']; // contoh komponen kritikal
+        $fields = ['cek_fork', 'klakson', 'lampu_kiri', 'lampu_kanan'];
         $unitData = [];
 
         foreach ($fields as $field) {
-            $data = detailP2HModel::where($field, 0)
-                ->join('master_p2h', 'detail_p2h.id_p2h', '=', 'master_p2h.id')
-                ->select('master_p2h.nomor_unit', DB::raw("COUNT(*) as jumlah"))
-                ->groupBy('master_p2h.nomor_unit')
+            $data = P2HModel::where($field, '!=', 'OK')
+                ->select('nomor_unit', DB::raw("COUNT(*) as jumlah"))
+                ->groupBy('nomor_unit')
                 ->having('jumlah', '>=', 2)
                 ->get();
 
             foreach ($data as $row) {
                 $unitData[] = [
-                    'unit' => $row->nomor_unit,
-                    'komponen' => $field,
-                    'jumlah_masalah' => $row->jumlah
-                ];
+                        'unit' => $row->nomor_unit,
+                        'komponen' => $field,
+                        'jumlah_masalah' => $row->jumlah
+                    ];
             }
         }
 
         return response()->json($unitData);
     }
 
+
     // 8. Pemeriksaan hari ini
     public function pemeriksaanHariIni()
     {
         $today = Carbon::today();
-        $data = P2HModel::with('details')
-            ->whereDate('tanggal', $today)
-            ->get();
+        $data = P2HModel::whereDate('tanggal', $today)->get();
 
         return response()->json($data);
+    }
+
+    // 9. data P2H berdasarkan tanggal
+    public function getP2HGroupedDetail(Request $request)
+    {
+
+        $jenis = $request->jenis_p2h;
+        $data = P2HModel::orderBy('tanggal', 'desc')->where('jenis_p2h', $jenis)->get()
+        ->groupBy(fn ($item) => $item->jenis_p2h . '|' . $item->tanggal . '|' . $item->nomor_unit);
+
+        $result = [];
+
+        foreach ($data as $groupKey => $items) {
+            [$jenis_p2h, $tanggal, $nomor_unit] = explode('|', $groupKey);
+
+            $shiftData = [];
+
+            foreach ($items as $item) {
+                $shiftData[$item->shift] = $item;
+            }
+
+            $result[] = [
+                'tanggal' => $tanggal,
+                'nomor_unit' => $nomor_unit,
+                'jenis_p2h' => $jenis_p2h,
+                'shifts' => $shiftData
+            ];
+        }
+
+        return response()->json($result);
     }
 }
