@@ -136,12 +136,14 @@ Route::prefix('eng')->middleware('auth')->group(function () {
     Route::get('/foreman/pemakaian_air', [EngineeringController::class, 'formPemakaianAirforeman']);
     Route::get('/foreman/pemakaian_listrik', [EngineeringController::class, 'formPemakaianListrikforeman']);
     Route::get('/foreman/pemakaian_chemical', [EngineeringController::class, 'formPemakaianChemicalforeman']);
-    //operato
+    //operator
     Route::get('/operator/menu/air', [EngineeringController::class, 'menu_PemakaianAir']);
     Route::get('/operator/data_air', [EngineeringController::class, 'dataPemakaianAir']);
     Route::get('/operator/pemakaian_air', [EngineeringController::class, 'formPemakaianAir']);
     Route::get('/operator/pemakaian_listrik', [EngineeringController::class, 'formPemakaianListrik']);
     Route::get('/operator/pemakaian_chemical', [EngineeringController::class, 'formPemakaianChemical']);
+    Route::get('/operator/form', [EngineeringController::class, 'formUtility']);
+    Route::get('/operator/data/utility', [EngineeringController::class, 'DataUtility']);
 
     // CRUD air
     Route::get('/data/air', [EngineeringController::class, 'indexAir'])->name('air.index'); // Ambil semua data
@@ -151,12 +153,14 @@ Route::prefix('eng')->middleware('auth')->group(function () {
 
     // CRUD chemical
     Route::get('/data/chemical', [EngineeringController::class, 'indexChemical'])->name('chemical.index'); // Ambil semua data
-    Route::post('/data/chemical/store', [EngineeringController::class, 'storeChemical'])->name('chemical.store'); // Simpan data baru
+   // Route::post('/data/chemical/store', [EngineeringController::class, 'storeChemical'])->name('chemical.store'); // Simpan data baru
+    Route::post('/store/chemical', [EngineeringController::class, 'store_chemical'])->name('chemical.store'); // Simpan data baru
     Route::put('/data/chemical/{id}/update', [EngineeringController::class, 'updateChemical'])->name('chemical.update'); // Update status
     Route::delete('/data/chemical/{id}', [EngineeringController::class, 'destroyChemical'])->name('chemical.destroy'); // Hapus data
-
+    Route::get('/chemical-types/{area_id}', [EngineeringController::class, 'getTypesByArea']);
+    Route::get('/chemical-area', [EngineeringController::class, 'getChemicalAreas']);
     // CRUD listrik
-    Route::get('/data/listrik', [EngineeringController::class, 'data_listrik'])->name('listrik.data'); // Ambil semua data
+   // Route::get('/data/listrik', [EngineeringController::class, 'data_listrik'])->name('listrik.data'); // Ambil semua data
     Route::post('/data/listrik/store', [EngineeringController::class, 'storeListrik'])->name('listrik.store'); // Simpan data baru
     Route::put('/data/listrik/update/{id}', [EngineeringController::class, 'updateListrik'])->name('listrik.update');
     Route::get('/data/listrik/detail/{id}', [EngineeringController::class, 'DetailPemakaianListrik'])->name('listrik.data_detail'); // Ambil semua data
@@ -164,14 +168,17 @@ Route::prefix('eng')->middleware('auth')->group(function () {
     Route::post('/data/listrik/store/detail/{id}', [EngineeringController::class, 'storeListrikDetail'])->name('listrik.store_detail'); // Simpan data baru
     Route::post('/data/listrik/update/detail/{id}', [EngineeringController::class, 'updatelistrikDetail'])->name('listrik.update_detail'); // Update status
     Route::delete('/data/listrik/delete/detail/{id}', [EngineeringController::class, 'deletelistrikDetail'])->name('listrik.destroy_detail'); // Hapus data
+    Route::get('/data/listrik', [EngineeringController::class, 'getPemakaianListrikData']); // Hapus data
 
     // api pemakaian chemical
     Route::get('/api/chemical/harian', [EngineeringController::class, 'ApiChemicalPerHari']);
     Route::get('/api/chemical/mingguan', [EngineeringController::class, 'ApiChemicalPerMinggu']);
     Route::get('/api/chemical/bulanan', [EngineeringController::class, 'ApiChemicalPerBulan']);
+    Route::get('/data/chemical', [EngineeringController::class, 'getPemakaianChemicalData']);
 
     //api pemakaian air
     Route::get('api/air/{mode}', [EngineeringController::class, 'getPemakaianAir']);
+    Route::get('data/air', [EngineeringController::class, 'getPemakaianAirData']);
     //api pemakaian listrik
     Route::get('api/listrik/{mode}', [EngineeringController::class, 'ApiListrikPerHari']);
 

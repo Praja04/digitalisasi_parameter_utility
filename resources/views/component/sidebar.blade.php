@@ -725,11 +725,21 @@
                 @elseif(Session::get('jabatan') === 'operator' && Session::get('departemen') === 'engineering')
                 <li class="menu-title"><span data-key="t-menu">Menu</span></li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ url('eng/operator/menu/air') }}">
-                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Pemakaian Air</span>
+                    <a class="nav-link menu-link" href="{{ url('eng/operator/form') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form Utility</span>
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('eng/operator/data/utility') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Data Utility</span>
+                    </a>
+                </li>
+                <!-- <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('eng/operator/menu/air') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Pemakaian Air</span>
+                    </a>
+                </li> -->
+                <!-- <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ url('eng/operator/pemakaian_listrik') }}">
                         <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form Pemakaian Listrik</span>
                     </a>
@@ -738,7 +748,7 @@
                     <a class="nav-link menu-link" href="{{ url('eng/operator/pemakaian_chemical') }}">
                         <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form Pemakaian Chemical</span>
                     </a>
-                </li>
+                </li> -->
                 @elseif(Session::get('jabatan') === 'operator' && Session::get('departemen') === 'warehouse')
                 <li class="menu-title"><span data-key="t-menu">Menu</span></li>
                 <li class="nav-item">
