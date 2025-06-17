@@ -17,7 +17,7 @@ class AuthController extends Controller
             'dept_head' => '/eng/dept_head/dashboard',
             'supervisor' => '/eng/supervisor/dashboard',
             'foreman' => '/eng/foreman/dashboard', // <-- sesuaikan
-            'operator' => '/eng/operator/menu/air',
+            'operator' => '/eng/operator/form',
         ],
         'qc' => [
             'dept_head' => '/qc/dept_head/dashboard',

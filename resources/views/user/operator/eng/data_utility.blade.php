@@ -129,7 +129,7 @@
             let tableHeader = '';
 
             if (currentUnit === 'Air') {
-                url = '/eng/data/air';
+                url = "{{url('/eng/data/air')}}";
                 tableHeader = `<tr>
                     <th>Tanggal</th>
                     <th>Liter Awal</th>
@@ -139,7 +139,7 @@
                     <th>Catatan</th>
                 </tr>`;
             } else if (currentUnit === 'Listrik') {
-                url = '/eng/data/listrik';
+                url = "{{url('/eng/data/listrik')}}";
                 tableHeader = `<tr>
                     <th>Waktu</th>
                     <th>Operator</th>
@@ -150,7 +150,7 @@
                     <th>MWh</th>
                 </tr>`;
             } else if (currentUnit === 'Chemical') {
-                url = '/eng/data/chemical';
+                url = "{{url('/eng/data/chemical')}}";
                 tableHeader = `<tr>
                     <th>Tanggal</th>
                     <th>Area</th>
