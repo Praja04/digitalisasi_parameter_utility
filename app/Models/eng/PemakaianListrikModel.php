@@ -14,7 +14,7 @@ class PemakaianListrikModel extends Model
     protected $primaryKey = 'id';
     public $timestamps = true;
 
-    protected $fillable = [ 'waktu', 'operator','status'];
+    protected $fillable = [ 'waktu', 'operator', 'panel_type', 'volt', 'a', 'kw', 'mwh'];
 
     public function details()
     {

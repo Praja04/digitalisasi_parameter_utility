@@ -15,7 +15,7 @@ class PemakaianChemicalModel extends Model
     protected $primaryKey = 'id';
     public $timestamps = true;
 
-    protected $fillable = ['tanggal','nama_chemical', 'pemakaian_kg', 'created_by', 'updated_at', 'created_at', 'notes'];
+    protected $fillable = ['tanggal','chemical_area','jenis_pemakaian', 'nilai_pemakaian', 'operator', 'updated_at', 'created_at', 'notes','shift'];
 
 
 }

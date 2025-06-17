@@ -13,6 +13,9 @@ use Illuminate\Support\Carbon;
 use App\Services\TelegramService;
 use App\Models\Boiler\ReadSensors_Boiler;
 use Illuminate\Support\Facades\DB;
+use App\Models\eng\ChemicalType;
+use App\Models\eng\Chemical;
+use App\Models\eng\ChemicalArea;
 
 class EngineeringController extends Controller
 {
@@ -149,7 +152,21 @@ class EngineeringController extends Controller
         return view('user.operator.eng.form_pemakaian_chemical');
     }
 
+    public function formUtility()
+    {
+        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        }
+        return view('user.operator.eng.form_utility');
+    }
 
+    public function DataUtility()
+    {
+        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        }
+        return view('user.operator.eng.data_utility');
+    }
     /////End View Operator ////////////////
 
 
@@ -517,25 +534,44 @@ class EngineeringController extends Controller
     public function storeListrik(Request $request)
     {
         // Validasi input
-        $request->validate([
-            'waktu' => 'required',
-            'operator' => 'required',
+        $validated = $request->validate([
+            'waktu' => 'required|date',
+            'operator' => 'required|string|max:100',
+            'panel_type' => 'required|in:MDP,COS,SDP1,SDP2,SDP3,SDP4,SDP5,SDP6,SDP7,SDP8,SDP9,SDP10,SDP11,SDP12,SDP13,SDP14',
+            'volt' => 'nullable|numeric',
+            'a' => 'nullable|numeric',
+            'kw' => 'nullable|numeric',
+            'mwh' => 'nullable|numeric',
         ]);
-
+        $operator = Session::get('username');
         try {
-            // Simpan batch baru
-            $nama_user = Session::get('username');
-            $batch = PemakaianListrikModel::create([
-                'waktu' => $request->waktu,
-                'operator' => $request->operator,
-                // 'operator' => $nama_user, 
+            $exists = PemakaianListrikModel::whereDate('waktu', $validated['waktu'])
+            ->where('panel_type', $validated['panel_type'])
+            ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data untuk panel tersebut pada tanggal yang sama sudah ada.',
+                ], 409); // 409 = Conflict
+            }
+            // Simpan ke database
+            $data = PemakaianListrikModel::create([
+                'waktu' => $validated['waktu'],
+                'operator' => $operator,
+                'panel_type' => $validated['panel_type'],
+                'volt' => $validated['volt'] ?? null,
+                'a' => $validated['a'] ?? null,
+                'kw' => $validated['kw'] ?? null,
+                'mwh' => $validated['mwh'] ?? null,
             ]);
 
-            return response()->json(['success' => true, 'data' => $batch]);
+            return response()->json(['success' => true, 'message' => 'Data listrik berhasil disimpan.', 'data' => $data]);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menyimpan data.', 'error' => $e->getMessage()], 500);
         }
     }
+    
     public function updateListrik(Request $request, $id)
     {
         $data = PemakaianListrikModel::findOrFail($id);
@@ -652,7 +688,8 @@ class EngineeringController extends Controller
 
 
     // Api Pemakaian Listrik
-    public function ApiListrikPerHari($mode){
+    public function ApiListrikPerHari($mode)
+    {
         if ($mode === 'terakhir') {
             $data = PemakaianListrikModel::with('details')
                 ->orderBy('waktu', 'desc')
@@ -703,5 +740,193 @@ class EngineeringController extends Controller
             'mode' => $mode,
             'data' => $data,
         ]);
+    }
+
+    public function getTypesByArea($id)
+    {
+        $chemicals = ChemicalType::with('area')
+            ->where('chemical_area_id', $id)
+            ->get();
+
+        if ($chemicals->isEmpty()) {
+            return response()->json(['message' => 'No chemicals found for this area'], 404);
+        }
+
+        // Ubah ke format yang rapi
+        $data = $chemicals->map(function ($chemical) {
+            return [
+                'id' => $chemical->id,
+                'chemical_area_id' => $chemical->chemical_area_id,
+                'nama_chemical' => trim($chemical->nama_chemical),
+                'nama_area' => $chemical->area->nama_area ?? '-',
+                'created_at' => $chemical->created_at,
+                'updated_at' => $chemical->updated_at,
+            ];
+        });
+
+        return response()->json($data);
+    }
+
+    public function store_chemical(Request $request)
+    {
+        $request->validate([
+            'tanggal' => 'required|date',
+            'shift' => 'required',
+            'jenis_pemakaian' => 'required|array',
+            'chemical_area' => 'required',
+            'jumlah_pemakaian' => 'required|array',
+        ]);
+
+        $tanggal = $request->input('tanggal');
+        $shift = $request->input('shift');
+        $chemical_area = $request->input('chemical_area');
+        $keterangan = $request->input('keterangan');
+        $jenisPemakaian = $request->input('jenis_pemakaian');
+        $jumlahPemakaian = $request->input('jumlah_pemakaian');
+        
+        $operator = Session::get('username');
+        if (count($jenisPemakaian) !== count($jumlahPemakaian)) {
+            return response()->json(['message' => 'Data chemical tidak valid.'], 422);
+        }
+
+        foreach ($jenisPemakaian as $index => $jenis) {
+            // Cek apakah data dengan kombinasi ini sudah ada
+            $existing = PemakaianChemicalModel::where('tanggal', $tanggal)
+                ->where('jenis_pemakaian', $jenis)
+                ->where('shift', $shift)
+                ->where('chemical_area', $chemical_area)
+                ->first();
+
+            if ($existing) {
+                return response()->json([
+                    'message' => 'Data untuk area "' . $chemical_area . '" pada tanggal dan shift ini sudah ada.'
+                ], 422);
+            }
+
+            // Jika tidak ada, simpan data baru
+            PemakaianChemicalModel::create([
+                'tanggal' => $tanggal,
+                'chemical_area' => $chemical_area,
+                'jenis_pemakaian' => $jenis,
+                'nilai_pemakaian' => $jumlahPemakaian[$index],
+                'operator' => $operator,
+                'shift' => $shift,
+                'notes' => $keterangan,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+        
+
+        return response()->json(['message' => 'Data pemakaian chemical berhasil disimpan.']);
+    }
+
+    public function getPemakaianAirData(Request $request)
+    {
+        $query = PemakaianAirModel::query();
+
+        if ($request->filled('jenis_pemakaian')) {
+            $query->where('jenis_pemakaian', $request->jenis_pemakaian);
+        }
+
+        $data = $query->orderBy('tanggal', 'desc')->get()->groupBy('tanggal');
+
+        $result = [];
+
+        foreach ($data as $tanggal => $items) {
+            $result[] = [
+                'tanggal' => $tanggal,
+                'data' => $items->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'pemakaian_awal' => $item->pemakaian_awal,
+                        'pemakaian_akhir' => $item->pemakaian_akhir,
+                        'jenis_pemakaian' => $item->jenis_pemakaian,
+                        'created_by' => $item->created_by,
+                        'notes' => $item->notes,
+                    ];
+                })->values(),
+            ];
+        }
+
+        return response()->json($result);
+    }
+
+
+    public function getPemakaianChemicalData(Request $request)
+    {
+        $jenis = $request->jenis_pemakaian;
+
+        // Mulai query
+        $query = PemakaianChemicalModel::query();
+
+        // Filter hanya jika jenis_pemakaian diisi
+        if (!empty($jenis)) {
+            $query->where('jenis_pemakaian', $jenis);
+        }
+
+        // Ambil data dan grup berdasarkan tanggal
+        $data = $query->orderBy('tanggal', 'desc')->get()->groupBy('tanggal');
+
+        $result = [];
+
+        foreach ($data as $tanggal => $items) {
+            $result[] = [
+                'tanggal' => $tanggal,
+                'data' => $items->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'chemical_area' => $item->chemical_area,
+                        'jenis_pemakaian' => $item->jenis_pemakaian,
+                        'nilai_pemakaian' => $item->nilai_pemakaian,
+                        'operator' => $item->operator,
+                        'shift' => $item->shift,
+                        'notes' => $item->notes,
+                        'created_at' => $item->created_at,
+                        'updated_at' => $item->updated_at,
+                    ];
+                })->values(),
+            ];
+        }
+
+        return response()->json($result);
+    }
+
+    public function getPemakaianListrikData(Request $request)
+    {
+        // Ambil semua data, diurutkan berdasarkan waktu terbaru
+        $data = PemakaianListrikModel::orderBy('waktu', 'desc')->get()
+            ->groupBy(fn ($item) => date('Y-m-d', strtotime($item->waktu)));
+
+        $result = [];
+
+        foreach ($data as $tanggal => $items) {
+            $result[] = [
+                'tanggal' => $tanggal,
+                'data' => $items->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'waktu' => $item->waktu,
+                        'operator' => $item->operator,
+                        'panel_type' => $item->panel_type,
+                        'volt' => $item->volt,
+                        'a' => $item->a,
+                        'kw' => $item->kw,
+                        'mwh' => $item->mwh,
+                        'created_at' => $item->created_at,
+                        'updated_at' => $item->updated_at,
+                    ];
+                })->values(),
+            ];
+        }
+
+        return response()->json($result);
+    }
+
+    public function getChemicalAreas()
+    {
+        $areas = ChemicalArea::orderBy('nama_area')->get();
+
+        return response()->json($areas);
     }
 }
