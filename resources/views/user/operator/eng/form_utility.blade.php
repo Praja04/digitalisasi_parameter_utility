@@ -319,7 +319,7 @@
             let formData = $(this).serialize();
 
             $.ajax({
-                url: '/eng/data/air/store',
+                url: "{{url('/eng/data/air/store')}}",
                 method: 'POST',
                 data: formData,
                 success: function(response) {
@@ -363,7 +363,7 @@
             let formData = $(this).serialize();
 
             $.ajax({
-                url: '/eng/data/listrik/store',
+                url: "{{url('/eng/data/listrik/store')}}",
                 method: 'POST',
                 data: formData,
                 success: function(res) {
