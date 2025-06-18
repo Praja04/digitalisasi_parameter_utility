@@ -536,7 +536,7 @@ class EngineeringController extends Controller
         // Validasi input
         $validated = $request->validate([
             'waktu' => 'required|date',
-            'operator' => 'required|string|max:100',
+           // 'operator' => 'required|string|max:100',
             'panel_type' => 'required|in:MDP,COS,SDP1,SDP2,SDP3,SDP4,SDP5,SDP6,SDP7,SDP8,SDP9,SDP10,SDP11,SDP12,SDP13,SDP14',
             'volt' => 'nullable|numeric',
             'a' => 'nullable|numeric',
