@@ -9,7 +9,7 @@ class ChemicalType extends Model
     //
     protected $table = 'chemical_types';
     protected $primaryKey = 'id';
-    protected $fillable = ['chemical_area_id', 'nama_chemical'];
+    protected $fillable = ['chemical_area_id', 'nama_chemical','satuan'];
 
     public function area()
     {

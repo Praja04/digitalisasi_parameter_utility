@@ -38,7 +38,7 @@ class detailP2HModel extends Model
 
     public function data()
     {
-        return $this->belongsTo(P2HModel::class, 'id_p2h');
+        return $this->belongsTo(P2HForklfitModel::class, 'id_p2h');
     }
 
     public function calculateKelayakan()

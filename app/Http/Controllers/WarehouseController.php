@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Warehouse\CheckForm;
-use App\Models\Warehouse\CheckFormItem;
-use App\Models\Warehouse\CheckItem;
-use App\Models\Warehouse\Forklift;
-use App\Models\Warehouse\P2HModel;
-use App\Models\Warehouse\detailP2HModel;
+use App\Models\Warehouse\P2HForklfitModel;
+use App\Models\Warehouse\P2HPalletMoverModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
@@ -101,6 +97,7 @@ class WarehouseController extends Controller
     /////////// End View Foreman /////////////////
 
  
+    //forklift P2H
     public function storeP2h(Request $request)
     {
         // Validasi input
@@ -136,7 +133,7 @@ class WarehouseController extends Controller
             'fungsi_rem' => 'required|in:1,0',
         ]);
         // Cek apakah data dengan tanggal + shift + nomor_unit sudah ada
-        $exists = P2HModel::whereDate('tanggal', $request->tanggal)
+        $exists = P2HForklfitModel::whereDate('tanggal', $request->tanggal)
             ->where('shift', $request->shift)
             ->where('nomor_unit', $request->nomor_unit)
             ->where('jenis_p2h', $request->jenis_p2h)
@@ -148,8 +145,24 @@ class WarehouseController extends Controller
                 'message' => 'Data untuk tanggal, shift,jenis p2h, dan nomor unit ini sudah ada.'
             ], 422);
         }
+
+        // Ambil jam_operasional terakhir untuk unit ini
+        $lastRecord = P2HForklfitModel::where('nomor_unit', $request->nomor_unit)
+        //->orderByDesc('tanggal')
+        ->orderByDesc('created_at')
+        ->first();
+
+        if ($lastRecord && $request->jam_operasional < $lastRecord->jam_operasional
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Hours Meter unit ini tidak boleh lebih kecil dari data sebelumnya (' . $lastRecord->jam_operasional . '). Cek Kembali!'
+            ], 422);
+        }
+
+
         try {
-            $batch = P2HModel::create([
+            $batch = P2HForklfitModel::create([
                 'tanggal' => $request->tanggal,
                 'jenis_p2h' => $request->jenis_p2h,
                 'nomor_unit' => $request->nomor_unit,
@@ -188,7 +201,7 @@ class WarehouseController extends Controller
 
     public function destroyP2h($id)
     {
-        $data = P2HModel::findOrFail($id);
+        $data = P2HForklfitModel::findOrFail($id);
         $data->delete();
 
         return response()->json([
@@ -199,7 +212,7 @@ class WarehouseController extends Controller
 
     public function updateDetail(Request $request , $id)
     {
-        $detail = P2HModel::findOrFail($id);
+        $detail = P2HForklfitModel::findOrFail($id);
 
         $exclude = ['id', 'created_at', 'updated_at', 'p2h_model_id', 'shift', 'jenis_p2h', 'tanggal', 'nomor_unit', 'dept'];
         $fillable = collect($request->all())->except($exclude)->toArray();
@@ -208,6 +221,89 @@ class WarehouseController extends Controller
 
         return response()->json(['status' => 'success']);
     }
+
+    
+
+
+
+    //pallet mover P2H
+    public function storeP2hPalletMover(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'tanggal' => 'required|date',
+            'jenis_p2h' => 'required|string',
+            'nomor_unit' => 'required|string',
+            'dept' => 'required|string',
+            'shift' => 'required|string',
+            'operator_name' => 'required|string',
+            'catatan' => 'nullable|string',
+            'check_air_accu' => 'required|in:0,1',
+            'check_battery' => 'required|in:0,1',
+            'check_body_unit' => 'required|in:0,1',
+            'check_klakson' => 'required|in:0,1',
+            'check_roda' => 'required|in:0,1',
+            'check_sistem_kemudi' => 'required|in:0,1',
+            'check_kebersihan_unit' => 'required|in:0,1',
+            'check_kunci_pm' => 'required|in:0,1',
+            'check_hydraulic' => 'required|in:0,1',
+        ]);
+
+        // Cek apakah data dengan kombinasi unik sudah ada
+        $exists = P2HPalletMoverModel::whereDate('tanggal',
+            $request->tanggal
+        )
+        ->where('shift', $request->shift)
+        ->where('nomor_unit', $request->nomor_unit)
+            ->where('jenis_p2h', $request->jenis_p2h)
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data untuk tanggal, shift, jenis p2h, dan nomor unit ini sudah ada.'
+            ], 422);
+        }
+
+        try {
+            $batch = P2HPalletMoverModel::create($request->all());
+
+            return response()->json([
+                'success' => true,
+                'data' => $batch
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function destroyP2hPalletMover($id)
+    {
+        $data = P2HPalletMoverModel::findOrFail($id);
+        $data->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'data berhasil dihapus!'
+        ]);
+    }
+
+    public function updateDetailPalletMover(Request $request, $id)
+    {
+        $detail = P2HPalletMoverModel::findOrFail($id);
+
+        $exclude = [
+            'id', 'created_at', 'updated_at', 'shift', 'jenis_p2h', 'tanggal', 'nomor_unit', 'dept'
+        ];
+        $fillable = collect($request->all())->except($exclude)->toArray();
+
+        $detail->update($fillable);
+
+        return response()->json(['status' => 'success']);
+    }
+
     
 
 
@@ -219,20 +315,20 @@ class WarehouseController extends Controller
         $today = Carbon::today();
 
         // Total semua entri
-        $total = P2HModel::count();
+        $total = P2HForklfitModel::count();
 
         // Total entri hari ini
-        $todayCount = P2HModel::whereDate('tanggal', $today)->count();
+        $todayCount = P2HForklfitModel::whereDate('tanggal', $today)->count();
 
         // Completed: nomor_unit + tanggal yang sudah ada 3 shift
-        $completed = P2HModel::select('nomor_unit', 'tanggal')
+        $completed = P2HForklfitModel::select('nomor_unit', 'tanggal')
             ->groupBy('nomor_unit', 'tanggal')
             ->havingRaw('COUNT(DISTINCT shift) = 3')
             ->get()
             ->count();
 
         // Pending: nomor_unit + tanggal yang belum lengkap 3 shift
-        $pending = P2HModel::select('nomor_unit', 'tanggal')
+        $pending = P2HForklfitModel::select('nomor_unit', 'tanggal')
             ->groupBy('nomor_unit', 'tanggal')
             ->havingRaw('COUNT(DISTINCT shift) < 3')
             ->get()
@@ -249,7 +345,7 @@ class WarehouseController extends Controller
     // 2. Persentase kelayakan rata-rata dan kategori
     public function kelayakanSummary()
     {
-        $data = P2HModel::all();
+        $data = P2HForklfitModel::all();
         $total = $data->count();
 
         $kategori = [
@@ -292,7 +388,7 @@ class WarehouseController extends Controller
         $rusak = [];
 
         foreach ($komponen as $item) {
-            $rusak[$item] = P2HModel::where($item, '!=', 'OK')->count();
+            $rusak[$item] = P2HForklfitModel::where($item, '!=', 'OK')->count();
         }
 
         arsort($rusak); // urutkan dari terbanyak
@@ -304,14 +400,14 @@ class WarehouseController extends Controller
     // 4. Operator terbanyak + avg kelayakan
     public function operatorStat()
     {
-        $data = P2HModel::select('operator_name', DB::raw('COUNT(*) as jumlah'))
+        $data = P2HForklfitModel::select('operator_name', DB::raw('COUNT(*) as jumlah'))
             ->groupBy('operator_name')
             ->orderByDesc('jumlah')
             ->take(5)
             ->get();
 
         $hasil = $data->map(function ($item) {
-            $records = P2HModel::where('operator_name', $item->operator_name)->get();
+            $records = P2HForklfitModel::where('operator_name', $item->operator_name)->get();
             $avg = $records->avg(fn ($r) => $r->calculateKelayakan()['persentase']);
 
             return [
@@ -327,7 +423,7 @@ class WarehouseController extends Controller
     // 5. Distribusi shift
     public function shiftDistribusi()
     {
-        $data = P2HModel::select('shift', DB::raw('COUNT(*) as total'))
+        $data = P2HForklfitModel::select('shift', DB::raw('COUNT(*) as total'))
             ->groupBy('shift')
             ->orderBy('shift')
             ->get();
@@ -339,12 +435,12 @@ class WarehouseController extends Controller
     // 6. Progress pemeriksaan per unit
     public function unitProgress()
     {
-        $units = P2HModel::select('nomor_unit')
+        $units = P2HForklfitModel::select('nomor_unit')
         ->distinct()
         ->pluck('nomor_unit');
 
         $data = $units->map(function ($unit) {
-            $records = P2HModel::where('nomor_unit', $unit)->get();
+            $records = P2HForklfitModel::where('nomor_unit', $unit)->get();
             $avg = $records->count() ? round($records->avg(fn ($r) => $r->calculateKelayakan()['persentase'])) : 0;
             return [
                 'unit' => $unit,
@@ -364,7 +460,7 @@ class WarehouseController extends Controller
         $unitData = [];
 
         foreach ($fields as $field) {
-            $data = P2HModel::where($field, '!=', 'OK')
+            $data = P2HForklfitModel::where($field, '!=', 'OK')
                 ->select('nomor_unit', DB::raw("COUNT(*) as jumlah"))
                 ->groupBy('nomor_unit')
                 ->having('jumlah', '>=', 2)
@@ -387,7 +483,7 @@ class WarehouseController extends Controller
     public function pemeriksaanHariIni()
     {
         $today = Carbon::today();
-        $data = P2HModel::whereDate('tanggal', $today)->get();
+        $data = P2HForklfitModel::whereDate('tanggal', $today)->get();
 
         return response()->json($data);
     }
@@ -396,9 +492,34 @@ class WarehouseController extends Controller
     public function getP2HGroupedDetail(Request $request)
     {
 
-        $jenis = $request->jenis_p2h;
-        $data = P2HModel::orderBy('tanggal', 'desc')->where('jenis_p2h', $jenis)->get()
+        $data = P2HForklfitModel::orderBy('tanggal', 'desc')->get()
         ->groupBy(fn ($item) => $item->jenis_p2h . '|' . $item->tanggal . '|' . $item->nomor_unit);
+
+        $result = [];
+
+        foreach ($data as $groupKey => $items) {
+            [$jenis_p2h, $tanggal, $nomor_unit] = explode('|', $groupKey);
+
+            $shiftData = [];
+
+            foreach ($items as $item) {
+                $shiftData[$item->shift] = $item;
+            }
+
+            $result[] = [
+                'tanggal' => $tanggal,
+                'nomor_unit' => $nomor_unit,
+                'jenis_p2h' => $jenis_p2h,
+                'shifts' => $shiftData
+            ];
+        }
+
+        return response()->json($result);
+    }
+    public function getP2HGroupedDetailPalletMover()
+    {
+        $data = P2HPalletMoverModel::orderBy('tanggal', 'desc')->get()
+            ->groupBy(fn ($item) => $item->jenis_p2h . '|' . $item->tanggal . '|' . $item->nomor_unit);
 
         $result = [];
 

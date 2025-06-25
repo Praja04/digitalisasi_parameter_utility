@@ -76,7 +76,7 @@
                                     <label for="panel_type" class="form-label">Panel Type</label>
                                     <select id="panel_type" name="panel_type" class="form-select" required>
                                         <option value="">Pilih Panel</option>
-                                        @foreach(['MDP','COS','SDP1','SDP2','SDP3','SDP4','SDP5','SDP6','SDP7','SDP8','SDP9','SDP10','SDP11','SDP12','SDP13','SDP14'] as $panel)
+                                        @foreach(['MDP','SDP1','SDP2','SDP3','SDP4','SDP5','SDP6','SDP7','SDP8','SDP9','SDP10','SDP11','SDP12','SDP13','SDP14'] as $panel)
                                         <option value="{{ $panel }}">{{ $panel }}</option>
                                         @endforeach
                                     </select>
@@ -97,6 +97,10 @@
                                     <label for="mwh" class="form-label">MWh</label>
                                     <input type="number" name="mwh" class="form-control" step="0.01">
                                 </div>
+                                <div class="mb-3">
+                                    <label for="cos" class="form-label">Cos</label>
+                                    <input type="number" name="cos" class="form-control" step="0.01">
+                                </div>
                                 <button type="submit" class="btn btn-danger">Simpan Listrik</button>
                             </form>
                         </div>
@@ -109,22 +113,18 @@
                                     <input type="date" name="tanggal" id="tanggal_air" class="form-control" readonly>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="pemakaian_liter_awal" class="form-label">Volume Awal (Liter)</label>
+                                    <label for="pemakaian_liter_awal" class="form-label">Awal (Liter)</label>
                                     <input type="number" name="pemakaian_liter_awal" class="form-control" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="pemakaian_liter_akhir" class="form-label">Volume Akhir (Liter)</label>
+                                    <label for="pemakaian_liter_akhir" class="form-label">Akhir (Liter)</label>
                                     <input type="number" name="pemakaian_liter_akhir" class="form-control" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Jenis Pemakaian (area)</label>
-                                    <select name="jenis_pemakaian" class="form-control" required>
-                                        <option value="">-- Pilih Jenis Pemakaian --</option>
-                                        <option value="Outlet Storage RO">Outlet Storage RO</option>
-                                        <option value="Outlet Storage RO Reject">Outlet Storage RO Reject</option>
-                                        <option value="Outlet Fresh Water 1">Outlet Fresh Water 1</option>
-                                        <option value="Outlet Fresh Water 2">Outlet Fresh Water 2</option>
-                                        <option value="WWTP - Boiler - Fasum3">WWTP - Boiler - Fasum3</option>
+                                    <label for="area" class="form-label">Pilih Area</label>
+                                    <select id="air_area" name="jenis_pemakaian" class="form-select" required>
+
+
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -154,7 +154,7 @@
                                 <div class="mb-3">
                                     <label for="area" class="form-label">Pilih Area</label>
                                     <select id="chemical-area" name="chemical_area" class="form-select" required>
-                                        <option value="">Pilih Area</option>
+
 
                                     </select>
                                 </div>
@@ -182,17 +182,70 @@
 <!-- Script -->
 <script>
     $(document).ready(function() {
+
+        function toggleCosInput() {
+            if ($('#panel_type').val() === 'MDP') {
+                $('label[for="cos"]').parent().show();
+                $('input[name="cos"]').val('').prop('readonly', false);
+            } else {
+                $('label[for="cos"]').parent().hide();
+                let cos_value = null;
+                $('input[name="cos"]').val(cos_value).prop('readonly', true);
+            }
+        }
+
+        // Inisialisasi saat halaman dimuat
+        toggleCosInput();
+
+        // Jalankan saat pilihan berubah
+        $('#panel_type').on('change', toggleCosInput);
+
         $.get("{{url('eng/chemical-area')}}", function(data) {
+            const $select = $('#chemical-area');
+            $select.empty(); // Kosongkan option terlebih dahulu
+
+            // Tambahkan option default
+            $select.append($('<option>', {
+                value: '',
+                text: 'Pilih Area',
+                disabled: true,
+                selected: true
+            }));
+
+            // Tambahkan option untuk setiap area
             data.forEach(function(area) {
-                $('#chemical-area').append(
-                    $('<option>', {
-                        value: area.nama_area, // value = string nama_area
-                        text: area.nama_area, // label = string nama_area
-                        'data-id': area.id
-                    })
-                );
+                const $option = $('<option>', {
+                    value: area.nama_area,
+                    text: area.nama_area,
+                    'data-id': area.id,
+                    'data-nama': area.nama_area
+                });
+                $select.append($option);
             });
         });
+
+        $.get("{{url('eng/air-area')}}", function(data) {
+            const $select = $('#air_area');
+            $select.empty(); // Kosongkan option terlebih dahulu
+
+            // Tambahkan option default
+            $select.append($('<option>', {
+                value: '',
+                text: 'Pilih Area',
+                disabled: true,
+                selected: true
+            }));
+
+            // Tambahkan option untuk setiap area
+            data.forEach(function(area) {
+                const $option = $('<option>', {
+                    value: area.nama_area,
+                    text: area.nama_area,
+                });
+                $select.append($option);
+            });
+        });
+
 
         const today = new Date().toISOString().split('T')[0];
         $('#waktu_listrik').val(today);
@@ -227,13 +280,14 @@
 
         // Event perubahan dropdown area chemical
         $('#chemical-area').change(function() {
-            const areaId = $(this).find('option:selected').data('id');
+            const selectedOption = $(this).find('option:selected');
+            const areaId = selectedOption.data('id');
+
             if (areaId) {
                 $.ajax({
                     url: "{{ url('eng/chemical-types') }}/" + areaId,
                     type: 'GET',
                     success: function(data) {
-                        // Kosongkan container input
                         $('#chemical-input-container').empty();
 
                         if (data.length === 0) {
@@ -241,21 +295,24 @@
                             return;
                         }
 
-                        // Loop data chemical dan generate input
-                        data.forEach((chemical, index) => {
+                        data.forEach((chemical) => {
+                            const satuan = chemical.satuan || 'Kg';
+                            const isDefoamer = chemical.nama_chemical.toLowerCase().includes('defoamer'); // fleksibel, bisa 'Deformer', 'deFormer', dst.
+                            const requiredAttr = isDefoamer ? '' : 'required';
+
                             const inputGroup = `
-                                    <div class="mb-3 border rounded p-3">
-                                        <input type="hidden" name="chemical_ids[]" value="${chemical.id}">
-                                        <div class="mb-1">
-                                            <label class="form-label">${chemical.nama_chemical}</label>
-                                            <input type="hidden" name="jenis_pemakaian[]" class="form-control" value="${chemical.nama_chemical}" readonly>
-                                        </div>
-                                        <div class="mb-1">
-                                            <label class="form-label">Jumlah Pemakaian (Kg)</label>
-                                            <input type="number" name="jumlah_pemakaian[]" class="form-control" step="0.01" required>
-                                        </div>
-                                    </div>
-                                 `;
+                                                <div class="mb-3 border rounded p-3">
+                                                    <input type="hidden" name="chemical_ids[]" value="${chemical.id}">
+                                                    <div class="mb-1">
+                                                        <label class="form-label">${chemical.nama_chemical}</label>
+                                                        <input type="hidden" name="jenis_pemakaian[]" class="form-control" value="${chemical.nama_chemical}" readonly>
+                                                    </div>
+                                                    <div class="mb-1">
+                                                        <label class="form-label">Jumlah Pemakaian (${satuan})</label>
+                                                        <input type="number" name="jumlah_pemakaian[]" class="form-control" step="0.01" ${requiredAttr}>
+                                                    </div>
+                                                </div>
+                                            `;
                             $('#chemical-input-container').append(inputGroup);
                         });
                     },
@@ -329,8 +386,9 @@
                         text: response.message,
                     });
 
-                    // Reset form
-                    $('#form-pemakaian-air')[0].reset();
+                    setInterval(() => {
+                        location.reload(); // Reload halaman untuk update data
+                    }, 3000);
                 },
                 error: function(xhr) {
                     if (xhr.status === 422) {
@@ -368,7 +426,9 @@
                 data: formData,
                 success: function(res) {
                     Swal.fire('Berhasil', res.message, 'success');
-                    $('#form-pemakaian-listrik')[0].reset();
+                    setInterval(() => {
+                        location.reload(); // Reload halaman untuk update data
+                    }, 3000);
                 },
                 error: function(xhr) {
                     if (xhr.status === 422) {

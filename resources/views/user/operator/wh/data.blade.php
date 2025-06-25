@@ -53,7 +53,7 @@
             <!-- Filter Controls -->
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Cari Nomor Unit / Jenis P2H">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Cari Nomor Unit ">
                 </div>
                 <div class="col-md-4">
                     <input type="date" id="filterDate" class="form-control">
@@ -121,41 +121,48 @@
 <script>
     let currentData = [];
 
-    // Saat klik kartu unit (Forklift atau Pallet Mover)
-    $('.card-unit').on('click', function() {
-        let unit = $(this).data('unit');
+    let palletData = [];
 
-        // Ambil data dari controller via AJAX
+    $('.card-unit').on('click', function() {
+        const unit = $(this).data('unit');
+        const isPallet = unit === 'Pallet Mover';
+
+        const fetchUrl = isPallet ?
+            "{{ url('wh/p2h/data/pallet/mover') }}" :
+            "{{ url('wh/p2h/data') }}";
+
         $.ajax({
-            url: "{{ url('wh/p2h/data') }}",
+            url: fetchUrl,
             method: "GET",
-            data: {
-                jenis_p2h: unit
-            },
             success: function(response) {
-                currentData = response; // Simpan data untuk tombol Detail
+                const data = response;
+                palletData = isPallet ? response : [];
+                currentData = !isPallet ? response : [];
+
                 $('#p2hTableBody').empty();
                 $('#table-title').text(`Data P2H - ${unit}`);
                 $('#table-container').slideDown();
 
-                response.forEach((item, index) => {
+                data.forEach((item, index) => {
                     const shiftKeys = Object.keys(item.shifts).join(', ');
 
                     $('#p2hTableBody').append(`
-                        <tr>
-                            <td>${item.tanggal}</td>
-                            <td>${item.nomor_unit}</td>
-                            <td>${item.jenis_p2h}</td>
-                            <td>${shiftKeys}</td>
-                            <td>
-                                <button 
-                                    class="btn btn-sm btn-primary btn-detail" 
-                                    data-index="${index}">
-                                    Detail
-                                </button>
-                            </td>
-                        </tr>
-                    `);
+                    <tr>
+                        <td>${item.tanggal}</td>
+                        <td>${item.nomor_unit}</td>
+                        <td>${item.jenis_p2h}</td>
+                        <td>${shiftKeys}</td>
+                        <td>
+                            <button 
+                                class="btn btn-sm btn-primary btn-detail" 
+                                data-index="${index}"
+                                data-type="${isPallet ? 'pallet' : 'forklift'}"
+                            >
+                                Detail
+                            </button>
+                        </td>
+                    </tr>
+                `);
                 });
             },
             error: function() {
@@ -163,7 +170,6 @@
             }
         });
     });
-
     // Handler filter lokal
     function filterTable() {
         const keyword = $('#searchInput').val().toLowerCase();
@@ -199,34 +205,32 @@
 
     $(document).on('click', '.btn-detail', function() {
         const index = $(this).data('index');
-        const data = currentData[index];
+        const type = $(this).data('type');
+        const data = type === 'pallet' ? palletData[index] : currentData[index];
 
         let html = '';
 
         Object.entries(data.shifts).forEach(([shift, detail]) => {
-            // Ambil waktu dari created_at
             const time = new Date(detail.created_at).toLocaleTimeString('id-ID', {
                 hour: '2-digit',
                 minute: '2-digit',
             });
 
             html += `
-                        <div class="mb-4">
-                            <h5 class="mb-2">Shift ${shift}</h5>
-                            <p>
-                                <i class="bi bi-person-circle me-1"></i><strong>Operator:</strong> ${detail.operator_name}
-                                <i class="bi bi-clock me-1"></i><strong>Jam Input:</strong> ${time} WIB
-                            </p>
-                            
-                            <div class="row">
-                    `;
-
+            <div class="mb-4">
+                <h5 class="mb-2">Shift ${shift}</h5>
+                <p>
+                    <i class="bi bi-person-circle me-1"></i><strong>Operator:</strong> ${detail.operator_name}
+                    <i class="bi bi-clock ms-3 me-1"></i><strong>Jam Input:</strong> ${time} WIB
+                </p>
+                <div class="row">
+        `;
 
             for (const [key, value] of Object.entries(detail)) {
                 if (['id', 'created_at', 'updated_at', 'jenis_p2h', 'operator_name', 'p2h_model_id', 'shift'].includes(key)) continue;
 
                 const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                let badge;
+                let badge = '';
 
                 if (value === 1 || value === '1') {
                     badge = `<span class="badge bg-success">OK</span>`;
@@ -237,10 +241,10 @@
                 }
 
                 html += `
-                    <div class="col-md-4 mb-2">
-                        <strong>${label}</strong><br>${badge}
-                    </div>
-                `;
+                <div class="col-md-4 mb-2">
+                    <strong>${label}</strong><br>${badge}
+                </div>
+            `;
             }
 
             html += `</div></div>`;

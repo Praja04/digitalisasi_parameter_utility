@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\RetailD3Controller;
 use App\Http\Controllers\Api\RetailD5Controller;
 use App\Http\Controllers\Api\RetailD6Controller;
 use App\Http\Controllers\Api\RetailD7Controller;
+use App\Http\Controllers\Api\AllRetailController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SensorBoilerController;
 use App\Http\Controllers\Api\SensorDailyTankController;
@@ -49,6 +50,7 @@ Route::prefix('prd')->middleware('auth')->group(function () {
     Route::get('/dept_head/dashboard_retaild6', [ProduksiController::class, 'dashboardProduksi_retaild6']);
     Route::get('/dept_head/dashboard_retaild7', [ProduksiController::class, 'dashboardProduksi_retaild7']);
     Route::get('/dept_head/menu_retail', [ProduksiController::class, 'Menu_retail']);
+    Route::get('/dept_head/menu_variant', [ProduksiController::class, 'Menu_all_variant']);
     Route::get('/dept_head/all/retail', [ProduksiController::class, 'Dashboard_all_retail']);
     Route::get('/supervisor/dashboard', [ProduksiController::class, 'dashboardSupervisorProduksi']);
     Route::get('/foreman/dashboard', [ProduksiController::class, 'dashboardForemanProduksi']);
@@ -56,6 +58,8 @@ Route::prefix('prd')->middleware('auth')->group(function () {
 
 
     Route::get('/operator/detailbatch', [ProduksiController::class, 'showOperatorProduksi']);
+    Route::get('/operator/form_retail', [ProduksiController::class, 'Form_Retail']);
+
     Route::get('/operator/history', [ProduksiController::class, 'historyBatch']);
     Route::get('/operator/status_running', [ProduksiController::class, 'statusRunning']);
 
@@ -85,6 +89,10 @@ Route::prefix('prd')->middleware('auth')->group(function () {
     Route::post('/status-running/store', [ProduksiController::class, 'storeStatusRunning'])->name('statusrunning.store');
     Route::delete('/status-running/delete/{id}', [ProduksiController::class, 'destroyStatusRunning'])->name('statusrunning.destroy');
     Route::put('/status-running/update/{id}', [ProduksiController::class, 'updateStatusRunning'])->name('statusrunning.update');
+
+    //crud form retail
+    Route::post('/store/varian/retail', [ProduksiController::class, 'store_retail_varian']);
+    Route::post('/store/shift/retail', [ProduksiController::class, 'store_data_shift']);
 });
 //End PRD
 
@@ -153,14 +161,15 @@ Route::prefix('eng')->middleware('auth')->group(function () {
 
     // CRUD chemical
     Route::get('/data/chemical', [EngineeringController::class, 'indexChemical'])->name('chemical.index'); // Ambil semua data
-   // Route::post('/data/chemical/store', [EngineeringController::class, 'storeChemical'])->name('chemical.store'); // Simpan data baru
+    // Route::post('/data/chemical/store', [EngineeringController::class, 'storeChemical'])->name('chemical.store'); // Simpan data baru
     Route::post('/store/chemical', [EngineeringController::class, 'store_chemical'])->name('chemical.store'); // Simpan data baru
     Route::put('/data/chemical/{id}/update', [EngineeringController::class, 'updateChemical'])->name('chemical.update'); // Update status
     Route::delete('/data/chemical/{id}', [EngineeringController::class, 'destroyChemical'])->name('chemical.destroy'); // Hapus data
     Route::get('/chemical-types/{area_id}', [EngineeringController::class, 'getTypesByArea']);
     Route::get('/chemical-area', [EngineeringController::class, 'getChemicalAreas']);
+    Route::get('/air-area', [EngineeringController::class, 'getAirAreas']);
     // CRUD listrik
-   // Route::get('/data/listrik', [EngineeringController::class, 'data_listrik'])->name('listrik.data'); // Ambil semua data
+    // Route::get('/data/listrik', [EngineeringController::class, 'data_listrik'])->name('listrik.data'); // Ambil semua data
     Route::post('/data/listrik/store', [EngineeringController::class, 'storeListrik'])->name('listrik.store'); // Simpan data baru
     Route::put('/data/listrik/update/{id}', [EngineeringController::class, 'updateListrik'])->name('listrik.update');
     Route::get('/data/listrik/detail/{id}', [EngineeringController::class, 'DetailPemakaianListrik'])->name('listrik.data_detail'); // Ambil semua data
@@ -201,12 +210,18 @@ Route::prefix('wh')->group(function () {
     Route::get('/foreman/detail/p2h', [WarehouseController::class, 'DetailP2HForemanWarehouse']);
     Route::get('/foreman/detail/p2h/{id}', [WarehouseController::class, 'DetailP2HForeman']);
 
+    //forklift
     Route::get('/p2h', [WarehouseController::class, 'data_master']);
     Route::post('/p2h/store', [WarehouseController::class, 'storeP2h']);
     Route::put('/p2h/update-detail/{id}', [WarehouseController::class, 'updateDetail']);
     Route::delete('/p2h/delete/{id}', [WarehouseController::class, 'destroyP2h']);
     Route::get('/p2h/{id}/detail', [WarehouseController::class, 'formDetailP2h'])->name('p2h.detail.form');
     Route::post('/p2h/{id}/detail', [WarehouseController::class, 'storeDetailP2h'])->name('p2h.detail.store');
+
+    //pallet
+    Route::post('/p2h/store/pallet', [WarehouseController::class, 'storeP2hPalletMover']);
+    Route::put('/p2h/update-detail/{id}', [WarehouseController::class, 'updateDetailPalletMover']);
+    Route::delete('/p2h/delete/{id}', [WarehouseController::class, 'destroyP2hPalletMover']);
 
     //api
     Route::get('/p2h/summary', [WarehouseController::class, 'summary']);
@@ -218,6 +233,7 @@ Route::prefix('wh')->group(function () {
     Route::get('/p2h/masalah-berulang', [WarehouseController::class, 'masalahBerulang']);
     Route::get('/p2h/hari-ini', [WarehouseController::class, 'pemeriksaanHariIni']);
     Route::get('/p2h/data', [WarehouseController::class, 'getP2HGroupedDetail']);
+    Route::get('/p2h/data/pallet/mover', [WarehouseController::class, 'getP2HGroupedDetailPalletMover']);
 
 
 
@@ -444,4 +460,7 @@ Route::prefix('retail')->group(function () {
     Route::get('/d7/mesin/stop', [RetailD7Controller::class, 'durasiOffMesinPerShift']);
     Route::get('/d7/nozzle-count', [RetailD7Controller::class, 'getNozzleCount']);
     Route::get('/d7/output/gagal/filling', [RetailD7Controller::class, 'getGagalFilling']);
+
+    //
+    Route::get('/data/all/retail', [AllRetailController::class, 'data_retail_all_varian']);
 });

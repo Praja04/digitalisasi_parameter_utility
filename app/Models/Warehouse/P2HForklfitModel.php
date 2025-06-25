@@ -4,10 +4,10 @@ namespace App\Models\Warehouse;
 
 use Illuminate\Database\Eloquent\Model;
 
-class P2HModel extends Model
+class P2HForklfitModel extends Model
 {
     //
-    protected $table = 'master_p2h';
+    protected $table = 'p2h_forklift';
     protected $primaryKey = 'id';
     protected $fillable = [
         'tanggal', 'jenis_p2h', 'nomor_unit', 'dept', 'cek_baterai',

@@ -12,9 +12,9 @@ use App\Models\eng\PemakaianChemicalModel;
 use Illuminate\Support\Carbon;
 use App\Services\TelegramService;
 use App\Models\Boiler\ReadSensors_Boiler;
+use App\Models\eng\AirArea;
 use Illuminate\Support\Facades\DB;
 use App\Models\eng\ChemicalType;
-use App\Models\eng\Chemical;
 use App\Models\eng\ChemicalArea;
 
 class EngineeringController extends Controller
@@ -182,7 +182,7 @@ class EngineeringController extends Controller
             'tanggal' => 'required|date',
             'pemakaian_liter_awal' => 'required|numeric',
             'pemakaian_liter_akhir' => 'required|numeric',
-            'jenis_pemakaian' => 'required|in:Outlet Storage RO,Outlet Storage RO Reject,Outlet Fresh Water 1,Outlet Fresh Water 2,WWTP - Boiler - Fasum3',
+            'jenis_pemakaian' => 'required',
             'notes' => 'nullable|string|max:255',
         ]);
 
@@ -191,7 +191,18 @@ class EngineeringController extends Controller
                 'message' => 'Validasi gagal.',
                 'errors' => $validator->errors(),
             ], 422);
+        } // Cek apakah data dengan tanggal + jenis_pemakaian sudah ada
+        $exists = PemakaianAirModel::whereDate('tanggal', $request->input('tanggal'))
+            ->where('jenis_pemakaian', $request->input('jenis_pemakaian'))
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'message' => 'Data dengan tanggal dan jenis pemakaian yang sama sudah ada.',
+            ], 409); // 409 Conflict
         }
+
+
 
         try {
             $air = new PemakaianAirModel();
@@ -464,6 +475,9 @@ class EngineeringController extends Controller
         ]);
     }
 
+
+
+    //dipake
     //api air
 
     public function getPemakaianAir($mode)
@@ -536,18 +550,19 @@ class EngineeringController extends Controller
         // Validasi input
         $validated = $request->validate([
             'waktu' => 'required|date',
-           // 'operator' => 'required|string|max:100',
-            'panel_type' => 'required|in:MDP,COS,SDP1,SDP2,SDP3,SDP4,SDP5,SDP6,SDP7,SDP8,SDP9,SDP10,SDP11,SDP12,SDP13,SDP14',
+            // 'operator' => 'required|string|max:100',
+            'panel_type' => 'required|in:MDP,SDP1,SDP2,SDP3,SDP4,SDP5,SDP6,SDP7,SDP8,SDP9,SDP10,SDP11,SDP12,SDP13,SDP14',
             'volt' => 'nullable|numeric',
             'a' => 'nullable|numeric',
             'kw' => 'nullable|numeric',
             'mwh' => 'nullable|numeric',
+            'cos' => 'nullable|numeric',
         ]);
         $operator = Session::get('username');
         try {
             $exists = PemakaianListrikModel::whereDate('waktu', $validated['waktu'])
-            ->where('panel_type', $validated['panel_type'])
-            ->exists();
+                ->where('panel_type', $validated['panel_type'])
+                ->exists();
 
             if ($exists) {
                 return response()->json([
@@ -564,6 +579,7 @@ class EngineeringController extends Controller
                 'a' => $validated['a'] ?? null,
                 'kw' => $validated['kw'] ?? null,
                 'mwh' => $validated['mwh'] ?? null,
+                'cos' => $validated['cos'] ?? null,
             ]);
 
             return response()->json(['success' => true, 'message' => 'Data listrik berhasil disimpan.', 'data' => $data]);
@@ -571,7 +587,7 @@ class EngineeringController extends Controller
             return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menyimpan data.', 'error' => $e->getMessage()], 500);
         }
     }
-    
+
     public function updateListrik(Request $request, $id)
     {
         $data = PemakaianListrikModel::findOrFail($id);
@@ -758,6 +774,7 @@ class EngineeringController extends Controller
                 'id' => $chemical->id,
                 'chemical_area_id' => $chemical->chemical_area_id,
                 'nama_chemical' => trim($chemical->nama_chemical),
+                'satuan' => $chemical->satuan,
                 'nama_area' => $chemical->area->nama_area ?? '-',
                 'created_at' => $chemical->created_at,
                 'updated_at' => $chemical->updated_at,
@@ -783,7 +800,7 @@ class EngineeringController extends Controller
         $keterangan = $request->input('keterangan');
         $jenisPemakaian = $request->input('jenis_pemakaian');
         $jumlahPemakaian = $request->input('jumlah_pemakaian');
-        
+
         $operator = Session::get('username');
         if (count($jenisPemakaian) !== count($jumlahPemakaian)) {
             return response()->json(['message' => 'Data chemical tidak valid.'], 422);
@@ -816,24 +833,24 @@ class EngineeringController extends Controller
                 'updated_at' => now(),
             ]);
         }
-        
+
 
         return response()->json(['message' => 'Data pemakaian chemical berhasil disimpan.']);
     }
 
     public function getPemakaianAirData(Request $request)
     {
-        $query = PemakaianAirModel::query();
+        
+        $data = PemakaianAirModel::orderBy('tanggal')->get();
 
-        if ($request->filled('jenis_pemakaian')) {
-            $query->where('jenis_pemakaian', $request->jenis_pemakaian);
-        }
-
-        $data = $query->orderBy('tanggal', 'desc')->get()->groupBy('tanggal');
+        // Kelompokkan berdasarkan tanggal
+        $grouped = $data->groupBy(function ($item) {
+            return date('Y-m-d', strtotime($item->tanggal));
+        });
 
         $result = [];
 
-        foreach ($data as $tanggal => $items) {
+        foreach ($grouped as $tanggal => $items) {
             $result[] = [
                 'tanggal' => $tanggal,
                 'data' => $items->map(function ($item) {
@@ -844,6 +861,8 @@ class EngineeringController extends Controller
                         'jenis_pemakaian' => $item->jenis_pemakaian,
                         'created_by' => $item->created_by,
                         'notes' => $item->notes,
+                        'created_at' => $item->created_at,
+                        'updated_at' => $item->updated_at,
                     ];
                 })->values(),
             ];
@@ -855,37 +874,54 @@ class EngineeringController extends Controller
 
     public function getPemakaianChemicalData(Request $request)
     {
-        $jenis = $request->jenis_pemakaian;
+        // Ambil data utama
+        $data = PemakaianChemicalModel::orderBy('tanggal')->get();
 
-        // Mulai query
-        $query = PemakaianChemicalModel::query();
+        // Siapkan mapping satuan dengan key yang dinormalisasi
+        $satuanMap = ChemicalType::pluck('satuan', 'nama_chemical')->mapWithKeys(function ($satuan, $nama) {
+            $key = strtolower(preg_replace('/[^a-z0-9]/', '', $nama));
+            return [$key => $satuan];
+        });
 
-        // Filter hanya jika jenis_pemakaian diisi
-        if (!empty($jenis)) {
-            $query->where('jenis_pemakaian', $jenis);
-        }
-
-        // Ambil data dan grup berdasarkan tanggal
-        $data = $query->orderBy('tanggal', 'desc')->get()->groupBy('tanggal');
+        // Kelompokkan berdasarkan tanggal
+        $grouped = $data->groupBy(fn ($item) => date('Y-m-d', strtotime($item->tanggal)));
 
         $result = [];
 
-        foreach ($data as $tanggal => $items) {
+        foreach ($grouped as $tanggal => $items) {
+            $jenisGrouped = $items->groupBy('jenis_pemakaian');
+
+            $jenisData = [];
+
+            foreach ($jenisGrouped as $jenis => $entries) {
+                // Normalisasi untuk lookup
+                $lookupKey = strtolower(preg_replace('/[^a-z0-9]/', '', $jenis));
+                $satuan = $satuanMap[$lookupKey] ?? null;
+                // Render shift detail
+                $shifts = $entries->map(function ($entry) use ($satuan) {
+                    $nilai = $entry->nilai_pemakaian;
+                    $formatted = is_null($nilai) ? '-' : $nilai . ($satuan ? " {$satuan}" : '');
+                    return [
+                        'shift' => $entry->shift,
+                        'nilai_pemakaian' => $formatted,
+                        'area' => $entry->chemical_area,
+                        'operator' => $entry->operator,
+                        'notes' => $entry->notes,
+                        'created_at' => $entry->created_at,
+                        'updated_at' => $entry->updated_at,
+                    ];
+                })->sortBy(fn ($s) => preg_replace('/\D/', '', strtolower($s['shift'])))
+                ->values();
+
+                $jenisData[] = [
+                    'jenis_pemakaian' => $jenis,
+                    'shifts' => $shifts
+                ];
+            }
+
             $result[] = [
                 'tanggal' => $tanggal,
-                'data' => $items->map(function ($item) {
-                    return [
-                        'id' => $item->id,
-                        'chemical_area' => $item->chemical_area,
-                        'jenis_pemakaian' => $item->jenis_pemakaian,
-                        'nilai_pemakaian' => $item->nilai_pemakaian,
-                        'operator' => $item->operator,
-                        'shift' => $item->shift,
-                        'notes' => $item->notes,
-                        'created_at' => $item->created_at,
-                        'updated_at' => $item->updated_at,
-                    ];
-                })->values(),
+                'data' => $jenisData
             ];
         }
 
@@ -894,29 +930,70 @@ class EngineeringController extends Controller
 
     public function getPemakaianListrikData(Request $request)
     {
-        // Ambil semua data, diurutkan berdasarkan waktu terbaru
-        $data = PemakaianListrikModel::orderBy('waktu', 'desc')->get()
-            ->groupBy(fn ($item) => date('Y-m-d', strtotime($item->waktu)));
+        $defaultPanelOrder = ['MDP', 'SDP1', 'SDP2', 'SDP3', 'SDP4', 'SDP5', 'SDP6', 'SDP7', 'SDP8', 'SDP9', 'SDP10', 'SDP11', 'SDP12', 'SDP13', 'SDP14'];
 
+        $data = PemakaianListrikModel::orderBy('waktu')->get();
+
+        // Kelompokkan data berdasarkan tanggal
+        $grouped = $data->groupBy(function ($item) {
+            return date('Y-m-d', strtotime($item->waktu));
+        });
+
+        $sortedDates = $grouped->keys()->sort()->values(); // pastikan urut tanggal naik
         $result = [];
 
-        foreach ($data as $tanggal => $items) {
+        foreach ($sortedDates as $index => $tanggal) {
+            $items = $grouped[$tanggal];
+            $pivot = [];
+            $usage = [];
+            $operators = [];
+
+            // Panel tersedia dan terurut
+            $availablePanels = $items->pluck('panel_type')->unique()->values()->all();
+            $panels = array_values(array_intersect($defaultPanelOrder, $availablePanels));
+
+            // Ambil operator
+            foreach ($panels as $panel) {
+                $panelItem = $items->firstWhere('panel_type', $panel);
+                $operators[$panel] = $panelItem?->operator ?? null;
+            }
+
+            // Ambil semua parameter
+            $parameters = ['volt', 'a', 'kw', 'mwh', 'cos'];
+            foreach ($parameters as $param) {
+                $pivot[$param] = [];
+                foreach ($panels as $panel) {
+                    $panelItem = $items->firstWhere('panel_type', $panel);
+                    $pivot[$param][$panel] = $panelItem?->$param ?? null;
+                }
+            }
+
+            if ($index < count($sortedDates) - 1) {
+                $nextTanggal = $sortedDates[$index + 1];
+                $nextItems = $grouped[$nextTanggal];
+
+                foreach ($panels as $panel) {
+                    $currVolt = $items->firstWhere('panel_type', $panel)?->volt;
+                    $nextVolt = $nextItems->firstWhere('panel_type', $panel)?->volt;
+
+                    if (!is_null($currVolt) && !is_null($nextVolt)) {
+                        $usage[$panel] = $currVolt - $nextVolt;
+                    } else {
+                        $usage[$panel] = null;
+                    }
+                }
+            } else {
+                foreach ($panels as $panel) {
+                    $usage[$panel] = null;
+                }
+            }
+
             $result[] = [
                 'tanggal' => $tanggal,
-                'data' => $items->map(function ($item) {
-                    return [
-                        'id' => $item->id,
-                        'waktu' => $item->waktu,
-                        'operator' => $item->operator,
-                        'panel_type' => $item->panel_type,
-                        'volt' => $item->volt,
-                        'a' => $item->a,
-                        'kw' => $item->kw,
-                        'mwh' => $item->mwh,
-                        'created_at' => $item->created_at,
-                        'updated_at' => $item->updated_at,
-                    ];
-                })->values(),
+                'operator' => $operators,
+                'panels' => $panels,
+                'rows' => $pivot,
+                'usage' => $usage, // Tambahkan usage di sini
             ];
         }
 
@@ -926,6 +1003,13 @@ class EngineeringController extends Controller
     public function getChemicalAreas()
     {
         $areas = ChemicalArea::orderBy('nama_area')->get();
+
+        return response()->json($areas);
+    }
+
+    public function getAirAreas()
+    {
+        $areas = AirArea::orderBy('nama_area')->get();
 
         return response()->json($areas);
     }

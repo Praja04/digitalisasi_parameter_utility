@@ -76,15 +76,16 @@
                 <div class="card-body">
                     <h5 id="table-title" class="mb-3"></h5>
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover" id="Table">
-                            <thead class="table-light">
+                        <table class="table table-bordered table-hover" id="dateTable">
+                            <thead>
                                 <tr>
-
-                                    <th>Aksi</th>
+                                    <th>Tanggal</th>
+                                    <th>Total Entries</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="p2hTableBody">
-                                <!-- Data akan dimasukkan di sini oleh JavaScript -->
+                            <tbody>
+                                <!-- Baris diisi oleh JS/jQuery -->
                             </tbody>
                         </table>
                         <div id="pagination" class="mt-3 d-flex justify-content-center"></div>
@@ -95,182 +96,201 @@
         </div>
 
         <!-- Modal Detail Shift -->
-        <div class="modal fade" id="modalDetail" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <!-- Modal -->
+        <div class="modal fade" id="detailModal" tabindex="-1">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
-                    <div class="modal-header ">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Details: <span id="modalDate"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body" id="modalDetailBody">
-                        <!-- Konten detail akan diisi via JS -->
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <button type="button" class="btn btn-primary" id="downloadPDF">Download PDF</button>
+                    <div class="modal-body" id="modalContent">
+                        <p>Loading...</p>
                     </div>
                 </div>
             </div>
-
-
         </div>
+
     </div>
 </div>
 
-<!-- Script -->
 <script>
     $(document).ready(function() {
-        let allRows = []; // semua baris data mentah
+        const endpoints = {
+            Listrik: "{{url('/eng/data/listrik')}}",
+            Air: "{{url('/eng/data/air')}}",
+            Chemical: "{{url('/eng/data/chemical')}}"
+        };
+
         let currentUnit = '';
-        let currentPage = 1;
-        const rowsPerPage = 10;
+        let allData = [];
 
         $('.card-unit').on('click', function() {
             currentUnit = $(this).data('unit');
-            let url = '';
-            let tableHeader = '';
-
-            if (currentUnit === 'Air') {
-                url = "{{url('/eng/data/air')}}";
-                tableHeader = `<tr>
-                    <th>Tanggal</th>
-                    <th>Liter Awal</th>
-                    <th>Liter Akhir</th>
-                    <th>Jenis</th>
-                    <th>Operator</th>
-                    <th>Catatan</th>
-                </tr>`;
-            } else if (currentUnit === 'Listrik') {
-                url = "{{url('/eng/data/listrik')}}";
-                tableHeader = `<tr>
-                    <th>Waktu</th>
-                    <th>Operator</th>
-                    <th>Panel</th>
-                    <th>Volt</th>
-                    <th>Ampere</th>
-                    <th>KW</th>
-                    <th>MWh</th>
-                </tr>`;
-            } else if (currentUnit === 'Chemical') {
-                url = "{{url('/eng/data/chemical')}}";
-                tableHeader = `<tr>
-                    <th>Tanggal</th>
-                    <th>Area</th>
-                    <th>Jenis</th>
-                    <th>Nilai</th>
-                    <th>Operator</th>
-                    <th>Shift</th>
-                    <th>Catatan</th>
-                </tr>`;
-            }
-
-            $('#table-title').text('Data Pemakaian ' + currentUnit);
-            $('#Table thead').html(tableHeader);
+            $('#table-title').text(`Data Pemakaian ${currentUnit}`);
             $('#table-container').show();
 
-            $.ajax({
-                url: url,
-                method: 'GET',
-                success: function(response) {
-                    allRows = []; // reset
-                    response.forEach(group => {
-                        group.data.forEach(item => {
-                            let row = '';
-                            if (currentUnit === 'Air') {
-                                row = `<tr>
-                                    <td>${group.tanggal}</td>
-                                    <td>${item.pemakaian_awal}</td>
-                                    <td>${item.pemakaian_akhir}</td>
-                                    <td>${item.jenis_pemakaian}</td>
-                                    <td>${item.created_by}</td>
-                                    <td>${item.notes || '-'}</td>
-                                </tr>`;
-                            } else if (currentUnit === 'Listrik') {
-                                row = `<tr>
-                                    <td>${item.waktu}</td>
-                                    <td>${item.operator}</td>
-                                    <td>${item.panel_type}</td>
-                                    <td>${item.volt}</td>
-                                    <td>${item.a}</td>
-                                    <td>${item.kw}</td>
-                                    <td>${item.mwh}</td>
-                                </tr>`;
-                            } else if (currentUnit === 'Chemical') {
-                                row = `<tr>
-                                    <td>${group.tanggal}</td>
-                                    <td>${item.chemical_area}</td>
-                                    <td>${item.jenis_pemakaian}</td>
-                                    <td>${item.nilai_pemakaian}</td>
-                                    <td>${item.operator}</td>
-                                    <td>${item.shift}</td>
-                                    <td>${item.notes || '-'}</td>
-                                </tr>`;
-                            }
-                            allRows.push(row);
-                        });
-                    });
-
-                    currentPage = 1;
-                    applyFilterAndRender();
-                },
-                error: function(xhr) {
-                    console.error(xhr.responseText);
-                    alert("Gagal mengambil data.");
-                }
+            $.getJSON(endpoints[currentUnit], function(data) {
+                allData = data;
+                renderSummaryTable(data);
             });
         });
 
-        function applyFilterAndRender() {
+        function renderSummaryTable(data) {
+            allData = data;
+            applyFilters();
+
+        }
+
+        $(document).on('click', '.view-detail', function() {
+            const index = $(this).data('index');
+            const entry = allData[index];
+            $('#modalDate').text(entry.tanggal);
+            $('#modalContent').html(generatePivot(entry));
+            $('#detailModal').modal('show');
+        });
+
+        function generatePivot(entry) {
+            if (currentUnit === 'Listrik') {
+                const headers = entry.panels;
+                const parameters = Object.keys(entry.rows || {});
+                const usage = entry.usage || {};
+
+                // Baris operator
+                const operatorRow = `<tr><th>Operator</th>${headers.map(panel => `<td>${entry.operator?.[panel] ?? '-'}</td>`).join('')}</tr>`;
+
+                // Baris usage volt
+                const usageRow = `<tr><th>Usage (Volt)</th>${headers.map(panel => `<td>${usage[panel] ?? '-'}</td>`).join('')}</tr>`;
+
+                // Baris parameter (volt, a, kw, dll)
+                const paramRows = parameters.map(param => {
+                    const cells = headers.map(panel => `<td>${entry.rows[param][panel] ?? '-'}</td>`);
+                    return `<tr><th>${param}</th>${cells.join('')}</tr>`;
+                });
+
+                const allRows = [operatorRow, usageRow, ...paramRows];
+
+                return renderTable(headers, allRows, 'Keterangan');
+            }
+
+            if (currentUnit === 'Air') {
+                const headers = entry.data.map(d => d.jenis_pemakaian);
+                const rows = [{
+                        label: 'Awal',
+                        cells: entry.data.map(d => `${d.pemakaian_awal} liter`)
+                    },
+                    {
+                        label: 'Akhir',
+                        cells: entry.data.map(d => `${d.pemakaian_akhir} liter`)
+                    },
+                    {
+                        label: 'Created By',
+                        cells: entry.data.map(d => d.created_by)
+                    }
+                ];
+
+                return renderTable(headers, rows.map(r => {
+                    const td = r.cells.map(c => `<td>${c}</td>`).join('');
+                    return `<tr><th>${r.label}</th>${td}</tr>`;
+                }), 'Jenis Pemakaian');
+            }
+
+            if (currentUnit === 'Chemical') {
+                const shiftsSet = new Set();
+                const allParams = ['Nilai Pemakaian', 'Area', 'Operator', 'Notes'];
+
+                entry.data.forEach(d => d.shifts.forEach(s => shiftsSet.add(s.shift)));
+                const shifts = Array.from(shiftsSet);
+                const headers = shifts; // horizontal = shift
+
+                const rows = entry.data.map(d => {
+                    const barisNilai = shifts.map(s => {
+                        const dataShift = d.shifts.find(x => x.shift === s);
+                        return `<td>${dataShift?.nilai_pemakaian ?? '-'}</td>`;
+                    }).join('');
+                    const barisArea = shifts.map(s => {
+                        const dataShift = d.shifts.find(x => x.shift === s);
+                        return `<td>${dataShift?.area ?? '-'}</td>`;
+                    }).join('');
+                    const barisOperator = shifts.map(s => {
+                        const dataShift = d.shifts.find(x => x.shift === s);
+                        return `<td>${dataShift?.operator ?? '-'}</td>`;
+                    }).join('');
+                    const barisNotes = shifts.map(s => {
+                        const dataShift = d.shifts.find(x => x.shift === s);
+                        return `<td>${dataShift?.notes ?? '-'}</td>`;
+                    }).join('');
+
+                    return `
+          <tr class="table-primary"><th colspan="${shifts.length + 1}">${d.jenis_pemakaian}</th></tr>
+          <tr><th>Nilai Pemakaian</th>${barisNilai}</tr>
+          <tr><th>Area</th>${barisArea}</tr>
+          <tr><th>Operator</th>${barisOperator}</tr>
+          <tr><th>Notes</th>${barisNotes}</tr>
+        `;
+                });
+
+                return renderTable(headers, rows, 'Parameter');
+            }
+
+            return '<p>Data tidak tersedia.</p>';
+        }
+
+        function renderTable(headers, rows, rowHeader) {
+            return `
+      <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table table-bordered table-striped" style="min-width: 800px;">
+          <thead>
+            <tr><th>${rowHeader}</th>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
+          </thead>
+          <tbody>${rows.join('')}</tbody>
+        </table>
+      </div>
+    `;
+        }
+
+
+        function applyFilters() {
             const keyword = $('#searchInput').val().toLowerCase();
-            const date = $('#filterDate').val();
+            const filterDate = $('#filterDate').val();
+            const tbody = $('#dateTable tbody').empty();
 
-            const filteredRows = allRows.filter(rowHtml => {
-                const tempDiv = $('<div>').html(rowHtml);
-                const row = tempDiv.find('tr');
-                const text = row.text().toLowerCase();
-                const rowDate = row.find('td:first').text().trim();
-
-                const matchKeyword = keyword === '' || text.includes(keyword);
-                const matchDate = date === '' || rowDate.includes(date);
-                return matchKeyword && matchDate;
+            const filtered = allData.filter((item) => {
+                const tgl = item.tanggal.toLowerCase();
+                const keywordMatch = !keyword || tgl.includes(keyword);
+                const dateMatch = !filterDate || tgl === filterDate;
+                return keywordMatch && dateMatch;
             });
 
-            renderTable(filteredRows);
-        }
-
-        function renderTable(dataRows) {
-            const totalPages = Math.ceil(dataRows.length / rowsPerPage);
-            if (currentPage > totalPages) currentPage = 1;
-
-            const start = (currentPage - 1) * rowsPerPage;
-            const paginatedRows = dataRows.slice(start, start + rowsPerPage);
-
-            $('#p2hTableBody').html(paginatedRows.join(''));
-
-            // Render pagination
-            $('#pagination').empty();
-            if (totalPages <= 1) return;
-
-            for (let i = 1; i <= totalPages; i++) {
-                const btn = $('<button>')
-                    .addClass('btn btn-sm mx-1 ' + (i === currentPage ? 'btn-primary' : 'btn-outline-primary'))
-                    .text(i)
-                    .on('click', function() {
-                        currentPage = i;
-                        renderTable(dataRows);
-                    });
-                $('#pagination').append(btn);
+            if (filtered.length === 0) {
+                tbody.append('<tr><td colspan="3" class="text-center">Tidak ada data ditemukan.</td></tr>');
+                return;
             }
+
+            filtered.forEach((item, index) => {
+                let count = 0;
+                if (currentUnit === 'Air') count = item.data?.length || 0;
+                else if (currentUnit === 'Listrik') count = item.panels?.length || 0;
+                else if (currentUnit === 'Chemical') count = item.data?.length || 0;
+
+                const row = `
+            <tr>
+                <td>${item.tanggal}</td>
+                <td>${count}</td>
+                <td><button class="btn btn-sm btn-primary view-detail" data-index="${index}">Lihat Detail</button></td>
+            </tr>`;
+                tbody.append(row);
+            });
         }
+
+        $('#searchInput, #filterDate').on('input change', function() {
+            applyFilters();
+        });
 
         $('#resetFilter').on('click', function() {
             $('#searchInput').val('');
             $('#filterDate').val('');
-            currentPage = 1;
-            applyFilterAndRender();
-        });
-
-        $('#searchInput, #filterDate').on('input change', function() {
-            currentPage = 1;
-            applyFilterAndRender();
+            applyFilters();
         });
     });
 </script>
@@ -321,6 +341,11 @@
         background-color: #f8d7da;
         color: #842029;
         border-color: #dc3545;
+    }
+
+    .table-border-thick td,
+    .table-border-thick th {
+        border: 1px solid #333 !important;
     }
 </style>
 
