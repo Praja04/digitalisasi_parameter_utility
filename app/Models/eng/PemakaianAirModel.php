@@ -16,8 +16,8 @@ class PemakaianAirModel extends Model
 
     protected $fillable = [
         'tanggal',
-        'pemakaian_liter_awal',
-        'pemakaian_liter_akhir',
+        'pemakaian_awal',
+        'pemakaian_akhir',
         'jenis_pemakaian',
         'created_by',
         'notes'

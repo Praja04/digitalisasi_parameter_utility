@@ -135,10 +135,31 @@
             </div>
         </div>
 
+        <div class="modal fade" id="editPanelModal" tabindex="-1">
+            <div class="modal-dialog">
+                <form id="editPanelForm" class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Form</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" id="editPanelFormBody">
+                        Loading...
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
     $(document).ready(function() {
         const endpoints = {
             Listrik: "{{url('/eng/data/listrik')}}",
@@ -281,12 +302,28 @@
         function buildListrikTable(entry) {
             const headers = entry.panels;
             const parameters = Object.keys(entry.rows || {});
-            const operatorRow = `<tr><th>Operator</th>${headers.map(p => `<td>${entry.operator?.[p] ?? '-'}</td>`).join('')}</tr>`;
+
+            const operatorRow = `<tr>
+                <th>Operator</th>
+                ${headers.map(p => `
+                    <td>
+                    ${entry.operator?.[p] ?? '-'}
+                    <button class="btn btn-sm btn-warning btn-edit-panel mt-1" 
+                            data-panel="${p}" 
+                            data-entry='${JSON.stringify(entry)}'>
+                        Edit
+                    </button>
+                    </td>
+                `).join('')}
+                </tr>`;
+
             const usageRow = `<tr><th>Usage (Volt)</th>${headers.map(p => `<td>${entry.usage?.[p] ?? '-'}</td>`).join('')}</tr>`;
+
             const paramRows = parameters.map(param => {
                 const cells = headers.map(p => `<td>${entry.rows[param][p] ?? '-'}</td>`);
                 return `<tr><th>${param}</th>${cells.join('')}</tr>`;
             });
+
             return renderTable(headers, [operatorRow, usageRow, ...paramRows], 'Keterangan');
         }
 
@@ -303,8 +340,19 @@
                 {
                     label: 'Created By',
                     cells: entry.data.map(d => d.created_by)
+                },
+                {
+                    label: 'Action',
+                    cells: entry.data.map(d => `
+                <button class="btn btn-sm btn-warning btn-edit-air"
+                        data-entry='${JSON.stringify(d)}'
+                        data-tanggal="${entry.tanggal}">
+                    Edit
+                </button>
+            `)
                 }
             ];
+
             const markup = rows.map(r => `<tr><th>${r.label}</th>${r.cells.map(c => `<td>${c}</td>`).join('')}</tr>`);
             return renderTable(headers, markup, 'Jenis Pemakaian');
         }
@@ -312,6 +360,22 @@
         function buildChemicalTable(entry) {
             const shifts = Array.from(new Set(entry.data.flatMap(d => d.shifts.map(s => s.shift))));
             const rows = entry.data.map(d => {
+                const actionRow = `<tr><th>Action</th>${
+            shifts.map(s => {
+                const shiftData = d.shifts.find(x => x.shift === s);
+                return `<td>
+                    ${shiftData ? `
+                        <button class="btn btn-sm btn-warning btn-edit-chemical"
+                                data-shift="${s}" 
+                                data-jenis="${d.jenis_pemakaian}" 
+                                data-tanggal="${entry.tanggal}"
+                                data-entry='${JSON.stringify(shiftData)}'>
+                            Edit
+                        </button>` : '-' }
+                </td>`;
+            }).join('')
+        }</tr>`;
+
                 const group = ['nilai_pemakaian', 'area', 'operator', 'notes'].map(attr => {
                     const cells = shifts.map(s => {
                         const sd = d.shifts.find(x => x.shift === s);
@@ -322,12 +386,116 @@
                 });
 
                 return `
-                <tr class="table-primary"><th colspan="${shifts.length + 1}">${d.jenis_pemakaian}</th></tr>
-                ${group.join('')}`;
+            <tr class="table-primary"><th colspan="${shifts.length + 1}">${d.jenis_pemakaian}</th></tr>
+            ${group.join('')}
+            ${actionRow}
+        `;
             });
 
             return renderTable(shifts, rows, 'Parameter');
         }
+        $(document).on('click', '.btn-edit-panel', function() {
+            const panel = $(this).data('panel');
+            const data = $(this).data('entry');
+
+            const volt = data.rows?.volt?.[panel] ?? '';
+            const amp = data.rows?.a?.[panel] ?? '';
+            const kw = data.rows?.kw?.[panel] ?? '';
+            const mwh = data.rows?.mwh?.[panel] ?? '';
+            const cos = data.rows?.cos?.[panel] ?? '';
+            const usage = data.usage?.[panel] ?? '';
+            const operator = data.operator?.[panel] ?? '';
+
+            const formHtml = `
+                <input type="hidden" name="tanggal" value="${data.tanggal}">
+                <input type="hidden" name="panel_type" value="${panel}">
+                <div class="mb-2"><label>Volt</label><input class="form-control" name="volt" value="${volt}"></div>
+                <div class="mb-2"><label>Ampere</label><input class="form-control" name="a" value="${amp}"></div>
+                <div class="mb-2"><label>KW</label><input class="form-control" name="kw" value="${kw}"></div>
+                <div class="mb-2"><label>MWH</label><input class="form-control" name="mwh" value="${mwh}"></div>
+                <div class="mb-2"><label>Cos φ</label><input class="form-control" name="cos" value="${cos}"></div>
+                `;
+
+            $('#editPanelFormBody').html(formHtml);
+            $('#editPanelModal').modal('show');
+        });
+
+        $(document).on('click', '.btn-edit-air', function() {
+            const data = $(this).data('entry');
+            const tanggal = $(this).data('tanggal');
+
+            const formHtml = `
+        <input type="hidden" name="id" value="${data.id ?? ''}">
+        <input type="hidden" name="tanggal" value="${tanggal}">
+        <div class="mb-2"><label>Jenis Pemakaian</label><input class="form-control" name="jenis_pemakaian" value="${data.jenis_pemakaian}" readonly></div>
+        <div class="mb-2"><label>Pemakaian Awal</label><input class="form-control" name="pemakaian_awal" value="${data.pemakaian_awal}"></div>
+        <div class="mb-2"><label>Pemakaian Akhir</label><input class="form-control" name="pemakaian_akhir" value="${data.pemakaian_akhir}"></div>
+        <div class="mb-2"><label>Catatan</label><textarea class="form-control" name="notes">${data.notes ?? ''}</textarea></div>
+    `;
+
+            $('#editPanelFormBody').html(formHtml);
+            $('#editPanelModal').modal('show');
+        });
+
+        $(document).on('click', '.btn-edit-chemical', function() {
+            const shift = $(this).data('shift');
+            const jenis = $(this).data('jenis');
+            const tanggal = $(this).data('tanggal');
+            const data = $(this).data('entry');
+            const rawNilai = data.nilai_pemakaian ?? '';
+            const angkaNilai = typeof rawNilai === 'string' ? rawNilai.match(/\d+(\.\d+)?/)?.[0] ?? '' : rawNilai;
+
+            const formHtml = `
+        <input type="hidden" name="tanggal" value="${tanggal}">
+        <input type="hidden" name="shift" value="${shift}">
+        <input type="hidden" name="chemical_area" value="${data.area ?? ''}">
+        <div class="mb-2"><label>Jenis Pemakaian</label><input class="form-control" name="jenis_pemakaian" value="${jenis}" readonly></div>
+        <div class="mb-2"><label>Nilai Pemakaian</label><input class="form-control" name="nilai_pemakaian" value="${angkaNilai}"></div>
+        <div class="mb-2"><label>Catatan</label><textarea class="form-control" name="notes">${data.notes ?? ''}</textarea></div>
+    `;
+
+            $('#editPanelFormBody').html(formHtml);
+            $('#editPanelModal').modal('show');
+        });
+
+        $('#editPanelForm').on('submit', function(e) {
+            e.preventDefault();
+
+            const formData = $(this).serialize();
+            let url = '';
+
+            if (currentUnit === 'Listrik') {
+                url = '/eng/update-panel-listrik';
+            } else if (currentUnit === 'Air') {
+                url = '/eng/update-pemakaian-air';
+            } else if (currentUnit === 'Chemical') {
+                url = '/eng/update-pemakaian-chemical';
+            }
+
+            $.post(url, formData, function(res) {
+                $('#editPanelModal').modal('hide');
+                $('#detailModal').modal('hide');
+
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: 'Data berhasil diperbarui.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            }).fail(function() {
+                Swal.fire({
+                    title: 'Gagal!',
+                    text: 'Gagal menyimpan data. Silakan periksa kembali.',
+                    icon: 'error'
+                });
+            });
+        });
+
     });
 </script>
 

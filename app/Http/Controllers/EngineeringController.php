@@ -7,15 +7,16 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use App\Models\eng\PemakaianAirModel;
 use App\Models\eng\PemakaianListrikModel;
-use App\Models\eng\ListrikDetailModel;
 use App\Models\eng\PemakaianChemicalModel;
 use Illuminate\Support\Carbon;
 use App\Services\TelegramService;
 use App\Models\Boiler\ReadSensors_Boiler;
 use App\Models\eng\AirArea;
-use Illuminate\Support\Facades\DB;
 use App\Models\eng\ChemicalType;
 use App\Models\eng\ChemicalArea;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\DB;
 
 class EngineeringController extends Controller
 {
@@ -54,104 +55,42 @@ class EngineeringController extends Controller
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
-
-    ////End View Supervisor ///////////
-
-    //foreman
-
-    public function menu_PemakaianAirforeman()
-    {
-        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
-            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
-        }
-        return view('user.operator.eng.menu_pemakaian_air');
-    }
-    public function formPemakaianAirforeman()
-    {
-        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
-            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
-        }
-        return view('user.operator.eng.form_pemakaian_air');
-    }
-    public function dataPemakaianAirforeman()
-    {
-        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
-            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
-        }
-        return view('user.operator.eng.data_pemakaian_air');
-    }
-
-    public function formPemakaianListrikforeman()
-    {
-        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
-            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
-        }
-        return view('user.operator.eng.form_pemakaian_listrik');
-    }
-    public function DetailPemakaianListrikforeman($id)
-    {
-        if (Session::get('jabatan') == 'operator' || Session::get('jabatan') == 'foreman') {
-            $listrik = PemakaianListrikModel::findOrFail($id);
-            return view('user.operator.eng.detail_pemakaian_listrik', compact('listrik'));
+    public function DataUtilitySupervisor(){
+        if (Session::get('jabatan') == 'supervisor') {
+            return view('user.supervisor.eng.data_utility');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
-    public function formPemakaianChemicalforeman()
+    public function DashboardUtilitySupervisor()
     {
-        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
+        if (Session::get('jabatan') == 'supervisor') {
+            return view('user.supervisor.eng.dashboard_utility');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+    ////End View Supervisor ///////////
+
+    //foreman
+    public function dashboardForeman()
+    {
+        if (Session::get('jabatan') == 'foreman') {
+            return view('user.foreman.eng.dashboard_utility');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+    public function DataUtilityForeman()
+    {
+        if (Session::get('jabatan') !== 'foreman' && Session::get('departemen') !== 'engineering') {
             return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
-        return view('user.operator.eng.form_pemakaian_chemical');
+        return view('user.foreman.eng.data_utility');
     }
     ////End View Foreman ///////////
 
     //operator
     // 🔹 Form untuk Operator
-    public function menu_PemakaianAir()
-    {
-        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
-            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
-        }
-        return view('user.operator.eng.menu_pemakaian_air');
-    }
-    public function formPemakaianAir()
-    {
-        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
-            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
-        }
-        return view('user.operator.eng.form_pemakaian_air');
-    }
-    public function dataPemakaianAir()
-    {
-        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
-            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
-        }
-        return view('user.operator.eng.data_pemakaian_air');
-    }
-
-    public function formPemakaianListrik()
-    {
-        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
-            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
-        }
-        return view('user.operator.eng.form_pemakaian_listrik');
-    }
-    public function DetailPemakaianListrik($id)
-    {
-        if (Session::get('jabatan') == 'operator' || Session::get('jabatan') == 'foreman') {
-            $listrik = PemakaianListrikModel::findOrFail($id);
-            return view('user.operator.eng.detail_pemakaian_listrik', compact('listrik'));
-        }
-        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
-    }
-    public function formPemakaianChemical()
-    {
-        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
-            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
-        }
-        return view('user.operator.eng.form_pemakaian_chemical');
-    }
-
+    
+   
     public function formUtility()
     {
         if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
@@ -171,11 +110,7 @@ class EngineeringController extends Controller
 
 
     // Api crud operator
-    public function indexAir()
-    {
-        $data = PemakaianAirModel::orderBy('tanggal', 'desc')->get();
-        return response()->json($data);
-    }
+   
     public function storeAir(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -226,255 +161,52 @@ class EngineeringController extends Controller
         }
     }
 
-    public function updateAir(Request $request, $id)
-    {
-        $validator = Validator::make($request->all(), [
-            'tanggal' => 'required|date',
-            'pemakaian_liter_awal' => 'required|numeric',
-            'pemakaian_liter_akhir' => 'required|numeric',
-            'jenis_pemakaian' => 'required|in:Outlet Storage RO,Outlet Storage RO Reject,Outlet Fresh Water 1,Outlet Fresh Water 2,WWTP - Boiler - Fasum3',
-            'notes' => 'nullable|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validasi gagal.',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        try {
-            $air = PemakaianAirModel::find($id);
-            if (!$air) {
-                return response()->json([
-                    'message' => 'Data tidak ditemukan.',
-                ], 404);
-            }
-
-            $air->tanggal = $request->input('tanggal');
-            $air->pemakaian_awal = $request->input('pemakaian_liter_awal');
-            $air->pemakaian_akhir = $request->input('pemakaian_liter_akhir');
-            $air->jenis_pemakaian = $request->input('jenis_pemakaian');
-            $air->created_by = Session::get('username');
-            $air->notes = $request->input('notes');
-            $air->save();
-
-            return response()->json([
-                'message' => 'Data pemakaian air berhasil diupdate.',
-                'data' => $air,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Gagal mengupdate data.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    public function destroyAir($id)
-    {
-        try {
-            $air = PemakaianAirModel::find($id);
-            if (!$air) {
-                return response()->json([
-                    'message' => 'Data tidak ditemukan.',
-                ], 404);
-            }
-
-            $air->delete();
-
-            return response()->json([
-                'message' => 'Data pemakaian air berhasil dihapus.',
-                'id' => $id,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Gagal menghapus data.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
 
     // buatkan crud untuk pemakaian chemical api nya
-    public function indexChemical()
-    {
-        $data = PemakaianChemicalModel::orderBy('tanggal', 'desc')->get();
-        return response()->json($data);
-    }
 
-    public function storeChemical(Request $request)
+
+    public function storeListrik(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'tanggal' => 'required|date',
-            'pemakaian_kg' => 'required|numeric',
-            'nama_chemical' => 'required',
-            'notes' => 'nullable|string|max:255',
+        // Validasi input
+        $validated = $request->validate([
+            'waktu' => 'required|date',
+            // 'operator' => 'required|string|max:100',
+            'panel_type' => 'required|in:MDP,SDP1,SDP2,SDP3,SDP4,SDP5,SDP6,SDP7,SDP8,SDP9,SDP10,SDP11,SDP12,SDP13,SDP14',
+            'volt' => 'nullable|numeric',
+            'a' => 'nullable|numeric',
+            'kw' => 'nullable|numeric',
+            'mwh' => 'nullable|numeric',
+            'cos' => 'nullable|numeric',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validasi gagal.',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
+        $operator = Session::get('username');
         try {
-            $data = new PemakaianChemicalModel();
-            $data->tanggal = $request->input('tanggal');
-            $data->pemakaian_kg = $request->input('pemakaian_kg');
-            $data->nama_chemical = $request->input('nama_chemical');
-            $data->created_by = Session::get('username');
-            $data->notes = $request->input('notes');
-            $data->save();
+            $exists = PemakaianListrikModel::whereDate('waktu', $validated['waktu'])
+            ->where('panel_type', $validated['panel_type'])
+            ->exists();
 
-            return response()->json([
-                'message' => 'Data pemakaian chemical berhasil ditambahkan.',
-                'data' => $data,
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Gagal menyimpan data.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-
-    public function updateChemical(Request $request, $id)
-    {
-        $validator = Validator::make($request->all(), [
-            'tanggal' => 'required|date',
-            'pemakaian_kg' => 'required|numeric',
-            'nama_chemical' => 'required',
-            'notes' => 'nullable|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validasi gagal.',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        try {
-            $data = PemakaianChemicalModel::find($id);
-            if (!$data) {
+            if ($exists) {
                 return response()->json([
-                    'message' => 'Data tidak ditemukan.',
-                ], 404);
+                    'success' => false,
+                    'message' => 'Data untuk panel tersebut pada tanggal yang sama sudah ada.',
+                ], 409); // 409 = Conflict
             }
-
-            $data->tanggal = $request->input('tanggal');
-            $data->pemakaian_kg = $request->input('pemakaian_kg');
-            $data->nama_chemical = $request->input('nama_chemical');
-            $data->created_by = Session::get('username');
-            $data->notes = $request->input('notes');
-            $data->save();
-
-            return response()->json([
-                'message' => 'Data pemakaian chemical berhasil diupdate.',
-                'data' => $data,
+            // Simpan ke database
+            $data = PemakaianListrikModel::create([
+                'waktu' => $validated['waktu'],
+                'operator' => $operator,
+                'panel_type' => $validated['panel_type'],
+                'volt' => $validated['volt'] ?? null,
+                'a' => $validated['a'] ?? null,
+                'kw' => $validated['kw'] ?? null,
+                'mwh' => $validated['mwh'] ?? null,
+                'cos' => $validated['cos'] ?? null,
             ]);
+
+            return response()->json(['success' => true, 'message' => 'Data listrik berhasil disimpan.', 'data' => $data]);
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Gagal mengupdate data.',
-                'error' => $e->getMessage(),
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menyimpan data.', 'error' => $e->getMessage()], 500);
         }
     }
-
-
-    public function destroyChemical($id)
-    {
-        try {
-            $data = PemakaianChemicalModel::find($id);
-            if (!$data) {
-                return response()->json([
-                    'message' => 'Data tidak ditemukan.',
-                ], 404);
-            }
-
-            $data->delete();
-
-            return response()->json([
-                'message' => 'Data pemakaian chemical berhasil dihapus.',
-                'id' => $id,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Gagal menghapus data.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-
-    // Api chemical
-    public function ApiChemicalPerHari()
-    {
-        $today = Carbon::now()->toDateString(); // format: 'YYYY-MM-DD'
-
-        $data = PemakaianChemicalModel::whereDate('tanggal', $today)
-            ->select('nama_chemical')
-            ->selectRaw('SUM(pemakaian_kg) as total')
-            ->groupBy('nama_chemical')
-            ->orderByDesc('total')
-            ->get();
-
-        $top3 = $data->take(3);
-
-        return response()->json([
-            'mode' => 'per_hari',
-            'tanggal' => $today,
-            'data' => $data,
-            'top3' => $top3
-        ]);
-    }
-
-    public function ApiChemicalPerMinggu()
-    {
-        $startOfWeek = Carbon::now()->startOfWeek();
-        $endOfWeek = Carbon::now()->endOfWeek();
-
-        $data = PemakaianChemicalModel::whereBetween('tanggal', [$startOfWeek, $endOfWeek])
-            ->select('nama_chemical')
-            ->selectRaw('SUM(pemakaian_kg) as total')
-            ->groupBy('nama_chemical')
-            ->orderByDesc('total')
-            ->get();
-
-        $top3 = $data->take(3);
-
-        return response()->json([
-            'mode' => 'per_minggu',
-            'minggu' => $startOfWeek->toDateString() . ' - ' . $endOfWeek->toDateString(),
-            'data' => $data,
-            'top3' => $top3
-        ]);
-    }
-
-    public function ApiChemicalPerBulan()
-    {
-        $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = Carbon::now()->endOfMonth();
-
-        $data = PemakaianChemicalModel::whereBetween('tanggal', [$startOfMonth, $endOfMonth])
-            ->select('nama_chemical')
-            ->selectRaw('SUM(pemakaian_kg) as total')
-            ->groupBy('nama_chemical')
-            ->orderByDesc('total')
-            ->get();
-
-        $top3 = $data->take(3);
-
-        return response()->json([
-            'mode' => 'per_bulan',
-            'bulan' => $startOfMonth->format('F Y'),
-            'data' => $data,
-            'top3' => $top3
-        ]);
-    }
-
 
 
     //dipake
@@ -544,219 +276,6 @@ class EngineeringController extends Controller
         return response()->json($data);
     }
 
-
-    public function storeListrik(Request $request)
-    {
-        // Validasi input
-        $validated = $request->validate([
-            'waktu' => 'required|date',
-            // 'operator' => 'required|string|max:100',
-            'panel_type' => 'required|in:MDP,SDP1,SDP2,SDP3,SDP4,SDP5,SDP6,SDP7,SDP8,SDP9,SDP10,SDP11,SDP12,SDP13,SDP14',
-            'volt' => 'nullable|numeric',
-            'a' => 'nullable|numeric',
-            'kw' => 'nullable|numeric',
-            'mwh' => 'nullable|numeric',
-            'cos' => 'nullable|numeric',
-        ]);
-        $operator = Session::get('username');
-        try {
-            $exists = PemakaianListrikModel::whereDate('waktu', $validated['waktu'])
-                ->where('panel_type', $validated['panel_type'])
-                ->exists();
-
-            if ($exists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Data untuk panel tersebut pada tanggal yang sama sudah ada.',
-                ], 409); // 409 = Conflict
-            }
-            // Simpan ke database
-            $data = PemakaianListrikModel::create([
-                'waktu' => $validated['waktu'],
-                'operator' => $operator,
-                'panel_type' => $validated['panel_type'],
-                'volt' => $validated['volt'] ?? null,
-                'a' => $validated['a'] ?? null,
-                'kw' => $validated['kw'] ?? null,
-                'mwh' => $validated['mwh'] ?? null,
-                'cos' => $validated['cos'] ?? null,
-            ]);
-
-            return response()->json(['success' => true, 'message' => 'Data listrik berhasil disimpan.', 'data' => $data]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menyimpan data.', 'error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function updateListrik(Request $request, $id)
-    {
-        $data = PemakaianListrikModel::findOrFail($id);
-
-        $request->validate([
-            'waktu' => 'required',
-            'operator' => 'required',
-
-        ]);
-
-        $data->update([
-            'waktu' => $request->waktu,
-            'operator' => $request->operator,
-
-        ]);
-
-        return response()->json([
-            'message' => 'Data berhasil diperbarui!',
-        ]);
-    }
-
-    public function data_listrik_detail($id)
-    {
-
-        $data = PemakaianListrikModel::with('details')->findOrFail($id);
-        $data_detail = $data->details;
-        return response()->json($data_detail);
-    }
-
-    public function storeListrikDetail(Request $request, $id)
-    {
-
-        $listrik = PemakaianListrikModel::findOrFail($id);
-
-        $request->validate([
-            'panel_type' => 'required',
-            'volt' => 'required',
-            'a' => 'required',
-            'kw' => 'required',
-            'mwh' => 'required',
-        ]);
-
-        // Cek apakah shift sudah ada
-        $existingpanel = ListrikDetailModel::where('id_listrik', $listrik->id)
-            ->where('panel_type', $request->panel_type)
-            ->exists();
-
-        if ($existingpanel) {
-            return response()->json([
-                'message' => 'Type panel sudah ada datanya untuk tanggal ini!',
-                'status' => 'error'
-            ], 400);
-        }
-
-        $listrikDetail = ListrikDetailModel::create([
-            'id_listrik' => $id,
-            'panel_type' => $request->panel_type,
-            'volt' => $request->volt,
-            'a' => $request->a,
-            'kw' => $request->kw,
-            'mwh' => $request->mwh,
-        ]);
-
-        $totalDetail = ListrikDetailModel::where('id_listrik', $id)->count();
-
-        if ($totalDetail === 16) {
-            // Update status batch menjadi completed
-            PemakaianListrikModel::where('id', $id)->update(['status' => 'completed']);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Data pemakaian berhasil ditambahkan!',
-            'data' => $listrikDetail
-        ]);
-    }
-
-    public function deletelistrikDetail($id)
-    {
-        $data = ListrikDetailModel::findOrFail($id);
-        $data->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Data listrik ini berhasil dihapus!'
-        ]);
-    }
-
-    // update shift
-    public function updatelistrikDetail(Request $request, $id)
-    {
-        $data = ListrikDetailModel::findOrFail($id);
-
-        $request->validate([
-            'panel_type' => 'required',
-            'volt' => 'required',
-            'a' => 'required',
-            'kw' => 'required',
-            'mwh' => 'required',
-        ]);
-
-        $data->update([
-            'panel_type' => $request->panel_type,
-            'volt' => $request->volt,
-            'a' => $request->a,
-            'kw' => $request->kw,
-            'mwh' => $request->mwh,
-        ]);
-
-        return response()->json([
-            'message' => 'Data berhasil diperbarui!',
-        ]);
-    }
-
-
-    // Api Pemakaian Listrik
-    public function ApiListrikPerHari($mode)
-    {
-        if ($mode === 'terakhir') {
-            $data = PemakaianListrikModel::with('details')
-                ->orderBy('waktu', 'desc')
-                ->limit(7)
-                ->get()
-                ->map(function ($item) {
-                    return [
-                        'tanggal' => optional($item->waktu)->format('Y-m-d'),
-                        'operator' => $item->operator,
-                        'status' => $item->status,
-                        'details' => $item->details,
-                    ];
-                });
-        } else {
-            $query = PemakaianListrikModel::selectRaw('DATE(waktu) as tanggal, SUM(pemakaian_listrik_detail.mwh) as total_mwh')
-                ->join('pemakaian_listrik_detail', 'pemakaian_listrik_eng.id', '=', 'pemakaian_listrik_detail.id_listrik');
-
-            if ($mode === 'harian') {
-                $query->whereDate('waktu', Carbon::today());
-            } elseif ($mode === 'mingguan') {
-                $query->whereBetween('waktu', [
-                    Carbon::now()->subDays(7)->startOfDay(),
-                    Carbon::now()->endOfDay()
-                ]);
-            } elseif ($mode === 'bulanan') {
-                $query->whereMonth('waktu', Carbon::now()->month)
-                    ->whereYear('waktu', Carbon::now()->year);
-            }
-
-            $raw = $query->groupBy(DB::raw('DATE(waktu)'))
-                ->orderBy('tanggal', 'desc')
-                ->get();
-
-            // Map agar strukturnya mirip dengan 'terakhir'
-            $data = $raw->map(function ($row) {
-                return [
-                    'tanggal' => $row->tanggal,
-                    'total_mwh' => (float) $row->total_mwh,
-                    'operator' => null,
-                    'status' => null,
-                    'details' => [], // atau bisa fetch detail panel jika perlu
-                ];
-            });
-        }
-
-        return response()->json([
-            'success' => true,
-            'mode' => $mode,
-            'data' => $data,
-        ]);
-    }
 
     public function getTypesByArea($id)
     {
@@ -934,12 +453,12 @@ class EngineeringController extends Controller
 
         $data = PemakaianListrikModel::orderBy('waktu')->get();
 
-        // Kelompokkan data berdasarkan tanggal
+        // Group by tanggal (YYYY-MM-DD)
         $grouped = $data->groupBy(function ($item) {
             return date('Y-m-d', strtotime($item->waktu));
         });
 
-        $sortedDates = $grouped->keys()->sort()->values(); // pastikan urut tanggal naik
+        $sortedDates = $grouped->keys()->sort()->values();
         $result = [];
 
         foreach ($sortedDates as $index => $tanggal) {
@@ -958,7 +477,7 @@ class EngineeringController extends Controller
                 $operators[$panel] = $panelItem?->operator ?? null;
             }
 
-            // Ambil semua parameter
+            // Ambil parameter-parameter
             $parameters = ['volt', 'a', 'kw', 'mwh', 'cos'];
             foreach ($parameters as $param) {
                 $pivot[$param] = [];
@@ -968,21 +487,23 @@ class EngineeringController extends Controller
                 }
             }
 
+            // Hitung usage berdasarkan mwh selisih antar hari
             if ($index < count($sortedDates) - 1) {
                 $nextTanggal = $sortedDates[$index + 1];
                 $nextItems = $grouped[$nextTanggal];
 
                 foreach ($panels as $panel) {
-                    $currVolt = $items->firstWhere('panel_type', $panel)?->volt;
-                    $nextVolt = $nextItems->firstWhere('panel_type', $panel)?->volt;
+                    $currentMwh = $items->firstWhere('panel_type', $panel)?->mwh;
+                    $nextMwh = $nextItems->firstWhere('panel_type', $panel)?->mwh;
 
-                    if (!is_null($currVolt) && !is_null($nextVolt)) {
-                        $usage[$panel] = $currVolt - $nextVolt;
+                    if (!is_null($currentMwh) && !is_null($nextMwh)) {
+                        $usage[$panel] = $nextMwh - $currentMwh;
                     } else {
                         $usage[$panel] = null;
                     }
                 }
             } else {
+                // Tanggal terakhir: usage belum bisa dihitung
                 foreach ($panels as $panel) {
                     $usage[$panel] = null;
                 }
@@ -993,7 +514,7 @@ class EngineeringController extends Controller
                 'operator' => $operators,
                 'panels' => $panels,
                 'rows' => $pivot,
-                'usage' => $usage, // Tambahkan usage di sini
+                'usage' => $usage,
             ];
         }
 
@@ -1013,4 +534,492 @@ class EngineeringController extends Controller
 
         return response()->json($areas);
     }
+
+
+    //export excel
+    public function exportPemakaianListrikSpreadsheet(Request $request)
+    {
+        $month = $request->input('bulan'); // format: 2025-06
+        if (!$month) {
+            return response()->json(['message' => 'Parameter bulan diperlukan (format: YYYY-MM)'], 400);
+        }
+
+        $defaultPanelOrder = ['MDP', 'SDP1', 'SDP2', 'SDP3', 'SDP4', 'SDP5', 'SDP6', 'SDP7', 'SDP8', 'SDP9', 'SDP10', 'SDP11', 'SDP12', 'SDP13', 'SDP14'];
+
+        $data = PemakaianListrikModel::where('waktu', 'like', "$month%")->orderBy('waktu')->get();
+
+        $grouped = $data->groupBy(fn ($item) => date('Y-m-d', strtotime($item->waktu)));
+        $sortedDates = $grouped->keys()->sort()->values();
+        $result = [];
+
+        foreach ($sortedDates as $index => $tanggal) {
+            $items = $grouped[$tanggal];
+            $pivot = [];
+            $usage = [];
+            $operators = [];
+
+            $availablePanels = $items->pluck('panel_type')->unique()->values()->all();
+            $panels = array_values(array_intersect($defaultPanelOrder, $availablePanels));
+
+            foreach ($panels as $panel) {
+                $panelItem = $items->firstWhere('panel_type', $panel);
+                $operators[$panel] = $panelItem?->operator;
+            }
+
+            $parameters = ['volt', 'a', 'kw', 'mwh', 'cos'];
+            foreach ($parameters as $param) {
+                $pivot[$param] = [];
+                foreach ($panels as $panel) {
+                    $panelItem = $items->firstWhere('panel_type', $panel);
+                    $pivot[$param][$panel] = $panelItem?->$param ?? null;
+                }
+            }
+
+            if ($index < count($sortedDates) - 1) {
+                $nextItems = $grouped[$sortedDates[$index + 1]];
+                foreach ($panels as $panel) {
+                    $curr = $items->firstWhere('panel_type', $panel)?->mwh;
+                    $next = $nextItems->firstWhere('panel_type', $panel)?->mwh;
+                    $usage[$panel] = (!is_null($curr) && !is_null($next)) ? $next - $curr : null;
+                }
+            } else {
+                foreach ($panels as $panel) {
+                    $usage[$panel] = null;
+                }
+            }
+
+            $result[] = [
+                'tanggal' => $tanggal,
+                'operator' => $operators,
+                'panels' => $panels,
+                'rows' => $pivot,
+                'usage' => $usage,
+            ];
+        }
+
+        // Generate Excel
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $rowIndex = 1;
+
+        foreach ($result as $day) {
+            $panels = $day['panels'];
+            $tanggal = $day['tanggal'];
+
+            $sheet->setCellValue("A{$rowIndex}", 'Tanggal');
+            $sheet->setCellValue("B{$rowIndex}", 'Parameter');
+            $col = 'C';
+            foreach ($panels as $panel) {
+                $sheet->setCellValue("{$col}{$rowIndex}", $panel);
+                $col++;
+            }
+            $rowIndex++;
+
+            $params = [
+                'Operator' => $day['operator'],
+                'Volt'     => $day['rows']['volt'],
+                'A'        => $day['rows']['a'],
+                'kW'       => $day['rows']['kw'],
+                'MWh'      => $day['rows']['mwh'],
+                'Cos'      => $day['rows']['cos'],
+                'Usage'    => $day['usage'],
+            ];
+
+            foreach ($params as $label => $dataRow) {
+                $sheet->setCellValue("A{$rowIndex}", $tanggal);
+                $sheet->setCellValue("B{$rowIndex}", $label);
+                $col = 'C';
+                foreach ($panels as $panel) {
+                    $sheet->setCellValue("{$col}{$rowIndex}", $dataRow[$panel] ?? '');
+                    $col++;
+                }
+                $tanggal = ''; // hanya tampil di baris pertama
+                $rowIndex++;
+            }
+
+            $rowIndex++; // spasi antar tanggal
+        }
+
+        $fileName = 'Pemakaian-Listrik-' . $month . '.xlsx';
+        $writer = new Xlsx($spreadsheet);
+        $tempPath = tempnam(sys_get_temp_dir(), 'export-');
+        $writer->save($tempPath);
+
+        return response()->download($tempPath, $fileName)->deleteFileAfterSend(true);
+    
+    }
+
+
+    public function getTrendPemakaianAir(Request $request)
+    {
+        $tanggal = $request->query('tanggal'); // format: YYYY-MM-DD
+        $bulan   = $request->query('bulan');   // format: YYYY-MM
+
+        $query = PemakaianAirModel::query();
+
+        if ($tanggal) {
+            $query->whereDate('tanggal', $tanggal);
+        } elseif ($bulan) {
+            $query->whereMonth('tanggal', substr($bulan, 5, 2))
+                ->whereYear('tanggal', substr($bulan, 0, 4));
+        } else {
+            // 🔁 Default: seluruh data untuk bulan ini
+            $query->whereMonth('tanggal', now()->format('m'))
+                ->whereYear('tanggal', now()->format('Y'));
+        }
+
+        $data = $query->select(
+            'tanggal',
+            'jenis_pemakaian',
+            DB::raw('SUM(pemakaian_akhir - pemakaian_awal) as total_pemakaian')
+        )
+            ->groupBy('tanggal', 'jenis_pemakaian')
+            ->orderBy('tanggal')
+            ->get()
+            ->groupBy('jenis_pemakaian');
+
+        $result = [];
+        foreach ($data as $jenis => $records) {
+            $result[] = [
+                'name' => $jenis,
+                'data' => $records->map(fn ($r) => [
+                    'x' => $r->tanggal,
+                    'y' => round($r->total_pemakaian, 2)
+                ])->values()
+            ];
+        }
+
+        return response()->json($result);
+    }
+    public function getTrendPemakaianListrik(Request $request)
+    {
+        $tanggal = $request->query('tanggal'); // format: YYYY-MM-DD
+        $bulan   = $request->query('bulan');   // format: YYYY-MM
+
+        $query = PemakaianListrikModel::query();
+
+        if ($tanggal) {
+            $query->whereDate('waktu', $tanggal);
+        } elseif ($bulan) {
+            $query->whereYear('waktu', substr($bulan, 0, 4))
+                ->whereMonth('waktu', substr($bulan, 5, 2));
+        } else {
+            $query->whereYear('waktu', now()->format('Y'))
+                ->whereMonth('waktu', now()->format('m'));
+        }
+
+        // Ambil data per panel_type dan tanggal, lalu hitung delta mwh antar hari berikutnya
+        $data = $query->select('panel_type', 'waktu', 'mwh')
+        ->orderBy('panel_type')
+        ->orderBy('waktu')
+        ->get()
+            ->groupBy('panel_type');
+
+        $result = [];
+
+        foreach ($data as $panel => $records) {
+            $recordsByDate = $records->groupBy(fn ($r) => \Carbon\Carbon::parse($r->waktu)->format('Y-m-d'));
+            $dates = $recordsByDate->keys();
+
+            $series = [];
+            for ($i = 0; $i < count($dates) - 1; $i++) {
+                $d1 = $dates[$i];
+                $d2 = $dates[$i + 1];
+
+                $mwh1 = optional($recordsByDate[$d1]->first())->mwh;
+                $mwh2 = optional($recordsByDate[$d2]->first())->mwh;
+
+                if (!is_null($mwh1) && !is_null($mwh2) && $mwh2 >= $mwh1) {
+                    $usage = round($mwh2 - $mwh1, 3);
+                    $series[] = [
+                        'x' => $d1,
+                        'y' => $usage
+                    ];
+                }
+            }
+
+            if (!empty($series)) {
+                $result[] = [
+                    'name' => $panel,
+                    'data' => $series
+                ];
+            }
+        }
+
+        return response()->json($result);
+    }
+
+    public function getTrendPemakaianChemical(Request $request)
+    {
+        $tanggal = $request->query('tanggal'); // format: YYYY-MM-DD
+        $bulan   = $request->query('bulan');   // format: YYYY-MM
+
+        $query = PemakaianChemicalModel::query()
+            ->join('chemical_types', 'pemakaian_chemical.jenis_pemakaian', '=', 'chemical_types.nama_chemical');
+
+        if ($tanggal) {
+            $query->whereDate('pemakaian_chemical.tanggal', $tanggal);
+        } elseif ($bulan) {
+            $query->whereYear('pemakaian_chemical.tanggal', substr($bulan, 0, 4))
+                ->whereMonth('pemakaian_chemical.tanggal', substr($bulan, 5, 2));
+        } else {
+            $query->whereYear('pemakaian_chemical.tanggal', now()->format('Y'))
+                ->whereMonth('pemakaian_chemical.tanggal', now()->format('m'));
+        }
+
+        $data = $query->select(
+            'pemakaian_chemical.tanggal',
+            'pemakaian_chemical.jenis_pemakaian',
+            'chemical_types.satuan',
+            DB::raw('SUM(nilai_pemakaian) as total_pemakaian')
+        )
+            ->groupBy('pemakaian_chemical.tanggal', 'pemakaian_chemical.jenis_pemakaian', 'chemical_types.satuan')
+            ->orderBy('pemakaian_chemical.tanggal')
+            ->get()
+            ->groupBy('jenis_pemakaian');
+
+        $result = [];
+
+        foreach ($data as $jenis => $records) {
+            $satuan = $records->first()->satuan ?? '-';
+            $result[] = [
+                'name' => "$jenis ($satuan)",
+                'data' => $records->map(fn ($r) => [
+                    'x' => $r->tanggal,
+                    'y' => round($r->total_pemakaian, 2)
+                ])->values()
+            ];
+        }
+
+        return response()->json($result);
+    }
+
+    public function getTopJenisPemakaianAir(Request $request)
+    {
+        $bulan = $request->query('bulan'); // format: YYYY-MM
+
+        $tahun = $bulan ? substr($bulan, 0, 4) : now()->format('Y');
+        $bulanAngka = $bulan ? substr($bulan, 5, 2) : now()->format('m');
+
+        $data = PemakaianAirModel::query()
+            ->select(
+                'jenis_pemakaian',
+                DB::raw('SUM(pemakaian_akhir - pemakaian_awal) as total_pemakaian')
+            )
+            ->whereMonth('tanggal', $bulanAngka)
+            ->whereYear('tanggal', $tahun)
+            ->groupBy('jenis_pemakaian')
+            ->orderByDesc('total_pemakaian')
+            ->limit(5)
+            ->get();
+
+        return response()->json($data);
+    }
+
+    public function getTopJenisPemakaianListrik(Request $request)
+    {
+        $bulan = $request->query('bulan'); // format: YYYY-MM
+        $tahun = $bulan ? substr($bulan, 0, 4) : now()->format('Y');
+        $bulanAngka = $bulan ? substr($bulan, 5, 2) : now()->format('m');
+
+        $panelTypes = PemakaianListrikModel::whereMonth('waktu', $bulanAngka)
+            ->whereYear('waktu', $tahun)
+            ->groupBy('panel_type')
+            ->pluck('panel_type');
+
+        $usages = [];
+
+        foreach ($panelTypes as $panel) {
+            $data = PemakaianListrikModel::where('panel_type', $panel)
+                ->whereMonth('waktu', $bulanAngka)
+                ->whereYear('waktu', $tahun)
+                ->orderBy('waktu')
+                ->pluck('mwh')
+                ->values();
+
+            $totalUsage = 0;
+            for ($i = 0; $i < $data->count() - 1; $i++) {
+                $current = $data[$i];
+                $next = $data[$i + 1];
+                $delta = $next - $current;
+
+                if ($delta >= 0) {
+                    $totalUsage += $delta;
+                }
+            }
+
+            $usages[] = [
+                'panel_type' => $panel,
+                'total_usage' => round($totalUsage, 2)
+            ];
+        }
+
+        $top5 = collect($usages)
+            ->sortByDesc('total_usage')
+            ->take(5)
+            ->values();
+
+        return response()->json($top5);
+    
+    
+    }
+
+
+    public function getTopOperatorPemakaianAir(Request $request)
+    {
+        $bulan = $request->query('bulan'); // contoh: 2025-06
+
+        $tahun = $bulan ? substr($bulan, 0, 4) : now()->format('Y');
+        $bulanAngka = $bulan ? substr($bulan, 5, 2) : now()->format('m');
+
+        $data = PemakaianAirModel::query()
+            ->select(
+                'created_by',
+                DB::raw('COUNT(*) as jumlah_pengisian')
+            )
+            ->whereMonth('tanggal', $bulanAngka)
+            ->whereYear('tanggal', $tahun)
+            ->groupBy('created_by')
+            ->orderByDesc('jumlah_pengisian')
+            ->limit(5)
+            ->get();
+
+        return response()->json($data);
+    }
+
+    public function getTopOperatorPemakaianListrik(Request $request)
+    {
+        $bulan = $request->query('bulan'); // contoh: 2025-06
+
+        $tahun = $bulan ? substr($bulan, 0, 4) : now()->format('Y');
+        $bulanAngka = $bulan ? substr($bulan, 5, 2) : now()->format('m');
+
+        $data = PemakaianListrikModel::query()
+            ->select(
+                'operator',
+                DB::raw('COUNT(*) as jumlah_pengisian')
+            )
+            ->whereMonth('waktu', $bulanAngka)
+            ->whereYear('waktu', $tahun)
+            ->groupBy('operator')
+            ->orderByDesc('jumlah_pengisian')
+            ->limit(5)
+            ->get();
+
+        return response()->json($data);
+    }
+
+    public function getTopOperatorPemakaianChemical(Request $request)
+    {
+        $bulan = $request->query('bulan'); // contoh: 2025-06
+
+        $tahun = $bulan ? substr($bulan, 0, 4) : now()->format('Y');
+        $bulanAngka = $bulan ? substr($bulan, 5, 2) : now()->format('m');
+
+        $data = PemakaianChemicalModel::query()
+            ->select(
+                'operator',
+                DB::raw('COUNT(*) as jumlah_pengisian')
+            )
+            ->whereMonth('tanggal', $bulanAngka)
+            ->whereYear('tanggal', $tahun)
+            ->groupBy('operator')
+            ->orderByDesc('jumlah_pengisian')
+            ->limit(5)
+            ->get();
+
+        return response()->json($data);
+    }
+
+    public function updateListrik(Request $request)
+    {
+        $request->validate([
+            'tanggal' => 'required|date',
+            'panel_type' => 'required|string',
+            'volt' => 'nullable|numeric',
+            'a' => 'nullable|numeric',
+            'kw' => 'nullable|numeric',
+            'mwh' => 'nullable|numeric',
+            'cos' => 'nullable|numeric',
+        ]);
+
+        $data = PemakaianListrikModel::whereDate('waktu', $request->tanggal)
+            ->where('panel_type', $request->panel_type)
+            ->first();
+
+        if (!$data) {
+            return response()->json(['message' => 'Data tidak ditemukan.'], 404);
+        }
+
+        $data->update([
+            'volt' => $request->volt,
+            'a' => $request->a,
+            'kw' => $request->kw,
+            'mwh' => $request->mwh,
+            'cos' => $request->cos,
+        ]);
+
+        return response()->json(['message' => 'Data berhasil diperbarui.']);
+    }
+
+    public function updateAir(Request $request)
+    {
+        $request->validate([
+            'tanggal' => 'required|date',
+            'jenis_pemakaian' => 'required|string',
+            'pemakaian_awal' => 'required|numeric',
+            'pemakaian_akhir' => 'required|numeric',
+            'created_by' => 'nullable|string',
+            'notes' => 'nullable|string'
+        ]);
+
+        $air = PemakaianAirModel::whereDate('tanggal', $request->tanggal)
+            ->where('jenis_pemakaian', $request->jenis_pemakaian)
+            ->first();
+
+        if (!$air) {
+            return response()->json(['message' => 'Data tidak ditemukan.'], 404);
+        }
+
+        $air->update([
+            'tanggal' => $request->tanggal,
+            'jenis_pemakaian' => $request->jenis_pemakaian,
+            'pemakaian_awal' => $request->pemakaian_awal,
+            'pemakaian_akhir' => $request->pemakaian_akhir,
+            'notes' => $request->notes,
+        ]);
+
+        return response()->json(['message' => 'Data Air berhasil diperbarui.']);
+    }
+
+    public function updateChemical(Request $request)
+    {
+        $request->validate([
+            'tanggal' => 'required|date',
+            'jenis_pemakaian' => 'required|string',
+            'shift' => 'required|string',
+            'nilai_pemakaian' => 'required|numeric',
+            'notes' => 'nullable|string',
+        ]);
+
+        $data = PemakaianChemicalModel::whereDate('tanggal', $request->tanggal)
+            ->where('jenis_pemakaian', $request->jenis_pemakaian)
+            ->where('shift', $request->shift)
+            ->first();
+
+        if (!$data) {
+            return response()->json(['message' => 'Data tidak ditemukan.'], 404);
+        }
+
+        $data->update([
+            'nilai_pemakaian' => $request->nilai_pemakaian,
+            'jenis_pemakaian' => $request->jenis_pemakaian,
+            'notes' => $request->notes,
+        ]);
+
+        return response()->json(['message' => 'Data Chemical berhasil diperbarui.']);
+    }
+
+
+
 }
