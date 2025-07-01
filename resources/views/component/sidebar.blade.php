@@ -328,8 +328,25 @@
                                 <a href="{{ url('eng/supervisor/dashboard') }}" class="nav-link" data-key="t-analytics"> Analytics Boiler</a>
                             </li>
                             <li class="nav-item">
+                                <a href="{{ url('eng/supervisor/dashboard/utility') }}" class="nav-link" data-key="t-analytics">Analytics Utility</a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="{{ url('eng/dept_head/todo') }}" class="nav-link" data-key="t-analytics"> Todo List ENG </a>
                             </li>
+
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarDashboardsUtility" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboardsUtility">
+                        <i class="mdi mdi-tools"></i> <span data-key="t-dashboards">Data Utility </span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarDashboardsUtility">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="{{ url('eng/supervisor/data/utility') }}" class="nav-link" data-key="t-analytics"> Data Utility</a>
+                            </li>
+
 
                         </ul>
                     </div>
@@ -640,18 +657,18 @@
                 @elseif(Session::get('jabatan') === 'foreman' && Session::get('departemen') === 'engineering')
                 <li class="menu-title"><span data-key="t-menu">Menu</span></li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ url('eng/foreman/menu/air') }}">
-                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Pemakaian Air</span>
+                    <a class="nav-link menu-link" href="{{ url('eng/foreman/dashboard') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Dashboard Utility</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ url('eng/foreman/pemakaian_listrik') }}">
-                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form Pemakaian Listrik</span>
+                    <a class="nav-link menu-link" href="{{ url('eng/operator/form') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form Utility</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ url('eng/foreman/pemakaian_chemical') }}">
-                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form Pemakaian Chemical</span>
+                    <a class="nav-link menu-link" href="{{ url('eng/foreman/data/utility') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Data Utility</span>
                     </a>
                 </li>
 
@@ -734,21 +751,7 @@
                         <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Data Utility</span>
                     </a>
                 </li>
-                <!-- <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ url('eng/operator/menu/air') }}">
-                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Pemakaian Air</span>
-                    </a>
-                </li> -->
-                <!-- <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ url('eng/operator/pemakaian_listrik') }}">
-                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form Pemakaian Listrik</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ url('eng/operator/pemakaian_chemical') }}">
-                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form Pemakaian Chemical</span>
-                    </a>
-                </li> -->
+
                 @elseif(Session::get('jabatan') === 'operator' && Session::get('departemen') === 'warehouse')
                 <li class="menu-title"><span data-key="t-menu">Menu</span></li>
                 <li class="nav-item">

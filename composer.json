@@ -11,6 +11,7 @@
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
         "mailersend/laravel-driver": "^2.7",
+        "phpoffice/phpspreadsheet": "^4.4",
         "yajra/laravel-datatables-oracle": "^11.1"
     },
     "require-dev": {

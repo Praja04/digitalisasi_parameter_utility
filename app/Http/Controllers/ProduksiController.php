@@ -9,6 +9,8 @@ use App\Models\produksi\StatusRunning;
 use App\Models\produksi\AchievementBatchDetail;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
+use App\Models\produksi\VariantTarget;
+use App\Models\produksi\VariantShift;
 
 class ProduksiController extends Controller
 {
@@ -39,21 +41,21 @@ class ProduksiController extends Controller
     public function dashboardProduksi_retaild4()
     {
         if (Session::get('jabatan') == 'dept_head') {
-            return view('user.dept_head.Retail.dashboard_retaild4');  
+            return view('user.dept_head.Retail.dashboard_retaild4');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
     public function dashboardProduksi_retaild3()
     {
         if (Session::get('jabatan') == 'dept_head') {
-            return view('user.dept_head.Retail.dashboard_retaild3');  
+            return view('user.dept_head.Retail.dashboard_retaild3');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
     public function dashboardProduksi_retaild5()
     {
         if (Session::get('jabatan') == 'dept_head') {
-            return view('user.dept_head.Retail.dashboard_retaild5');  
+            return view('user.dept_head.Retail.dashboard_retaild5');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
@@ -86,6 +88,12 @@ class ProduksiController extends Controller
             return view('user.dept_head.Retail.dashboard_all_mesin');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+
+    public function Menu_all_variant()
+    {
+
+        return view('user.dept_head.Retail.menu_all_variant');
     }
 
     ///////////End View Dept Head ///////////////////
@@ -130,7 +138,12 @@ class ProduksiController extends Controller
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
-
+    public function Form_Retail()
+    {
+       
+            return view('user.operator.prd.Retail.form');
+       
+    }
     ////////////End View Operator /////////////////
 
 
@@ -431,7 +444,7 @@ class ProduksiController extends Controller
         ]);
     }
 
-   
+
 
     public function AchievementBatch(Request $request)
     {
@@ -582,4 +595,52 @@ class ProduksiController extends Controller
             'message' => 'Status running berhasil dihapus!'
         ]);
     }
+
+
+    // for retail
+    public function store_retail_varian(Request $request)
+    {
+        $validated = $request->validate([
+            'variant_name' => 'required|string|max:100',
+            'target' => 'required|integer|min:1',
+            'tanggal' => 'required|date',
+        ]);
+
+        // Cegah data duplikat pada variant + tanggal
+        $exists = VariantTarget::where('variant_name', $validated['variant_name'])
+        ->where('tanggal', $validated['tanggal'])
+        ->exists();
+
+        if ($exists) {
+            return response()->json(['message' => 'Data target sudah ada untuk tanggal ini.'], 422);
+        }
+
+        $target = VariantTarget::create($validated);
+        return response()->json(['message' => 'Target berhasil disimpan.', 'data' => $target]);
+    }
+
+    public function store_data_shift(Request $request)
+    {
+        $validated = $request->validate([
+            'variant_name' => 'required|string|max:100',
+            'shift_number' => 'required|integer|in:1,2,3',
+            'total' => 'required|integer|min:0',
+            'tanggal' => 'required|date',
+        ]);
+
+        // Cegah duplikat berdasarkan variant + shift + tanggal
+        $exists = VariantShift::where('variant_name', $validated['variant_name'])
+        ->where('shift_number', $validated['shift_number'])
+        ->where('tanggal', $validated['tanggal'])
+        ->exists();
+
+        if ($exists) {
+            return response()->json(['message' => 'Data shift sudah ada untuk kombinasi variant, tanggal dan shift ini.'], 422);
+        }
+
+        $entry = VariantShift::create($validated);
+        return response()->json(['message' => 'Shift berhasil disimpan.', 'data' => $entry]);
+    }
+
+    
 }
