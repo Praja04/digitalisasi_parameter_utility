@@ -48,106 +48,7 @@
             </div>
         </div>
 
-        <!-- Form -->
-        <!-- <div class="row mt-4" id="form-forklift" style="display: none;">
-            <div class="col-md-10 offset-md-1">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 id="form-title">Form Pemeriksaan</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="formP2HForklift" data-url="{{ url('wh/p2h/store') }}">
-                            @csrf
-                            <input type="hidden" name="jenis_p2h" value="Forklift" />
-
-                            <div class="row">
-                                <div class="col-md-3 mb-3">
-                                    <label>Tanggal</label>
-                                    <input type="date" class="form-control" name="tanggal" value="{{ date('Y-m-d') }}" readonly>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label>Nomor Unit</label>
-                                    <input type="text" class="form-control" name="nomor_unit">
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label>Departemen</label>
-                                    <input type="text" class="form-control" name="dept" required>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label>Shift</label>
-                                    <select class="form-control" name="shift" required>
-                                        <option value="">-- Pilih Shift --</option>
-                                        <option value="1">Shift 1</option>
-                                        <option value="2">Shift 2</option>
-                                        <option value="3">Shift 3</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label>Hours Meter</label>
-                                    <input type="text" class="form-control" name="jam_operasional" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label>Nama Operator</label>
-                                    <input type="text" class="form-control" value="{{ Session::get('username') }}" name="operator_name" readonly>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <label>Catatan</label>
-                                    <textarea class="form-control" name="catatan"></textarea>
-                                </div>
-                            </div>
-
-                            <hr>
-                            <h5>Pemeriksaan Item</h5>
-                            <div class="row">
-                                @php
-                                $checks = [
-                                'cek_baterai' => 'Baterai',
-                                'cek_fork' => 'Fork',
-                                'kondisi_body_kebersihan' => 'Body & Kebersihan',
-                                'lampu_kiri' => 'Lampu Kiri',
-                                'lampu_kanan' => 'Lampu Kanan',
-                                'lampu_sorot' => 'Lampu Sorot',
-                                'lampu_sign_depan_kanan' => 'Sign Depan Kanan',
-                                'lampu_sign_depan_kiri' => 'Sign Depan Kiri',
-                                'kipas_belakang' => 'Kipas Belakang',
-                                'rantai_lift' => 'Rantai Lift',
-                                'sistem_hidrolik' => 'Sistem Hidrolik',
-                                'kondisi_axle' => 'Axle',
-                                'sistem_kemudi' => 'Sistem Kemudi',
-                                'panel_display' => 'Panel Display',
-                                'air_aki' => 'Air Aki',
-                                'klakson' => 'Klakson',
-                                'buzzer_mundur' => 'Buzzer Mundur',
-                                'kaca_spion' => 'Kaca Spion',
-                                'kondisi_ban' => 'Ban',
-                                'fungsi_rem' => 'Rem',
-                                ];
-                                @endphp
-                                @foreach ($checks as $key => $label)
-                                <div class="col-md-4 mb-3">
-                                    <label>{{ $label }}</label>
-                                    <div>
-                                        <label class="me-2 radio-label" data-type="ok">
-                                            <input type="radio" name="{{ $key }}" value="1" required> OK
-                                        </label>
-                                        <label class="radio-label" data-type="nok">
-                                            <input type="radio" name="{{ $key }}" value="0"> NOK
-                                        </label>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-
-                            <div class="text-end mt-4">
-                                <button type="submit" class="btn btn-success">Simpan</button>
-                                <button type="button" class="btn btn-secondary" id="cancelForm">Batal</button>
-                            </div>
-                        </form>
-
-                    </div>
-                </div>
-            </div>
-        </div> -->
+       
         <div class="row mt-4" id="form-forklift" style="display: none;">
             <div class="col-md-10 offset-md-1">
                 <div class="card">
@@ -215,7 +116,7 @@
                                 'kondisi_axle' => ['label' => 'Check Kondisi Axle', 'desc' => 'Kondisi ban normal, tidak ada noise saat dioperasikan'],
                                 'sistem_kemudi' => ['label' => 'Sistem Kemudi', 'desc' => 'Tidak berat dan lancar'],
                                 'panel_display' => ['label' => 'Check Panel Display', 'desc' => 'Berfungsi normal, tidak pecah, tidak ada alarm'],
-                                'jam_operasional' => ['label' => 'Hours Meter', 'desc' => 'Catat hours meter sesuai aktual di unit'],
+                               
                                 'air_aki' => ['label' => 'Check Isi Air Aki', 'desc' => 'Berada di level standar'],
 
                                 'klakson' => ['label' => 'Check Klakson / Horn', 'desc' => 'Bunyi ketika tombol ditekan'],
