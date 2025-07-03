@@ -138,6 +138,7 @@ Route::prefix('eng')->middleware('auth')->group(function () {
     Route::get('/supervisor/data/utility', [EngineeringController::class, 'DataUtilitySupervisor']);
     Route::get('/foreman/dashboard', [EngineeringController::class, 'DashboardForeman']);
     Route::get('/foreman/data/utility', [EngineeringController::class, 'DataUtilityForeman']);
+    Route::get('/foreman/form', [EngineeringController::class, 'formUtilityForeman']);
 
     //operator
     Route::get('/operator/form', [EngineeringController::class, 'formUtility']);

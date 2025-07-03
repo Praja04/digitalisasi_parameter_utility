@@ -191,9 +191,9 @@
         });
     }
 
-    function loadTop5Listrik(bulan = '2025-06') {
+    function loadTop5Listrik(bulan = null) {
         $.ajax({
-            url: '/eng/top5/listrik',
+            url: "{{url('/eng/top5/listrik')}}",
             type: 'GET',
             data: {
                 bulan: bulan

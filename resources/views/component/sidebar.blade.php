@@ -45,6 +45,9 @@
                                 <a href="{{ url('eng/dept_head/dashboard') }}" class="nav-link" data-key="t-analytics"> Analytics Boiler</a>
                             </li>
                             <li class="nav-item">
+                                <a href="{{ url('eng/supervisor/dashboard/utility') }}" class="nav-link" data-key="t-analytics">Analytics Utility</a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="{{ url('eng/dept_head/todo') }}" class="nav-link" data-key="t-analytics"> Todo List ENG </a>
                             </li>
 
@@ -662,7 +665,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ url('eng/operator/form') }}">
+                    <a class="nav-link menu-link" href="{{ url('eng/foreman/form') }}">
                         <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form Utility</span>
                     </a>
                 </li>
