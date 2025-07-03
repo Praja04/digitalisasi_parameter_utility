@@ -63,7 +63,7 @@ class EngineeringController extends Controller
     }
     public function DashboardUtilitySupervisor()
     {
-        if (Session::get('jabatan') == 'supervisor') {
+        if (Session::get('jabatan') == 'supervisor' || Session::get('jabatan') == 'dept_head') {
             return view('user.supervisor.eng.dashboard_utility');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
@@ -84,6 +84,13 @@ class EngineeringController extends Controller
             return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
         return view('user.foreman.eng.data_utility');
+    }
+    public function formUtilityForeman()
+    {
+        if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        }
+        return view('user.foreman.eng.form_utility');
     }
     ////End View Foreman ///////////
 

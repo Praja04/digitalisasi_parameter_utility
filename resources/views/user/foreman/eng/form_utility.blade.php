@@ -70,7 +70,7 @@
                                 @csrf
                                 <div class="mb-3">
                                     <label for="waktu" class="form-label">Waktu</label>
-                                    <input type="date" name="waktu" class="form-control" id="waktu_listrik" readonly>
+                                    <input type="date" name="waktu" class="form-control" id="waktu_listrik">
                                 </div>
                                 <div class="mb-3">
                                     <label for="panel_type" class="form-label">Panel Type</label>
@@ -110,7 +110,7 @@
                                 @csrf
                                 <div class="mb-3">
                                     <label for="tanggal" class="form-label">Tanggal</label>
-                                    <input type="date" name="tanggal" id="tanggal_air" class="form-control" readonly>
+                                    <input type="date" name="tanggal" id="tanggal_air" class="form-control" >
                                 </div>
                                 <div class="mb-3">
                                     <label for="pemakaian_liter_awal" class="form-label">Awal (m³)</label>
@@ -140,7 +140,8 @@
                                 @csrf
                                 <div class="mb-3">
                                     <label for="tanggal" class="form-label">Tanggal</label>
-                                    <input type="date" name="tanggal" id="tanggal_chemical" class="form-control" readonly>
+                                    <input type="date" name="tanggal" id="tanggal_chemical" class="form-control"   
+                                    >
                                 </div>
                                 <div class="mb-3">
                                     <label for="area" class="form-label">Pilih Shift</label>
@@ -247,10 +248,7 @@
         });
 
 
-        const today = new Date().toISOString().split('T')[0];
-        $('#waktu_listrik').val(today);
-        $('#tanggal_air').val(today);
-        $('#tanggal_chemical').val(today);
+        
 
         $('.card-unit').click(function() {
             const unit = $(this).data('unit');

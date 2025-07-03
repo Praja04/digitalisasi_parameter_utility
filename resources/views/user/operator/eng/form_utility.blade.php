@@ -181,6 +181,33 @@
 
 <!-- Script -->
 <script>
+    function setTanggalChemical() {
+        const now = new Date();
+        let tanggal = new Date(now); // default: hari ini
+
+        const jam = now.getHours();
+        const menit = now.getMinutes();
+        const detik = now.getSeconds();
+        const selectedShift = $('#shift').val();
+
+        // Hitung total detik dari jam 00:00:00
+        const totalDetik = jam * 3600 + menit * 60 + detik;
+
+        // 06:00:00 = 21600 detik
+        const batasAwalShift1 = 6 * 3600;
+
+        // Kalau shift 3 dan waktu sekarang masih di bawah jam 06:00:00, anggap masih hari sebelumnya
+        if (selectedShift === 'shift 3' && totalDetik < batasAwalShift1) {
+            tanggal.setDate(tanggal.getDate() - 1);
+        }
+
+        const tanggalFormatted = tanggal.toISOString().split('T')[0];
+        $('#tanggal_chemical').val(tanggalFormatted);
+    }
+    // Trigger saat shift dipilih
+    $('#shift').on('change', function() {
+        setTanggalChemical();
+    });
     $(document).ready(function() {
 
         function toggleCosInput() {
@@ -250,7 +277,10 @@
         const today = new Date().toISOString().split('T')[0];
         $('#waktu_listrik').val(today);
         $('#tanggal_air').val(today);
-        $('#tanggal_chemical').val(today);
+
+
+
+        setTanggalChemical();
 
         $('.card-unit').click(function() {
             const unit = $(this).data('unit');
