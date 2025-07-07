@@ -318,6 +318,7 @@ class EngineeringController extends Controller
             'jenis_pemakaian' => 'required|array',
             'chemical_area' => 'required',
             'jumlah_pemakaian' => 'required|array',
+            'running_hour' => 'nullable|array',
         ]);
 
         $tanggal = $request->input('tanggal');
@@ -326,6 +327,7 @@ class EngineeringController extends Controller
         $keterangan = $request->input('keterangan');
         $jenisPemakaian = $request->input('jenis_pemakaian');
         $jumlahPemakaian = $request->input('jumlah_pemakaian');
+        $running_hour = $request->input('running_hour');
 
         $operator = Session::get('username');
         if (count($jenisPemakaian) !== count($jumlahPemakaian)) {
@@ -352,6 +354,7 @@ class EngineeringController extends Controller
                 'chemical_area' => $chemical_area,
                 'jenis_pemakaian' => $jenis,
                 'nilai_pemakaian' => $jumlahPemakaian[$index],
+                'running_hour' => $running_hour[$index],
                 'operator' => $operator,
                 'shift' => $shift,
                 'notes' => $keterangan,
