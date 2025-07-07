@@ -110,7 +110,7 @@
                                 @csrf
                                 <div class="mb-3">
                                     <label for="tanggal" class="form-label">Tanggal</label>
-                                    <input type="date" name="tanggal" id="tanggal_air" class="form-control" >
+                                    <input type="date" name="tanggal" id="tanggal_air" class="form-control">
                                 </div>
                                 <div class="mb-3">
                                     <label for="pemakaian_liter_awal" class="form-label">Awal (m³)</label>
@@ -140,8 +140,7 @@
                                 @csrf
                                 <div class="mb-3">
                                     <label for="tanggal" class="form-label">Tanggal</label>
-                                    <input type="date" name="tanggal" id="tanggal_chemical" class="form-control"   
-                                    >
+                                    <input type="date" name="tanggal" id="tanggal_chemical" class="form-control">
                                 </div>
                                 <div class="mb-3">
                                     <label for="area" class="form-label">Pilih Shift</label>
@@ -248,7 +247,7 @@
         });
 
 
-        
+
 
         $('.card-unit').click(function() {
             const unit = $(this).data('unit');
@@ -280,6 +279,7 @@
         $('#chemical-area').change(function() {
             const selectedOption = $(this).find('option:selected');
             const areaId = selectedOption.data('id');
+            const areaName = selectedOption.data('nama')?.toLowerCase();
 
             if (areaId) {
                 $.ajax({
@@ -295,22 +295,38 @@
 
                         data.forEach((chemical) => {
                             const satuan = chemical.satuan || 'Kg';
-                            const isDefoamer = chemical.nama_chemical.toLowerCase().includes('defoamer'); // fleksibel, bisa 'Deformer', 'deFormer', dst.
+                            const isDefoamer = chemical.nama_chemical.toLowerCase().includes('defoamer');
                             const requiredAttr = isDefoamer ? '' : 'required';
 
+                            let runningHourInput = '';
+
+                            // ⏱️ Tambahkan input Running Hour jika area WWTP
+                            if (areaName == 'wwtp') {
+                                runningHourInput = `
+                            <div class="mb-1">
+                                <label class="form-label">Running Hour (jam)</label>
+                                <input type="number" name="running_hour[]" class="form-control" step="0.1" required>
+                            </div>
+                        `;
+                            } else {
+                                runningHourInput = `<input type="hidden" name="running_hour[]" value="">`;
+                            }
+
                             const inputGroup = `
-                                                <div class="mb-3 border rounded p-3">
-                                                    <input type="hidden" name="chemical_ids[]" value="${chemical.id}">
-                                                    <div class="mb-1">
-                                                        <label class="form-label">${chemical.nama_chemical}</label>
-                                                        <input type="hidden" name="jenis_pemakaian[]" class="form-control" value="${chemical.nama_chemical}" readonly>
-                                                    </div>
-                                                    <div class="mb-1">
-                                                        <label class="form-label">Jumlah Pemakaian (${satuan})</label>
-                                                        <input type="number" name="jumlah_pemakaian[]" class="form-control" step="0.01" ${requiredAttr}>
-                                                    </div>
-                                                </div>
-                                            `;
+                        <div class="mb-3 border rounded p-3">
+                            <input type="hidden" name="chemical_ids[]" value="${chemical.id}">
+                            <div class="mb-1">
+                                <label class="form-label">${chemical.nama_chemical}</label>
+                                <input type="hidden" name="jenis_pemakaian[]" class="form-control" value="${chemical.nama_chemical}" readonly>
+                            </div>
+                            <div class="mb-1">
+                                <label class="form-label">Jumlah Pemakaian (${satuan})</label>
+                                <input type="number" name="jumlah_pemakaian[]" class="form-control" step="0.01" ${requiredAttr}>
+                            </div>
+                            ${runningHourInput}
+                        </div>
+                    `;
+
                             $('#chemical-input-container').append(inputGroup);
                         });
                     },

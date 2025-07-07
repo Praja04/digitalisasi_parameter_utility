@@ -41,7 +41,7 @@
                 <div class="card clickable card-unit pallet-card" data-unit="Pallet Mover">
                     <div class="card-body text-center">
                         <h4 class="card-title">Pallet Mover</h4>
-                        <img src="{{ asset('assets/images/pallet.jpg') }}" alt="gambar" height="150" style="border-radius: 20px;">
+                        <img src="{{ asset('assets/images/pallet_mover.jpg') }}" alt="gambar" height="150" style="border-radius: 20px;">
                         <p class="text-muted">Klik untuk pemeriksaan</p>
                     </div>
                 </div>
@@ -246,7 +246,7 @@
                 for (const [key, value] of Object.entries(detail)) {
                     if (['id', 'created_at', 'updated_at', 'jenis_p2h', 'operator_name', 'p2h_model_id', 'shift'].includes(key)) continue;
 
-                    const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    let label = key === 'jam_operasional' ? 'Hours Meter' : key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                     let badge;
 
                     if (value === 1 || value === '1') {
@@ -327,7 +327,7 @@
                 } else if (key === 'jam_operasional') {
                     formHtml += `
                 <div class="mb-3">
-                    <label class="form-label"><strong>${label}</strong></label>
+                    <label class="form-label"><strong>Hours Meter</strong></label>
                     <input type="text" class="form-control" name="${key}" value="${value}" readonly>
                 </div>
             `;

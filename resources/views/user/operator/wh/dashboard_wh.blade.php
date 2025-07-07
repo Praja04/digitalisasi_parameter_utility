@@ -41,7 +41,7 @@
                 <div class="card clickable card-unit pallet-card" data-unit="Pallet Mover">
                     <div class="card-body text-center">
                         <h4 class="card-title">Pallet Mover</h4>
-                        <img src="{{ asset('assets/images/pallet.jpg') }}" alt="gambar" height="150" style="border-radius: 20px;">
+                        <img src="{{ asset('assets/images/pallet_mover.jpg') }}" alt="gambar" height="150" style="border-radius: 20px;">
                         <p class="text-muted">Klik untuk pemeriksaan</p>
                     </div>
                 </div>
