@@ -317,7 +317,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-xl-12">
 
                 <div class="card crm-widget">
@@ -341,7 +341,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
+                           
 
                             <div class="col">
                                 <div class="mt-3 mt-md-0 py-4 px-3">
@@ -361,7 +361,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
+                           
                             <div class="col">
                                 <div class="mt-3 mt-lg-0 py-4 px-3">
                                     <h5 class="text-muted text-uppercase fs-13">
@@ -380,7 +380,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
+                           
 
                             <div class="col">
                                 <div class="mt-3 mt-lg-0 py-4 px-3">
@@ -400,12 +400,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
+                        
 
                         </div>
-                        <!-- end row -->
+                     
                     </div>
-                    <!-- end card body -->
+                  
                 </div>
 
                 <div class="card crm-widget">
@@ -429,7 +429,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
+                          
 
                             <div class="col">
                                 <div class="mt-3 mt-md-0 py-4 px-3">
@@ -449,7 +449,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
+                          
                             <div class="col">
                                 <div class="mt-3 mt-lg-0 py-4 px-3">
                                     <h5 class="text-muted text-uppercase fs-13">
@@ -468,7 +468,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
+                          
 
                             <div class="col">
                                 <div class="mt-3 mt-lg-0 py-4 px-3">
@@ -488,19 +488,18 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
+                          
 
                         </div>
-                        <!-- end row -->
+                    
                     </div>
-                    <!-- end card body -->
+                   
                 </div>
-                <!-- end card -->
+               
             </div>
-            <!-- end col -->
-        </div>
-        <!-- end row -->
-
+           
+        </div> -->
+       
 
         <div class="row">
             <div class="col-xl-12">
@@ -764,25 +763,25 @@
             let stopUrl = useRealtimeUrl ? "{{ url('retail/d1/mesin/stop/realtime') }}" : "{{ url('retail/d1/mesin/stop') }}";
 
 
-            $.ajax({
-                url: "{{url('retail/d1/nozzle-count')}}",
-                method: 'GET',
-                data: data,
-                success: function(response) {
-                    $('#output_nozzle1_shift1').text(response.shift_1?.nozzle_1 ?? 0);
-                    $('#output_nozzle1_shift2').text(response.shift_2?.nozzle_1 ?? 0);
-                    $('#output_nozzle1_shift3').text(response.shift_3?.nozzle_1 ?? 0);
-                    $('#output_nozzle2_shift1').text(response.shift_1?.nozzle_2 ?? 0);
-                    $('#output_nozzle2_shift2').text(response.shift_2?.nozzle_2 ?? 0);
-                    $('#output_nozzle2_shift3').text(response.shift_3?.nozzle_2 ?? 0);
+            // $.ajax({
+            //     url: "{{url('retail/d1/nozzle-count')}}",
+            //     method: 'GET',
+            //     data: data,
+            //     success: function(response) {
+            //         $('#output_nozzle1_shift1').text(response.shift_1?.nozzle_1 ?? 0);
+            //         $('#output_nozzle1_shift2').text(response.shift_2?.nozzle_1 ?? 0);
+            //         $('#output_nozzle1_shift3').text(response.shift_3?.nozzle_1 ?? 0);
+            //         $('#output_nozzle2_shift1').text(response.shift_1?.nozzle_2 ?? 0);
+            //         $('#output_nozzle2_shift2').text(response.shift_2?.nozzle_2 ?? 0);
+            //         $('#output_nozzle2_shift3').text(response.shift_3?.nozzle_2 ?? 0);
 
-                    $('#total_nozzle1').text(response.total_nozzle_1 ?? 0);
-                    $('#total_nozzle2').text(response.total_nozzle_2 ?? 0);
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseJSON);
-                }
-            });
+            //         $('#total_nozzle1').text(response.total_nozzle_1 ?? 0);
+            //         $('#total_nozzle2').text(response.total_nozzle_2 ?? 0);
+            //     },
+            //     error: function(xhr) {
+            //         console.error('Error:', xhr.responseJSON);
+            //     }
+            // });
 
             $.ajax({
                 url: startUrl,

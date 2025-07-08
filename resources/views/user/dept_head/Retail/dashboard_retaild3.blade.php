@@ -317,7 +317,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-xl-12">
 
                 <div class="card crm-widget">
@@ -341,7 +341,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
 
                             <div class="col">
                                 <div class="mt-3 mt-md-0 py-4 px-3">
@@ -361,7 +360,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
                             <div class="col">
                                 <div class="mt-3 mt-lg-0 py-4 px-3">
                                     <h5 class="text-muted text-uppercase fs-13">
@@ -380,7 +378,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
 
                             <div class="col">
                                 <div class="mt-3 mt-lg-0 py-4 px-3">
@@ -400,12 +397,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
 
                         </div>
-                        <!-- end row -->
                     </div>
-                    <!-- end card body -->
                 </div>
 
                 <div class="card crm-widget">
@@ -429,7 +423,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
 
                             <div class="col">
                                 <div class="mt-3 mt-md-0 py-4 px-3">
@@ -449,7 +442,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
                             <div class="col">
                                 <div class="mt-3 mt-lg-0 py-4 px-3">
                                     <h5 class="text-muted text-uppercase fs-13">
@@ -468,7 +460,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
 
                             <div class="col">
                                 <div class="mt-3 mt-lg-0 py-4 px-3">
@@ -488,18 +479,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- end col -->
 
                         </div>
-                        <!-- end row -->
                     </div>
-                    <!-- end card body -->
                 </div>
-                <!-- end card -->
             </div>
-            <!-- end col -->
-        </div>
-        <!-- end row -->
+        </div> -->
 
 
         <div class="row">
@@ -764,25 +749,25 @@
             let stopUrl = useRealtimeUrl ? "{{ url('retail/d3/mesin/stop/realtime') }}" : "{{ url('retail/d3/mesin/stop') }}";
 
 
-            $.ajax({
-                url: "{{url('retail/d3/nozzle-count')}}",
-                method: 'GET',
-                data: data,
-                success: function(response) {
-                    $('#output_nozzle1_shift1').text(response.shift_1?.nozzle_1 ?? 0);
-                    $('#output_nozzle1_shift2').text(response.shift_2?.nozzle_1 ?? 0);
-                    $('#output_nozzle1_shift3').text(response.shift_3?.nozzle_1 ?? 0);
-                    $('#output_nozzle2_shift1').text(response.shift_1?.nozzle_2 ?? 0);
-                    $('#output_nozzle2_shift2').text(response.shift_2?.nozzle_2 ?? 0);
-                    $('#output_nozzle2_shift3').text(response.shift_3?.nozzle_2 ?? 0);
+            // $.ajax({
+            //     url: "{{url('retail/d3/nozzle-count')}}",
+            //     method: 'GET',
+            //     data: data,
+            //     success: function(response) {
+            //         $('#output_nozzle1_shift1').text(response.shift_1?.nozzle_1 ?? 0);
+            //         $('#output_nozzle1_shift2').text(response.shift_2?.nozzle_1 ?? 0);
+            //         $('#output_nozzle1_shift3').text(response.shift_3?.nozzle_1 ?? 0);
+            //         $('#output_nozzle2_shift1').text(response.shift_1?.nozzle_2 ?? 0);
+            //         $('#output_nozzle2_shift2').text(response.shift_2?.nozzle_2 ?? 0);
+            //         $('#output_nozzle2_shift3').text(response.shift_3?.nozzle_2 ?? 0);
 
-                    $('#total_nozzle1').text(response.total_nozzle_1 ?? 0);
-                    $('#total_nozzle2').text(response.total_nozzle_2 ?? 0);
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseJSON);
-                }
-            });
+            //         $('#total_nozzle1').text(response.total_nozzle_1 ?? 0);
+            //         $('#total_nozzle2').text(response.total_nozzle_2 ?? 0);
+            //     },
+            //     error: function(xhr) {
+            //         console.error('Error:', xhr.responseJSON);
+            //     }
+            // });
 
             $.ajax({
                 url: startUrl,
@@ -840,7 +825,7 @@
                     response.forEach(item => {
                         const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
                         const text = item.performance_output_percent + ' %';
-                        
+
                         // if (filter === 'today') {
                         //     // Cek waktu saat ini dan tampilkan shift yang relevan
                         //     if (currentHour >= 6 && currentHour < 14 && item.shift === 'Shift 1') {
@@ -854,8 +839,8 @@
                         //         $(`#performance_${shiftId}`).text('0 %');
                         //     }
                         // } else {
-                            // Untuk filter tanggal atau range, tampilkan semua shift
-                            $(`#performance_${shiftId}`).text(text);
+                        // Untuk filter tanggal atau range, tampilkan semua shift
+                        $(`#performance_${shiftId}`).text(text);
                         //}
                     });
 
@@ -898,9 +883,9 @@
                         //         $(`#gagal_filling_${shiftId}`).text('0 %');
                         //     }
                         // } else {
-                            // Untuk filter tanggal atau range, tampilkan semua shift
-                            $(`#gagal_filling_${shiftId}`).text(text);
-                       // }
+                        // Untuk filter tanggal atau range, tampilkan semua shift
+                        $(`#gagal_filling_${shiftId}`).text(text);
+                        // }
                     });
                 },
                 error: function(xhr) {
