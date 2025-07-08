@@ -357,6 +357,183 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-xl-3 col-lg-6">
+                <div class="card ribbon-box right overflow-hidden">
+                    <div class="card-body text-center p-4">
+                        <div class="ribbon ribbon-success ribbon-shape trending-ribbon" id="ribbon_d8">
+                            <i class="ri-hand-heart-fill text-white align-bottom"></i>
+                            <span class="trending-ribbon-text" id="mesin_status_d8"></span>
+                        </div>
+                        <img src="{{asset('/assets/images/retail.png')}}" alt="" height="90">
+                        <h5 class="mb-1 mt-4"><a href="" class="link-primary">Retail Filling D8</a></h5>
+                        <p class="text-muted mb-4">Performance Output</p>
+                        <div class="px-2 py-2 mt-1">
+                            <p class="mb-1">Shift 1 :
+                                <span id="total_counter_d8_shift1"></span> <span class="float-end" id="retail_d8_mesin_shift1"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" id="progress_d8_shift1" role="progressbar">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 2 :
+                                <span id="total_counter_d8_shift2"></span>
+                                <span class="float-end" id="retail_d8_mesin_shift2"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d8_shift2">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 3 :
+                                <span id="total_counter_d8_shift3"></span> <span class="float-end" id="retail_d8_mesin_shift3"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d8_shift3">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <a href="{{url('prd/dept_head/dashboard_retaild8')}}" class="btn btn-light w-100">Lihat Detail</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-6">
+                <div class="card ribbon-box right overflow-hidden">
+                    <div class="card-body text-center p-4">
+                        <div class="ribbon ribbon-success ribbon-shape trending-ribbon" id="ribbon_d9">
+                            <i class="ri-hand-heart-fill text-white align-bottom"></i>
+                            <span class="trending-ribbon-text" id="mesin_status_d9"></span>
+                        </div>
+                        <img src="{{asset('/assets/images/retail.png')}}" alt="" height="90">
+                        <h5 class="mb-1 mt-4"><a href="" class="link-primary">Retail Filling D9</a></h5>
+                        <p class="text-muted mb-4">Performance Output</p>
+                        <div class="px-2 py-2 mt-1">
+                            <p class="mb-1">Shift 1 :
+                                <span id="total_counter_d9_shift1"></span> <span class="float-end" id="retail_d9_mesin_shift1"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" id="progress_d9_shift1" role="progressbar">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 2 :
+                                <span id="total_counter_d9_shift2"></span>
+                                <span class="float-end" id="retail_d9_mesin_shift2"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d9_shift2">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 3 :
+                                <span id="total_counter_d9_shift3"></span> <span class="float-end" id="retail_d9_mesin_shift3"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d9_shift3">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <a href="{{url('prd/dept_head/dashboard_retaild9')}}" class="btn btn-light w-100">Lihat Detail</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-3 col-lg-6">
+                <div class="card ribbon-box right overflow-hidden">
+                    <div class="card-body text-center p-4">
+                        <div class="ribbon ribbon-success ribbon-shape trending-ribbon" id="ribbon_d10">
+                            <i class="ri-hand-heart-fill text-white align-bottom"></i>
+                            <span class="trending-ribbon-text" id="mesin_status_d10"></span>
+                        </div>
+                        <img src="{{asset('/assets/images/retail.png')}}" alt="" height="90">
+                        <h5 class="mb-1 mt-4"><a href="" class="link-primary">Retail Filling D10</a></h5>
+                        <p class="text-muted mb-4">Performance Output</p>
+                        <div class="px-2 py-2 mt-1">
+                            <p class="mb-1">Shift 1 :
+                                <span id="total_counter_d10_shift1"></span> <span class="float-end" id="retail_d10_mesin_shift1"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" id="progress_d10_shift1" role="progressbar">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 2 :
+                                <span id="total_counter_d10_shift2"></span>
+                                <span class="float-end" id="retail_d10_mesin_shift2"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d10_shift2">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 3 :
+                                <span id="total_counter_d10_shift3"></span> <span class="float-end" id="retail_d10_mesin_shift3"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d10_shift3">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <a href="{{url('prd/dept_head/dashboard_retaild10')}}" class="btn btn-light w-100">Lihat Detail</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-6">
+                <div class="card ribbon-box right overflow-hidden">
+                    <div class="card-body text-center p-4">
+                        <div class="ribbon ribbon-success ribbon-shape trending-ribbon" id="ribbon_d14">
+                            <i class="ri-hand-heart-fill text-white align-bottom"></i>
+                            <span class="trending-ribbon-text" id="mesin_status_d14"></span>
+                        </div>
+                        <img src="{{asset('/assets/images/retail.png')}}" alt="" height="90">
+                        <h5 class="mb-1 mt-4"><a href="" class="link-primary">Retail Filling D14</a></h5>
+                        <p class="text-muted mb-4">Performance Output</p>
+                        <div class="px-2 py-2 mt-1">
+                            <p class="mb-1">Shift 1 :
+                                <span id="total_counter_d14_shift1"></span> <span class="float-end" id="retail_d14_mesin_shift1"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" id="progress_d14_shift1" role="progressbar">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 2 :
+                                <span id="total_counter_d14_shift2"></span>
+                                <span class="float-end" id="retail_d14_mesin_shift2"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d14_shift2">
+                                </div>
+                            </div>
+
+                            <p class="mt-3 mb-1">Shift 3 :
+                                <span id="total_counter_d14_shift3"></span> <span class="float-end" id="retail_d14_mesin_shift3"></span>
+                            </p>
+                            <div class="progress bg-soft-primary mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" id="progress_d14_shift3">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <a href="{{url('prd/dept_head/dashboard_retaild14')}}" class="btn btn-light w-100">Lihat Detail</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -390,7 +567,7 @@
             $('#date-picker').val(formattedDate);
 
             // Array mesin
-            const mesinList = ['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'];
+            const mesinList = ['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8', 'd9', 'd10', 'd14'];
 
             for (const mesin of mesinList) {
                 // Ambil status mesin

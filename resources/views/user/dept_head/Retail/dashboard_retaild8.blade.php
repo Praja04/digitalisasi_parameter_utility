@@ -7,7 +7,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                    <h4 class="mb-sm-0">Produksi - Retail Filling D5</h4>
+                    <h4 class="mb-sm-0">Produksi - Retail Filling D8</h4>
 
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
@@ -75,7 +75,7 @@
                         <div class="d-flex align-items-end justify-content-between mt-4">
                             <div>
                                 <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" id="total_counter"></span></h4>
-                                <p>Retail D5</p>
+                                <p>Retail D7</p>
                             </div>
                             <div class="avatar-sm flex-shrink-0" data-aos="flip-up">
                                 <span class=" avatar-title bg-success rounded fs-3">
@@ -100,7 +100,7 @@
                         <div class="d-flex align-items-end justify-content-between mt-4">
                             <div>
                                 <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" id="average_main_speed"></span></h4>
-                                <p>Retail D5</p>
+                                <p>Retail D8</p>
                             </div>
                             <div class="avatar-sm flex-shrink-0" data-aos="flip-up">
                                 <span class=" avatar-title bg-info rounded fs-3">
@@ -317,183 +317,6 @@
             </div>
         </div>
 
-        <!-- <div class="row">
-            <div class="col-xl-12">
-
-                <div class="card crm-widget">
-                    <div class="card-body p-0">
-
-                        <div class="row row-cols-xxl-4 row-cols-md-3 row-cols-1 g-0">
-                            <div class="col">
-                                <div class="py-4 px-3">
-                                    <h5 class="text-muted text-uppercase fs-13">
-                                        Total Nozzle 1
-                                    </h5>
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <i class="ri-space-ship-line display-6 text-muted"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h2 class="mb-0">
-                                                <span class="counter-value" id="total_nozzle1" data-target=""></span>
-                                            </h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-
-                            <div class="col">
-                                <div class="mt-3 mt-md-0 py-4 px-3">
-                                    <h5 class="text-muted text-uppercase fs-13">
-                                        Output Nozzle 1 Shift 1
-
-                                    </h5>
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <i class="ri-space-ship-line display-6 text-muted"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h2 class="mb-0">
-                                                <span class="counter-value" id="output_nozzle1_shift1" data-target=""></span>
-                                            </h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col">
-                                <div class="mt-3 mt-lg-0 py-4 px-3">
-                                    <h5 class="text-muted text-uppercase fs-13">
-                                        Output Nozzle 1 Shift 2
-
-                                    </h5>
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <i class="ri-space-ship-line display-6 text-muted"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h2 class="mb-0">
-                                                <span class="counter-value" id="output_nozzle1_shift2" data-target=""></span>
-                                            </h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-
-                            <div class="col">
-                                <div class="mt-3 mt-lg-0 py-4 px-3">
-                                    <h5 class="text-muted text-uppercase fs-13">
-                                        Output Nozzle 1 Shift 3
-
-                                    </h5>
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <i class="ri-space-ship-line display-6 text-muted"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h2 class="mb-0">
-                                                <span class="counter-value" id="output_nozzle1_shift3" data-target=""></span>
-                                            </h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-
-                        </div> 
-                    </div> 
-                </div>
-
-                <div class="card crm-widget">
-                    <div class="card-body p-0">
-
-                        <div class="row row-cols-xxl-4 row-cols-md-3 row-cols-1 g-0">
-                            <div class="col">
-                                <div class="py-4 px-3">
-                                    <h5 class="text-muted text-uppercase fs-13">
-                                        Total Nozzle 2
-                                    </h5>
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <i class="ri-space-ship-line display-6 text-muted"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h2 class="mb-0">
-                                                <span class="counter-value" id="total_nozzle2" data-target=""></span>
-                                            </h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-
-                            <div class="col">
-                                <div class="mt-3 mt-md-0 py-4 px-3">
-                                    <h5 class="text-muted text-uppercase fs-13">
-                                        Output Nozzle 2 Shift 1
-
-                                    </h5>
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <i class="ri-space-ship-line display-6 text-muted"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h2 class="mb-0">
-                                                <span class="counter-value" id="output_nozzle2_shift1" data-target=""></span>
-                                            </h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col">
-                                <div class="mt-3 mt-lg-0 py-4 px-3">
-                                    <h5 class="text-muted text-uppercase fs-13">
-                                        Output Nozzle 2 Shift 2
-
-                                    </h5>
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <i class="ri-space-ship-line display-6 text-muted"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h2 class="mb-0">
-                                                <span class="counter-value" id="output_nozzle2_shift2" data-target=""></span>
-                                            </h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-
-                            <div class="col">
-                                <div class="mt-3 mt-lg-0 py-4 px-3">
-                                    <h5 class="text-muted text-uppercase fs-13">
-                                        Output Nozzle 2 Shift 3
-
-                                    </h5>
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <i class="ri-space-ship-line display-6 text-muted"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h2 class="mb-0">
-                                                <span class="counter-value" id="output_nozzle2_shift3" data-target=""></span>
-                                            </h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-
-                        </div> 
-                    </div> 
-                </div> 
-            </div>
-            
-        </div>  -->
 
 
         <div class="row">
@@ -635,7 +458,7 @@
 
         function get_data() {
             $.ajax({
-                url: "{{ url('retail/d5/last') }}",
+                url: "{{ url('retail/d8/last') }}",
                 type: "GET",
                 dataType: "json",
                 success: function(data) {
@@ -669,7 +492,7 @@
             });
 
             $.ajax({
-                url: "{{ url('retail/d5/output/performance') }}",
+                url: "{{ url('retail/d8/output/performance') }}",
                 type: "GET",
                 dataType: "json",
                 success: function(data) {
@@ -683,7 +506,7 @@
             });
 
             $.ajax({
-                url: "{{url('retail/d5/mesin-stop-periods')}}",
+                url: "{{url('retail/d8/mesin-stop-periods')}}",
                 method: 'GET',
                 // data: data,
                 dataType: "json",
@@ -699,7 +522,7 @@
             });
 
             $.ajax({
-                url: "{{url('retail/d5/average-main-speed')}}",
+                url: "{{url('retail/d8/average-main-speed')}}",
                 method: 'GET',
                 // data: data,
                 dataType: "json",
@@ -754,29 +577,10 @@
                 data.end_date = $('#end-date').val();
             }
 
-            let startUrl = useRealtimeUrl ? "{{ url('retail/d5/mesin/start/realtime') }}" : "{{ url('retail/d5/mesin/start') }}";
-            let stopUrl = useRealtimeUrl ? "{{ url('retail/d5/mesin/stop/realtime') }}" : "{{ url('retail/d5/mesin/stop') }}";
+            let startUrl = useRealtimeUrl ? "{{ url('retail/d8/mesin/start/realtime') }}" : "{{ url('retail/d8/mesin/start') }}";
+            let stopUrl = useRealtimeUrl ? "{{ url('retail/d8/mesin/stop/realtime') }}" : "{{ url('retail/d8/mesin/stop') }}";
 
 
-            // $.ajax({
-            //     url: "{{url('retail/d5/nozzle-count')}}",
-            //     method: 'GET',
-            //     data: data,
-            //     success: function(response) {
-            //         $('#output_nozzle1_shift1').text(response.shift_1?.nozzle_1 ?? 0);
-            //         $('#output_nozzle1_shift2').text(response.shift_2?.nozzle_1 ?? 0);
-            //         $('#output_nozzle1_shift3').text(response.shift_3?.nozzle_1 ?? 0);
-            //         $('#output_nozzle2_shift1').text(response.shift_1?.nozzle_2 ?? 0);
-            //         $('#output_nozzle2_shift2').text(response.shift_2?.nozzle_2 ?? 0);
-            //         $('#output_nozzle2_shift3').text(response.shift_3?.nozzle_2 ?? 0);
-
-            //         $('#total_nozzle1').text(response.total_nozzle_1 ?? 0);
-            //         $('#total_nozzle2').text(response.total_nozzle_2 ?? 0);
-            //     },
-            //     error: function(xhr) {
-            //         console.error('Error:', xhr.responseJSON);
-            //     }
-            // });
 
             $.ajax({
                 url: startUrl,
@@ -819,7 +623,7 @@
             });
 
             $.ajax({
-                url: "{{url('retail/d5/output/performance/all_shift')}}",
+                url: "{{url('retail/d8/output/performance/all_shift')}}",
                 method: 'GET',
                 data: data,
                 success: function(response) {
@@ -861,7 +665,7 @@
             });
 
             $.ajax({
-                url: "{{url('retail/d5/output/gagal/filling')}}",
+                url: "{{url('retail/d8/output/gagal/filling')}}",
                 method: 'GET',
                 data: data,
                 success: function(response) {
@@ -919,7 +723,7 @@
 
                 // Ambil ulang data dan tampilkan ke modal
                 $.ajax({
-                    url: "{{url('retail/d5/mesin-stop-periods')}}",
+                    url: "{{url('retail/d8/mesin-stop-periods')}}",
                     method: 'GET',
                     data: data,
                     success: function(response) {

@@ -312,7 +312,7 @@
         function buildChemicalTable(entry) {
             const shifts = Array.from(new Set(entry.data.flatMap(d => d.shifts.map(s => s.shift))));
             const rows = entry.data.map(d => {
-                const group = ['nilai_pemakaian', 'area', 'operator', 'notes'].map(attr => {
+                const group = ['nilai_pemakaian', 'area', 'operator', 'notes','running_hour'].map(attr => {
                     const cells = shifts.map(s => {
                         const sd = d.shifts.find(x => x.shift === s);
                         return `<td>${sd?.[attr] ?? '-'}</td>`;
