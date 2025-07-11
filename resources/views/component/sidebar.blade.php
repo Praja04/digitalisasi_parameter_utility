@@ -715,6 +715,11 @@
                 @elseif(Session::get('jabatan') === 'operator' && Session::get('departemen') === 'produksi')
                 <li class="menu-title"><span data-key="t-menu">Menu</span></li>
                 <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('prd/operator/form_retail') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form target Retail</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ url('prd/operator/dashboard') }}">
                         <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form input Batch</span>
                     </a>

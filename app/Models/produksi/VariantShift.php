@@ -10,7 +10,7 @@ class VariantShift extends Model
     use HasFactory;
 
     protected $table = 'variant_shifts';
-    protected $fillable = ['variant_name', 'shift_number','total', 'tanggal'];
+    protected $fillable = ['variant_name', 'shift_number','total', 'tanggal','line','jumlah_batch'];
 
     public $timestamps = false;
 
