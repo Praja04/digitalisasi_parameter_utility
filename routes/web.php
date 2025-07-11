@@ -72,24 +72,24 @@ Route::prefix('prd')->middleware('auth')->group(function () {
     Route::get('/operator/status_running', [ProduksiController::class, 'statusRunning']);
 
     // Data Achievement batch
-    Route::get('/achievement', [ProduksiController::class, 'AchievementBatch'])->name('achievement.batch');
-    Route::get('/achievement/harian', [ProduksiController::class, 'AchievementBatchHarian'])->name('achievement.harian');
-    Route::get('/achievement/mingguan', [ProduksiController::class, 'AchievementBatchMingguan'])->name('achievement.mingguan');
-    Route::get('/achievement/bulanan', [ProduksiController::class, 'AchievementBatchBulanan'])->name('achievement.bulanan');
+    // Route::get('/achievement', [ProduksiController::class, 'AchievementBatch'])->name('achievement.batch');
+    // Route::get('/achievement/harian', [ProduksiController::class, 'AchievementBatchHarian'])->name('achievement.harian');
+    // Route::get('/achievement/mingguan', [ProduksiController::class, 'AchievementBatchMingguan'])->name('achievement.mingguan');
+    // Route::get('/achievement/bulanan', [ProduksiController::class, 'AchievementBatchBulanan'])->name('achievement.bulanan');
 
     // CRUD Batch Produksi
-    Route::get('/batch', [ProduksiController::class, 'index'])->name('batch.index'); // Menampilkan semua batch
-    Route::get('/batch-completed', [ProduksiController::class, 'indexCompleted'])->name('batch.index-completed'); // Menampilkan semua batch
-    Route::post('/batch/store', [ProduksiController::class, 'storeBatch'])->name('batch.store'); // Simpan batch baru
-    Route::get('/operator/batch/{id}', [ProduksiController::class, 'showOperatorProduksi'])->name('operator.batch.show');
-    Route::put('/batch/{id}/update-status', [ProduksiController::class, 'updateStatus'])->name('batch.updateStatus'); // Update status batch
-    Route::delete('/delete/batch/{id}', [ProduksiController::class, 'destroy'])->name('batch.destroy'); // Hapus batch
+    // Route::get('/batch', [ProduksiController::class, 'index'])->name('batch.index'); // Menampilkan semua batch
+    // Route::get('/batch-completed', [ProduksiController::class, 'indexCompleted'])->name('batch.index-completed'); // Menampilkan semua batch
+    // Route::post('/batch/store', [ProduksiController::class, 'storeBatch'])->name('batch.store'); // Simpan batch baru
+    // Route::get('/operator/batch/{id}', [ProduksiController::class, 'showOperatorProduksi'])->name('operator.batch.show');
+    // Route::put('/batch/{id}/update-status', [ProduksiController::class, 'updateStatus'])->name('batch.updateStatus'); // Update status batch
+    // Route::delete('/delete/batch/{id}', [ProduksiController::class, 'destroy'])->name('batch.destroy'); // Hapus batch
 
     // CRUD Shift untuk setiap Batch
-    Route::post('/batch/{batch_id}/shift/store', [ProduksiController::class, 'storeBatchDetail'])->name('batch.shift.store'); // Tambah shift
-    Route::get('/batch/{batch_id}/shift', [ProduksiController::class, 'getShiftData'])->name('batch.shift.get'); // Ambil data shift
-    Route::delete('/batch/shift/{id}', [ProduksiController::class, 'deleteShift'])->name('batch.shift.delete'); // Hapus shift
-    Route::put('/batch/shift/update/{shiftId}', [ProduksiController::class, 'updateShift'])->name('batch.shift.update');
+    // Route::post('/batch/{batch_id}/shift/store', [ProduksiController::class, 'storeBatchDetail'])->name('batch.shift.store'); // Tambah shift
+    // Route::get('/batch/{batch_id}/shift', [ProduksiController::class, 'getShiftData'])->name('batch.shift.get'); // Ambil data shift
+    // Route::delete('/batch/shift/{id}', [ProduksiController::class, 'deleteShift'])->name('batch.shift.delete'); // Hapus shift
+    // Route::put('/batch/shift/update/{shiftId}', [ProduksiController::class, 'updateShift'])->name('batch.shift.update');
 
     // CRUD Status Running
     Route::get('/status-running', [ProduksiController::class, 'StatusRunningList'])->name('statusrunning.read');

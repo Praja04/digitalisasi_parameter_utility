@@ -210,7 +210,7 @@
          let formData = $(this).serialize();
 
          $.ajax({
-            url: "{{url('/eng/data/status/store')}}",
+            url: "{{url('/prd/status-running/store')}}",
             method: 'POST',
             data: formData,
             success: function(response) {
@@ -255,7 +255,7 @@
          let formData = $(this).serialize();
 
          $.ajax({
-            url: "{{url('/eng/data/batch/store')}}",
+            url: "{{url('/prd/store/shift/retail')}}",
             method: 'POST',
             data: formData,
             success: function(res) {
