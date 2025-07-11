@@ -67,7 +67,7 @@
                         </div>
                         <div class="mb-3">
                            <label for="shift" class="form-label">shift</label>
-                           <select class="form-select" name="shift" id="shift">
+                           <select class="form-select" name="shift_number" id="shift">
                               <option value="">Pilih Shift</option>
                               <option value="1">Shift 1</option>
                               <option value="2">Shift 2</option>
@@ -80,7 +80,18 @@
                         </div>
                         <div class="mb-3">
                            <label for="variant" class="form-label">variant</label>
-                           <input type="text" name="variant" class="form-control" id="variant_batch">
+                           <select name="variant_name" class="form-control" id="variant_batch" required>
+                              <option value="">Pilih Varian</option>
+                              <option value="YB20gr">Varian YB20gr</option>
+                              <option value="YB77gr">Varian YB77gr</option>
+                              <option value="BB77BBG1">Varian BB77BBG1</option>
+                              <option value="BB77Harga">Varian BB77Harga</option>
+                              <option value="250gr">Varian 250gr</option>
+                              <option value="BB725">Varian BB725</option>
+                              <option value="40gr">Varian 40gr</option>
+                              <option value="700gr">Varian 700gr</option>
+                              <option value="BB725">Varian BB725</option>
+                           </select>
                         </div>
                         <div class="mb-3">
                            <label for="jumlah_batch" class="form-label">jumlah_batch</label>
@@ -88,7 +99,7 @@
                         </div>
                         <div class="mb-3">
                            <label for="berat_batch" class="form-label">berat_batch</label>
-                           <input type="text" name="berat_batch" class="form-control" id="berat_batch_batch">
+                           <input type="text" name="total" class="form-control" id="berat_batch">
                         </div>
                         <button type="submit" class="btn btn-danger">Simpan batch</button>
                      </form>
@@ -154,7 +165,7 @@
                         </div>
                         <div class="mb-3">
                            <label for="batch" class="form-label">Batch <span class="text-danger">*</span></label>
-                           <input type="text" class="form-control" id="batch">
+                           <input type="text" class="form-control" name="batch" id="batch">
                         </div>
                         <button type="submit" class="btn btn-primary">Simpan status</button>
                      </form>
