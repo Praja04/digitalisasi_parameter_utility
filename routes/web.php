@@ -161,7 +161,9 @@ Route::prefix('eng')->middleware('auth')->group(function () {
     Route::get('/trend-pemakaian-listrik', [EngineeringController::class, 'getTrendPemakaianListrik']);
     Route::get('/trend-pemakaian-chemical', [EngineeringController::class, 'getTrendPemakaianChemical']);
     Route::get('/top5/air', [EngineeringController::class, 'getTopJenisPemakaianAir']);
+    Route::get('/top5/air/raw', [EngineeringController::class, 'getTopJenisPemakaianAirRaw']);
     Route::get('/top5/listrik', [EngineeringController::class, 'getTopJenisPemakaianListrik']);
+    Route::get('/top5/chemical', [EngineeringController::class, 'getTopJenisPemakaianChemical']);
     Route::get('/top5/operator/air', [EngineeringController::class, 'getTopOperatorPemakaianAir']);
     Route::get('/top5/operator/listrik', [EngineeringController::class, 'getTopOperatorPemakaianListrik']);
     Route::get('/top5/operator/chemical', [EngineeringController::class, 'getTopOperatorPemakaianChemical']);
@@ -179,6 +181,8 @@ Route::prefix('eng')->middleware('auth')->group(function () {
     Route::post('/update-pemakaian-chemical', [EngineeringController::class, 'updateChemical']);
 
     Route::get('/export-pemakaian-listrik', [EngineeringController::class, 'exportPemakaianListrikSpreadsheet']);
+    Route::get('/export-pemakaian-chemical', [EngineeringController::class, 'exportPemakaianChemicalSpreadsheet']);
+    Route::get('/export-pemakaian-air', [EngineeringController::class, 'exportPemakaianAirSpreadsheet']);
 
     //send tele bot
     Route::get('send/tele', [EngineeringController::class, 'Notif_boiler']);

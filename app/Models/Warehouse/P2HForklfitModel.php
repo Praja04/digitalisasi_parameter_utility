@@ -10,7 +10,8 @@ class P2HForklfitModel extends Model
     protected $table = 'p2h_forklift';
     protected $primaryKey = 'id';
     protected $fillable = [
-        'tanggal', 'jenis_p2h', 'nomor_unit', 'dept', 'cek_baterai',
+        'tanggal', 'jenis_p2h', 'nomor_unit', 'dept',
+        'cek_baterai',
         'cek_fork',
         'kondisi_body_kebersihan',
         'lampu_kiri',
@@ -34,6 +35,7 @@ class P2HForklfitModel extends Model
         'shift',
         'operator_name',
         'catatan',
+        'persentase',
     ];
 
     public function calculateKelayakan()
@@ -89,6 +91,4 @@ class P2HForklfitModel extends Model
             'status' => $status
         ];
     }
-
-    
 }
