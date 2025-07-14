@@ -96,7 +96,7 @@ class WarehouseController extends Controller
     }
     /////////// End View Foreman /////////////////
 
- 
+
     //forklift P2H
     public function storeP2h(Request $request)
     {
@@ -110,7 +110,8 @@ class WarehouseController extends Controller
             'operator_name' => 'required|string|max:100',
             'catatan' => 'nullable|string',
             'jam_operasional' => 'required',
-            // validasi semua kolom boolean (OK/NOK)
+
+            // Validasi status komponen
             'cek_baterai' => 'required|in:1,0',
             'cek_fork' => 'required|in:1,0',
             'kondisi_body_kebersihan' => 'required|in:1,0',
@@ -132,7 +133,8 @@ class WarehouseController extends Controller
             'kondisi_ban' => 'required|in:1,0',
             'fungsi_rem' => 'required|in:1,0',
         ]);
-        // Cek apakah data dengan tanggal + shift + nomor_unit sudah ada
+
+        // Cek duplikasi data
         $exists = P2HForklfitModel::whereDate('tanggal', $request->tanggal)
             ->where('shift', $request->shift)
             ->where('nomor_unit', $request->nomor_unit)
@@ -142,25 +144,48 @@ class WarehouseController extends Controller
         if ($exists) {
             return response()->json([
                 'success' => false,
-                'message' => 'Data untuk tanggal, shift,jenis p2h, dan nomor unit ini sudah ada.'
+                'message' => 'Data untuk tanggal, shift, jenis P2H, dan nomor unit ini sudah ada.'
             ], 422);
         }
 
-        // Ambil jam_operasional terakhir untuk unit ini
+        // Validasi jam operasional
         $lastRecord = P2HForklfitModel::where('nomor_unit', $request->nomor_unit)
-        //->orderByDesc('tanggal')
         ->orderByDesc('created_at')
         ->first();
 
-        if ($lastRecord && $request->jam_operasional < $lastRecord->jam_operasional
-        ) {
+        if ($lastRecord && $request->jam_operasional < $lastRecord->jam_operasional) {
             return response()->json([
                 'success' => false,
-                'message' => 'Hours Meter unit ini tidak boleh lebih kecil dari data sebelumnya (' . $lastRecord->jam_operasional . '). Cek Kembali!'
+                'message' => 'Hours Meter unit ini tidak boleh lebih kecil dari data sebelumnya (' . $lastRecord->jam_operasional . '). Cek kembali!'
             ], 422);
         }
 
+        // Perhitungan persentase
+        $group20 = ['cek_baterai', 'cek_fork', 'kondisi_body_kebersihan', 'lampu_kiri', 'lampu_kanan', 'lampu_sorot', 'lampu_sign_depan_kanan', 'lampu_sign_depan_kiri', 'kipas_belakang'];
+        $group50 = ['rantai_lift', 'sistem_hidrolik', 'kondisi_axle', 'sistem_kemudi', 'panel_display', 'jam_operasional', 'air_aki'];
+        $group30 = ['klakson', 'buzzer_mundur', 'kaca_spion', 'kondisi_ban', 'fungsi_rem'];
 
+        $totalPoin = 0;
+        foreach ($group20 as $field) {
+            $totalPoin += $request->$field ? 20 : 0;
+        }
+        foreach ($group50 as $field) {
+            $totalPoin += $request->$field ? 50 : 0;
+        }
+        foreach ($group30 as $field) {
+            $totalPoin += $request->$field ? 30 : 0;
+        }
+
+        $maxPoin = (count($group20) * 20) + (count($group50) * 50) + (count($group30) * 30); // Total bobot ideal
+        $persentase = round(($totalPoin / $maxPoin) * 100, 2);
+
+        // Deteksi rusak berat
+        $criticalNok = ['cek_baterai', 'kipas_belakang', 'rantai_lift', 'sistem_hidrolik', 'kondisi_axle', 'sistem_kemudi', 'panel_display', 'air_aki', 'fungsi_rem'];
+        $isRusakBerat = collect($criticalNok)->contains(fn ($f) => $request->$f == 0);
+        $statusUnit = $isRusakBerat ? 'Rusak Berat' : 'Normal';
+        if ($isRusakBerat) {
+            $persentase = 50.00; // Tetapkan nilai default jika rusak berat
+        }
         try {
             $batch = P2HForklfitModel::create([
                 'tanggal' => $request->tanggal,
@@ -191,13 +216,20 @@ class WarehouseController extends Controller
                 'kaca_spion' => $request->kaca_spion,
                 'kondisi_ban' => $request->kondisi_ban,
                 'fungsi_rem' => $request->fungsi_rem,
+                'persentase' => $persentase
             ]);
 
-            return response()->json(['success' => true, 'data' => $batch]);
+            return response()->json([
+                'success' => true,
+                'data' => $batch,
+                'persentase' => $persentase,
+                'status_unit' => $statusUnit
+            ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
     public function destroyP2h($id)
     {

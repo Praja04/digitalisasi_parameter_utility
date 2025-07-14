@@ -88,13 +88,17 @@
                                 <!-- Baris diisi oleh JS/jQuery -->
                             </tbody>
                         </table>
-                        <div id="export-container" class="mt-3" style="display:none;">
-                            <button class="btn btn-success" id="exportListrikBtn">
+                        <div id="export-container" class="mt-3" style="display: none;">
+                            <button class="btn btn-success" id="exportListrikBtn" style="display: none;">
                                 Export Excel (Listrik)
                             </button>
+                            <button class="btn btn-success" id="exportAirBtn" style="display: none;">
+                                Export Excel (Air)
+                            </button>
+                            <button class="btn btn-success" id="exportChemicalBtn" style="display: none;">
+                                Export Excel (Chemical)
+                            </button>
                         </div>
-
-                        <!-- Modal Pilih Bulan -->
                         <div class="modal fade" id="bulanModal" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -112,6 +116,8 @@
                                 </div>
                             </div>
                         </div>
+
+
                         <div id="pagination" class="mt-3 d-flex justify-content-center"></div>
 
                     </div>
@@ -159,7 +165,12 @@
                 applyFilters();
             });
 
-            $('#export-container').toggle(currentUnit === 'Listrik');
+            // Tampilkan tombol export sesuai unit
+            $('#export-container').show();
+            $('#exportListrikBtn').toggle(currentUnit === 'Listrik');
+            $('#exportAirBtn').toggle(currentUnit === 'Air');
+            $('#exportChemicalBtn').toggle(currentUnit === 'Chemical');
+
         });
 
         $('#searchInput, #filterDate').on('input change', applyFilters);
@@ -169,11 +180,31 @@
         });
 
         $('#exportListrikBtn').on('click', () => $('#bulanModal').modal('show'));
-
+        $('#exportAirBtn').on('click', () => $('#bulanModal').modal('show'));
+        $('#exportChemicalBtn').on('click', () => $('#bulanModal').modal('show'));
         $('#confirmExport').on('click', function() {
             const bulan = $('#bulanPicker').val();
             if (!bulan) return alert('Silakan pilih bulan terlebih dahulu.');
-            window.open(`/export-pemakaian-listrik?bulan=${bulan}`, '_blank');
+
+            let baseUrl = "{{url('eng/export-pemakaian-')}}";
+            let url = '';
+
+            switch (currentUnit) {
+                case 'Listrik':
+                    url = `${baseUrl}listrik?bulan=${bulan}`;
+                    break;
+                case 'Air':
+                    url = `${baseUrl}air?bulan=${bulan}`;
+                    break;
+                case 'Chemical':
+                    url = `${baseUrl}chemical?bulan=${bulan}`;
+                    break;
+                default:
+                    alert('Unit tidak dikenal untuk export.');
+                    return;
+            }
+
+            window.open(url, '_blank');
             $('#bulanModal').modal('hide');
         });
 
@@ -282,7 +313,7 @@
             const headers = entry.panels;
             const parameters = Object.keys(entry.rows || {});
             const operatorRow = `<tr><th>Operator</th>${headers.map(p => `<td>${entry.operator?.[p] ?? '-'}</td>`).join('')}</tr>`;
-            const usageRow = `<tr><th>Usage (Volt)</th>${headers.map(p => `<td>${entry.usage?.[p] ?? '-'}</td>`).join('')}</tr>`;
+            const usageRow = `<tr><th>Usage </th>${headers.map(p => `<td>${entry.usage?.[p] ?? '-'}</td>`).join('')}</tr>`;
             const paramRows = parameters.map(param => {
                 const cells = headers.map(p => `<td>${entry.rows[param][p] ?? '-'}</td>`);
                 return `<tr><th>${param}</th>${cells.join('')}</tr>`;
@@ -311,8 +342,9 @@
 
         function buildChemicalTable(entry) {
             const shifts = Array.from(new Set(entry.data.flatMap(d => d.shifts.map(s => s.shift))));
+
             const rows = entry.data.map(d => {
-                const group = ['nilai_pemakaian', 'area', 'operator', 'notes','running_hour'].map(attr => {
+                const group = ['nilai_pemakaian', 'area', 'operator', 'notes', 'running_hour'].map(attr => {
                     const cells = shifts.map(s => {
                         const sd = d.shifts.find(x => x.shift === s);
                         return `<td>${sd?.[attr] ?? '-'}</td>`;
@@ -321,9 +353,20 @@
                     return `<tr><th>${label}</th>${cells.join('')}</tr>`;
                 });
 
+                const totalRow = `
+            <tr class="table-warning">
+                <th>Total Pemakaian</th>
+                <td colspan="${shifts.length}">${d.total_pemakaian} ${d.satuan}</td>
+            </tr>
+        `;
+
                 return `
-                <tr class="table-primary"><th colspan="${shifts.length + 1}">${d.jenis_pemakaian}</th></tr>
-                ${group.join('')}`;
+            <tr class="table-primary">
+                <th colspan="${shifts.length + 1}">${d.jenis_pemakaian}</th>
+            </tr>
+            ${group.join('')}
+            ${totalRow}
+        `;
             });
 
             return renderTable(shifts, rows, 'Parameter');

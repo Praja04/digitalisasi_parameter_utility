@@ -88,9 +88,15 @@
                                 <!-- Baris diisi oleh JS/jQuery -->
                             </tbody>
                         </table>
-                        <div id="export-container" class="mt-3" style="display:none;">
-                            <button class="btn btn-success" id="exportListrikBtn">
+                        <div id="export-container" class="mt-3" style="display: none;">
+                            <button class="btn btn-success" id="exportListrikBtn" style="display: none;">
                                 Export Excel (Listrik)
+                            </button>
+                            <button class="btn btn-success" id="exportAirBtn" style="display: none;">
+                                Export Excel (Air)
+                            </button>
+                            <button class="btn btn-success" id="exportChemicalBtn" style="display: none;">
+                                Export Excel (Chemical)
                             </button>
                         </div>
 
@@ -180,7 +186,10 @@
                 applyFilters();
             });
 
-            $('#export-container').toggle(currentUnit === 'Listrik');
+            $('#export-container').show();
+            $('#exportListrikBtn').toggle(currentUnit === 'Listrik');
+            $('#exportAirBtn').toggle(currentUnit === 'Air');
+            $('#exportChemicalBtn').toggle(currentUnit === 'Chemical');
         });
 
         $('#searchInput, #filterDate').on('input change', applyFilters);
@@ -190,11 +199,31 @@
         });
 
         $('#exportListrikBtn').on('click', () => $('#bulanModal').modal('show'));
-
+        $('#exportAirBtn').on('click', () => $('#bulanModal').modal('show'));
+        $('#exportChemicalBtn').on('click', () => $('#bulanModal').modal('show'));
         $('#confirmExport').on('click', function() {
             const bulan = $('#bulanPicker').val();
             if (!bulan) return alert('Silakan pilih bulan terlebih dahulu.');
-            window.open(`/export-pemakaian-listrik?bulan=${bulan}`, '_blank');
+
+            let baseUrl = "{{url('eng/export-pemakaian-')}}";
+            let url = '';
+
+            switch (currentUnit) {
+                case 'Listrik':
+                    url = `${baseUrl}listrik?bulan=${bulan}`;
+                    break;
+                case 'Air':
+                    url = `${baseUrl}air?bulan=${bulan}`;
+                    break;
+                case 'Chemical':
+                    url = `${baseUrl}chemical?bulan=${bulan}`;
+                    break;
+                default:
+                    alert('Unit tidak dikenal untuk export.');
+                    return;
+            }
+
+            window.open(url, '_blank');
             $('#bulanModal').modal('hide');
         });
 

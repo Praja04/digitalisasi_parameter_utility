@@ -24,57 +24,130 @@
         </div>
 
         <div class="row">
-            <div class="col-xxl-4 col-md-12">
+            <div class="col-xxl-6 col-md-12">
+                <div class="card">
+                    <div class="card-header align-items-center d-flex">
+                        <h4 class="card-title mb-0 flex-grow-1">Pemakaian Air Proses & Support Utility</h4>
+                        <div class="flex-shrink-0">
+                            <div class="dropdown card-header-dropdown">
+                                <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-expanded="false" id="dropdownPemakaianAir">
+                                    <span class="fw-semibold text-uppercase fs-12">Filter:</span>
+                                    <span class="text-muted" id="selectedBulanAir">Pilih Tanggal<i class="mdi mdi-chevron-down ms-1"></i></span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end p-3" style="min-width: 280px;">
+                                    <div class="mb-2">
+                                        <label for="startDateAir" class="form-label mb-0">Dari:</label>
+                                        <input type="date" id="startDateAir" class="form-control form-control-sm">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="endDateAir" class="form-label mb-0">Sampai:</label>
+                                        <input type="date" id="endDateAir" class="form-control form-control-sm">
+                                    </div>
+                                    <button class="btn btn-sm btn-primary w-100" id="applyAirRange">Terapkan</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pb-0">
+                        <div id="pemakaian-air-chart" class="apex-charts" dir="ltr"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xxl-6 col-md-12">
                 <div class="card">
                     <div class="card-header align-items-center d-flex">
                         <h4 class="card-title mb-0 flex-grow-1">
-                            Top 5 Pemakaian Air
+                            Pemakaian Air Raw
                         </h4>
                         <div class="flex-shrink-0">
                             <div class="dropdown card-header-dropdown">
-                                <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dropdownPemakaianListrik">
-                                    <span class="fw-semibold text-uppercase fs-12">Sort by: </span>
-                                    <span class="text-muted" id="selectedBulan">Bulan Ini<i class="mdi mdi-chevron-down ms-1"></i></span>
+                                <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-expanded="false" id="dropdownPemakaianAirRaw">
+                                    <span class="fw-semibold text-uppercase fs-12">Filter:</span>
+                                    <span class="text-muted" id="selectedBulanAirRaw">Pilih Tanggal<i class="mdi mdi-chevron-down ms-1"></i></span>
                                 </a>
-                                <div class="dropdown-menu dropdown-menu-end" id="bulan-dropdown">
-                                    <a class="dropdown-item" href="#" data-bulan="2025-06">Juni 2025</a>
-                                    <a class="dropdown-item" href="#" data-bulan="2025-05">Mei 2025</a>
-                                    <a class="dropdown-item" href="#" data-bulan="2025-04">April 2025</a>
+                                <div class="dropdown-menu dropdown-menu-end p-3" style="min-width: 280px;">
+                                    <div class="mb-2">
+                                        <label for="startDateAirRaw" class="form-label mb-0">Dari:</label>
+                                        <input type="date" id="startDateAirRaw" class="form-control form-control-sm">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="endDateAirRaw" class="form-label mb-0">Sampai:</label>
+                                        <input type="date" id="endDateAirRaw" class="form-control form-control-sm">
+                                    </div>
+                                    <button class="btn btn-sm btn-primary w-100" id="applyAirRawRange">Terapkan</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- end card header -->
                     <div class="card-body pb-0">
-                        <div id="pemakaian-air-chart" data-colors='["--vz-primary", "--vz-success", "--vz-warning"]' class="apex-charts" dir="ltr"></div>
+                        <div id="pemakaian-air-chart-raw" data-colors='["--vz-primary", "--vz-success", "--vz-warning"]' class="apex-charts" dir="ltr"></div>
                     </div>
                 </div>
                 <!-- end card -->
             </div>
 
-            <div class="col-xxl-4 col-md-12">
+            <div class="col-xxl-6 col-md-12">
+                <div class="card">
+                    <div class="card-header align-items-center d-flex">
+                        <h4 class="card-title mb-0 flex-grow-1">Pemakaian Listrik</h4>
+                        <div class="flex-shrink-0">
+                            <div class="dropdown card-header-dropdown">
+                                <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-expanded="false" id="dropdownPemakaianListrik">
+                                    <span class="fw-semibold text-uppercase fs-12">Filter:</span>
+                                    <span class="text-muted" id="selectedBulanListrik">Pilih Tanggal<i class="mdi mdi-chevron-down ms-1"></i></span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end p-3" style="min-width: 280px;">
+                                    <div class="mb-2">
+                                        <label for="startDateListrik" class="form-label mb-0">Dari:</label>
+                                        <input type="date" id="startDateListrik" class="form-control form-control-sm">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="endDateListrik" class="form-label mb-0">Sampai:</label>
+                                        <input type="date" id="endDateListrik" class="form-control form-control-sm">
+                                    </div>
+                                    <button class="btn btn-sm btn-primary w-100" id="applyListrikRange">Terapkan</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pb-0">
+                        <div id="pemakaian-listrik-chart" class="apex-charts" dir="ltr"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xxl-6 col-md-12">
                 <div class="card">
                     <div class="card-header align-items-center d-flex">
                         <h4 class="card-title mb-0 flex-grow-1">
-                            Top 5 Pemakaian Listrik
+                            Pemakaian Chemical
                         </h4>
                         <div class="flex-shrink-0">
                             <div class="dropdown card-header-dropdown">
-                                <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dropdownPemakaianListrik">
-                                    <span class="fw-semibold text-uppercase fs-12">Sort by: </span>
-                                    <span class="text-muted" id="selectedBulanListrik">Bulan Ini<i class="mdi mdi-chevron-down ms-1"></i></span>
+                                <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-expanded="false" id="dropdownPemakaianChemical">
+                                    <span class="fw-semibold text-uppercase fs-12">Filter:</span>
+                                    <span class="text-muted" id="selectedBulanChemical">Pilih Tanggal<i class="mdi mdi-chevron-down ms-1"></i></span>
                                 </a>
-                                <div class="dropdown-menu dropdown-menu-end" id="bulan-dropdown-listrik">
-                                    <a class="dropdown-item" href="#" data-bulan="2025-06">Juni 2025</a>
-                                    <a class="dropdown-item" href="#" data-bulan="2025-05">Mei 2025</a>
-                                    <a class="dropdown-item" href="#" data-bulan="2025-04">April 2025</a>
+                                <div class="dropdown-menu dropdown-menu-end p-3" style="min-width: 280px;">
+                                    <div class="mb-2">
+                                        <label for="startDateChemical" class="form-label mb-0">Dari:</label>
+                                        <input type="date" id="startDateChemical" class="form-control form-control-sm">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="endDateChemical" class="form-label mb-0">Sampai:</label>
+                                        <input type="date" id="endDateChemical" class="form-control form-control-sm">
+                                    </div>
+                                    <button class="btn btn-sm btn-primary w-100" id="applyChemicalRange">Terapkan</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- end card header -->
                     <div class="card-body pb-0">
-                        <div id="pemakaian-listrik-chart" data-colors='["--vz-primary", "--vz-success", "--vz-warning"]' class="apex-charts" dir="ltr"></div>
+                        <div id="pemakaian-chemical-chart" data-colors='["--vz-primary", "--vz-success", "--vz-warning"]' class="apex-charts" dir="ltr"></div>
                     </div>
                 </div>
                 <!-- end card -->
@@ -179,28 +252,44 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     let chartPemakaianAir = null;
+    let chartPemakaianAirRaw = null;
     let chartListrik = null;
+    let chartChemical = null;
 
-    function fetchPemakaianAir(bulan = null) {
-        const url = "{{ url('eng/top5/air') }}" + (bulan ? `?bulan=${bulan}` : '');
+    function fetchPemakaianAir(start, end) {
+        const url = `{{ url('eng/top5/air') }}?start_date=${start}&end_date=${end}`;
 
         $.getJSON(url, function(data) {
             const labels = data.map(d => d.jenis_pemakaian);
             const values = data.map(d => parseFloat(d.total_pemakaian));
-            renderBarChart(labels, values);
+            const tipe = "#pemakaian-air-chart";
+            renderBarChart(labels, values, tipe);
         });
     }
 
-    function loadTop5Listrik(bulan = null) {
+    function fetchPemakaianAirRaw(start, end) {
+        const url = `{{ url('eng/top5/air/raw') }}?start_date=${start}&end_date=${end}`;
+
+        $.getJSON(url, function(data) {
+            const labels = data.map(d => d.jenis_pemakaian);
+            const values = data.map(d => parseFloat(d.total_pemakaian));
+            const tipe = "#pemakaian-air-chart-raw";
+            renderBarChartRaw(labels, values, tipe);
+        });
+    }
+
+
+    function loadPemakaianListrik(start, end) {
         $.ajax({
             url: "{{url('/eng/top5/listrik')}}",
             type: 'GET',
             data: {
-                bulan: bulan
+                start_date: start,
+                end_date: end
             },
             success: function(data) {
-                const labels = data.slice(0, 5).map(item => item.panel_type);
-                const usage = data.slice(0, 5).map(item => item.total_usage);
+                const labels = data.map(item => item.panel_type);
+                const usage = data.map(item => item.total_usage);
 
                 const optionsListrik = {
                     chart: {
@@ -251,9 +340,7 @@
                     },
                     tooltip: {
                         y: {
-                            formatter: function(val) {
-                                return val + " mWh"
-                            }
+                            formatter: val => `${val} mWh`
                         }
                     }
                 };
@@ -279,11 +366,103 @@
         });
     }
 
+    function loadPemakaianChemical(start, end) {
+        $.ajax({
+            url: "{{url('/eng/top5/chemical')}}",
+            type: 'GET',
+            data: {
+                start_date: start,
+                end_date: end
+            },
+            success: function(data) {
+                const labels = data.map(item => item.jenis_pemakaian);
+                const usage = data.map(item => item.total_pemakaian);
+                const satuan = data.map(item => item.satuan);
 
-    function renderBarChart(labels, values) {
+                const optionsChemical = {
+                    chart: {
+                        type: 'bar',
+                        height: 300,
+                        toolbar: {
+                            show: false
+                        },
+                        animations: {
+                            enabled: true,
+                            easing: 'easeinout',
+                            speed: 500,
+                            animateGradually: {
+                                enabled: true,
+                                delay: 150
+                            },
+                            dynamicAnimation: {
+                                enabled: true,
+                                speed: 350
+                            }
+                        }
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                            columnWidth: '50%',
+                            endingShape: 'rounded'
+                        }
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        show: true,
+                        width: 2,
+                        colors: ['transparent']
+                    },
+                    series: [{
+                        name: 'Pemakaian Chemical',
+                        data: usage
+                    }],
+                    xaxis: {
+                        categories: labels
+                    },
+                    fill: {
+                        opacity: 1,
+                        colors: ['#FEB019']
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function(val, {
+                                dataPointIndex
+                            }) {
+                                const unit = satuan[dataPointIndex] || '';
+                                return `${val} ${unit}`;
+                            }
+                        }
+                    }
+                };
+
+                if (chartChemical) {
+                    chartChemical.updateOptions({
+                        xaxis: {
+                            categories: labels
+                        },
+                        series: [{
+                            name: 'Pemakaian Chemical',
+                            data: usage
+                        }]
+                    }, true, true);
+                } else {
+                    chartChemical = new ApexCharts(document.querySelector("#pemakaian-chemical-chart"), optionsChemical);
+                    chartChemical.render();
+                }
+            },
+            error: function() {
+                console.error("Gagal memuat data pemakaian chemical.");
+            }
+        });
+    }
+
+    function renderBarChart(labels, values, tipe) {
         if (chartPemakaianAir) chartPemakaianAir.destroy();
 
-        chartPemakaianAir = new ApexCharts(document.querySelector("#pemakaian-air-chart"), {
+        chartPemakaianAir = new ApexCharts(document.querySelector(tipe), {
             chart: {
                 type: 'bar',
                 height: 300
@@ -323,6 +502,51 @@
 
         chartPemakaianAir.render();
     }
+
+    function renderBarChartRaw(labels, values, tipe) {
+        if (chartPemakaianAirRaw) chartPemakaianAirRaw.destroy();
+
+        chartPemakaianAirRaw = new ApexCharts(document.querySelector(tipe), {
+            chart: {
+                type: 'bar',
+                height: 300
+            },
+            series: [{
+                name: 'Total Pemakaian',
+                data: values
+            }],
+            xaxis: {
+                categories: labels,
+                labels: {
+                    style: {
+                        fontSize: '12px'
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                style: {
+                    fontSize: '11px'
+                },
+                formatter: val => val
+            },
+            tooltip: {
+                y: {
+                    formatter: val => `${val} m³`
+                }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '50%'
+                }
+            },
+            colors: ['#008FFB']
+        });
+
+        chartPemakaianAirRaw.render();
+    }
+
 
     function loadTopOperator(utility, containerId, bulan = null) {
         const url = `{{ url('eng/top5/operator') }}/${utility}` + (bulan ? `?bulan=${bulan}` : '');
@@ -435,29 +659,66 @@
     }
 
     $(document).ready(function() {
-        // Load awal
-        fetchPemakaianAir();
-        loadTop5Listrik();
+        // Load default bulan ini
+        const today = new Date();
+        const startDefault = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().slice(0, 10);
+        const endDefault = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().slice(0, 10);
+
+        $('#startDateAir').val(startDefault);
+        $('#endDateAir').val(endDefault);
+        $('#startDateListrik').val(startDefault);
+        $('#endDateListrik').val(endDefault);
+
+        fetchPemakaianAir(startDefault, endDefault);
+        fetchPemakaianAirRaw(startDefault, endDefault);
+        loadPemakaianListrik(startDefault, endDefault);
+        loadPemakaianChemical(startDefault, endDefault);
+
 
         loadTopOperator('air', '#top-operator-list');
         loadTopOperator('listrik', '#top-operator-listrik');
         loadTopOperator('chemical', '#top-operator-chemical');
 
-        // Dropdown pemakaian air
-        $('#bulan-dropdown .dropdown-item').on('click', function() {
-            const bulan = $(this).data('bulan');
-            $('#selectedBulan').html(`${$(this).text()}<i class="mdi mdi-chevron-down ms-1"></i>`);
+        $('#applyAirRange').on('click', function() {
+            const start = $('#startDateAir').val();
+            const end = $('#endDateAir').val();
+            if (!start || !end) return alert("Isi rentang tanggal Air.");
+
+            $('#selectedBulanAir').html(`Dari ${start} s/d ${end}<i class="mdi mdi-chevron-down ms-1"></i>`);
             $("#pemakaian-air-chart").empty();
-            fetchPemakaianAir(bulan);
+            fetchPemakaianAir(start, end);
         });
-        // Dropdown filter bulan
-        $('#bulan-dropdown-listrik a').on('click', function(e) {
-            e.preventDefault();
-            const bulan = $(this).data('bulan');
-            $('#selectedBulanListrik').text($(this).text());
-            $("#pemakaian-listrik-chart").empty(); // hapus chart lama
-            loadTop5Listrik(bulan);
+
+        $('#applyAirRawRange').on('click', function() {
+            const start = $('#startDateAirRaw').val();
+            const end = $('#endDateAirRaw').val();
+            if (!start || !end) return alert("Isi rentang tanggal Air.");
+
+            $('#selectedBulanAirRaw').html(`Dari ${start} s/d ${end}<i class="mdi mdi-chevron-down ms-1"></i>`);
+            $("#pemakaian-air-chart-raw").empty();
+            fetchPemakaianAirRaw(start, end);
         });
+
+        // Filter Listrik
+        $('#applyListrikRange').on('click', function() {
+            const start = $('#startDateListrik').val();
+            const end = $('#endDateListrik').val();
+            if (!start || !end) return alert("Isi rentang tanggal Listrik.");
+
+            $('#selectedBulanListrik').html(`Dari ${start} s/d ${end}<i class="mdi mdi-chevron-down ms-1"></i>`);
+            $("#pemakaian-listrik-chart").empty();
+            loadPemakaianListrik(start, end);
+        });
+        $('#applyChemicalRange').on('click', function() {
+            const start = $('#startDateChemical').val();
+            const end = $('#endDateChemical').val();
+            if (!start || !end) return alert("Isi rentang tanggal Chemical.");
+
+            $('#selectedBulanChemical').html(`Dari ${start} s/d ${end}<i class="mdi mdi-chevron-down ms-1"></i>`);
+            $("#pemakaian-chemical-chart").empty();
+            loadPemakaianListrik(start, end);
+        });
+
 
         // Filter operator air
         $('#filterBulanOperator').on('change', function() {

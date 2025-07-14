@@ -370,7 +370,7 @@ class EngineeringController extends Controller
     public function getPemakaianAirData(Request $request)
     {
         
-        $data = PemakaianAirModel::orderBy('tanggal')->get();
+        $data = PemakaianAirModel::orderBy('tanggal','desc')->get();
 
         // Kelompokkan berdasarkan tanggal
         $grouped = $data->groupBy(function ($item) {
@@ -403,47 +403,97 @@ class EngineeringController extends Controller
 
     public function getPemakaianChemicalData(Request $request)
     {
-        // Ambil data utama
-        $data = PemakaianChemicalModel::orderBy('tanggal')->get();
+        $data = PemakaianChemicalModel::orderBy('tanggal', 'desc')->get();
 
-        // Siapkan mapping satuan dengan key yang dinormalisasi
+        // Mapping satuan berdasarkan nama chemical yang dinormalisasi
         $satuanMap = ChemicalType::pluck('satuan', 'nama_chemical')->mapWithKeys(function ($satuan, $nama) {
             $key = strtolower(preg_replace('/[^a-z0-9]/', '', $nama));
             return [$key => $satuan];
         });
 
-        // Kelompokkan berdasarkan tanggal
         $grouped = $data->groupBy(fn ($item) => date('Y-m-d', strtotime($item->tanggal)));
-
         $result = [];
 
         foreach ($grouped as $tanggal => $items) {
             $jenisGrouped = $items->groupBy('jenis_pemakaian');
-
             $jenisData = [];
 
             foreach ($jenisGrouped as $jenis => $entries) {
-                // Normalisasi untuk lookup
                 $lookupKey = strtolower(preg_replace('/[^a-z0-9]/', '', $jenis));
-                $satuan = $satuanMap[$lookupKey] ?? null;
-                // Render shift detail
-                $shifts = $entries->map(function ($entry) use ($satuan) {
+                $satuanAsli = $satuanMap[$lookupKey] ?? null;
+
+                // Detail per shift
+                $shifts = $entries->map(function ($entry) use ($satuanAsli) {
                     $nilai = $entry->nilai_pemakaian;
-                    $formatted = is_null($nilai) ? '-' : $nilai . ($satuan ? " {$satuan}" : '');
+                    $formatted = is_null($nilai) ? '-' : "{$nilai}" . ($satuanAsli ? " {$satuanAsli}" : '');
                     return [
                         'shift' => $entry->shift,
                         'nilai_pemakaian' => $formatted,
                         'area' => $entry->chemical_area,
                         'operator' => $entry->operator,
                         'notes' => $entry->notes,
+                        'running_hour' => $entry->running_hour,
                         'created_at' => $entry->created_at,
                         'updated_at' => $entry->updated_at,
                     ];
-                })->sortBy(fn ($s) => preg_replace('/\D/', '', strtolower($s['shift'])))
-                ->values();
+                })->sortBy(fn ($s) => preg_replace('/\D/', '', strtolower($s['shift'])))->values();
+
+                // Hitung total pemakaian dan tentukan satuannya
+                $totalPemakaian = 0;
+                $hasCustomRumus = false;
+
+                foreach ($entries as $entry) {
+                    $nilai = is_numeric($entry->nilai_pemakaian)
+                        ? floatval($entry->nilai_pemakaian)
+                        : floatval(preg_replace('/[^\d.]+/', '', $entry->nilai_pemakaian));
+                    $rh = $entry->running_hour ?? 1;
+                    $jenisAsli = trim($entry->jenis_pemakaian);
+
+                    switch ($jenisAsli) {
+                        case 'PAC powder 1':
+                            $totalPemakaian += $rh * ($nilai * 60 * 7.6 / 100) / 1000;
+                            $hasCustomRumus = true;
+                            break;
+                        case 'PAC powder 2':
+                            $totalPemakaian += $rh * ($nilai * 60 * 12.5 / 100) / 1000;
+                            $hasCustomRumus = true;
+                            break;
+                        case 'BE-100':
+                            $totalPemakaian += $rh * ($nilai * 60 * 12.5 / 100) / 1000;
+                            $hasCustomRumus = true;
+                            break;
+                        case 'C-204':
+                            $totalPemakaian += $rh * ($nilai * 60 * 1 / 100) / 1000;
+                            $hasCustomRumus = true;
+                            break;
+                        case 'C-9040 step 1':
+                            $totalPemakaian += $rh * ($nilai * 60 * 0.11 / 100) / 1000;
+                            $hasCustomRumus = true;
+                            break;
+                        case 'C-9040 step 2':
+                            $totalPemakaian += $rh * ($nilai * 60 * 0.35 / 100) / 1000;
+                            $hasCustomRumus = true;
+                            break;
+                        case 'Denfloc 260 PA':
+                            $totalPemakaian += ($rh * ($nilai / 1000 * 60) * 480) / 1000 / 1000 / 1000;
+                            $hasCustomRumus = true;
+                            break;
+                        case 'NaOH':
+                            $totalPemakaian += $rh * ($nilai / 1000 * 60) * 1.5;
+                            $hasCustomRumus = true;
+                            break;
+                        default:
+                            $totalPemakaian += $nilai;
+                            break;
+                    }
+                }
+
+                $finalSatuan = $hasCustomRumus ? 'kg/hari' : ($satuanAsli ?? null);
 
                 $jenisData[] = [
                     'jenis_pemakaian' => $jenis,
+                    'total_pemakaian' => round($totalPemakaian, 3),
+                    'satuan' => $finalSatuan,
                     'shifts' => $shifts
                 ];
             }
@@ -528,7 +578,7 @@ class EngineeringController extends Controller
             ];
         }
 
-        return response()->json($result);
+        return response()->json(array_reverse($result));
     }
 
     public function getChemicalAreas()
@@ -657,6 +707,117 @@ class EngineeringController extends Controller
 
         return response()->download($tempPath, $fileName)->deleteFileAfterSend(true);
     
+    }
+
+    public function exportPemakaianAirSpreadsheet(Request $request)
+    {
+        $month = $request->input('bulan');
+        if (!$month) {
+            return response()->json(['message' => 'Parameter bulan diperlukan (format: YYYY-MM)'], 400);
+        }
+
+        $data = PemakaianAirModel::where('tanggal', 'like', "$month%")->orderBy('tanggal')->get();
+        $grouped = $data->groupBy(fn ($item) => date('Y-m-d', strtotime($item->tanggal)));
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $rowIndex = 1;
+
+        foreach ($grouped as $tanggal => $items) {
+            $jenisList = $items->pluck('jenis_pemakaian')->unique()->values()->all();
+
+            $sheet->setCellValue("A{$rowIndex}", 'Tanggal');
+            $sheet->setCellValue("B{$rowIndex}", 'Parameter');
+            $col = 'C';
+            foreach ($jenisList as $jenis) {
+                $sheet->setCellValue("{$col}{$rowIndex}", $jenis);
+                $col++;
+            }
+            $rowIndex++;
+
+            $params = ['pemakaian_awal' => 'Awal', 'pemakaian_akhir' => 'Akhir', 'created_by' => 'Created By'];
+
+            foreach ($params as $field => $label) {
+                $sheet->setCellValue("A{$rowIndex}", $tanggal);
+                $sheet->setCellValue("B{$rowIndex}", $label);
+                $col = 'C';
+                foreach ($jenisList as $jenis) {
+                    $item = $items->firstWhere('jenis_pemakaian', $jenis);
+                    $sheet->setCellValue("{$col}{$rowIndex}", $item?->$field ?? '');
+                    $col++;
+                }
+                $tanggal = '';
+                $rowIndex++;
+            }
+
+            $rowIndex++;
+        }
+
+        $fileName = "Pemakaian-Air-{$month}.xlsx";
+        $writer = new Xlsx($spreadsheet);
+        $tempPath = tempnam(sys_get_temp_dir(), 'export-air-');
+        $writer->save($tempPath);
+
+        return response()->download($tempPath, $fileName)->deleteFileAfterSend(true);
+    }
+
+    public function exportPemakaianChemicalSpreadsheet(Request $request)
+    {
+        $month = $request->input('bulan');
+        if (!$month) {
+            return response()->json(['message' => 'Parameter bulan diperlukan (format: YYYY-MM)'], 400);
+        }
+
+        $data = PemakaianChemicalModel::where('tanggal', 'like', "$month%")
+        ->orderBy('tanggal')
+        ->get();
+
+        // Kelompokkan data berdasarkan tanggal, shift, dan area
+        $grouped = $data->groupBy(fn ($item) => $item->tanggal . '|' . $item->shift . '|' . $item->chemical_area);
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $rowIndex = 1;
+
+        // Header
+        $headers = ['Tanggal', 'Jenis Pemakaian', 'Shift', 'Nilai Pemakaian', 'Area', 'Operator', 'Notes', 'Running Hour'];
+        foreach ($headers as $col => $label) {
+            $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col + 1);
+            $sheet->setCellValue("{$columnLetter}{$rowIndex}", $label);
+        }
+        $rowIndex++;
+
+        foreach ($grouped as $key => $entries) {
+            [$tanggal, $shift, $area] = explode('|', $key);
+            $startMergeRow = $rowIndex;
+            $mergeLength = count($entries);
+
+            foreach ($entries as $entry) {
+                $sheet->setCellValue("A{$rowIndex}", $tanggal);
+                $sheet->setCellValue("B{$rowIndex}", $entry->jenis_pemakaian);
+                $sheet->setCellValue("C{$rowIndex}", $shift);
+                $sheet->setCellValue("D{$rowIndex}", $entry->nilai_pemakaian);
+                $sheet->setCellValue("E{$rowIndex}", $area);
+                $sheet->setCellValue("F{$rowIndex}", $entry->operator);
+                $sheet->setCellValue("G{$rowIndex}", $entry->notes);
+                $sheet->setCellValue("H{$rowIndex}", $entry->running_hour);
+                $rowIndex++;
+            }
+
+            // Merge cells hanya jika lebih dari satu baris
+            if ($mergeLength > 1) {
+                $sheet->mergeCells("A{$startMergeRow}:A" . ($rowIndex - 1)); // Tanggal
+                $sheet->mergeCells("C{$startMergeRow}:C" . ($rowIndex - 1)); // Shift
+                $sheet->mergeCells("E{$startMergeRow}:E" . ($rowIndex - 1)); // Area
+            }
+        }
+
+        $fileName = "Pemakaian-Chemical-{$month}.xlsx";
+        $writer = new Xlsx($spreadsheet);
+        $tempPath = tempnam(sys_get_temp_dir(), 'export-chemical-');
+        $writer->save($tempPath);
+
+        return response()->download($tempPath, $fileName)->deleteFileAfterSend(true);
     }
 
 
@@ -806,21 +967,43 @@ class EngineeringController extends Controller
 
     public function getTopJenisPemakaianAir(Request $request)
     {
-        $bulan = $request->query('bulan'); // format: YYYY-MM
+        $start = $request->query('start_date');
+        $end = $request->query('end_date');
 
-        $tahun = $bulan ? substr($bulan, 0, 4) : now()->format('Y');
-        $bulanAngka = $bulan ? substr($bulan, 5, 2) : now()->format('m');
-
+        // Default ke bulan sekarang
+        if (!$start || !$end) {
+            $start = now()->startOfMonth()->format('Y-m-d');
+            $end = now()->endOfMonth()->format('Y-m-d');
+        }
+        $excludedSources = ['PDAM', 'Sumur 1', 'Sumur 2', 'Sumur 4', 'Sumur 5'];
         $data = PemakaianAirModel::query()
-            ->select(
-                'jenis_pemakaian',
-                DB::raw('SUM(pemakaian_akhir - pemakaian_awal) as total_pemakaian')
-            )
-            ->whereMonth('tanggal', $bulanAngka)
-            ->whereYear('tanggal', $tahun)
+            ->select('jenis_pemakaian', DB::raw('SUM(pemakaian_akhir - pemakaian_awal) AS total_pemakaian'))
+            ->whereBetween('tanggal', [$start, $end])
+            ->whereNotIn('jenis_pemakaian', $excludedSources)
             ->groupBy('jenis_pemakaian')
             ->orderByDesc('total_pemakaian')
-            ->limit(5)
+            ->get();
+
+        return response()->json($data);
+
+    }
+    public function getTopJenisPemakaianAirRaw(Request $request)
+    {
+        $start = $request->query('start_date');
+        $end = $request->query('end_date');
+
+        // Default ke bulan sekarang
+        if (!$start || !$end) {
+            $start = now()->startOfMonth()->format('Y-m-d');
+            $end = now()->endOfMonth()->format('Y-m-d');
+        }
+        $excludedSources = ['PDAM', 'Sumur 1', 'Sumur 2', 'Sumur 4', 'Sumur 5'];
+        $data = PemakaianAirModel::query()
+            ->select('jenis_pemakaian', DB::raw('SUM(pemakaian_akhir - pemakaian_awal) AS total_pemakaian'))
+            ->whereBetween('tanggal', [$start, $end])
+            ->whereIn('jenis_pemakaian', $excludedSources)
+            ->groupBy('jenis_pemakaian')
+            ->orderByDesc('total_pemakaian')
             ->get();
 
         return response()->json($data);
@@ -828,12 +1011,15 @@ class EngineeringController extends Controller
 
     public function getTopJenisPemakaianListrik(Request $request)
     {
-        $bulan = $request->query('bulan'); // format: YYYY-MM
-        $tahun = $bulan ? substr($bulan, 0, 4) : now()->format('Y');
-        $bulanAngka = $bulan ? substr($bulan, 5, 2) : now()->format('m');
+        $start = $request->query('start_date');
+        $end = $request->query('end_date');
 
-        $panelTypes = PemakaianListrikModel::whereMonth('waktu', $bulanAngka)
-            ->whereYear('waktu', $tahun)
+        if (!$start || !$end) {
+            $start = now()->startOfMonth()->format('Y-m-d');
+            $end = now()->endOfMonth()->format('Y-m-d');
+        }
+
+        $panelTypes = PemakaianListrikModel::whereBetween('waktu', [$start, $end])
             ->groupBy('panel_type')
             ->pluck('panel_type');
 
@@ -841,21 +1027,15 @@ class EngineeringController extends Controller
 
         foreach ($panelTypes as $panel) {
             $data = PemakaianListrikModel::where('panel_type', $panel)
-                ->whereMonth('waktu', $bulanAngka)
-                ->whereYear('waktu', $tahun)
+                ->whereBetween('waktu', [$start, $end])
                 ->orderBy('waktu')
                 ->pluck('mwh')
                 ->values();
 
             $totalUsage = 0;
             for ($i = 0; $i < $data->count() - 1; $i++) {
-                $current = $data[$i];
-                $next = $data[$i + 1];
-                $delta = $next - $current;
-
-                if ($delta >= 0) {
-                    $totalUsage += $delta;
-                }
+                $delta = $data[$i + 1] - $data[$i];
+                if ($delta >= 0) $totalUsage += $delta;
             }
 
             $usages[] = [
@@ -864,14 +1044,90 @@ class EngineeringController extends Controller
             ];
         }
 
-        $top5 = collect($usages)
-            ->sortByDesc('total_usage')
-            ->take(5)
-            ->values();
+        return response()->json(collect($usages)->sortByDesc('total_usage')->values());
+    }
 
-        return response()->json($top5);
-    
-    
+    public function getTopJenisPemakaianChemical(Request $request)
+    {
+        $start = $request->query('start_date');
+        $end = $request->query('end_date');
+
+        if (!$start || !$end) {
+            $start = now()->startOfMonth()->format('Y-m-d');
+            $end = now()->endOfMonth()->format('Y-m-d');
+        }
+
+        $data = PemakaianChemicalModel::whereBetween('tanggal', [$start, $end])->get();
+
+        // Normalisasi satuan dari chemical type
+        $satuanMap = ChemicalType::pluck('satuan', 'nama_chemical')->mapWithKeys(function ($satuan, $nama) {
+            $key = strtolower(preg_replace('/[^a-z0-9]/', '', $nama));
+            return [$key => $satuan];
+        });
+
+        $grouped = $data->groupBy('jenis_pemakaian');
+        $result = [];
+
+        foreach ($grouped as $jenis => $entries) {
+            $totalPemakaian = 0;
+            $hasCustomRumus = false;
+            $lookupKey = strtolower(preg_replace('/[^a-z0-9]/', '', $jenis));
+            $satuanAsli = $satuanMap[$lookupKey] ?? null;
+
+            foreach ($entries as $entry) {
+                $nilai = is_numeric($entry->nilai_pemakaian)
+                    ? floatval($entry->nilai_pemakaian)
+                    : floatval(preg_replace('/[^\d.]+/', '', $entry->nilai_pemakaian));
+                $rh = $entry->running_hour ?? 1;
+                $jenisAsli = trim($entry->jenis_pemakaian);
+
+                switch ($jenisAsli) {
+                    case 'PAC powder 1':
+                        $totalPemakaian += $rh * ($nilai * 60 * 7.6 / 100) / 1000;
+                        $hasCustomRumus = true;
+                        break;
+                    case 'PAC powder 2':
+                        $totalPemakaian += $rh * ($nilai * 60 * 12.5 / 100) / 1000;
+                        $hasCustomRumus = true;
+                        break;
+                    case 'BE-100':
+                        $totalPemakaian += $rh * ($nilai * 60 * 12.5 / 100) / 1000;
+                        $hasCustomRumus = true;
+                        break;
+                    case 'C-204':
+                        $totalPemakaian += $rh * ($nilai * 60 * 1 / 100) / 1000;
+                        $hasCustomRumus = true;
+                        break;
+                    case 'C-9040 step 1':
+                        $totalPemakaian += $rh * ($nilai * 60 * 0.11 / 100) / 1000;
+                        $hasCustomRumus = true;
+                        break;
+                    case 'C-9040 step 2':
+                        $totalPemakaian += $rh * ($nilai * 60 * 0.35 / 100) / 1000;
+                        $hasCustomRumus = true;
+                        break;
+                    case 'Denfloc 260 PA':
+                        $totalPemakaian += ($rh * ($nilai / 1000 * 60) * 480) / 1000 / 1000 / 1000;
+                        $hasCustomRumus = true;
+                        break;
+                    case 'NaOH':
+                        $totalPemakaian += $rh * ($nilai / 1000 * 60) * 1.5;
+                        $hasCustomRumus = true;
+                        break;
+                    default:
+                        $totalPemakaian += $nilai;
+                        break;
+                }
+            }
+
+            $result[] = [
+                'jenis_pemakaian' => $jenis,
+                'total_pemakaian' => round($totalPemakaian, 3),
+                'satuan' => $hasCustomRumus ? 'kg/hari' : ($satuanAsli ?? '-')
+            ];
+        }
+
+        return response()->json(collect($result)->sortByDesc('total_pemakaian')->values());
     }
 
 
@@ -891,7 +1147,7 @@ class EngineeringController extends Controller
             ->whereYear('tanggal', $tahun)
             ->groupBy('created_by')
             ->orderByDesc('jumlah_pengisian')
-            ->limit(5)
+            // ->limit(5)
             ->get();
 
         return response()->json($data);
@@ -913,7 +1169,7 @@ class EngineeringController extends Controller
             ->whereYear('waktu', $tahun)
             ->groupBy('operator')
             ->orderByDesc('jumlah_pengisian')
-            ->limit(5)
+            // ->limit(5)
             ->get();
 
         return response()->json($data);

@@ -48,7 +48,7 @@
             </div>
         </div>
 
-       
+
         <div class="row mt-4" id="form-forklift" style="display: none;">
             <div class="col-md-10 offset-md-1">
                 <div class="card">
@@ -90,10 +90,10 @@
                                     <label>Nama Operator</label>
                                     <input type="text" class="form-control" value="{{ Session::get('username') }}" name="operator_name" readonly>
                                 </div>
-                                <div class="col-md-12 mb-3">
+                                <!-- <div class="col-md-12 mb-3">
                                     <label>Catatan</label>
                                     <textarea class="form-control" name="catatan"></textarea>
-                                </div>
+                                </div> -->
                             </div>
 
                             <hr>
@@ -116,7 +116,7 @@
                                 'kondisi_axle' => ['label' => 'Check Kondisi Axle', 'desc' => 'Kondisi ban normal, tidak ada noise saat dioperasikan'],
                                 'sistem_kemudi' => ['label' => 'Sistem Kemudi', 'desc' => 'Tidak berat dan lancar'],
                                 'panel_display' => ['label' => 'Check Panel Display', 'desc' => 'Berfungsi normal, tidak pecah, tidak ada alarm'],
-                               
+
                                 'air_aki' => ['label' => 'Check Isi Air Aki', 'desc' => 'Berada di level standar'],
 
                                 'klakson' => ['label' => 'Check Klakson / Horn', 'desc' => 'Bunyi ketika tombol ditekan'],
@@ -131,17 +131,19 @@
                                 <div class="col-md-6 mb-3">
                                     <label>{{ $item['label'] }}</label>
                                     <small class="text-muted d-block">{{ $item['desc'] }}</small>
-                                    <div>
-                                        <label class="me-2 radio-label" data-type="ok">
+                                    <div class="d-flex gap-2">
+                                        <label class="me-2 radio-label">
                                             <input type="radio" name="{{ $key }}" value="1" required> OK
                                         </label>
-                                        <label class="radio-label" data-type="nok">
+                                        <label class="radio-label">
                                             <input type="radio" name="{{ $key }}" value="0"> Tidak OK
                                         </label>
                                     </div>
+                                    <input type="text" class="form-control mt-2 item-note" name="note_{{ $key }}" placeholder="Catatan jika Tidak OK (max 100 karakter)" maxlength="100" style="display:none;">
                                 </div>
                                 @endforeach
                             </div>
+                            <textarea name="catatan" id="catatan-hidden" hidden></textarea>
 
                             <div class="text-end mt-4">
                                 <button type="submit" class="btn btn-success">Simpan</button>
@@ -191,10 +193,7 @@
                                     <label>Nama Operator</label>
                                     <input type="text" class="form-control" name="operator_name" value="{{ Session::get('username') }}" readonly>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label>Catatan</label>
-                                    <textarea class="form-control" name="catatan"></textarea>
-                                </div>
+
                             </div>
 
                             <hr>
@@ -215,10 +214,10 @@
                                 @endphp
 
                                 @foreach ($checks as $key => $item)
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label>{{ $item['label'] }}</label>
                                     <small class="text-muted d-block">{{ $item['desc'] }}</small>
-                                    <div>
+                                    <div class="d-flex gap-2">
                                         <label class="me-2 radio-label">
                                             <input type="radio" name="{{ $key }}" value="1" required> OK
                                         </label>
@@ -226,9 +225,11 @@
                                             <input type="radio" name="{{ $key }}" value="0"> Tidak OK
                                         </label>
                                     </div>
+                                    <input type="text" class="form-control mt-2 item-note" name="note_{{ $key }}" placeholder="Catatan jika Tidak OK (max 100 karakter)" maxlength="100" style="display:none;">
                                 </div>
                                 @endforeach
                             </div>
+                            <textarea name="catatan" id="catatan-hidden" hidden></textarea>
 
                             <div class="text-end mt-4">
                                 <button type="submit" class="btn btn-success">Simpan</button>
@@ -244,81 +245,6 @@
     </div>
 </div>
 
-<!-- Script -->
-<!-- <script>
-    $(document).ready(function() {
-        $('.card-unit').on('click', function() {
-            let unit = $(this).data('unit');
-
-            // Sembunyikan form dulu
-            $('#form-container').slideUp(600, function() {
-                // Setelah tertutup, set data baru dan tampilkan kembali
-                $('#jenis_p2h').val(unit);
-                $('#form-title').text(`Form Pemeriksaan - ${unit}`);
-                $('#formP2H')[0].reset();
-                $('#form-container').slideDown();
-            });
-        });
-
-
-        $('#cancelForm').on('click', function() {
-            $('#formP2H')[0].reset();
-            $('#form-container').slideUp();
-        });
-
-        $('#formP2H').submit(function(e) {
-            e.preventDefault();
-
-            $.ajax({
-                url: "{{ url('wh/p2h/store') }}",
-                method: "POST",
-                data: $(this).serialize(),
-                success: function(response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil',
-                        text: response.message ?? 'Data P2H disimpan!',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    $('#formP2H')[0].reset();
-                    $('#form-container').slideUp();
-                    setInterval(() => {
-                        location.reload();
-                    }, 3000);
-
-                },
-                error: function(xhr) {
-                    let msg = 'Terjadi kesalahan.';
-                    if (xhr.responseJSON?.errors) {
-                        msg = Object.values(xhr.responseJSON.errors).flat().join('\n');
-                    } else if (xhr.responseJSON?.message) {
-                        msg = xhr.responseJSON.message;
-                    }
-                    Swal.fire('Gagal', msg, 'error');
-                }
-
-            });
-        });
-
-        $('input[type=radio]').on('change', function() {
-            const name = $(this).attr('name');
-            const isOk = $(this).val() === '1';
-
-            const group = $(`input[name="${name}"]`);
-
-            group.each(function() {
-                $(this).closest('.radio-label').removeClass('ok-selected nok-selected');
-            });
-
-            if (isOk) {
-                $(this).closest('.radio-label').addClass('ok-selected');
-            } else {
-                $(this).closest('.radio-label').addClass('nok-selected');
-            }
-        });
-    });
-</script> -->
 <script>
     $(document).ready(function() {
         $('.card-unit').on('click', function() {
@@ -370,22 +296,55 @@
         // Reusable AJAX submit logic
         function submitP2HForm(form) {
             const actionUrl = $(form).data("url");
+            const formId = $(form).attr("id");
+            let notes = [];
+
+            $(`#${formId} .item-note:visible`).each(function() {
+                let label = $(this).closest('.mb-3').find('label').first().text().trim();
+                label = label.replace(/^check\s+/i, '').trim();
+
+                const text = $(this).val().trim();
+                if (text) notes.push(`${label.toLowerCase()} ${text}`);
+            });
+
+            const gabungan = notes.join(', ');
+            $(`#${formId} [name="catatan"]`).val(gabungan);
 
             $.ajax({
                 url: actionUrl,
                 method: "POST",
                 data: $(form).serialize(),
                 success: function(response) {
+                    const persen = response.persentase ?? '-';
+                    const status = response.status_unit ?? '-';
+
+                    const kriteriaHTML = `
+                <hr>
+                <div style="text-align:left; font-size:14px; line-height:1.5; margin-top:10px;">
+                    <strong>Kriteria Kelayakan:</strong><br>
+                    ✅ <b>90-100%</b>: Unit MHE <i>sangat layak</i> untuk dioperasikan<br>
+                    ✅ <b>80-89%</b>: Layak dengan <i>perbaikan minor</i><br>
+                    ⚠️ <b>70-79%</b>: Perlu <i>perbaikan signifikan</i> sebelum operasi<br>
+                    ❌ <b><70%</b>: Tidak layak untuk dioperasikan
+                </div>
+            `;
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil',
-                        text: response.message ?? 'Data P2H disimpan!',
-                        timer: 2000,
-                        showConfirmButton: false
+                        html: `
+                    <strong>Data P2H disimpan!</strong><br><br>
+                    Kondisi unit: <b>${status}</b><br>
+                    Persentase kelayakan: <b>${persen}%</b>
+                    ${kriteriaHTML}
+                `,
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false
+                    }).then(() => {
+                        form.reset();
+                        $(form).closest('.row').slideUp();
+                        location.reload();
                     });
-                    form.reset();
-                    $(form).closest('.row').slideUp();
-                    setTimeout(() => location.reload(), 2500);
                 },
                 error: function(xhr) {
                     let msg = 'Terjadi kesalahan.';
@@ -415,6 +374,15 @@
         });
     });
 
+    // Inisialisasi note form global
+    const $noteWrapper = $('<div class="col-md-12 mb-3" id="note-container" style="display:none;">')
+        .append('<label>Catatan Pemeriksaan</label>')
+        .append('<textarea class="form-control" name="catatan" maxlength="500" rows="3" readonly></textarea>');
+
+    // Inject ke setiap form P2H
+    $('#formP2HForklift .card-body').append($noteWrapper.clone());
+    $('#formP2HPalletMover .card-body').append($noteWrapper.clone());
+
     function highlightNextCheck(currentInput) {
         const currentGroup = $(currentInput).closest(".mb-3");
         const container = currentGroup.closest(".row");
@@ -431,9 +399,49 @@
         }
     }
 
-    // Trigger on change across all forms
+    function updateGlobalCatatan(formSelector) {
+        const notes = [];
+        $(`${formSelector} .item-note:visible`).each(function() {
+            const label = $(this).closest('.mb-3').find('label').first().text().trim();
+            const text = $(this).val().trim();
+            if (text) {
+                notes.push(`${label.toLowerCase()} ${text}`);
+            }
+        });
+        const fullNote = notes.join(', ');
+        $(`${formSelector} #note-container`).show().find('textarea').val(fullNote);
+    }
+
+
+
     $('body').on('change', 'input[type=radio]', function() {
         highlightNextCheck(this);
+        const name = $(this).attr('name');
+        const isOk = $(this).val() === '1';
+        const group = $(`input[name="${name}"]`);
+        const formSelector = '#' + $(this).closest('form').attr('id');
+
+        group.each(function() {
+            $(this).closest('.radio-label').removeClass('ok-selected nok-selected');
+        });
+
+        $(this).closest('.radio-label').addClass(isOk ? 'ok-selected' : 'nok-selected');
+
+        // Tampilkan atau sembunyikan input catatan per item
+        const noteField = $(this).closest('.mb-3').find('.item-note');
+        if (!isOk) {
+            noteField.show().focus();
+        } else {
+            noteField.hide().val('');
+        }
+
+        updateGlobalCatatan(formSelector);
+    });
+
+    // Monitor pengetikan di input catatan individual
+    $('body').on('input', '.item-note', function() {
+        const formSelector = '#' + $(this).closest('form').attr('id');
+        updateGlobalCatatan(formSelector);
     });
 
     // Opsional: kasih highlight pertama saat form muncul
