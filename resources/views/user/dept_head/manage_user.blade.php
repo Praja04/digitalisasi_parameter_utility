@@ -95,6 +95,11 @@
                                         <div class="invalid-feedback">Please enter a valid email.</div>
                                     </div>
                                     <div class="mb-3">
+                                        <label for="nik" class="form-label">NIK</label>
+                                        <input type="number" class="form-control" id="nik" name="nik" placeholder="Enter nik" required />
+                                        <div class="invalid-feedback">Please enter nik.</div>
+                                    </div>
+                                    <div class="mb-3">
                                         <label for="password" class="form-label">Password</label>
                                         <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required />
                                         <div class="invalid-feedback">Please enter a password</div>
@@ -165,6 +170,10 @@
                             <div class="mb-3">
                                 <label for="editEmail" class="form-label">Email</label>
                                 <input type="email" class="form-control" id="editEmail" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editNik" class="form-label">Email</label>
+                                <input type="number" class="form-control" id="editNik" name="nik" required>
                             </div>
 
                             <div class="mb-3">
@@ -345,6 +354,10 @@
                                             <h5 class="mb-1 tasks-num">${user.departemen}</h5>
                                             <p class="text-muted mb-0">Departemen</p>
                                         </div>
+                                        <div class="col text-center">
+                                            <h5 class="mb-1 tasks-num">${user.nik}</h5>
+                                            <p class="text-muted mb-0">Departemen</p>
+                                        </div>
 
                                         <!-- Actions -->
                                         <div class="col-auto">
@@ -440,6 +453,7 @@
                                                     <div class="col-12">
                                                         <p class="mb-1">${user.email}</p>
                                                         <p class="text-muted member-departemen mb-0">${user.departemen}</p>
+                                                        <p class="text-muted  mb-0">${user.nik}</p>
                                                     </div>
                                                 </div>
                                             </div>

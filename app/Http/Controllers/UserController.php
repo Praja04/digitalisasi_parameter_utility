@@ -15,7 +15,7 @@ class UserController extends Controller
     // Menyediakan data untuk DataTables
     public function getUsers()
     {
-        $users = User::select('id', 'username', 'jabatan', 'email', 'image', 'created_at', 'departemen')->get();
+        $users = User::select('id', 'username', 'jabatan', 'email','nik', 'image', 'created_at', 'departemen')->get();
 
         return response()->json($users);
     }
@@ -28,6 +28,7 @@ class UserController extends Controller
             'password' => 'required|min:6',
             'email' => 'required|email',
             'jabatan' => 'required',
+            'nik' => 'required',
             'departemen' => 'required',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
@@ -42,6 +43,7 @@ class UserController extends Controller
             'username' => $request->username,
             'password' => bcrypt($request->password),
             'email' => $request->email,
+            'nik' => $request->nik,
             'jabatan' => $request->jabatan,
             'departemen' => $request->departemen,
             'image' => $imageName,
@@ -64,6 +66,7 @@ class UserController extends Controller
             'username' => 'required|unique:users,username,' . $id,
             'email' => 'required|email',
             'jabatan' => 'required',
+            'nik' => 'required',
             'departemen' => 'required',
             'password' => 'nullable|min:6',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
@@ -86,6 +89,7 @@ class UserController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'jabatan' => $request->jabatan,
+            'nik' => $request->nik,
             'departemen' => $request->departemen,
             'password' => $request->password ? bcrypt($request->password) : $user->password,
         ]);

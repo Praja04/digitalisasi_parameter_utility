@@ -642,6 +642,16 @@
                         <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Data P2H</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('wh/forklift-registration') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Registrasi Forklift</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('wh/pallet-mover-registration') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Registrasi Pallet Mover</span>
+                    </a>
+                </li>
                 <!-- end supervisor -->
 
                 <!-- foreman -->

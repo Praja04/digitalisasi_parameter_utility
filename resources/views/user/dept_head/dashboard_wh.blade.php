@@ -1,12 +1,55 @@
 @extends('layout')
 
+<!-- Font mewah dan transisi tema -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        transition: background-color 0.3s ease;
+    }
+
+    .page-content {
+        background-color: var(--bs-body-bg);
+        transition: background-color 0.3s ease;
+    }
+
+    h4,
+    h5 {
+        font-family: 'Playfair Display', serif;
+        font-weight: 600;
+    }
+
+    .card {
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        background-color: var(--bs-card-bg, #ffffff);
+    }
+
+    .card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+    }
+
+    [data-bs-theme="dark"] .card {
+        background-color: #1f2230;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+
+    [data-bs-theme="dark"] h4,
+    [data-bs-theme="dark"] h5 {
+        color: #e4e7ec;
+    }
+</style>
+
 @section('content')
 <div class="page-content">
     <div class="container-fluid">
-        <h4 class="mb-4">Dashboard Pemeriksaan P2H</h4>
+        {{-- Forklift Dashboard --}}
+        <h4 class="mb-4">Dashboard Pemeriksaan P2H - Forklift</h4>
 
         <div class="row">
-            <!-- Summary Cards -->
             <div class="col-md-3" id="card-total"></div>
             <div class="col-md-3" id="card-today"></div>
             <div class="col-md-3" id="card-pending"></div>
@@ -14,7 +57,6 @@
         </div>
 
         <div class="row mt-4">
-            <!-- Grafik Kelayakan -->
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
@@ -23,7 +65,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Komponen Masalah Terbanyak -->
+
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
@@ -35,7 +77,6 @@
         </div>
 
         <div class="row mt-4">
-            <!-- Operator terbanyak -->
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
@@ -45,7 +86,6 @@
                 </div>
             </div>
 
-            <!-- Shift distribusi -->
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
@@ -56,8 +96,59 @@
             </div>
         </div>
 
+        {{-- Pallet Mover Dashboard --}}
+        <h4 class="mb-4 mt-5">Dashboard Pemeriksaan P2H – Pallet Mover</h4>
+
+        <div class="row">
+            <div class="col-md-3" id="pm-card-total"></div>
+            <div class="col-md-3" id="pm-card-today"></div>
+            <div class="col-md-3" id="pm-card-pending"></div>
+            <div class="col-md-3" id="pm-card-completed"></div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Distribusi Kelayakan – Pallet Mover</h5>
+                        <div id="chartKelayakanPallet"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Komponen Masalah Terbanyak – Pallet Mover</h5>
+                        <div id="chartTopMasalahPallet"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Top Operator Pemeriksa – Pallet Mover</h5>
+                        <div id="chartOperatorPallet"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Distribusi Shift – Pallet Mover</h5>
+                        <div id="chartShiftPallet"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
+
 
 <!-- Load ApexCharts -->
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>

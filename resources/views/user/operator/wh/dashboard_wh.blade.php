@@ -67,11 +67,22 @@
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label>Nomor Unit</label>
-                                    <input type="text" class="form-control" name="nomor_unit" required>
+                                    @if($forklifts->count() > 1)
+                                    <select name="nomor_unit" id="forkliftSelect" class="form-select">
+                                        @foreach($forklifts as $unit)
+                                        <option value="{{ $unit['nomor_unit'] }}" data-departemen="{{ $unit['departemen'] }}">
+                                            {{ $unit['nomor_unit'] }} ({{ $unit['is_primary'] ? 'Primary' : 'Backup' }})
+                                        </option>
+                                        @endforeach
+                                    </select>
+
+                                    @elseif($forklifts->count() === 1)
+                                    <input type="text" name="nomor_unit" class="form-control" value="{{ $forklifts[0]['nomor_unit'] }}" readonly>
+                                    @endif
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label>Departemen</label>
-                                    <input type="text" class="form-control" name="dept" required>
+                                    <input type="text" class="form-control" id="departemenInput" name="dept" value="{{ ucfirst($departemen) }}" readonly>
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label>Shift</label>
@@ -174,11 +185,22 @@
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label>Nomor Unit</label>
-                                    <input type="text" class="form-control" name="nomor_unit" required>
+                                    @if($pallets->count() > 1)
+                                    <select name="nomor_unit" id="palletselect" class="form-select">
+                                        @foreach($pallets as $unit)
+                                        <option value="{{ $unit['nomor_unit'] }}" data-departemen="{{ $unit['departemenpallet'] }}">
+                                            {{ $unit['nomor_unit'] }} ({{ $unit['is_primary'] ? 'Primary' : 'Backup' }})
+                                        </option>
+                                        @endforeach
+                                    </select>
+
+                                    @elseif($pallets->count() === 1)
+                                    <input type="text" name="nomor_unit" class="form-control" value="{{ $pallets[0]['nomor_unit'] }}" readonly>
+                                    @endif
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label>Departemen</label>
-                                    <input type="text" class="form-control" name="dept" required>
+                                    <input type="text" class="form-control" id="departemenInputpallet" name="dept" value="{{ ucfirst($departemenpallet) }}" readonly>
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label>Shift</label>
@@ -247,6 +269,30 @@
 
 <script>
     $(document).ready(function() {
+
+        const $select = $('#forkliftSelect');
+        const $selectpallet = $('#palletselect');
+        const $departemenInput = $('#departemenInput');
+        const $departemenInputpallet = $('#departemenInputpallet');
+
+        function updateDepartemen() {
+            const departemen = $select.find(':selected').data('departemen');
+            console.log('Selected Departemen:', departemen);
+            $departemenInput.val(departemen);
+        }
+
+        function updateDepartemenpallet() {
+            const departemenpallet = $selectpallet.find(':selected').data('departemen');
+            console.log('Selected Departemen:', departemenpallet);
+            $departemenInputpallet.val(departemenpallet);
+        }
+
+        $select.on('change', updateDepartemen);
+        $selectpallet.on('change', updateDepartemenpallet);
+        updateDepartemen(); // Set saat load awal
+        updateDepartemenpallet(); // Set saat load awal
+
+
         $('.card-unit').on('click', function() {
             let unit = $(this).data('unit');
 

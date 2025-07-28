@@ -978,7 +978,7 @@
                 endDate = $('#end-date').val();
             }
 
-            fetchAchievement(filter, startDate, endDate);
+            // fetchAchievement(filter, startDate, endDate);
         });
 
         // Initialization
@@ -1001,7 +1001,7 @@
         updateDateTime();
         updateRealtimeInfo();
         setInterval(updateRealtimeInfo, 10000);
-        fetchAchievement();
+        // fetchAchievement();
     });
 </script>
 

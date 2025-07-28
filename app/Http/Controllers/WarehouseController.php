@@ -4,6 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Warehouse\P2HForklfitModel;
 use App\Models\Warehouse\P2HPalletMoverModel;
+use App\Models\Warehouse\ForkliftModel;
+use App\Models\Warehouse\PalletMoverModel;
+use App\Models\User;
+use App\Models\Warehouse\UserForkliftAssignmentModel;
+use App\Models\Warehouse\PalletAssignmentModel;
+use App\Models\Warehouse\UserPalletAssignmentModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
@@ -45,12 +51,48 @@ class WarehouseController extends Controller
     /////////////// 🔹 Dashboard untuk Operator //////////////////
     public function DashboardOperatorWarehouse()
     {
-        if (Session::get('jabatan') == 'operator') {
-            return view('user.operator.wh.dashboard_wh');
+        if (Session::get('jabatan') === 'operator') {
+            $userId = Session::get('user_id');
+
+            $assignments = UserForkliftAssignmentModel::with('forklift')
+                ->where('user_id', $userId)
+                ->where('is_active', true)
+                ->get();
+
+            $forklifts = $assignments->filter(fn ($a) => $a->forklift)->map(function ($a) {
+                return [
+                    'nomor_unit' => $a->forklift->nomor_unit,
+                    'departemen' => $a->forklift->departemen,
+                    'is_primary' => $a->is_primary,
+                ];
+            });
+
+            $palletAssignments = PalletAssignmentModel::with('pallet')
+            ->where('user_id', $userId)
+            ->get();
+
+            $pallets = $palletAssignments->filter(fn ($a) => $a->pallet)->map(function ($a) {
+                return [
+                    'nomor_unit' => $a->pallet->nomor_unit,
+                    'departemen' => $a->pallet->departemen,
+                    'is_primary' => $a->is_primary,
+                    'tipe' => 'Pallet Mover'
+                ];
+            });
+
+
+            // Ambil departemen & nomor unit pertama untuk default tampilan
+            $departemen = $forklifts->first()['departemen'] ?? '';
+            $nomorUnit = $forklifts->first()['nomor_unit'] ?? '';
+
+            $departemenpallet = $forklifts->first()['departemen'] ?? '';
+            $nomorUnitpallet = $forklifts->first()['nomor_unit'] ?? '';
+
+            return view('user.operator.wh.dashboard_wh', compact('forklifts', 'pallets' ,'departemen', 'nomorUnit', 'departemenpallet', 'nomorUnitpallet'));
         }
+
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
-
     public function DetailP2HOperatorWarehouse()
     {
         if (Session::get('jabatan') == 'operator') {
@@ -150,8 +192,8 @@ class WarehouseController extends Controller
 
         // Validasi jam operasional
         $lastRecord = P2HForklfitModel::where('nomor_unit', $request->nomor_unit)
-        ->orderByDesc('created_at')
-        ->first();
+            ->orderByDesc('created_at')
+            ->first();
 
         if ($lastRecord && $request->jam_operasional < $lastRecord->jam_operasional) {
             return response()->json([
@@ -242,7 +284,7 @@ class WarehouseController extends Controller
         ]);
     }
 
-    public function updateDetail(Request $request , $id)
+    public function updateDetail(Request $request, $id)
     {
         $detail = P2HForklfitModel::findOrFail($id);
 
@@ -254,7 +296,7 @@ class WarehouseController extends Controller
         return response()->json(['status' => 'success']);
     }
 
-    
+
 
 
 
@@ -282,11 +324,12 @@ class WarehouseController extends Controller
         ]);
 
         // Cek apakah data dengan kombinasi unik sudah ada
-        $exists = P2HPalletMoverModel::whereDate('tanggal',
+        $exists = P2HPalletMoverModel::whereDate(
+            'tanggal',
             $request->tanggal
         )
-        ->where('shift', $request->shift)
-        ->where('nomor_unit', $request->nomor_unit)
+            ->where('shift', $request->shift)
+            ->where('nomor_unit', $request->nomor_unit)
             ->where('jenis_p2h', $request->jenis_p2h)
             ->exists();
 
@@ -336,7 +379,7 @@ class WarehouseController extends Controller
         return response()->json(['status' => 'success']);
     }
 
-    
+
 
 
     //api
@@ -373,7 +416,7 @@ class WarehouseController extends Controller
             'pending' => $pending,
         ]);
     }
- 
+
     // 2. Persentase kelayakan rata-rata dan kategori
     public function kelayakanSummary()
     {
@@ -384,7 +427,7 @@ class WarehouseController extends Controller
             'layak' => 0,
             'perlu_perhatian' => 0,
             'tidak_layak' => 0,
-           
+
         ];
 
         if ($total > 0) {
@@ -399,8 +442,6 @@ class WarehouseController extends Controller
                 elseif ($persen >= 85) $kategori['perlu_perhatian']++;
                 else $kategori['tidak_layak']++;
             }
-
-           
         }
 
         return response()->json($kategori);
@@ -413,7 +454,7 @@ class WarehouseController extends Controller
             'cek_baterai', 'cek_fork', 'kondisi_body_kebersihan', 'lampu_kiri', 'lampu_kanan',
             'lampu_sorot', 'lampu_sign_depan_kanan', 'lampu_sign_depan_kiri', 'kipas_belakang',
             'rantai_lift', 'sistem_hidrolik', 'kondisi_axle', 'sistem_kemudi', 'panel_display',
-             'air_aki', 'klakson', 'buzzer_mundur', 'kaca_spion', 'kondisi_ban',
+            'air_aki', 'klakson', 'buzzer_mundur', 'kaca_spion', 'kondisi_ban',
             'fungsi_rem'
         ];
 
@@ -468,8 +509,8 @@ class WarehouseController extends Controller
     public function unitProgress()
     {
         $units = P2HForklfitModel::select('nomor_unit')
-        ->distinct()
-        ->pluck('nomor_unit');
+            ->distinct()
+            ->pluck('nomor_unit');
 
         $data = $units->map(function ($unit) {
             $records = P2HForklfitModel::where('nomor_unit', $unit)->get();
@@ -500,10 +541,10 @@ class WarehouseController extends Controller
 
             foreach ($data as $row) {
                 $unitData[] = [
-                        'unit' => $row->nomor_unit,
-                        'komponen' => $field,
-                        'jumlah_masalah' => $row->jumlah
-                    ];
+                    'unit' => $row->nomor_unit,
+                    'komponen' => $field,
+                    'jumlah_masalah' => $row->jumlah
+                ];
             }
         }
 
@@ -525,7 +566,7 @@ class WarehouseController extends Controller
     {
 
         $data = P2HForklfitModel::orderBy('tanggal', 'desc')->get()
-        ->groupBy(fn ($item) => $item->jenis_p2h . '|' . $item->tanggal . '|' . $item->nomor_unit);
+            ->groupBy(fn ($item) => $item->jenis_p2h . '|' . $item->tanggal . '|' . $item->nomor_unit);
 
         $result = [];
 
@@ -574,4 +615,6 @@ class WarehouseController extends Controller
 
         return response()->json($result);
     }
+
+  
 }
