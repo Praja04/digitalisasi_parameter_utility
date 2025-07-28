@@ -292,7 +292,6 @@
         updateDepartemen(); // Set saat load awal
         updateDepartemenpallet(); // Set saat load awal
 
-
         $('.card-unit').on('click', function() {
             let unit = $(this).data('unit');
 
@@ -327,15 +326,96 @@
             $('#form-pallet').slideUp();
         });
 
-        // Handler submit untuk forklift
+        // Fungsi validasi untuk memastikan catatan diisi jika status "Tidak OK"
+        function validateP2HForm(form) {
+            let isValid = true;
+            let errorMessages = [];
+
+            // Reset error styling
+            $(form).find('.item-note').removeClass('is-invalid shake');
+            $(form).find('.invalid-feedback').remove();
+            $(form).find('.mb-3').removeClass('has-error');
+
+            // Cek setiap item yang bernilai "Tidak OK"
+            $(form).find('input[type=radio][value="0"]:checked').each(function() {
+                const name = $(this).attr('name');
+                const noteField = $(form).find(`input[name="note_${name}"]`);
+                const itemLabel = $(this).closest('.mb-3').find('label').first().text().trim();
+                const parentGroup = $(this).closest('.mb-3');
+
+                if (noteField.length && noteField.is(':visible')) {
+                    const noteValue = noteField.val().trim();
+
+                    if (!noteValue) {
+                        isValid = false;
+                        errorMessages.push(`Catatan untuk "${itemLabel}" wajib diisi karena status "Tidak OK"`);
+
+                        // Tambahkan styling error
+                        noteField.addClass('is-invalid shake');
+                        parentGroup.addClass('has-error');
+                        noteField.after('<div class="invalid-feedback">Catatan wajib diisi untuk status "Tidak OK" <span class="required-indicator">*</span></div>');
+
+                        // Focus ke field pertama yang error
+                        if (errorMessages.length === 1) {
+                            setTimeout(() => {
+                                noteField.focus();
+                            }, 100);
+                        }
+
+                        // Hapus animasi shake setelah selesai
+                        setTimeout(() => {
+                            noteField.removeClass('shake');
+                        }, 300);
+                    }
+                }
+            });
+
+            // Tampilkan pesan error jika ada
+            if (!isValid) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Data Belum Lengkap',
+                    html: `<div style="text-align: left;">${errorMessages.join('<br>• ')}</div>`,
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        htmlContainer: 'text-start'
+                    }
+                });
+
+                // Scroll ke item error pertama
+                const firstError = $(form).find('.item-note.is-invalid').first();
+                if (firstError.length) {
+                    firstError[0].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }
+            }
+
+            return isValid;
+        }
+
+        // Handler submit untuk forklift dengan validasi
         $('#formP2HForklift').submit(function(e) {
             e.preventDefault();
+
+            // Validasi sebelum submit
+            if (!validateP2HForm(this)) {
+                return false;
+            }
+
             submitP2HForm(this);
         });
 
-        // Handler submit untuk pallet mover
+        // Handler submit untuk pallet mover dengan validasi
         $('#formP2HPalletMover').submit(function(e) {
             e.preventDefault();
+
+            // Validasi sebelum submit
+            if (!validateP2HForm(this)) {
+                return false;
+            }
+
             submitP2HForm(this);
         });
 
@@ -418,6 +498,21 @@
                 .closest('.radio-label')
                 .addClass(isOk ? 'ok-selected' : 'nok-selected');
         });
+
+        // Real-time validation saat user mengetik di catatan
+        $('body').on('input', '.item-note', function() {
+            const $this = $(this);
+
+            // Hapus error styling jika user mulai mengetik
+            if ($this.hasClass('is-invalid') && $this.val().trim()) {
+                $this.removeClass('is-invalid');
+                $this.siblings('.invalid-feedback').remove();
+                $this.closest('.mb-3').removeClass('has-error');
+            }
+
+            const formSelector = '#' + $(this).closest('form').attr('id');
+            updateGlobalCatatan(formSelector);
+        });
     });
 
     // Inisialisasi note form global
@@ -458,8 +553,6 @@
         $(`${formSelector} #note-container`).show().find('textarea').val(fullNote);
     }
 
-
-
     $('body').on('change', 'input[type=radio]', function() {
         highlightNextCheck(this);
         const name = $(this).attr('name');
@@ -477,8 +570,14 @@
         const noteField = $(this).closest('.mb-3').find('.item-note');
         if (!isOk) {
             noteField.show().focus();
+            // Tambahkan placeholder yang lebih deskriptif
+            noteField.attr('placeholder', 'Wajib diisi! Jelaskan kondisi/masalah yang ditemukan (max 100 karakter)');
         } else {
             noteField.hide().val('');
+            // Reset error state jika ada
+            noteField.removeClass('is-invalid');
+            noteField.siblings('.invalid-feedback').remove();
+            $(this).closest('.mb-3').removeClass('has-error');
         }
 
         updateGlobalCatatan(formSelector);
@@ -545,6 +644,117 @@
         background-color: #f8d7da;
         color: #842029;
         border-color: #dc3545;
+    }
+
+    /* Error styling untuk input catatan */
+    .item-note.is-invalid {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+        background-color: #fff5f5;
+    }
+
+    .invalid-feedback {
+        display: block !important;
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: #dc3545;
+        font-weight: 500;
+    }
+
+    /* Highlight item yang memiliki error */
+    .mb-3.has-error {
+        border: 2px solid #dc3545;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #fff5f5;
+        margin-bottom: 1rem;
+    }
+
+    /* Animasi shake untuk field error */
+    @keyframes shake {
+
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+
+        10%,
+        30%,
+        50%,
+        70%,
+        90% {
+            transform: translateX(-3px);
+        }
+
+        20%,
+        40%,
+        60%,
+        80% {
+            transform: translateX(3px);
+        }
+    }
+
+    .item-note.shake {
+        animation: shake 0.5s ease-in-out;
+    }
+
+    /* Styling untuk required indicator */
+    .required-indicator {
+        color: #dc3545;
+        font-weight: bold;
+        margin-left: 3px;
+    }
+
+    /* Hover effect untuk catatan yang wajib diisi */
+    .item-note:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        background-color: #fff;
+    }
+
+    /* Styling khusus untuk catatan NOK */
+    .item-note[style*="display: block"],
+    .item-note[style*="display: inline-block"],
+    .item-note:not([style*="display: none"]) {
+        border-left: 4px solid #ffc107;
+        padding-left: 10px;
+    }
+
+    /* Tooltip untuk catatan wajib */
+    .item-note::placeholder {
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    /* Styling untuk form yang sedang dalam proses validasi */
+    .validating {
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    /* Indikator loading saat submit */
+    .btn[type="submit"]:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* Styling untuk catatan yang sudah diisi dengan benar */
+    .item-note.valid {
+        border-color: #198754;
+        background-color: #f8fff9;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .mb-3.has-error {
+            padding: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .invalid-feedback {
+            font-size: 0.8em;
+        }
     }
 </style>
 

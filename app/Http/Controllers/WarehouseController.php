@@ -111,6 +111,7 @@ class WarehouseController extends Controller
     public function DashboardForemanWarehouse()
     {
         if (Session::get('jabatan') == 'foreman') {
+           
             return view('user.foreman.wh.dashboard');
         }
         return redirect('/')->with(
@@ -121,7 +122,9 @@ class WarehouseController extends Controller
     public function FormP2HForeman()
     {
         if (Session::get('jabatan') == 'foreman') {
-            return view('user.foreman.wh.form_p2h');
+            $data_forklift = ForkliftModel::all();
+            $data_pallet = PalletMoverModel::all();
+            return view('user.foreman.wh.form_p2h', compact('data_forklift', 'data_pallet'));
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
