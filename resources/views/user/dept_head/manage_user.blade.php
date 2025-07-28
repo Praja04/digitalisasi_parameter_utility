@@ -172,7 +172,7 @@
                                 <input type="email" class="form-control" id="editEmail" name="email" required>
                             </div>
                             <div class="mb-3">
-                                <label for="editNik" class="form-label">Email</label>
+                                <label for="editNik" class="form-label">NIK</label>
                                 <input type="number" class="form-control" id="editNik" name="nik" required>
                             </div>
 
