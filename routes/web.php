@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProduksiController;
 use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\WH\PalletMoverController;
+use App\Http\Controllers\WH\ForkliftControllers;
 use App\Http\Controllers\QCController;
 use App\Http\Controllers\EngineeringController;
 use App\Http\Controllers\Api\RetailD1Controller;
@@ -243,6 +245,87 @@ Route::prefix('wh')->group(function () {
     Route::delete('/check-forms/{checkForm}', [WarehouseController::class, 'destroy']);
     //
 
+    // 1. Halaman utama forklift registration
+    Route::get('/forklift-registration', [ForkliftControllers::class, 'showForkliftRegistration'])
+    ->name('wh.forklift.registration');
+
+    // 2. Get data forklift untuk DataTable (AJAX)
+    Route::get('/forklift/data', [ForkliftControllers::class, 'getForkliftData'])
+    ->name('wh.forklift.data');
+
+    // 3. Store forklift baru (CREATE)
+    Route::post('/forklift/store', [ForkliftControllers::class, 'storeForklift'])
+    ->name('wh.forklift.store');
+
+    // 4. Update forklift data (UPDATE)
+    Route::put('/forklift/{id}', [ForkliftControllers::class, 'updateForklift'])
+    ->name('wh.forklift.update');
+
+    // 5. Delete forklift (DELETE)
+    Route::delete('/forklift/{id}', [ForkliftControllers::class, 'deleteForklift'])
+    ->name('wh.forklift.delete');
+    Route::get('/forklift/{id}', [ForkliftControllers::class, 'getForkliftDetail'])
+    ->name('wh.forklift.detail');
+    Route::get('/forklift/{id}/backups', [ForkliftControllers::class, 'getBackupOperators']);
+
+
+    /**
+     * ============================================
+     * USER FORKLIFT ASSIGNMENT ROUTES
+     * ============================================
+     */
+
+    // 6. Get warehouse operators untuk dropdown (AJAX)
+    Route::get('/operators/warehouse', [ForkliftControllers::class, 'getWarehouseOperators'])
+    ->name('wh.operators.warehouse');
+
+    // 7. Store user assignment ke forklift (CREATE ASSIGNMENT)
+    Route::post('/forklift/assignment/store', [ForkliftControllers::class, 'storeUserAssignment'])
+    ->name('wh.forklift.assignment.store');
+
+    Route::get('forklift/{id}/assignment', [ForkliftControllers::class, 'editAssignment']);
+    Route::post('forklift/assignment/update', [ForkliftControllers::class, 'updateAssignment'])->name('wh.forklift.assignment.update');
+
+    //pallet
+    // Halaman utama registrasi pallet mover
+    Route::get('/pallet-mover-registration', [PalletMoverController::class, 'showPalletMoverRegistration'])
+    ->name('wh.pallet.registration');
+
+    // DataTable JSON
+    Route::get('/pallet-mover/data', [PalletMoverController::class, 'getPalletData'])
+    ->name('wh.pallet.data');
+
+    // Tambah pallet
+    Route::post('/pallet-mover/store', [PalletMoverController::class, 'storePalletMover'])
+    ->name('wh.pallet.store');
+
+    // Detail pallet untuk edit
+    Route::get('/pallet-mover/detail/{id}', [PalletMoverController::class, 'getPalletMoverDetail'])
+    ->name('wh.pallet.detail');
+
+    // Update pallet
+    Route::put('/pallet-mover/{id}', [PalletMoverController::class, 'updatePalletMover'])
+    ->name('wh.pallet.update');
+
+    // Hapus pallet
+    Route::delete('/pallet-mover/{id}', [PalletMoverController::class, 'deletePalletMover'])
+    ->name('wh.pallet.destroy');
+
+    // Simpan assignment (primary dan backup operator)
+    Route::post('/pallet-mover/assignment/store', [PalletMoverController::class, 'storeAssignment'])
+    ->name('wh.pallet.assignment.store');
+
+    // Tampilkan assignment detail untuk edit
+    Route::get('/pallet-mover/{id}/assignment', [PalletMoverController::class, 'editAssignment'])
+    ->name('wh.pallet.assignment.detail');
+
+    // Update assignment
+    Route::post('/pallet-mover/assignment/{id}', [PalletMoverController::class, 'updateAssignment'])
+    ->name('wh.pallet.assignment.update');
+
+    // Tampilkan backup operator
+    Route::get('/pallet-mover/{id}/backups', [PalletMoverController::class, 'getBackupOperators'])
+    ->name('wh.pallet.backups');
 });
 //end Warehouse
 
