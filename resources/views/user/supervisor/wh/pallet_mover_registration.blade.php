@@ -54,6 +54,7 @@
                         <tr>
                             <th>Unit</th>
                             <th>Status</th>
+                            <th>Deskripsi</th>
                             <th>Departemen</th>
                             <th>Operator Utama</th>
                             <th>Jumlah Cadangan</th>
@@ -209,11 +210,22 @@
 
         $('#palletTable').DataTable({
             ajax: routeList.data,
+            responsive: true,
+            scrollX: true,
+            autoWidth: false,
             columns: [{
                     data: 'nomor_unit'
                 },
                 {
-                    data: 'status'
+                    data: 'status',
+                    render: function(data) {
+                        let badgeClass = 'bg-success';
+                        if (data === 'maintenance') badgeClass = 'bg-warning';
+                        if (data === 'inactive') badgeClass = 'bg-danger';
+                        return `<span class="badge ${badgeClass}">${data}</span>`;
+                    }
+                }, {
+                    data: 'notes'
                 },
                 {
                     data: 'departemen'
@@ -241,12 +253,14 @@
                     data: 'id',
                     render: function(id, _, row) {
                         return `
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-primary assign-btn" data-id="${id}" data-unit="${row.nomor_unit}">Assign</button>
+                            <div class="btn-group" role="group">
+                                 <button class="btn btn-sm btn-primary assign-btn" data-id="${id}" data-unit="${row.nomor_unit}">Assign</button>
                                 <button class="btn btn-sm btn-info edit-assignment-btn" data-id="${id}" data-unit="${row.nomor_unit}">Edit Assignment</button>
                                 <button class="btn btn-sm btn-warning edit-btn" data-id="${id}">Edit</button>
                                 <button class="btn btn-sm btn-danger delete-btn" data-id="${id}" data-unit="${row.nomor_unit}">Delete</button>
-                            </div>`;
+                            </div>
+                          
+                        `;
                     }
                 }
             ]

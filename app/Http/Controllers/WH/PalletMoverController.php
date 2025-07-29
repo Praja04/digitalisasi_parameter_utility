@@ -14,7 +14,7 @@ class PalletMoverController extends Controller
     // 1. Menampilkan halaman registrasi pallet mover
     public function showPalletMoverRegistration()
     {
-        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head'])) {
+        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head', 'foreman'])) {
             return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
 
@@ -57,6 +57,7 @@ class PalletMoverController extends Controller
                 'id' => $pallet->id,
                 'nomor_unit' => $pallet->nomor_unit,
                 'status' => ucfirst($pallet->status),
+                'notes' => ucfirst($pallet->notes),
                 'departemen' => ucfirst($pallet->departemen),
                 'primary_operator' => $primary ? $primary->username : '-',
                 'backup_count' => $backup->count(),
@@ -70,7 +71,7 @@ class PalletMoverController extends Controller
     // 3. Store Pallet Mover
     public function storePalletMover(Request $request)
     {
-        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head'])) {
+        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head', 'foreman'])) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -94,7 +95,7 @@ class PalletMoverController extends Controller
     // 4. Update Pallet Mover
     public function updatePalletMover(Request $request, $id)
     {
-        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head'])) {
+        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head','foreman'])) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -114,7 +115,7 @@ class PalletMoverController extends Controller
     // 5. Delete Pallet Mover
     public function deletePalletMover($id)
     {
-        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head'])) {
+        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head', 'foreman'])) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -238,4 +239,3 @@ class PalletMoverController extends Controller
         return response()->json(['backups' => $backups]);
     }
 }
-
