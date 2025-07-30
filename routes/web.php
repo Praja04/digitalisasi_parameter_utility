@@ -200,13 +200,15 @@ Route::prefix('wh')->group(function () {
     //Supervisor
     Route::get('/supervisor/dashboard', [WarehouseController::class, 'DashboardSupervisorWarehouse']);
     Route::get('/supervisor/detail/p2h', [WarehouseController::class, 'DetailP2HSupervisorWarehouse']);
+    Route::view('/supervisor/manajemen_user', 'user.supervisor.wh.manage_user');
     //Foreman
+    Route::view('/foreman/manajemen_user', 'user.foreman.wh.manage_user');
     Route::get('/foreman/dashboard', [WarehouseController::class, 'DashboardForemanWarehouse']);
     Route::get('/foreman/form/p2h', [WarehouseController::class, 'FormP2HForeman']);
     Route::get('/foreman/detail/p2h', [WarehouseController::class, 'DetailP2HForemanWarehouse']);
     Route::get('/foreman/detail/p2h/{id}', [WarehouseController::class, 'DetailP2HForeman']);
 
-    //forklift
+    //forklift[]
     Route::get('/p2h', [WarehouseController::class, 'data_master']);
     Route::post('/p2h/store', [WarehouseController::class, 'storeP2h']);
     Route::put('/p2h/update-detail/{id}', [WarehouseController::class, 'updateDetail']);

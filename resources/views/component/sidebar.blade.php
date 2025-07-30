@@ -637,22 +637,50 @@
                         </ul>
                     </div>
                 </li>
+
+
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ url('wh/supervisor/detail/p2h') }}">
-                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Data P2H</span>
+                    <a class="nav-link menu-link" href="#P2hForeman" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="P2hForeman">
+                        <i class="mdi mdi-package-variant"></i> <span data-key="t-dashboards">P2H Online</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="P2hForeman">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ url('wh/supervisor/detail/p2h') }}">
+                                    <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Data P2H</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#RegistrasiP2Hforeman" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="RegistrasiP2Hforeman">
+                        <i class="mdi mdi-package-variant"></i> <span data-key="t-dashboards">Registrasi Unit P2H</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="RegistrasiP2Hforeman">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ url('wh/forklift-registration') }}">
+                                    <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Registrasi Forklift</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ url('wh/pallet-mover-registration') }}">
+                                    <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Registrasi Pallet Mover</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('wh/supervisor/manajemen_user') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Manage User</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ url('wh/forklift-registration') }}">
-                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Registrasi Forklift</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ url('wh/pallet-mover-registration') }}">
-                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Registrasi Pallet Mover</span>
-                    </a>
-                </li>
-                <!-- end supervisor -->
 
                 <!-- foreman -->
                 @elseif(Session::get('jabatan') === 'foreman' && Session::get('departemen') === 'qc')
@@ -709,16 +737,54 @@
                         <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Foreman Dashboard</span>
                     </a>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ url('wh/foreman/form/p2h') }}">
-                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form P2H</span>
+                    <a class="nav-link menu-link" href="#P2hForeman" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="P2hForeman">
+                        <i class="mdi mdi-package-variant"></i> <span data-key="t-dashboards">P2H Online</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="P2hForeman">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ url('wh/foreman/form/p2h') }}">
+                                    <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form P2H</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ url('wh/foreman/detail/p2h') }}">
+                                    <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Data P2H</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#RegistrasiP2Hforeman" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="RegistrasiP2Hforeman">
+                        <i class="mdi mdi-package-variant"></i> <span data-key="t-dashboards">Registrasi Unit P2H</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="RegistrasiP2Hforeman">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ url('wh/forklift-registration') }}">
+                                    <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Registrasi Forklift</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ url('wh/pallet-mover-registration') }}">
+                                    <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Registrasi Pallet Mover</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('wh/foreman/manajemen_user') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Manage User</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ url('wh/foreman/detail/p2h') }}">
-                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Data P2H</span>
-                    </a>
-                </li>
+
+
                 <!-- end foreman -->
 
                 <!-- operator -->

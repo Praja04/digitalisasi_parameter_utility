@@ -15,7 +15,7 @@ class ForkliftControllers extends Controller
     // 1. Menampilkan halaman register forklift
     public function showForkliftRegistration()
     {
-        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head'])) {
+        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head','foreman'])) {
             return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
 
@@ -71,6 +71,7 @@ class ForkliftControllers extends Controller
                 'id' => $forklift->id,
                 'nomor_unit' => $forklift->nomor_unit,
                 'status' => ucfirst($forklift->status),
+                'notes' => ucfirst($forklift->notes),
                 'departemen' => ucfirst($forklift->departemen),
                 'primary_operator' => $primary ? $primary->username : '-',
                 'backup_count' => $backup->count(),
@@ -84,7 +85,7 @@ class ForkliftControllers extends Controller
     // 3. Store forklift baru (CREATE) - NO CHANGES NEEDED
     public function storeForklift(Request $request)
     {
-        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head'])) {
+        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head','foreman'])) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -116,7 +117,7 @@ class ForkliftControllers extends Controller
     // 4. Update forklift data (UPDATE) - NO CHANGES NEEDED
     public function updateForklift(Request $request, $id)
     {
-        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head'])) {
+        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head','foreman'])) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -150,7 +151,7 @@ class ForkliftControllers extends Controller
     // 5. Delete forklift (DELETE) - FIXED
     public function deleteForklift($id)
     {
-        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head'])) {
+        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head','foreman'])) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -174,7 +175,7 @@ class ForkliftControllers extends Controller
 
     public function getForkliftDetail($id)
     {
-        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head'])) {
+        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head','foreman'])) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -221,7 +222,7 @@ class ForkliftControllers extends Controller
     // 6. Get warehouse operators untuk dropdown - NO CHANGES NEEDED
     public function getWarehouseOperators()
     {
-        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head'])) {
+        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head','foreman'])) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -239,7 +240,7 @@ class ForkliftControllers extends Controller
     // 7. Store user assignment ke forklift (CREATE ASSIGNMENT) - IMPROVED
     public function storeUserAssignment(Request $request)
     {
-        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head'])) {
+        if (!in_array(Session::get('jabatan'), ['supervisor', 'dept_head','foreman'])) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
