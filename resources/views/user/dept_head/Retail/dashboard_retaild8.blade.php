@@ -383,408 +383,329 @@
     $(document).ready(function() {
         let gaugeChart = null;
 
-        function initGaugeChart(value) {
-            let options = {
-                chart: {
-                    type: 'radialBar',
-                    height: 200,
-                },
-                series: [value],
-                labels: ['Main Speed'],
-                plotOptions: {
-                    radialBar: {
-                        hollow: {
-                            size: '60%',
+        initEventListeners();
+        fetchdataFilter();
+    });
+
+    function initEventListeners() {
+        $('#filter').on('change', handleFilterChange);
+        $('#apply-filter').on('click', fetchdataFilter);
+        $(document).on('click', '.total_stop_mesin', showStopPeriodsDetail);
+    }
+
+    function handleFilterChange() {
+        let selected = $(this).val();
+        $('#start-date-group, #end-date-group').addClass('d-none');
+        if (selected === 'date') {
+            $('#start-date-group').removeClass('d-none');
+        } else if (selected === 'range') {
+            $('#start-date-group, #end-date-group').removeClass('d-none');
+        }
+    }
+
+    let gaugeChart = null;
+
+    function initGaugeChart(value) {
+        let options = {
+            chart: {
+                type: 'radialBar',
+                height: 200,
+            },
+            series: [value],
+            labels: ['Main Speed'],
+            plotOptions: {
+                radialBar: {
+                    hollow: {
+                        size: '60%',
+                    },
+                    dataLabels: {
+                        name: {
+                            show: true,
+                            fontSize: '18px',
                         },
-                        dataLabels: {
-                            name: {
-                                show: true,
-                                fontSize: '18px',
-                            },
-                            value: {
-                                show: true,
-                                fontSize: '22px',
-                                formatter: function(val) {
-                                    return parseFloat(val).toFixed(1) + ' Spm';
-                                }
+                        value: {
+                            show: true,
+                            fontSize: '22px',
+                            formatter: function(val) {
+                                return parseFloat(val).toFixed(1) + ' Spm';
                             }
                         }
                     }
-                },
-                fill: {
-                    colors: ['#008FFB']
                 }
-            };
-
-            gaugeChart = new ApexCharts($("#gauge_main_speed")[0], options);
-            gaugeChart.render();
-        }
-
-        function updateGaugeChart(value) {
-            if (gaugeChart) {
-                gaugeChart.updateSeries([value]);
+            },
+            fill: {
+                colors: ['#008FFB']
             }
+        };
+
+        gaugeChart = new ApexCharts($("#gauge_main_speed")[0], options);
+        gaugeChart.render();
+    }
+
+    function updateGaugeChart(value) {
+        if (gaugeChart) {
+            gaugeChart.updateSeries([value]);
         }
+    }
 
-        function getShift(now) {
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
+    function getShift(now) {
+        let hours = now.getHours();
+        let minutes = now.getMinutes();
 
-            if ((hours === 6 && minutes >= 1) || (hours > 6 && hours < 14) || (hours === 14 && minutes === 0)) {
-                return "Shift 1";
-            } else if ((hours === 14 && minutes >= 1) || (hours > 14 && hours < 22) || (hours === 22 && minutes === 0)) {
-                return "Shift 2";
-            } else {
-                return "Shift 3"; // Dari jam 22:01 sampai 06:00 keesokan harinya
+        if ((hours === 6 && minutes >= 1) || (hours > 6 && hours < 14) || (hours === 14 && minutes === 0)) {
+            return "Shift 1";
+        } else if ((hours === 14 && minutes >= 1) || (hours > 14 && hours < 22) || (hours === 22 && minutes === 0)) {
+            return "Shift 2";
+        } else {
+            return "Shift 3"; // Dari jam 22:01 sampai 06:00 keesokan harinya
+        }
+    }
+
+    function updateDateTime() {
+        let now = new Date();
+        let formattedDate = now.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+
+        let shift = getShift(now);
+
+        // Set nilai tanggal dan shift ke elemen yang sesuai
+        $('#date-picker').val(formattedDate);
+        $('#shift').val(shift);
+    }
+
+    function fetchdataFilter() {
+        let filter = $('#filter').val() || 'today'; // default ke 'today'
+        let data = {};
+        let today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
+        let useRealtimeUrl = false;
+
+        if (filter === 'today') {
+            data.filter = 'realtime';
+            useRealtimeUrl = true;
+        } else if (filter === 'date') {
+            let selectedDate = $('#start-date').val();
+            data.filter = 'tanggal';
+            data.tanggal = selectedDate;
+
+            if (selectedDate === today) {
+                useRealtimeUrl = true;
             }
+        } else if (filter === 'range') {
+            data.filter = 'range';
+            data.start_date = $('#start-date').val();
+            data.end_date = $('#end-date').val();
         }
 
-        function updateDateTime() {
-            let now = new Date();
-            let formattedDate = now.toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit"
-            });
+        let startUrl = useRealtimeUrl ? "{{ url('retail/d8/mesin/start/realtime') }}" : "{{ url('retail/d8/mesin/start') }}";
+        let stopUrl = useRealtimeUrl ? "{{ url('retail/d8/mesin/stop/realtime') }}" : "{{ url('retail/d8/mesin/stop') }}";
 
-            let shift = getShift(now);
-
-            // Set nilai tanggal dan shift ke elemen yang sesuai
-            $('#date-picker').val(formattedDate);
-            $('#shift').val(shift);
-        }
-
-        function get_data() {
-            $.ajax({
-                url: "{{ url('retail/d8/last') }}",
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    // console.log(data);
-                    $('#total_counter').text(data.total_counter);
-                    // const totalCounter = data.total_counter;
-                    // animateCounter($('#total_counter'), totalCounter, 1000);
-                    let startMesin = data.start_mesin;
-                    let imagePath = '';
-
-                    if (startMesin == 1) {
-                        imagePath = '{{ asset("assets/images/hijau.png") }}';
-                    } else {
-                        imagePath = '{{ asset("assets/images/merah.png") }}';
-                    }
-
-                    $('#start_mesin').html(`<img src="${imagePath}" alt="Status Mesin" style="height: 100px;">`);
-
-
-                    let speed = parseFloat(data.main_speed) || 0;
-
-                    if (!gaugeChart) {
-                        initGaugeChart(speed);
-                    } else {
-                        updateGaugeChart(speed);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching data:", error);
-                }
-            });
-
-            $.ajax({
-                url: "{{ url('retail/d8/output/performance') }}",
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    //console.log(data);
-                    $('#performance_output_realtime').text(data.performance_output_percent + ' %');
-                    $('#shift_performance').text(data.shift);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching data:", error);
-                }
-            });
-
-            $.ajax({
-                url: "{{url('retail/d8/mesin-stop-periods')}}",
-                method: 'GET',
-                // data: data,
-                dataType: "json",
-                success: function(response) {
-                    $('#total_stop_mesin').text(response.total);
-                    // const total = parseInt(response.total) || 0;
-                    // animateCounter($('#total_stop_mesin'), total, 1000);
-                    //  console.log(response);
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseJSON);
-                }
-            });
-
-            $.ajax({
-                url: "{{url('retail/d8/average-main-speed')}}",
-                method: 'GET',
-                // data: data,
-                dataType: "json",
-                success: function(response) {
-                    // console.log('Average Main Speed:', response.average_main_speed);
-                    const avg = parseFloat(response.average_main_speed).toFixed(2) || 0;
-                    // animateCounter($('#average_main_speed'), avg, 1000);
-                    $('#average_main_speed').text(avg);
-
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseJSON);
-                }
-            });
-
-            updateDateTime();
-        }
-
-        get_data();
-        setInterval(get_data, 5000); // refresh setiap 5 detik
-
-        $('#filter').on('change', function() {
-            let selected = $(this).val();
-            $('#start-date-group, #end-date-group').addClass('d-none');
-            if (selected === 'date') {
-                $('#start-date-group').removeClass('d-none');
-            } else if (selected === 'range') {
-                $('#start-date-group, #end-date-group').removeClass('d-none');
+        $.ajax({
+            url: "{{ url('retail/d8/output/performance') }}",
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                $('#performance_output_realtime').text(data.performance_output_percent + ' %');
+                $('#shift_performance').text(data.shift);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching data:", error);
             }
         });
 
-        function fetchdataFilter() {
-            let filter = $('#filter').val() || 'today'; // default ke 'today'
-            let data = {};
-            let today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
-            let useRealtimeUrl = false;
-
-            if (filter === 'today') {
-                data.filter = 'realtime';
-                useRealtimeUrl = true;
-            } else if (filter === 'date') {
-                let selectedDate = $('#start-date').val();
-                data.filter = 'tanggal';
-                data.tanggal = selectedDate;
-
-                if (selectedDate === today) {
-                    useRealtimeUrl = true;
-                }
-            } else if (filter === 'range') {
-                data.filter = 'range';
-                data.start_date = $('#start-date').val();
-                data.end_date = $('#end-date').val();
+        $.ajax({
+            url: "{{url('retail/d8/mesin-stop-periods')}}",
+            method: 'GET',
+            dataType: "json",
+            success: function(response) {
+                $('#total_stop_mesin').text(response.total);
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr.responseJSON);
             }
+        });
 
-            let startUrl = useRealtimeUrl ? "{{ url('retail/d8/mesin/start/realtime') }}" : "{{ url('retail/d8/mesin/start') }}";
-            let stopUrl = useRealtimeUrl ? "{{ url('retail/d8/mesin/stop/realtime') }}" : "{{ url('retail/d8/mesin/stop') }}";
+        $.ajax({
+            url: "{{url('retail/d8/average-main-speed')}}",
+            method: 'GET',
+            dataType: "json",
+            success: function(response) {
+                const avg = parseFloat(response.average_main_speed).toFixed(2) || 0;
+                $('#average_main_speed').text(avg);
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr.responseJSON);
+            }
+        });
 
+        $.ajax({
+            url: startUrl,
+            method: 'GET',
+            data: useRealtimeUrl ? {} : data,
+            success: function(response) {
+                const result = response.result;
+                Object.keys(result).forEach(shiftKey => {
+                    const shiftData = result[shiftKey];
+                    const hasil = (shiftData.hasil * 100).toFixed(2);
+                    $(`#uptime_${shiftKey}`).text(hasil + ' %');
+                });
+            },
+            error: function(xhr) {
+                console.error('Start Mesin Error:', xhr.responseJSON);
+            }
+        });
 
+        $.ajax({
+            url: stopUrl,
+            method: 'GET',
+            data: useRealtimeUrl ? {} : data,
+            success: function(response) {
+                const result = response.result;
+                Object.keys(result).forEach(shiftKey => {
+                    const shiftData = result[shiftKey];
+                    const hasil = (shiftData.hasil * 100).toFixed(2);
+                    $(`#downtime_${shiftKey}`).text(hasil + ' %');
+                });
+            },
+            error: function(xhr) {
+                console.error('Stop Mesin Error:', xhr.responseJSON);
+            }
+        });
 
-            $.ajax({
-                url: startUrl,
-                method: 'GET',
-                data: useRealtimeUrl ? {} : data,
-                success: function(response) {
-                    //console.log('Start Mesin:', response);
-                    console.log(startUrl);
-                    const result = response.result;
+        $.ajax({
+            url: "{{url('retail/d8/output/performance/all_shift')}}",
+            method: 'GET',
+            data: data,
+            success: function(response) {
+                response.forEach(item => {
+                    const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
+                    const text = item.performance_output_percent + ' %';
+                    $(`#performance_${shiftId}`).text(text);
+                });
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr.responseJSON);
+            }
+        });
 
-                    Object.keys(result).forEach(shiftKey => {
-                        const shiftData = result[shiftKey];
-                        const hasil = (shiftData.hasil * 100).toFixed(2);
-                        $(`#uptime_${shiftKey}`).text(hasil + ' %');
-                    });
-                },
-                error: function(xhr) {
-                    console.error('Start Mesin Error:', xhr.responseJSON);
-                }
-            });
+        $.ajax({
+            url: "{{url('retail/d8/output/gagal/filling')}}",
+            method: 'GET',
+            data: data,
+            success: function(response) {
+                response.forEach(item => {
+                    const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
+                    const text = item.performance_gagal_filling_percent + ' %';
+                    $(`#gagal_filling_${shiftId}`).text(text);
+                });
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr.responseJSON);
+            }
+        });
 
-            $.ajax({
-                url: stopUrl,
-                method: 'GET',
-                data: useRealtimeUrl ? {} : data,
-                success: function(response) {
-                    //console.log('Stop Mesin:', response);
-                    console.log(stopUrl);
-                    const result = response.result;
+        // Start the interval for fetching data every 10 seconds after the initial fetch
+        setInterval(get_data, 10000);
+    }
 
-                    Object.keys(result).forEach(shiftKey => {
-                        const shiftData = result[shiftKey];
-                        const hasil = (shiftData.hasil * 100).toFixed(2);
-                        $(`#downtime_${shiftKey}`).text(hasil + ' %');
-                    });
-                },
-                error: function(xhr) {
-                    console.error('Stop Mesin Error:', xhr.responseJSON);
-                }
-            });
+    function get_data() {
+        $.ajax({
+            url: "{{ url('retail/d8/last') }}",
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                $('#total_counter').text(data.total_counter);
+                let startMesin = data.start_mesin;
+                let imagePath = startMesin == 1 ? '{{ asset("assets/images/hijau.png") }}' : '{{ asset("assets/images/merah.png") }}';
+                $('#start_mesin').html(`<img src="${imagePath}" alt="Status Mesin" style="height: 100px;">`);
 
-            $.ajax({
-                url: "{{url('retail/d8/output/performance/all_shift')}}",
-                method: 'GET',
-                data: data,
-                success: function(response) {
-                    // response.forEach(item => {
-                    //     const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
-                    //     const text = item.performance_output_percent + ' %';
-                    //     $(`#performance_${shiftId}`).text(text);
-                    // });
-                    console.log(response);
-                    let currentHour = new Date().getHours();
+                let speed = parseFloat(data.main_speed) || 0;
 
-                    response.forEach(item => {
-                        const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
-                        const text = item.performance_output_percent + ' %';
-                        
-                        // if (filter === 'today') {
-                        //     // Cek waktu saat ini dan tampilkan shift yang relevan
-                        //     if (currentHour >= 6 && currentHour < 14 && item.shift === 'Shift 1') {
-                        //         $(`#performance_${shiftId}`).text(text);
-                        //     } else if (currentHour >= 14 && currentHour < 22 && item.shift === 'Shift 2') {
-                        //         $(`#performance_${shiftId}`).text(text);
-                        //     } else if (currentHour >= 22 || currentHour < 6 && item.shift === 'Shift 3') {
-                        //         $(`#performance_${shiftId}`).text(text);
-                        //     } else {
-                        //         // Untuk shift yang tidak relevan, set ke 0
-                        //         $(`#performance_${shiftId}`).text('0 %');
-                        //     }
-                        // } else {
-                            // Untuk filter tanggal atau range, tampilkan semua shift
-                            $(`#performance_${shiftId}`).text(text);
-                        //}
-                    });
-
-                    // console.log(response);
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseJSON);
-                }
-            });
-
-            $.ajax({
-                url: "{{url('retail/d8/output/gagal/filling')}}",
-                method: 'GET',
-                data: data,
-                success: function(response) {
-                    // response.forEach(item => {
-                    //     const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
-                    //     const text = item.performance_gagal_filling_percent + ' %';
-                    //     $(`#gagal_filling_${shiftId}`).text(text);
-                    // });
-
-                    //console.log(response);
-                    // Ambil waktu sekarang
-                    let currentHour = new Date().getHours();
-
-                    response.forEach(item => {
-                        const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
-                        const text = item.performance_gagal_filling_percent + ' %';
-
-                        // if (filter === 'today') {
-                        //     // Cek waktu saat ini dan tampilkan shift yang relevan
-                        //     if (currentHour >= 6 && currentHour < 14 && item.shift === 'Shift 1') {
-                        //         $(`#gagal_filling_${shiftId}`).text(text);
-                        //     } else if (currentHour >= 14 && currentHour < 22 && item.shift === 'Shift 2') {
-                        //         $(`#gagal_filling_${shiftId}`).text(text);
-                        //     } else if (currentHour >= 22 || currentHour < 6 && item.shift === 'Shift 3') {
-                        //         $(`#gagal_filling_${shiftId}`).text(text);
-                        //     } else {
-                        //         // Untuk shift yang tidak relevan, set ke 0
-                        //         $(`#gagal_filling_${shiftId}`).text('0 %');
-                        //     }
-                        // } else {
-                            // Untuk filter tanggal atau range, tampilkan semua shift
-                            $(`#gagal_filling_${shiftId}`).text(text);
-                       // }
-                    });
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseJSON);
-                }
-            });
-
-            $(document).on('click', '.total_stop_mesin', function() {
-                let filter = $('#filter').val() || 'today';
-                let data = {};
-
-                if (filter === 'today') {
-                    data.filter = 'realtime';
-                } else if (filter === 'date') {
-                    data.filter = 'tanggal';
-                    data.tanggal = $('#start-date').val();
-                } else if (filter === 'range') {
-                    data.filter = 'range';
-                    data.start_date = $('#start-date').val();
-                    data.end_date = $('#end-date').val();
+                if (!gaugeChart) {
+                    initGaugeChart(speed);
+                } else {
+                    updateGaugeChart(speed);
                 }
 
-                // Ambil ulang data dan tampilkan ke modal
-                $.ajax({
-                    url: "{{url('retail/d8/mesin-stop-periods')}}",
-                    method: 'GET',
-                    data: data,
-                    success: function(response) {
-                        const detailList = response.data;
+                updateDateTime();
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching data:", error);
+            }
+        });
+    }
 
-                        let html = '';
-                        if (detailList.length > 0) {
-                            html += '<ul class="list-group">';
-                            detailList.forEach(function(item, index) {
-                                html += `
+    function showStopPeriodsDetail() {
+        let filter = $('#filter').val() || 'today';
+        let data = {};
+
+        if (filter === 'today') {
+            data.filter = 'realtime';
+        } else if (filter === 'date') {
+            data.filter = 'tanggal';
+            data.tanggal = $('#start-date').val();
+        } else if (filter === 'range') {
+            data.filter = 'range';
+            data.start_date = $('#start-date').val();
+            data.end_date = $('#end-date').val();
+        }
+
+        $.ajax({
+            url: "{{url('retail/d8/mesin-stop-periods')}}",
+            method: 'GET',
+            data: data,
+            success: function(response) {
+                const detailList = response.data;
+                let html = '';
+
+                if (detailList.length > 0) {
+                    html += '<ul class="list-group">';
+                    detailList.forEach(function(item, index) {
+                        html += `
                         <li class="list-group-item">
                             <strong>${index + 1}.</strong>
-                            <br>Mesin: Retail D4
+                            <br>Mesin: Retail D8
                             <br>Start Downtime: ${item.ts_mulai ?? '-'}
                             <br>End Downtime: ${item.ts_akhir ?? '-'}
-                            
                         </li>
                     `;
-                            });
-                            html += '</ul>';
-                        } else {
-                            html = '<p class="text-muted">Tidak ada data stop periods untuk periode ini.</p>';
-                        }
-
-                        $('#abnormalModalLabel').text('Detail Stop Periods Mesin');
-                        $('#abnormalModalBody').html(html);
-                        $('#abnormalModal').modal('show');
-                    },
-                    error: function(xhr) {
-                        $('#abnormalModalBody').html('<p class="text-danger">Gagal memuat data</p>');
-                        $('#abnormalModal').modal('show');
-                    }
-                });
-            });
-
-        }
-
-        function animateCounter($element, endValue, duration = 1000) {
-            let startValue = 0;
-            let startTime = null;
-
-            function step(currentTime) {
-                if (!startTime) startTime = currentTime;
-                const progress = Math.min((currentTime - startTime) / duration, 1);
-                const currentValue = Math.floor(progress * (endValue - startValue) + startValue);
-                $element.text(currentValue);
-                if (progress < 1) {
-                    requestAnimationFrame(step);
+                    });
+                    html += '</ul>';
+                } else {
+                    html = '<p class="text-muted">Tidak ada data stop periods untuk periode ini.</p>';
                 }
-            }
 
-            requestAnimationFrame(step);
+                $('#abnormalModalLabel').text('Detail Stop Periods Mesin');
+                $('#abnormalModalBody').html(html);
+                $('#abnormalModal').modal('show');
+            },
+            error: function(xhr) {
+                $('#abnormalModalBody').html('<p class="text-danger">Gagal memuat data</p>');
+                $('#abnormalModal').modal('show');
+            }
+        });
+    }
+
+    function animateCounter($element, endValue, duration = 1000) {
+        let startValue = 0;
+        let startTime = null;
+
+        function step(currentTime) {
+            if (!startTime) startTime = currentTime;
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            const currentValue = Math.floor(progress * (endValue - startValue) + startValue);
+            $element.text(currentValue);
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            }
         }
 
-        $('#apply-filter').on('click', function() {
-            fetchdataFilter();
-        });
-        fetchdataFilter();
-
-
-    });
+        requestAnimationFrame(step);
+    }
 </script>
 
 
