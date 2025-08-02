@@ -648,7 +648,7 @@ class retail_d5 extends Model
                 ->whereBetween('ts', [$shift['start'], $shift['end']])
                 ->orderByDesc('ts')
                 ->limit(1)
-                    ->first();
+                ->first();
             } else {
                 $rangeStart = $oneHourBeforeEnd;
                 $rangeEnd = $shift['end'];
@@ -685,12 +685,13 @@ class retail_d5 extends Model
 
             $durasiMenit = 0;
             if ($actualTs && strtotime($actualTs) >= $shift['start']->getTimestamp()) {
-                $durasiMenit = $shift['start']->diffInMinutes(Carbon::parse($actualTs));
+                $actualCarbon = Carbon::parse($actualTs, $timezone); // Pastikan timezone sesuai
+                $durasiMenit = $shift['start']->diffInMinutes($actualCarbon);
             }
 
             $performance = $durasiMenit > 0
-                ? ($totalCounter / ($durasiMenit * 40 * 2)) * 100
-                : 0;
+            ? ($totalCounter / ($durasiMenit * 40 * 2)) * 100
+            : 0;
 
             $results[] = [
                 'shift' => $shift['name'],
