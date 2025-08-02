@@ -845,7 +845,7 @@
                         html += `
                         <li class="list-group-item">
                             <strong>${index + 1}.</strong>
-                            <br>Mesin: Retail D4
+                            <br>Mesin: Retail D5
                             <br>Start Downtime: ${item.ts_mulai ?? '-'}
                             <br>End Downtime: ${item.ts_akhir ?? '-'}
                         </li>

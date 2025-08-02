@@ -15,10 +15,17 @@ use App\Models\produksi\VariantShift;
 class ProduksiController extends Controller
 {
     // 🔹 Dashboard untuk Dept Head
-    public function dashboardProduksi()
+    public function dashboardProduksi_pasteurisasi1()
     {
         if (Session::get('jabatan') == 'dept_head') {
-            return view('user.dept_head.dashboard_produksi');
+            return view('user.dept_head.prd.dashboard_produksi_pasteurisasi1');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+    public function dashboardProduksi_pasteurisasi2()
+    {
+        if (Session::get('jabatan') == 'dept_head') {
+            return view('user.dept_head.prd.dashboard_produksi_pasteurisasi2');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
@@ -542,7 +549,7 @@ class ProduksiController extends Controller
 
 
 
-    ///////////////////Status Running Produksi//////////////////
+    ///////////////////Status Running Produksi Pasteurisasi 1//////////////////
     public function getLastData_statusRunning()
     {
         $lastData = StatusRunning::orderBy('created_at', 'desc')->first();
@@ -626,6 +633,89 @@ class ProduksiController extends Controller
         ]);
     }
 
+    ///////////////////Status Running Produksi Pasteurisasi 2//////////////////
+    public function getLastData_statusRunningPasteurisasi2()
+    {
+        $lastData = StatusRunning::orderBy('created_at', 'desc')->first();
+
+        if ($lastData) {
+            return response()->json($lastData);
+        } else {
+            return response()->json(['message' => 'Tidak ada data status running.'], 404);
+        }
+    }
+
+    public function StatusRunningListPasteurisasi2()
+    {
+        $batches = StatusRunning::orderBy('created_at', 'desc')
+        ->get();
+
+        return response()->json($batches);
+    }
+
+    public function storeStatusRunningPasteurisasi2(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'mode' => 'required|string',
+            'varian' => 'required|string',
+            'batch' => 'required|string',
+            'storage' => 'required|string',
+        ]);
+
+        try {
+            // Simpan batch baru
+            $nama_user = Session::get('username');
+            $data = StatusRunning::create([
+                'mode' => $request->mode,
+                'varian' => $request->varian,
+                'batch' => $request->batch,
+                'created_by' => $nama_user,  // Gantilah dengan user yang login
+                'storage' => $request->storage
+            ]);
+
+            return response()->json(['success' => true, 'data' => $data]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    // 🔹 Update Status Running
+    public function updateStatusRunningPasteurisasi2(Request $request, $id)
+    {
+        $request->validate([
+            'mode' => 'required|string',
+            'varian' => 'required|string',
+            'batch' => 'required|string',
+            'storage' => 'required|string',
+        ]);
+
+        $data = StatusRunning::findOrFail($id);
+        $data->update([
+            'mode' => $request->mode,
+            'varian' => $request->varian,
+            'batch' => $request->batch,
+            'storage' => $request->storage,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status running diperbarui!',
+            'data' => $data
+        ]);
+    }
+
+    // 🔹 Hapus StatusRunning
+    public function destroyStatusRunningPasteurisasi2($id)
+    {
+        $data = StatusRunning::findOrFail($id);
+        $data->delete();
+
+        return response()->json([
+                'success' => true,
+                'message' => 'Status running berhasil dihapus!'
+            ]);
+    }
 
     // for retail
     public function store_retail_varian(Request $request)

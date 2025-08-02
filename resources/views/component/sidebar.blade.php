@@ -76,7 +76,10 @@
                     <div class="collapse menu-dropdown" id="sidebarDashboardsPRD">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ url('prd/dept_head/dashboard') }}" class="nav-link" data-key="t-analytics"> Analytics Pasteurisasi 1</a>
+                                <a href="{{ url('prd/dept_head/dashboard/pasteurisasi1') }}" class="nav-link" data-key="t-analytics"> Analytics Pasteurisasi 1</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ url('prd/dept_head/dashboard/pasteurisasi2') }}" class="nav-link" data-key="t-analytics"> Analytics Pasteurisasi 2</a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ url('prd/dept_head/menu_retail') }}" class="nav-link" data-key="t-analytics"> Analytics Retail</a>

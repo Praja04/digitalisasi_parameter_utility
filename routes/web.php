@@ -30,7 +30,7 @@ use App\Http\Controllers\Api\SensorPasteurisasi2Controller;
 use App\Http\Controllers\Api\SensorDissolverController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
-
+use App\Models\Pasteurisasi2\Pasteurisasi2Model;
 
 Route::get('/', function () {
     return view('signin/login');
@@ -47,7 +47,8 @@ Route::get('form', function () {
 //PRD
 Route::prefix('prd')->middleware('auth')->group(function () {
     // Dashboard
-    Route::get('/dept_head/dashboard', [ProduksiController::class, 'dashboardProduksi']);
+    Route::get('/dept_head/dashboard/pasteurisasi1', [ProduksiController::class, 'dashboardProduksi_pasteurisasi1']);
+    Route::get('/dept_head/dashboard/pasteurisasi2', [ProduksiController::class, 'dashboardProduksi_pasteurisasi2']);
     Route::get('/dept_head/dashboard_retaild1', [ProduksiController::class, 'dashboardProduksi_retaild1']);
     Route::get('/dept_head/dashboard_retaild2', [ProduksiController::class, 'dashboardProduksi_retaild2']);
     Route::get('/dept_head/dashboard_retaild4', [ProduksiController::class, 'dashboardProduksi_retaild4']);
@@ -93,12 +94,21 @@ Route::prefix('prd')->middleware('auth')->group(function () {
     // Route::delete('/batch/shift/{id}', [ProduksiController::class, 'deleteShift'])->name('batch.shift.delete'); // Hapus shift
     // Route::put('/batch/shift/update/{shiftId}', [ProduksiController::class, 'updateShift'])->name('batch.shift.update');
 
-    // CRUD Status Running
+    // CRUD Status Running pasteurisasi 1
     Route::get('/status-running', [ProduksiController::class, 'StatusRunningList'])->name('statusrunning.read');
     Route::get('/data/status-running', [ProduksiController::class, 'getLastData_statusRunning'])->name('statusrunning.data');
     Route::post('/status-running/store', [ProduksiController::class, 'storeStatusRunning'])->name('statusrunning.store');
     Route::delete('/status-running/delete/{id}', [ProduksiController::class, 'destroyStatusRunning'])->name('statusrunning.destroy');
     Route::put('/status-running/update/{id}', [ProduksiController::class, 'updateStatusRunning'])->name('statusrunning.update');
+
+    //CRUD Status Running pasteurisasi 2
+
+    Route::get('/status-running/pasteurisasi2', [ProduksiController::class, 'StatusRunningListPasteurisasi2'])->name('statusrunningPasteurisasi2.read');
+    Route::get('/data/status-running/pasteurisasi2', [ProduksiController::class, 'getLastData_statusRunningPasteurisasi2'])->name('statusrunningPasteurisasi2.data');
+    Route::post('/status-running/store/pasteurisasi2', [ProduksiController::class, 'storeStatusRunningPasteurisasi2'])->name('statusrunningPasteurisasi2.store');
+    Route::delete('/status-running/delete/pasteurisasi2/{id}', [ProduksiController::class, 'destroyStatusRunningPasteurisasi2'])->name('statusrunningPasteurisasi2.destroy');
+    Route::put('/status-running/update/pasteurisasi2/{id}', [ProduksiController::class, 'updateStatusRunningPasteurisasi2'])->name('statusrunningPasteurisasi2.update');
+
 
     //crud form retail
     Route::post('/store/varian/retail', [ProduksiController::class, 'store_retail_varian']);
@@ -410,11 +420,14 @@ Route::prefix('pasteurisasi1')->group(function () {
 
 Route::prefix('pasteurisasi2')->group(function () {
     Route::view('/realtime', 'pasteurisasi2.realtime');
-    Route::get('/data-realtime', [SensorPasteurisasi2Controller::class, 'getLatestData']);
-    Route::get('/data-harian', [SensorPasteurisasi2Controller::class, 'getPasteurisasi2DataHarian']);
-    Route::get('/data-mingguan', [SensorPasteurisasi2Controller::class, 'getPasteurisasi2DataMingguan']);
     Route::view('/datatren', 'pasteurisasi2.datatren');
-    Route::get('/data', [SensorPasteurisasi2Controller::class, 'getPasteurisasi2Data']);
+    Route::get('/data-harian', [SensorPasteurisasi2Controller::class, 'getPasteurisasi1DataHarian']);
+    Route::get('/data-mingguan', [SensorPasteurisasi2Controller::class, 'getPasteurisasi1DataMingguan']);
+    Route::get('/data-realtime', [SensorPasteurisasi2Controller::class, 'getLatestData']);
+    Route::get('/data', [SensorPasteurisasi2Controller::class, 'getPasteurisasi1Data']);
+    Route::get('/suhuheating', [SensorPasteurisasi2Controller::class, 'getAbnormalPeriodsSuhuHeating']);
+    Route::get('/suhuholding', [SensorPasteurisasi2Controller::class, 'getAbnormalPeriodsSuhuHolding']);
+    Route::get('/flowrate', [SensorPasteurisasi2Controller::class, 'getAbnormalPeriodsFlowRate']);
 });
 
 Route::prefix('st53')->group(function () {
