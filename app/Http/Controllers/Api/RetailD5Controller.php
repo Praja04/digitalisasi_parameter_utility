@@ -286,7 +286,7 @@ class RetailD5Controller extends Controller
             $hasil = [
                 'shift1' => [
                     'shift1_detik' => $durasi['shift1_detik'],
-                    'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
+                     'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
                 ],
                 'shift2' => [
                     'shift2_detik' => $durasi['shift2_detik'],
@@ -468,16 +468,20 @@ class RetailD5Controller extends Controller
                 $shiftEnd = $shift['end'];
 
                 $menitBerjalan = ($now->between($shiftStart, $shiftEnd))
-                    ? $shiftStart->diffInMinutes($now)
-                    : $shiftStart->diffInMinutes($shiftEnd);
+                ? $shiftStart->diffInMinutes($now)
+                : $shiftStart->diffInMinutes($shiftEnd);
 
                 $key = strtolower(str_replace(' ', '', $shift['name']));
                 $detik = $durasi[$shift['name'] . '_detik'] ?? 0;
 
+                // Tentukan pembagi berdasarkan hari (Sabtu atau tidak)
+                $isSaturday = $carbonDate->dayOfWeek === Carbon::SATURDAY;
+                $pembagi = $isSaturday ? 300 : 420;
+
                 $hasil[$key] = [
                     'menit_shift' => $menitBerjalan,
                     'detik' => $detik,
-                    'hasil' => $detik > 0 ? ($detik / 60) / max($menitBerjalan, 1) : 0,
+                    'hasil' => $detik > 0 ? ($detik / 60) / max($pembagi, 1) : 0,
                 ];
             }
         }
@@ -511,19 +515,24 @@ class RetailD5Controller extends Controller
                 $shiftEnd = $shift['end'];
 
                 $menitBerjalan = ($now->between($shiftStart, $shiftEnd))
-                    ? $shiftStart->diffInMinutes($now)
-                    : $shiftStart->diffInMinutes($shiftEnd);
+                ? $shiftStart->diffInMinutes($now)
+                : $shiftStart->diffInMinutes($shiftEnd);
 
                 $key = strtolower(str_replace(' ', '', $shift['name']));
                 $detik = $durasi[$shift['name'] . '_detik'] ?? 0;
 
+                // Tentukan pembagi sesuai hari
+                $isSaturday = $carbonDate->dayOfWeek === Carbon::SATURDAY;
+                $pembagi = $isSaturday ? 300 : 420;
+
                 $hasil[$key] = [
                     'menit_shift' => $menitBerjalan,
                     'detik' => $detik,
-                    'hasil' => $detik > 0 ? ($detik / 60) / max($menitBerjalan, 1) : 0,
+                    'hasil' => $detik > 0 ? ($detik / 60) / max($pembagi, 1) : 0,
                 ];
             }
         }
 
         return response()->json(["result" => $hasil]);
-    }}
+    }
+}
