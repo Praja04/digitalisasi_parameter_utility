@@ -683,10 +683,14 @@ class retail_d5 extends Model
             $totalCounter = $data ? $data->total_counter : 0;
             $actualTs = $data ? $data->ts : null;
 
-            $durasiMenit = $shift['end']->diffInMinutes($shift['start']);
+            $durasiMenit = 0;
+            if ($actualTs && strtotime($actualTs) >= $shift['start']->getTimestamp()) {
+                $durasiMenit = $shift['start']->diffInMinutes(Carbon::parse($actualTs));
+            }
+
             $performance = $durasiMenit > 0
-            ? ($totalCounter / ($durasiMenit * 40 * 2)) * 100
-            : 0;
+                ? ($totalCounter / ($durasiMenit * 40 * 2)) * 100
+                : 0;
 
             $results[] = [
                 'shift' => $shift['name'],
@@ -771,17 +775,17 @@ class retail_d5 extends Model
                 [
                     'name' => 'Shift 1',
                     'start' => $carbonDate->copy()->setTime(6, 0, 0),
-                    'end'   => $carbonDate->copy()->setTime(10, 0, 0),
+                    'end'   => $carbonDate->copy()->setTime(11, 0, 0),
                 ],
                 [
                     'name' => 'Shift 2',
-                    'start' => $carbonDate->copy()->setTime(10, 0, 1),
-                    'end'   => $carbonDate->copy()->setTime(14, 0, 0),
+                    'start' => $carbonDate->copy()->setTime(11, 0, 1),
+                    'end'   => $carbonDate->copy()->setTime(16, 0, 0),
                 ],
                 [
                     'name' => 'Shift 3',
-                    'start' => $carbonDate->copy()->setTime(14, 0, 1),
-                    'end'   => $carbonDate->copy()->setTime(18, 0, 0),
+                    'start' => $carbonDate->copy()->setTime(16, 0, 1),
+                    'end'   => $carbonDate->copy()->setTime(21, 0, 0),
                 ],
             ];
         }
