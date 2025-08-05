@@ -67,7 +67,7 @@ class WarehouseController extends Controller
                 ];
             });
 
-            $palletAssignments = PalletAssignmentModel::with('pallet')
+            $palletAssignments = PalletAssignmentModel::with('palletMover')
             ->where('user_id', $userId)
             ->get();
 
