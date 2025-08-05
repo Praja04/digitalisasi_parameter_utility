@@ -68,13 +68,13 @@ class WarehouseController extends Controller
             });
 
             $palletAssignments = PalletAssignmentModel::with('palletMover')
-            ->where('user_id', $userId)
-            ->get();
+                ->where('user_id', $userId)
+                ->get();
 
-            $pallets = $palletAssignments->filter(fn ($a) => $a->pallet)->map(function ($a) {
+            $pallets = $palletAssignments->filter(fn ($a) => $a->palletMover)->map(function ($a) {
                 return [
-                    'nomor_unit' => $a->pallet->nomor_unit,
-                    'departemen' => $a->pallet->departemen,
+                    'nomor_unit' => $a->palletMover->nomor_unit,
+                    'departemen' => $a->palletMover->departemen,
                     'is_primary' => $a->is_primary,
                     'tipe' => 'Pallet Mover'
                 ];
@@ -85,10 +85,10 @@ class WarehouseController extends Controller
             $departemen = $forklifts->first()['departemen'] ?? '';
             $nomorUnit = $forklifts->first()['nomor_unit'] ?? '';
 
-            $departemenpallet = $forklifts->first()['departemen'] ?? '';
-            $nomorUnitpallet = $forklifts->first()['nomor_unit'] ?? '';
-
-            return view('user.operator.wh.dashboard_wh', compact('forklifts', 'pallets' ,'departemen', 'nomorUnit', 'departemenpallet', 'nomorUnitpallet'));
+            $departemenpallet = $pallets->first()['departemen'] ?? '';
+            $nomorUnitpallet = $pallets->first()['nomor_unit'] ?? '';
+            //dd($pallets);
+            return view('user.operator.wh.dashboard_wh', compact('forklifts', 'pallets', 'departemen', 'nomorUnit', 'departemenpallet', 'nomorUnitpallet'));
         }
 
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
@@ -111,7 +111,7 @@ class WarehouseController extends Controller
     public function DashboardForemanWarehouse()
     {
         if (Session::get('jabatan') == 'foreman') {
-           
+
             return view('user.foreman.wh.dashboard');
         }
         return redirect('/')->with(
@@ -618,6 +618,4 @@ class WarehouseController extends Controller
 
         return response()->json($result);
     }
-
-  
 }
