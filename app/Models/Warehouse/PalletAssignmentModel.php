@@ -34,8 +34,7 @@ class PalletAssignmentModel extends Model
     // 🔗 Relasi
     public function palletMover(): BelongsTo
     {
-        return $this->belongsTo(PalletMoverModel::class, 'pallet_mover_id');
-    }
+        return $this->belongsTo(PalletMoverModel::class, 'pallet_mover_id');    }
 
     public function user(): BelongsTo
     {
