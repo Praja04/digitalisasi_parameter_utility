@@ -286,7 +286,7 @@ class RetailD5Controller extends Controller
             $hasil = [
                 'shift1' => [
                     'shift1_detik' => $durasi['shift1_detik'],
-                     'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
+                    'hasil' => $durasi['shift1_detik'] > 0 ? ($durasi['shift1_detik'] / 60) / 420 : 0,
                 ],
                 'shift2' => [
                     'shift2_detik' => $durasi['shift2_detik'],
@@ -474,9 +474,9 @@ class RetailD5Controller extends Controller
                 $key = strtolower(str_replace(' ', '', $shift['name']));
                 $detik = $durasi[$shift['name'] . '_detik'] ?? 0;
 
-                // Tentukan pembagi berdasarkan hari (Sabtu atau tidak)
+                // Tentukan pembagi: jika belum akhir shift, pakai menitBerjalan
                 $isSaturday = $carbonDate->dayOfWeek === Carbon::SATURDAY;
-                $pembagi = $isSaturday ? 300 : 420;
+                $pembagi = $now->lt($shiftEnd) ? $menitBerjalan : ($isSaturday ? 300 : 420);
 
                 $hasil[$key] = [
                     'menit_shift' => $menitBerjalan,
@@ -515,8 +515,8 @@ class RetailD5Controller extends Controller
                 $shiftEnd = $shift['end'];
 
                 $menitBerjalan = ($now->between($shiftStart, $shiftEnd))
-                ? $shiftStart->diffInMinutes($now)
-                : $shiftStart->diffInMinutes($shiftEnd);
+                    ? $shiftStart->diffInMinutes($now)
+                    : $shiftStart->diffInMinutes($shiftEnd);
 
                 $key = strtolower(str_replace(' ', '', $shift['name']));
                 $detik = $durasi[$shift['name'] . '_detik'] ?? 0;
