@@ -61,10 +61,42 @@
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarDashboardsQC">
                         <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a href="{{ url('qc/dept_head/dashboard') }}" class="nav-link" data-key="t-analytics"> Analytics Pasteurisasi 1</a>
+                            </li> -->
+
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="#DashboardProses" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="DashboardProses">
+                                    <i class="mdi mdi-chart-areaspline"></i> <span data-key="t-dashboards">Dashboard Makro</span>
+                                </a>
+                                <div class="collapse menu-dropdown" id="DashboardProses">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item"><a href="{{url('qc/dashboard/ggaggas')}}" class="nav-link"><i class="mdi mdi-flask"></i> Analisis GGA & GGAS</a></li>
+                                        <li class="nav-item"><a href="{{url('qc/dashboard/blending/awal')}}" class="nav-link"><i class="mdi mdi-blender"></i> Analisis Blending Awal</a></li>
+                                        <li class="nav-item"><a href="{{url('qc/dashboard/blending/after')}}" class="nav-link"><i class="mdi mdi-blender-outline"></i> Analisis Blending After Adjust</a></li>
+                                        <li class="nav-item"><a href="{{url('qc/dashboard/monitoring/turun')}}" class="nav-link"><i class="mdi mdi-chart-line"></i> Monitoring Turun Blending</a></li>
+                                        <li class="nav-item"><a href="{{url('qc/dashboard/monitoring/storage')}}" class="nav-link"><i class="mdi mdi-database"></i> Monitoring Storage</a></li>
+                                    </ul>
+                                </div>
                             </li>
 
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="#Dashboardmikro" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="Dashboardmikro">
+                                    <i class="mdi mdi-chart-scatter-plot"></i> <span data-key="t-dashboards">Dashboard Mikro</span>
+                                </a>
+                                <div class="collapse menu-dropdown" id="Dashboardmikro">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item"><a href="#" class="nav-link"><i class="mdi mdi-blender"></i> Blending After Adjust</a></li>
+                                        <li class="nav-item"><a href="#" class="nav-link"><i class="mdi mdi-database-check-outline"></i> Monitoring Storage</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ url('qc/dashboard/rm') }}" data-key="t-analytics">
+                                    <i class="mdi mdi-chemical-weapon"></i> <span data-key="t-widgets">Dashboard RMPM</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </li>

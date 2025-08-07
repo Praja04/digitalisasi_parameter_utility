@@ -20,6 +20,62 @@ class QCController extends Controller
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
+
+    public function dashboardRM()
+    {
+        if (Session::get('jabatan') == 'dept_head'
+        ) {
+            return view('user.dept_head.qc.dashboard_rm');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+
+    public function dashboardGGAGGAS()
+    {
+        if (
+            Session::get('jabatan') == 'dept_head'
+        ) {
+            return view('user.dept_head.qc.dashboard_ggaggas');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+    public function dashboardBlendingAwal()
+    {
+        if (
+            Session::get('jabatan') == 'dept_head'
+        ) {
+            return view('user.dept_head.qc.dashboard_blending_awal');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+    public function dashboardBlendingAfter()
+    {
+        if (
+            Session::get('jabatan') == 'dept_head'
+        ) {
+            return view('user.dept_head.qc.dashboard_blending_after');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+
+    public function dashboardMonitoringTurun()
+    {
+        if (
+            Session::get('jabatan') == 'dept_head'
+        ) {
+            return view('user.dept_head.qc.dashboard_turun');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+    public function dashboardMonitoringStorage()
+    {
+        if (
+            Session::get('jabatan') == 'dept_head'
+        ) {
+            return view('user.dept_head.qc.dashboard_storage');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
     // End Dept Head
 
     // 🔹 Dashboard untuk Supervisor
