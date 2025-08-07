@@ -137,28 +137,30 @@
 </div>
 <!-- end row -->
 <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.41.0/dist/apexcharts.min.js"></script>
+
+
 <script>
     $(document).ready(function() {
 
-        // Load data awal (default: hari ini)
+        // Load data awal
         fetchChartData('gga');
         fetchChartData('ggas');
 
-        // Event filter untuk GGA
+        // Event filter GGA
         $('#filter_gga').on('click', function() {
             let start = $('#start_date_gga').val();
             let end = $('#end_date_gga').val();
             fetchChartData('gga', start, end);
         });
 
-        // Event filter untuk GGAS
+        // Event filter GGAS
         $('#filter_ggas').on('click', function() {
             let start = $('#start_date_ggas').val();
             let end = $('#end_date_ggas').val();
             fetchChartData('ggas', start, end);
         });
 
-        // Fungsi ambil data & render chart
+        // Ambil data & render chart
         function fetchChartData(type, startDate = null, endDate = null) {
             let url = "http://10.11.10.130:8081/public/api/ggas/gga/analysis";
             if (startDate && endDate) {
@@ -171,26 +173,17 @@
             });
         }
 
-        // Fungsi render ApexChart
+        // Render ApexChart
         function renderChart(selector, data, title) {
-            const categories = data.map(item => 'Batch ' + item.batch_number);
+            const categories = data.map(item => `Batch ${item.batch_number} - ${item.variant} (PO: ${item.po_number})`);
 
-            const brixSeries = data.map(item => ({
-                x: 'Batch ' + item.batch_number,
-                y: parseFloat(item.brix),
-                meta: {
-                    po: item.po_number,
-                    variant: item.variant
-                }
-            }));
+            const brixSeries = data.map(item => isNaN(parseFloat(item.brix)) ? 0 : parseFloat(item.brix));
+            const naclSeries = data.map(item => isNaN(parseFloat(item.nacl)) ? 0 : parseFloat(item.nacl));
 
-            const naclSeries = data.map(item => ({
-                x: 'Batch ' + item.batch_number,
-                y: parseFloat(item.nacl),
-                meta: {
-                    po: item.po_number,
-                    variant: item.variant
-                }
+            const metaData = data.map(item => ({
+                po: item.po_number,
+                variant: item.variant,
+                label: `Batch ${item.batch_number} - ${item.variant} (PO: ${item.po_number})`
             }));
 
             const options = {
@@ -208,7 +201,8 @@
                     }
                 ],
                 xaxis: {
-                    categories: categories
+                    categories: categories,
+                    type: 'category'
                 },
                 stroke: {
                     curve: 'smooth'
@@ -221,26 +215,19 @@
                     shared: true,
                     custom: function({
                         series,
-                        dataPointIndex,
-                        w
+                        dataPointIndex
                     }) {
-                        const brixData = w.config.series[0].data[dataPointIndex];
-                        const naclData = w.config.series[1].data[dataPointIndex];
-
-                        if (!brixData || !naclData) {
-                            return `<div class="apex-tooltip">Data tidak tersedia</div>`;
-                        }
-
-                        const po = brixData.meta.po || '-';
-                        const variant = brixData.meta.variant || '-';
+                        const brix = series[0][dataPointIndex];
+                        const nacl = series[1][dataPointIndex];
+                        const meta = metaData[dataPointIndex];
 
                         return `
                     <div class="apex-tooltip">
-                        <strong>Batch ${brixData.x}</strong><br/>
-                        Brix: ${brixData.y.toFixed(2)} °Bx<br/>
-                        NaCl: ${naclData.y.toFixed(2)} °Bx<br/>
-                        PO Number: ${po}<br/>
-                        Variant: ${variant}
+                        <strong>${meta.label}</strong><br/>
+                        Brix: ${brix.toFixed(2)} °Bx<br/>
+                        NaCl: ${nacl.toFixed(2)} °Bx<br/>
+                        PO Number: ${meta.po}<br/>
+                        Variant: ${meta.variant}
                     </div>
                 `;
                     }
@@ -250,26 +237,25 @@
             $(selector).html('');
             new ApexCharts(document.querySelector(selector), options).render();
         }
-
-        // Load default data
+        // Load default disposisi
         fetchDispositionData('gga');
         fetchDispositionData('ggas');
 
-        // Event filter GGA
+        // Event filter disposisi GGA
         $('#filter_gga_disposisi').on('click', function() {
             let start = $('#start_date_gga_disposisi').val();
             let end = $('#end_date_gga_disposisi').val();
             fetchDispositionData('gga', start, end);
         });
 
-        // Event filter GGAS
+        // Event filter disposisi GGAS
         $('#filter_ggas_disposisi').on('click', function() {
             let start = $('#start_date_ggas_disposisi').val();
             let end = $('#end_date_ggas_disposisi').val();
             fetchDispositionData('ggas', start, end);
         });
 
-        // Fungsi ambil data dan render
+        // Ambil data & render chart disposisi
         function fetchDispositionData(type, startDate = null, endDate = null) {
             let url = "http://10.11.10.130:8081/public/api/ggas/gga/disposition-analysis";
             if (startDate && endDate) {
@@ -282,7 +268,7 @@
             });
         }
 
-        // Fungsi render chart batang
+        // Render chart batang disposisi
         function renderBarChartDisposisi(selector, data, title) {
             const labels = Object.keys(data);
             const counts = Object.values(data);
@@ -319,11 +305,10 @@
                 }
             };
 
-            // Bersihkan chart sebelum render
             $(selector).html('');
             new ApexCharts(document.querySelector(selector), options).render();
         }
+
     });
 </script>
-
 @endsection
