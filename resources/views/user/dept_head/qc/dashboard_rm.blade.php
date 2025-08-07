@@ -1,113 +1,116 @@
-@extends('layouts.app')
-@section('title', 'Dashboard Sampling RMPM')
+@extends('layout')
 
 @section('content')
-<div class="container mt-4">
+<div class="page-content">
+    <div class="container-fluid">
+        <div class="container mt-4">
 
-    <h2 class="fw-bold lh-base text-primary-emphasis mb-4" data-aos="fade-right" style="letter-spacing: -0.5px;">
-        <i class="ri-bar-chart-line fs-3 align-middle me-2 text-primary"></i>
-        Dashboard Sampling <span class="text-dark">RMPM</span>
-    </h2>
-    <!-- 🔍 Filter -->
-    <div class="card mb-4" data-aos="fade-down">
-        <div class="card-body">
-            <form id="filter-form" class="row gx-3 gy-2 align-items-end mb-4">
-                <div class="col-md-4">
-                    <label for="filter-jenis-gula" class="form-label fw-semibold">Jenis Gula</label>
-                    <select class="form-select" id="filter-jenis-gula" name="jenis_gula">
-                        <option value="">Semua</option>
-                        <option value="Gula">Gula</option>
-                        <option value="Garam">Garam</option>
-                        <option value="Gula Tebu">Gula Tebu</option>
-                        <option value="Gula Kelapa">Gula Kelapa</option>
-                    </select>
-                </div>
+            <h2 class="fw-bold lh-base text-primary-emphasis mb-4" data-aos="fade-right" style="letter-spacing: -0.5px;">
+                <i class="ri-bar-chart-line fs-3 align-middle me-2 text-primary"></i>
+                Dashboard Sampling <span class="text-dark">RMPM</span>
+            </h2>
+            <!-- 🔍 Filter -->
+            <div class="card mb-4" data-aos="fade-down">
+                <div class="card-body">
+                    <form id="filter-form" class="row gx-3 gy-2 align-items-end mb-4">
+                        <div class="col-md-4">
+                            <label for="filter-jenis-gula" class="form-label fw-semibold">Jenis Gula</label>
+                            <select class="form-select" id="filter-jenis-gula" name="jenis_gula">
+                                <option value="">Semua</option>
+                                <option value="Gula">Gula</option>
+                                <option value="Garam">Garam</option>
+                                <option value="Gula Tebu">Gula Tebu</option>
+                                <option value="Gula Kelapa">Gula Kelapa</option>
+                            </select>
+                        </div>
 
-                <div class="col-md-4">
-                    <label for="filter-start-date" class="form-label fw-semibold">Mulai Tanggal</label>
-                    <input type="date" class="form-control" id="filter-start-date" name="start_date">
-                </div>
+                        <div class="col-md-4">
+                            <label for="filter-start-date" class="form-label fw-semibold">Mulai Tanggal</label>
+                            <input type="date" class="form-control" id="filter-start-date" name="start_date">
+                        </div>
 
-                <div class="col-md-4">
-                    <label for="filter-end-date" class="form-label fw-semibold">Sampai Tanggal</label>
-                    <input type="date" class="form-control" id="filter-end-date" name="end_date">
-                </div>
+                        <div class="col-md-4">
+                            <label for="filter-end-date" class="form-label fw-semibold">Sampai Tanggal</label>
+                            <input type="date" class="form-control" id="filter-end-date" name="end_date">
+                        </div>
 
-                <div class="col-12 mt-3">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="ri-filter-line me-1"></i> Filter
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-
-    <div class="row gy-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">Kondisi Mobil</div>
-                <div class="card-body" id="chart-mobil"></div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">Dokumen</div>
-                <div class="card-body" id="chart-dokumen"></div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">Fisik Kemasan</div>
-                <div class="card-body" id="chart-kemasan"></div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">Fisik Bahan Mentah</div>
-                <div class="card-body" id="chart-raw"></div>
-            </div>
-        </div>
-
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">Sampling Umum</div>
-                <div class="card-body" id="card-umum"></div>
-            </div>
-        </div>
-
-        <h2 class="mb-4 fw-bold">📋 Analisa Kualitas Bahan & Disposisi</h2>
-
-        <div class="row gy-4">
-            {{-- Parameter Kualitas --}}
-            @foreach (['Gula', 'Garam', 'Gula Tebu', 'Gula Kelapa'] as $jenis)
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">Parameter Kualitas: {{ $jenis }}</div>
-                    <div class="card-body" id="chart-{{ Str::slug($jenis) }}"></div>
-                </div>
-            </div>
-            @endforeach
-
-            {{-- Disposisi Total --}}
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">Rekap Disposisi</div>
-                    <div class="card-body" id="chart-disposisi-total"></div>
+                        <div class="col-12 mt-3">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="ri-filter-line me-1"></i> Filter
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
-            {{-- Pending Disposisi --}}
-            <div class="col-md-6">
-                <div class="card bg-warning-subtle border-0">
-                    <div class="card-body text-center">
-                        <h5>Total Pending Disposisi</h5>
-                        <h1 id="pending-count" class="display-4 fw-bold">...</h1>
+
+            <div class="row gy-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">Kondisi Mobil</div>
+                        <div class="card-body" id="chart-mobil"></div>
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">Dokumen</div>
+                        <div class="card-body" id="chart-dokumen"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">Fisik Kemasan</div>
+                        <div class="card-body" id="chart-kemasan"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">Fisik Bahan Mentah</div>
+                        <div class="card-body" id="chart-raw"></div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">Sampling Umum</div>
+                        <div class="card-body" id="card-umum"></div>
+                    </div>
+                </div>
+
+                <h2 class="mb-4 fw-bold">📋 Analisa Kualitas Bahan & Disposisi</h2>
+
+                <div class="row gy-4">
+                    {{-- Parameter Kualitas --}}
+                    @foreach (['Gula', 'Garam', 'Gula Tebu', 'Gula Kelapa'] as $jenis)
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">Parameter Kualitas: {{ $jenis }}</div>
+                            <div class="card-body" id="chart-{{ Str::slug($jenis) }}"></div>
+                        </div>
+                    </div>
+                    @endforeach
+
+                    {{-- Disposisi Total --}}
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">Rekap Disposisi</div>
+                            <div class="card-body" id="chart-disposisi-total"></div>
+                        </div>
+                    </div>
+
+                    {{-- Pending Disposisi --}}
+                    <div class="col-md-6">
+                        <div class="card bg-warning-subtle border-0">
+                            <div class="card-body text-center">
+                                <h5>Total Pending Disposisi</h5>
+                                <h1 id="pending-count" class="display-4 fw-bold">...</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
-
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
