@@ -120,6 +120,12 @@ Route::prefix('prd')->middleware('auth')->group(function () {
 Route::prefix('qc')->middleware('auth')->group(function () {
     // Dashboard 
     Route::get('/dept_head/dashboard', [QCController::class, 'dashboardQC']);
+    Route::get('/dashboard/rm', [QCController::class, 'dashboardRM']);
+    Route::get('/dashboard/ggaggas', [QCController::class, 'dashboardGGAGGAS']);
+    Route::get('/dashboard/blending/awal', [QCController::class, 'dashboardBlendingAwal']);
+    Route::get('/dashboard/blending/after', [QCController::class, 'dashboardBlendingAfter']);
+    Route::get('/dashboard/monitoring/turun', [QCController::class, 'dashboardMonitoringTurun']);
+    Route::get('/dashboard/monitoring/storage', [QCController::class, 'dashboardMonitoringStorage']);
     Route::get('/supervisor/dashboard', [QCController::class, 'dashboardSupervisorQC']);
     Route::get('/foreman/dashboard', [QCController::class, 'dashboardForemanQC']);
     Route::get('/operator/dashboard', [QCController::class, 'dashboardOperatorQC']);
