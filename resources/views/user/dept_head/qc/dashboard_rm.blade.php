@@ -1,78 +1,113 @@
-@extends('layout')
+@extends('layouts.app')
 @section('title', 'Dashboard Sampling RMPM')
 
 @section('content')
-<div class="page-content">
-    <div class="container-fluid">
-        <div class="container mt-4">
-            <h2 class="mb-4 fw-bold">📊 Dashboard Sampling RMPM</h2>
-            <div class="row gy-4">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">Kondisi Mobil</div>
-                        <div class="card-body" id="chart-mobil"></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">Dokumen</div>
-                        <div class="card-body" id="chart-dokumen"></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">Fisik Kemasan</div>
-                        <div class="card-body" id="chart-kemasan"></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">Fisik Bahan Mentah</div>
-                        <div class="card-body" id="chart-raw"></div>
-                    </div>
+<div class="container mt-4">
+
+    <h2 class="fw-bold lh-base text-primary-emphasis mb-4" data-aos="fade-right" style="letter-spacing: -0.5px;">
+        <i class="ri-bar-chart-line fs-3 align-middle me-2 text-primary"></i>
+        Dashboard Sampling <span class="text-dark">RMPM</span>
+    </h2>
+    <!-- 🔍 Filter -->
+    <div class="card mb-4" data-aos="fade-down">
+        <div class="card-body">
+            <form id="filter-form" class="row gx-3 gy-2 align-items-end mb-4">
+                <div class="col-md-4">
+                    <label for="filter-jenis-gula" class="form-label fw-semibold">Jenis Gula</label>
+                    <select class="form-select" id="filter-jenis-gula" name="jenis_gula">
+                        <option value="">Semua</option>
+                        <option value="Gula">Gula</option>
+                        <option value="Garam">Garam</option>
+                        <option value="Gula Tebu">Gula Tebu</option>
+                        <option value="Gula Kelapa">Gula Kelapa</option>
+                    </select>
                 </div>
 
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">Sampling Umum</div>
-                        <div class="card-body" id="card-umum"></div>
-                    </div>
+                <div class="col-md-4">
+                    <label for="filter-start-date" class="form-label fw-semibold">Mulai Tanggal</label>
+                    <input type="date" class="form-control" id="filter-start-date" name="start_date">
                 </div>
 
-                <h2 class="mb-4 fw-bold">📋 Analisa Kualitas Bahan & Disposisi</h2>
-
-                <div class="row gy-4">
-                    {{-- Parameter Kualitas --}}
-                    @foreach (['Gula', 'Garam', 'Gula Tebu', 'Gula Kelapa'] as $jenis)
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">Parameter Kualitas: {{ $jenis }}</div>
-                            <div class="card-body" id="chart-{{ Str::slug($jenis) }}"></div>
-                        </div>
-                    </div>
-                    @endforeach
-
-                    {{-- Disposisi Total --}}
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">Rekap Disposisi</div>
-                            <div class="card-body" id="chart-disposisi-total"></div>
-                        </div>
-                    </div>
-
-                    {{-- Pending Disposisi --}}
-                    <div class="col-md-6">
-                        <div class="card bg-warning-subtle border-0">
-                            <div class="card-body text-center">
-                                <h5>Total Pending Disposisi</h5>
-                                <h1 id="pending-count" class="display-4 fw-bold">...</h1>
-                            </div>
-                        </div>
-                    </div>
+                <div class="col-md-4">
+                    <label for="filter-end-date" class="form-label fw-semibold">Sampai Tanggal</label>
+                    <input type="date" class="form-control" id="filter-end-date" name="end_date">
                 </div>
 
+                <div class="col-12 mt-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="ri-filter-line me-1"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="row gy-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Kondisi Mobil</div>
+                <div class="card-body" id="chart-mobil"></div>
             </div>
         </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Dokumen</div>
+                <div class="card-body" id="chart-dokumen"></div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Fisik Kemasan</div>
+                <div class="card-body" id="chart-kemasan"></div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Fisik Bahan Mentah</div>
+                <div class="card-body" id="chart-raw"></div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">Sampling Umum</div>
+                <div class="card-body" id="card-umum"></div>
+            </div>
+        </div>
+
+        <h2 class="mb-4 fw-bold">📋 Analisa Kualitas Bahan & Disposisi</h2>
+
+        <div class="row gy-4">
+            {{-- Parameter Kualitas --}}
+            @foreach (['Gula', 'Garam', 'Gula Tebu', 'Gula Kelapa'] as $jenis)
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Parameter Kualitas: {{ $jenis }}</div>
+                    <div class="card-body" id="chart-{{ Str::slug($jenis) }}"></div>
+                </div>
+            </div>
+            @endforeach
+
+            {{-- Disposisi Total --}}
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Rekap Disposisi</div>
+                    <div class="card-body" id="chart-disposisi-total"></div>
+                </div>
+            </div>
+
+            {{-- Pending Disposisi --}}
+            <div class="col-md-6">
+                <div class="card bg-warning-subtle border-0">
+                    <div class="card-body text-center">
+                        <h5>Total Pending Disposisi</h5>
+                        <h1 id="pending-count" class="display-4 fw-bold">...</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -80,8 +115,6 @@
 <script>
     $(function() {
         const endpoints = {
-
-
             mobil: {
                 url: "http://10.11.10.130:8081/public/api/dashboard-rmpm/mobil",
                 key: 'mobil'
@@ -146,22 +179,63 @@
 
         $.get(endpoints.umum, res => {
             $('#card-umum').html(`
-            <div class="row">
-                <div class="col-md-4">
-                    <strong>Total Identitas:</strong> ${res.total_identitas}
-                    <br><strong>Jenis Gula:</strong>
-                    <ul>${Object.entries(res.jenis_gula).map(([key, val]) => `<li>${key}: ${val}</li>`).join('')}</ul>
-                </div>
-                <div class="col-md-4">
-                    <strong>Top Supplier:</strong>
-                    <ul>${Object.entries(res.top_supplier).map(([key, val]) => `<li>${key}: ${val}</li>`).join('')}</ul>
-                </div>
-                <div class="col-md-4">
-                    <strong>Sampling Completion:</strong>
-                    <ul>${Object.entries(res.sampling_completion).map(([key, val]) => `<li>${key}: ${val}</li>`).join('')}</ul>
+    <div class="row gy-4">
+        <!-- Total Identitas -->
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="card border shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="avatar-sm mx-auto mb-3">
+                        <span class="avatar-title rounded-circle bg-light text-primary fs-3">
+                            <i class="ri-database-2-line"></i>
+                        </span>
+                    </div>
+                    <h6 class="text-muted">Total Identitas</h6>
+                    <h2 class="fw-bold text-primary mb-1">${res.total_identitas}</h2>
+                    <span class="text-muted small">Jumlah seluruh sample masuk</span>
                 </div>
             </div>
-        `);
+        </div>
+
+        <!-- Jenis Gula -->
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="card border shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="avatar-sm mx-auto mb-3">
+                        <span class="avatar-title rounded-circle bg-light text-info fs-3">
+                            <i class="ri-store-2-fill"></i>
+                        </span>
+                    </div>
+                    <h6 class="text-muted">Jenis Gula</h6>
+                    <ul class="list-unstyled mb-0 text-start mt-2">
+                        ${Object.entries(res.jenis_gula).map(([key, val]) => `
+                            <li><i class="ri-arrow-right-s-fill text-info"></i> <strong>${key}:</strong> ${val}</li>
+                        `).join('')}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Supplier -->
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="card border shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="avatar-sm mx-auto mb-3">
+                        <span class="avatar-title rounded-circle bg-light text-warning fs-3">
+                            <i class="ri-truck-line"></i>
+                        </span>
+                    </div>
+                    <h6 class="text-muted">Top Supplier</h6>
+                    <ul class="list-unstyled mb-0 text-start mt-2">
+                        ${Object.entries(res.top_supplier).map(([key, val]) => `
+                            <li><i class="ri-user-fill text-warning"></i> <strong>${key}:</strong> ${val}</li>
+                        `).join('')}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    `);
+
         });
     });
 
