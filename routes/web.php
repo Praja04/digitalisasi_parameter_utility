@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProduksiController;
-use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\WH\WarehouseController;
 use App\Http\Controllers\WH\PalletMoverController;
 use App\Http\Controllers\WH\ForkliftControllers;
 use App\Http\Controllers\QCController;

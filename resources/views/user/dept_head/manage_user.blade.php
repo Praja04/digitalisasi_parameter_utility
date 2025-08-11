@@ -1,5 +1,4 @@
 @extends('layout')
-@section('dynamic_url', 'st53/realtime-tankA')
 @section('content')
 
 <div class="page-content">
@@ -127,6 +126,45 @@
                                         </select>
                                         <div class="invalid-feedback">Please select a Departemen.</div>
                                     </div>
+
+                                    <div class="mb-3">
+                                        <label for="bagian" class="form-label">Bagian</label>
+                                        <select class="form-control" id="bagian" name="bagian" required>
+                                            <option value="" disabled selected>Pilih Departemen</option>
+                                            <option value="Dokumen Control">Dokumen Control</option>
+                                            <option value="Engineering">Engineering</option>
+                                            <option value="Engineering Kalibrasi">Engineering Kalibrasi</option>
+                                            <option value="Engineering Maintenance & Improvement">Engineering Maintenance & Improvement</option>
+                                            <option value="Engineering Produksi">Engineering Produksi</option>
+                                            <option value="Engineering WWTP">Engineering WWTP</option>
+                                            <option value="Engineering Workshop & Project">Engineering Workshop & Project</option>
+                                            <option value="Expedisi">Expedisi</option>
+                                            <option value="Factory">Factory</option>
+                                            <option value="Health Safety Environment">Health Safety Environment</option>
+                                            <option value="IT Support">IT Support</option>
+                                            <option value="Production Planning Control">Production Planning Control</option>
+                                            <option value="Produksi">Produksi</option>
+                                            <option value="Produksi Filling Retail">Produksi Filling Retail</option>
+                                            <option value="Produksi Material Balance & Project">Produksi Material Balance & Project</option>
+                                            <option value="Produksi Proses">Produksi Proses</option>
+                                            <option value="Purchasing Raw Material">Purchasing Raw Material</option>
+                                            <option value="Quality Control">Quality Control</option>
+                                            <option value="Quality Control Filling">Quality Control Filling</option>
+                                            <option value="Quality Control Kimia">Quality Control Kimia</option>
+                                            <option value="Quality Control Mikrobiologi">Quality Control Mikrobiologi</option>
+                                            <option value="Quality Control Proses">Quality Control Proses</option>
+                                            <option value="Quality Control Raw & Packaging Material">Quality Control Raw & Packaging Material</option>
+                                            <option value="Research & Development">Research & Development</option>
+                                            <option value="Timbangan">Timbangan</option>
+                                            <option value="Warehouse">Warehouse</option>
+                                            <option value="Warehouse Co Product">Warehouse Co Product</option>
+                                            <option value="Warehouse Finish Good">Warehouse Finish Good</option>
+                                            <option value="Warehouse Raw Material">Warehouse Raw Material</option>
+                                            <option value="Warehouse Sparepart">Warehouse Sparepart</option>
+                                        </select>
+                                    </div>
+
+
                                     <div class="hstack gap-2 justify-content-end">
                                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                                         <button type="submit" class="btn btn-success">Add Member</button>
@@ -184,6 +222,43 @@
                                     <option value="qc">QC</option>
                                     <option value="produksi">Produksi</option>
                                     <option value="warehouse">Warehouse</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="editBagian" class="form-label">Bagian</label>
+                                <select class="form-control" id="editBagian" name="bagian" required>
+                                    <option value="" disabled selected>Pilih Bagian</option>
+                                    <option value="Dokumen Control">Dokumen Control</option>
+                                    <option value="Engineering">Engineering</option>
+                                    <option value="Engineering Kalibrasi">Engineering Kalibrasi</option>
+                                    <option value="Engineering Maintenance & Improvement">Engineering Maintenance & Improvement</option>
+                                    <option value="Engineering Produksi">Engineering Produksi</option>
+                                    <option value="Engineering WWTP">Engineering WWTP</option>
+                                    <option value="Engineering Workshop & Project">Engineering Workshop & Project</option>
+                                    <option value="Expedisi">Expedisi</option>
+                                    <option value="Factory">Factory</option>
+                                    <option value="Health Safety Environment">Health Safety Environment</option>
+                                    <option value="IT Support">IT Support</option>
+                                    <option value="Production Planning Control">Production Planning Control</option>
+                                    <option value="Produksi">Produksi</option>
+                                    <option value="Produksi Filling Retail">Produksi Filling Retail</option>
+                                    <option value="Produksi Material Balance & Project">Produksi Material Balance & Project</option>
+                                    <option value="Produksi Proses">Produksi Proses</option>
+                                    <option value="Purchasing Raw Material">Purchasing Raw Material</option>
+                                    <option value="Quality Control">Quality Control</option>
+                                    <option value="Quality Control Filling">Quality Control Filling</option>
+                                    <option value="Quality Control Kimia">Quality Control Kimia</option>
+                                    <option value="Quality Control Mikrobiologi">Quality Control Mikrobiologi</option>
+                                    <option value="Quality Control Proses">Quality Control Proses</option>
+                                    <option value="Quality Control Raw & Packaging Material">Quality Control Raw & Packaging Material</option>
+                                    <option value="Research & Development">Research & Development</option>
+                                    <option value="Timbangan">Timbangan</option>
+                                    <option value="Warehouse">Warehouse</option>
+                                    <option value="Warehouse Co Product">Warehouse Co Product</option>
+                                    <option value="Warehouse Finish Good">Warehouse Finish Good</option>
+                                    <option value="Warehouse Raw Material">Warehouse Raw Material</option>
+                                    <option value="Warehouse Sparepart">Warehouse Sparepart</option>
                                 </select>
                             </div>
 
@@ -424,7 +499,7 @@
                                                             <li>
                                                                 <a class="dropdown-item edit-list" href="#editMemberModal" data-bs-toggle="modal" 
                                                                    data-edit-id="${user.id}" data-username="${user.username}" 
-                                                                   data-jabatan="${user.jabatan}" data-email="${user.email}">
+                                                                   data-jabatan="${user.jabatan}" data-email="${user.email}" data-bagian="${user.bagian}">
                                                                     <i class="ri-pencil-line me-2 align-bottom text-muted"></i>Edit
                                                                 </a>
                                                             </li>
@@ -480,12 +555,14 @@
             let jabatan = $(this).data('jabatan');
             let email = $(this).data('email');
             let password = $(this).data('password');
+            let bagian = $(this).data('bagian');
 
             $('#editUserId').val(id);
             $('#editUsername').val(username);
             $('#editJabatan').val(jabatan);
             $('#editEmail').val(email);
             $('#editPassword').val(password);
+            $('#editBagian').val(bagian);
         });
 
         $('#editMemberForm').submit(function(e) {
@@ -507,7 +584,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: base_url +'/'+ userId,
+                        url: base_url + '/' + userId,
 
                         type: 'POST',
                         data: formData,

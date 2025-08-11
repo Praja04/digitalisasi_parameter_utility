@@ -732,6 +732,33 @@
                 </li>
                 @elseif(Session::get('jabatan') === 'foreman' && Session::get('departemen') === 'engineering')
                 <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+                @if(Session::get('bagian') === 'Engineering Maintenance & Improvement')
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ url('wh/foreman/dashboard') }}">
+                        <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Foreman Dashboard</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#P2hForeman" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="P2hForeman">
+                        <i class="mdi mdi-package-variant"></i> <span data-key="t-dashboards">P2H Online</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="P2hForeman">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ url('wh/foreman/form/p2h') }}">
+                                    <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Form P2H</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ url('wh/foreman/detail/p2h') }}">
+                                    <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Data P2H</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                @endif
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ url('eng/foreman/dashboard') }}">
                         <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Dashboard Utility</span>
@@ -747,6 +774,8 @@
                         <i class="mdi mdi-card-account-details"></i> <span data-key="t-widgets">Data Utility</span>
                     </a>
                 </li>
+
+
 
                 @elseif(Session::get('jabatan') === 'foreman' && Session::get('departemen') === 'produksi')
                 <li class="menu-title"><span data-key="t-menu">Menu</span></li>
