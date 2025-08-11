@@ -81,6 +81,7 @@
                                 <!-- Data akan dimasukkan di sini oleh JavaScript -->
                             </tbody>
                         </table>
+                        <div id="pagination" class="mt-3 d-flex justify-content-center"></div>
                     </div>
                 </div>
             </div>
@@ -133,213 +134,246 @@
 
 
     </div>
+</div>
 
-    <!-- Script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- Script -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <script>
-        let currentData = [];
+<script>
+    let currentData = [];
+    let filteredData = [];
+    const rowsPerPage = 10;
+    let currentPage = 1;
 
-        // Saat klik kartu unit (Forklift atau Pallet Mover)
-        $('.card-unit').on('click', function() {
-            let unit = $(this).data('unit');
+    // Fungsi render tabel dengan pagination
+    function renderTable(data, page = 1) {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const paginated = data.slice(start, end);
 
-            // Ambil data dari controller via AJAX
-            $.ajax({
-                url: "{{ url('wh/p2h/data') }}",
-                method: "GET",
-                data: {
-                    jenis_p2h: unit
-                },
-                success: function(response) {
-                    currentData = response; // Simpan data untuk tombol Detail
-                    $('#p2hTableBody').empty();
-                    $('#table-title').text(`Data P2H - ${unit}`);
-                    $('#table-container').slideDown();
+        $('#p2hTableBody').empty();
 
-                    response.forEach((item, index) => {
-                        const shiftKeys = Object.keys(item.shifts).join(', ');
-
-                        $('#p2hTableBody').append(`
-                        <tr>
-                            <td>${item.tanggal}</td>
-                            <td>${item.nomor_unit}</td>
-                            <td>${item.jenis_p2h}</td>
-                            <td>${shiftKeys}</td>
-                            <td>
-                                <button 
-                                    class="btn btn-sm btn-primary btn-detail" 
-                                    data-index="${index}">
-                                    Detail
-                                </button>
-                            </td>
-                        </tr>
-                    `);
-                    });
-                },
-                error: function() {
-                    Swal.fire('Gagal', 'Gagal mengambil data P2H.', 'error');
-                }
-            });
+        paginated.forEach((item, index) => {
+            const shiftKeys = Object.keys(item.shifts).join(', ');
+            $('#p2hTableBody').append(`
+            <tr>
+                <td>${item.tanggal}</td>
+                <td>${item.nomor_unit}</td>
+                <td>${item.jenis_p2h}</td>
+                <td>${shiftKeys}</td>
+                <td>
+                    <button 
+                        class="btn btn-sm btn-primary btn-detail" 
+                        data-index="${start + index}">
+                        Detail
+                    </button>
+                </td>
+            </tr>
+        `);
         });
 
-        // Handler filter lokal
-        function filterTable() {
-            const keyword = $('#searchInput').val().toLowerCase();
-            const selectedDate = $('#filterDate').val();
+        renderPagination(data.length, page);
+    }
 
-            $('#p2hTableBody tr').each(function() {
-                const unit = $(this).find('td:eq(1)').text().toLowerCase();
-                const jenis = $(this).find('td:eq(2)').text().toLowerCase();
-                const tanggal = $(this).find('td:eq(0)').text();
+    // Fungsi render pagination
+    function renderPagination(totalItems, currentPage) {
+        const totalPages = Math.ceil(totalItems / rowsPerPage);
+        let html = '';
 
-                const matchesKeyword = unit.includes(keyword) || jenis.includes(keyword);
-                const matchesDate = !selectedDate || tanggal === selectedDate;
-
-                if (matchesKeyword && matchesDate) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            });
+        for (let i = 1; i <= totalPages; i++) {
+            html += `
+            <button class="btn btn-sm ${i === currentPage ? 'btn-primary' : 'btn-outline-primary'} mx-1 page-btn" data-page="${i}">
+                ${i}
+            </button>
+        `;
         }
 
-        // Event listener
-        $('#searchInput').on('input', filterTable);
-        $('#filterDate').on('change', filterTable);
-        $('#resetFilter').on('click', function() {
-            $('#searchInput').val('');
-            $('#filterDate').val('');
-            filterTable();
+        $('#pagination').html(html);
+    }
+
+    // Filter berdasarkan keyword dan tanggal
+    function applyFilter() {
+        const keyword = $('#searchInput').val().toLowerCase();
+        const selectedDate = $('#filterDate').val();
+
+        filteredData = currentData.filter(item => {
+            const unit = item.nomor_unit.toLowerCase();
+            const jenis = item.jenis_p2h.toLowerCase();
+            const tanggal = item.tanggal;
+
+            const matchKeyword = unit.includes(keyword) || jenis.includes(keyword);
+            const matchDate = !selectedDate || tanggal === selectedDate;
+
+            return matchKeyword && matchDate;
         });
 
+        currentPage = 1;
+        renderTable(filteredData, currentPage);
+    }
 
-        // Saat klik tombol Detail
+    // Event listeners
+    $('#searchInput').on('input', applyFilter);
+    $('#filterDate').on('change', applyFilter);
+    $('#resetFilter').on('click', function() {
+        $('#searchInput').val('');
+        $('#filterDate').val('');
+        applyFilter();
+    });
 
-        $(document).on('click', '.btn-detail', function() {
-            const index = $(this).data('index');
-            const data = currentData[index];
+    $(document).on('click', '.page-btn', function() {
+        currentPage = parseInt($(this).data('page'));
+        renderTable(filteredData, currentPage);
+    });
 
-            let html = '';
+    // Saat klik kartu unit
+    $('.card-unit').on('click', function() {
+        const unit = $(this).data('unit');
+        const isPallet = unit === 'Pallet Mover';
 
-            Object.entries(data.shifts).forEach(([shift, detail]) => {
-                // Ambil waktu dari created_at
-                const time = new Date(detail.created_at).toLocaleTimeString('id-ID', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                });
+        const fetchUrl = isPallet ?
+            "{{ url('wh/p2h/data/pallet/mover') }}" :
+            "{{ url('wh/p2h/data') }}";
 
-                html += `
-                        <div class="mb-4">
-                            <h5 class="mb-2">Shift ${shift}</h5>
-                            <p>
-                                <i class="bi bi-person-circle me-1"></i><strong>Operator:</strong> ${detail.operator_name}
-                                <i class="bi bi-clock me-1"></i><strong>Jam Input:</strong> ${time} WIB
-                            </p>
-                            <button class="btn btn-sm btn-warning mb-3 btn-edit-shift" data-shift="${shift}"  data-id="${detail.id}">
-                                Edit ${detail.id}
-                            </button>
-                            <div class="row">
-                    `;
+        $.ajax({
+            url: fetchUrl,
+            method: "GET",
+            data: {
+                jenis_p2h: unit
+            },
+            success: function(response) {
+                currentData = response;
+                filteredData = [...currentData];
 
+                $('#table-title').text(`Data P2H - ${unit}`);
+                $('#table-container').slideDown();
 
-                for (const [key, value] of Object.entries(detail)) {
-                    if (['id', 'created_at', 'updated_at', 'jenis_p2h', 'operator_name', 'p2h_model_id', 'shift'].includes(key)) continue;
+                currentPage = 1;
+                renderTable(filteredData, currentPage);
+            },
+            error: function() {
+                Swal.fire('Gagal', 'Gagal mengambil data P2H.', 'error');
+            }
+        });
+    });
 
-                    let label = key === 'jam_operasional' ? 'Hours Meter' : key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                    let badge;
+    // Detail modal
+    $(document).on('click', '.btn-detail', function() {
+        const index = $(this).data('index');
+        const data = filteredData[index];
 
-                    if (value === 1 || value === '1') {
-                        badge = `<span class="badge bg-success">OK</span>`;
-                    } else if (value === 0 || value === '0') {
-                        badge = `<span class="badge bg-danger">NOK</span>`;
-                    } else {
-                        badge = `<span class="text-muted">${value}</span>`;
-                    }
+        let html = '';
 
-                    html += `
-                    <div class="col-md-4 mb-2">
-                        <strong>${label}</strong><br>${badge}
-                    </div>
-                `;
-                }
-
-                html += `</div></div>`;
+        Object.entries(data.shifts).forEach(([shift, detail]) => {
+            const time = new Date(detail.created_at).toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
             });
 
-            $('#modalDetailBody').html(html);
-            $('#modalDetailP2H').modal('show');
-        });
-
-        $('#downloadPDF').on('click', function() {
-            const element = document.getElementById('modalDetailBody');
-
-            // Opsi konfigurasi
-            const opt = {
-                margin: 0.5,
-                filename: 'detail_p2h_shift.pdf',
-                image: {
-                    type: 'jpeg',
-                    quality: 0.98
-                },
-                html2canvas: {
-                    scale: 2
-                },
-                jsPDF: {
-                    unit: 'in',
-                    format: 'a4',
-                    orientation: 'portrait'
-                }
-            };
-
-            html2pdf().set(opt).from(element).save();
-        });
-
-
-        $(document).on('click', '.btn-edit-shift', function() {
-            const id = $(this).data('id');
-            const shift = $(this).data('shift');
-
-            const detail = Object.values(currentData).flatMap(p2h => Object.values(p2h.shifts)).find(d => d.id == id);
-
-            if (!detail) return;
-
-            let formHtml = '';
+            html += `
+            <div class="mb-4">
+                <h5 class="mb-2">Shift ${shift}</h5>
+                <p>
+                    <i class="bi bi-person-circle me-1"></i><strong>Operator:</strong> ${detail.operator_name}
+                    <i class="bi bi-clock me-1"></i><strong>Jam Input:</strong> ${time} WIB
+                </p>
+                <button class="btn btn-sm btn-warning mb-3 btn-edit-shift" data-shift="${shift}" data-id="${detail.id}">
+                    Edit ${detail.id}
+                </button>
+                <div class="row">
+        `;
 
             for (const [key, value] of Object.entries(detail)) {
-                if (['created_at', 'updated_at', 'p2h_model_id', 'operator_name', 'shift'].includes(key)) continue;
+                if (['id', 'created_at', 'updated_at', 'jenis_p2h', 'operator_name', 'p2h_model_id', 'shift'].includes(key)) continue;
 
-                const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                let label = key === 'jam_operasional' ? 'Hours Meter' : key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                let badge;
 
-                // Display as text only
-                if (['tanggal', 'jenis_p2h', 'nomor_unit', 'dept'].includes(key)) {
-                    formHtml += `
+                if (value === 1 || value === '1') {
+                    badge = `<span class="badge bg-success">OK</span>`;
+                } else if (value === 0 || value === '0') {
+                    badge = `<span class="badge bg-danger">NOK</span>`;
+                } else {
+                    badge = `<span class="text-muted">${value}</span>`;
+                }
+
+                html += `
+                <div class="col-md-4 mb-2">
+                    <strong>${label}</strong><br>${badge}
+                </div>
+            `;
+            }
+
+            html += `</div></div>`;
+        });
+
+        $('#modalDetailBody').html(html);
+        $('#modalDetailP2H').modal('show');
+    });
+
+    // PDF export
+    $('#downloadPDF').on('click', function() {
+        const element = document.getElementById('modalDetailBody');
+
+        const opt = {
+            margin: 0.5,
+            filename: 'detail_p2h_shift.pdf',
+            image: {
+                type: 'jpeg',
+                quality: 0.98
+            },
+            html2canvas: {
+                scale: 2
+            },
+            jsPDF: {
+                unit: 'in',
+                format: 'a4',
+                orientation: 'portrait'
+            }
+        };
+
+        html2pdf().set(opt).from(element).save();
+    });
+
+    // Edit modal
+    $(document).on('click', '.btn-edit-shift', function() {
+        const id = $(this).data('id');
+        const shift = $(this).data('shift');
+
+        const detail = Object.values(currentData).flatMap(p2h => Object.values(p2h.shifts)).find(d => d.id == id);
+        if (!detail) return;
+
+        let formHtml = '';
+
+        for (const [key, value] of Object.entries(detail)) {
+            if (['created_at', 'updated_at', 'p2h_model_id', 'operator_name', 'shift'].includes(key)) continue;
+
+            const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+            if (['tanggal', 'jenis_p2h', 'nomor_unit', 'dept'].includes(key)) {
+                formHtml += `
                 <div class="mb-3">
                     <label class="form-label"><strong>${label}</strong></label>
                     <p class="form-control-plaintext">${value}</p>
                 </div>
             `;
-                } else if (key === 'id') {
-                    formHtml += `
-              
-                    <input type="hidden" class="form-control" id="${key}" name="${key}" value="${value}">
-            `;
-                } else if (key === 'jam_operasional') {
-                    formHtml += `
+            } else if (key === 'id') {
+                formHtml += `<input type="hidden" class="form-control" id="${key}" name="${key}" value="${value}">`;
+            } else if (key === 'jam_operasional') {
+                formHtml += `
                 <div class="mb-3">
                     <label class="form-label"><strong>Hours Meter</strong></label>
                     <input type="text" class="form-control" name="${key}" value="${value}" readonly>
                 </div>
             `;
-                } else if (key === 'catatan') {
-                    formHtml += `
+            } else if (key === 'catatan') {
+                formHtml += `
                 <div class="mb-3">
                     <label class="form-label"><strong>${label}</strong></label>
                     <input type="text" class="form-control" name="${key}">
                 </div>
             `;
-                } else {
-                    formHtml += `
+            } else {
+                formHtml += `
                 <div class="mb-3">
                     <label class="form-label"><strong>${label}</strong></label>
                     <select name="${key}" class="form-select">
@@ -348,81 +382,81 @@
                     </select>
                 </div>
             `;
-                }
             }
+        }
 
-            $('#editShiftForm').data('id', id);
-            $('#editShiftBody').html(formHtml);
-            $('#modalEditShift').modal('show');
+        $('#editShiftForm').data('id', id);
+        $('#editShiftBody').html(formHtml);
+        $('#modalEditShift').modal('show');
+    });
+
+    // Submit edit form
+    $('#editShiftForm').on('submit', function(e) {
+        e.preventDefault();
+
+        const id = $('#id').val();
+        const formData = $(this).serialize();
+
+        $.ajax({
+            url: "{{url('wh/p2h/update-detail')}}/" + id,
+            method: 'PUT',
+            data: formData,
+            success: function(res) {
+                Swal.fire('Berhasil', 'Data berhasil diperbarui', 'success');
+                $('#modalEditShift').modal('hide');
+                $('#modalDetailP2H').modal('hide');
+                setTimeout(() => {
+                    location.reload(); // Reload halaman untuk melihat perubahan
+                }, 1000);
+            },
+            error: function(err) {
+                Swal.fire('Gagal', 'Gagal mengupdate data', 'error');
+            }
         });
-
-
-        $('#editShiftForm').on('submit', function(e) {
-            e.preventDefault();
-
-            const id = $('#id').val();
-            const formData = $(this).serialize();
-
-            $.ajax({
-                url: "{{url('wh/p2h/update-detail')}}/" + id,
-                method: 'PUT',
-                data: formData,
-                success: function(res) {
-                    Swal.fire('Berhasil', 'Data berhasil diperbarui', 'success');
-                    $('#modalEditShift').modal('hide');
-                    $('#modalDetailP2H').modal('hide');
-                    setInterval(() => {
-                        location.reload(); // Reload halaman untuk melihat perubahan
-                    }, 1000);
-                },
-                error: function(err) {
-                    Swal.fire('Gagal', 'Gagal mengupdate data', 'error');
-                }
-            });
-        });
-    </script>
+    });
+</script>
 
 
 
-    <style>
-        .clickable {
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
+<style>
+    .clickable {
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
 
-        .clickable:hover {
-            transform: scale(1.03);
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
-        }
+    .clickable:hover {
+        transform: scale(1.03);
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+    }
 
-        .forklift-card:hover {
-            background-color: #ffe5e5;
-            border: 1px solid #dc3545;
-        }
+    .forklift-card:hover {
+        background-color: #ffe5e5;
+        border: 1px solid #dc3545;
+    }
 
-        .pallet-card:hover {
-            background-color: #e0f0ff;
-            border: 1px solid #0d6efd;
-        }
+    .pallet-card:hover {
+        background-color: #e0f0ff;
+        border: 1px solid #0d6efd;
+    }
 
-        .radio-label {
-            padding: 5px 10px;
-            border-radius: 6px;
-            border: 1px solid transparent;
-            display: inline-block;
-        }
+    .radio-label {
+        padding: 5px 10px;
+        border-radius: 6px;
+        border: 1px solid transparent;
+        display: inline-block;
+    }
 
-        .radio-label.ok-selected {
-            background-color: #d1f7d6;
-            color: #0f5132;
-            border-color: #198754;
-        }
+    .radio-label.ok-selected {
+        background-color: #d1f7d6;
+        color: #0f5132;
+        border-color: #198754;
+    }
 
-        .radio-label.nok-selected {
-            background-color: #f8d7da;
-            color: #842029;
-            border-color: #dc3545;
-        }
-    </style>
+    .radio-label.nok-selected {
+        background-color: #f8d7da;
+        color: #842029;
+        border-color: #dc3545;
+    }
+</style>
 
-    @endsection
+@endsection

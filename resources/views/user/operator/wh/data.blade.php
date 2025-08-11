@@ -81,6 +81,7 @@
                                 <!-- Data akan dimasukkan di sini oleh JavaScript -->
                             </tbody>
                         </table>
+                        <div id="pagination" class="mt-3 d-flex justify-content-center"></div>
                     </div>
                 </div>
             </div>
@@ -120,9 +121,96 @@
 
 <script>
     let currentData = [];
-
     let palletData = [];
+    let filteredData = [];
+    const rowsPerPage = 10;
+    let currentPage = 1;
 
+    // Fungsi render tabel dengan pagination
+    function renderTable(data, page = 1) {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const paginatedData = data.slice(start, end);
+
+        $('#p2hTableBody').empty();
+
+        paginatedData.forEach((item, index) => {
+            const shiftKeys = Object.keys(item.shifts).join(', ');
+            $('#p2hTableBody').append(`
+            <tr>
+                <td>${item.tanggal}</td>
+                <td>${item.nomor_unit}</td>
+                <td>${item.jenis_p2h}</td>
+                <td>${shiftKeys}</td>
+                <td>
+                    <button 
+                        class="btn btn-sm btn-primary btn-detail" 
+                        data-index="${start + index}"
+                        data-type="${item.jenis_p2h === 'Pallet Mover' ? 'pallet' : 'forklift'}"
+                    >
+                        Detail
+                    </button>
+                </td>
+            </tr>
+        `);
+        });
+
+        renderPagination(data.length, page);
+    }
+
+    // Fungsi render tombol pagination
+    function renderPagination(totalItems, currentPage) {
+        const totalPages = Math.ceil(totalItems / rowsPerPage);
+        let html = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            html += `
+            <button class="btn btn-sm ${i === currentPage ? 'btn-primary' : 'btn-outline-primary'} mx-1 page-btn" data-page="${i}">
+                ${i}
+            </button>
+        `;
+        }
+
+        $('#pagination').html(html);
+    }
+
+    // Fungsi filter berdasarkan keyword dan tanggal
+    function applyFilter() {
+        const keyword = $('#searchInput').val().toLowerCase();
+        const selectedDate = $('#filterDate').val();
+        const sourceData = $('#table-title').text().includes('Pallet') ? palletData : currentData;
+
+        filteredData = sourceData.filter(item => {
+            const unit = item.nomor_unit.toLowerCase();
+            const jenis = item.jenis_p2h.toLowerCase();
+            const tanggal = item.tanggal;
+
+            const matchKeyword = unit.includes(keyword) || jenis.includes(keyword);
+            const matchDate = !selectedDate || tanggal === selectedDate;
+
+            return matchKeyword && matchDate;
+        });
+
+        currentPage = 1;
+        renderTable(filteredData, currentPage);
+    }
+
+    // Event listener filter dan reset
+    $('#searchInput').on('input', applyFilter);
+    $('#filterDate').on('change', applyFilter);
+    $('#resetFilter').on('click', function() {
+        $('#searchInput').val('');
+        $('#filterDate').val('');
+        applyFilter();
+    });
+
+    // Event listener pagination
+    $(document).on('click', '.page-btn', function() {
+        currentPage = parseInt($(this).data('page'));
+        renderTable(filteredData, currentPage);
+    });
+
+    // Event listener klik unit
     $('.card-unit').on('click', function() {
         const unit = $(this).data('unit');
         const isPallet = unit === 'Pallet Mover';
@@ -135,74 +223,23 @@
             url: fetchUrl,
             method: "GET",
             success: function(response) {
-                const data = response;
                 palletData = isPallet ? response : [];
                 currentData = !isPallet ? response : [];
+                filteredData = response;
 
-                $('#p2hTableBody').empty();
                 $('#table-title').text(`Data P2H - ${unit}`);
                 $('#table-container').slideDown();
 
-                data.forEach((item, index) => {
-                    const shiftKeys = Object.keys(item.shifts).join(', ');
-
-                    $('#p2hTableBody').append(`
-                    <tr>
-                        <td>${item.tanggal}</td>
-                        <td>${item.nomor_unit}</td>
-                        <td>${item.jenis_p2h}</td>
-                        <td>${shiftKeys}</td>
-                        <td>
-                            <button 
-                                class="btn btn-sm btn-primary btn-detail" 
-                                data-index="${index}"
-                                data-type="${isPallet ? 'pallet' : 'forklift'}"
-                            >
-                                Detail
-                            </button>
-                        </td>
-                    </tr>
-                `);
-                });
+                currentPage = 1;
+                renderTable(filteredData, currentPage);
             },
             error: function() {
                 Swal.fire('Gagal', 'Gagal mengambil data P2H.', 'error');
             }
         });
     });
-    // Handler filter lokal
-    function filterTable() {
-        const keyword = $('#searchInput').val().toLowerCase();
-        const selectedDate = $('#filterDate').val();
 
-        $('#p2hTableBody tr').each(function() {
-            const unit = $(this).find('td:eq(1)').text().toLowerCase();
-            const jenis = $(this).find('td:eq(2)').text().toLowerCase();
-            const tanggal = $(this).find('td:eq(0)').text();
-
-            const matchesKeyword = unit.includes(keyword) || jenis.includes(keyword);
-            const matchesDate = !selectedDate || tanggal === selectedDate;
-
-            if (matchesKeyword && matchesDate) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
-        });
-    }
-
-    // Event listener
-    $('#searchInput').on('input', filterTable);
-    $('#filterDate').on('change', filterTable);
-    $('#resetFilter').on('click', function() {
-        $('#searchInput').val('');
-        $('#filterDate').val('');
-        filterTable();
-    });
-
-
-    // Saat klik tombol Detail
-
+    // Event listener tombol Detail
     $(document).on('click', '.btn-detail', function() {
         const index = $(this).data('index');
         const type = $(this).data('type');
@@ -217,19 +254,19 @@
             });
 
             html += `
-            <div class="mb-4">
-                <h5 class="mb-2">Shift ${shift}</h5>
-                <p>
-                    <i class="bi bi-person-circle me-1"></i><strong>Operator:</strong> ${detail.operator_name}
-                    <i class="bi bi-clock ms-3 me-1"></i><strong>Jam Input:</strong> ${time} WIB
-                </p>
-                <div class="row">
+        <div class="mb-4">
+            <h5 class="mb-2">Shift ${shift}</h5>
+            <p>
+                <i class="bi bi-person-circle me-1"></i><strong>Operator:</strong> ${detail.operator_name}
+                <i class="bi bi-clock ms-3 me-1"></i><strong>Jam Input:</strong> ${time} WIB
+            </p>
+            <div class="row">
         `;
 
             for (const [key, value] of Object.entries(detail)) {
                 if (['id', 'created_at', 'updated_at', 'jenis_p2h', 'operator_name', 'p2h_model_id', 'shift'].includes(key)) continue;
 
-                let label = key === 'jam_operasional' ?'Hours Meter' :key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                let label = key === 'jam_operasional' ? 'Hours Meter' : key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                 let badge = '';
 
                 if (value === 1 || value === '1') {
@@ -241,10 +278,10 @@
                 }
 
                 html += `
-                <div class="col-md-4 mb-2">
-                    <strong>${label}</strong><br>${badge}
-                </div>
-            `;
+            <div class="col-md-4 mb-2">
+                <strong>${label}</strong><br>${badge}
+            </div>
+        `;
             }
 
             html += `</div></div>`;
@@ -254,10 +291,10 @@
         $('#modalDetailP2H').modal('show');
     });
 
+    // PDF download
     $('#downloadPDF').on('click', function() {
         const element = document.getElementById('modalDetailBody');
 
-        // Opsi konfigurasi
         const opt = {
             margin: 0.5,
             filename: 'detail_p2h_shift.pdf',
