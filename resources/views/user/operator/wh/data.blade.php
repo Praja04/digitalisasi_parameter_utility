@@ -293,7 +293,18 @@
 
     // PDF download
     $('#downloadPDF').on('click', function() {
-        const element = document.getElementById('modalDetailBody');
+        // Ambil header dan body modal
+        const header = document.querySelector('#modalDetailP2H .modal-header').cloneNode(true);
+        const body = document.querySelector('#modalDetailBody').cloneNode(true);
+
+        // Bungkus jadi 1 div untuk di-export
+        const exportContainer = document.createElement('div');
+        exportContainer.appendChild(header);
+        exportContainer.appendChild(body);
+
+        // Hilangkan scroll & batas tinggi
+        exportContainer.style.maxHeight = 'unset';
+        exportContainer.style.overflow = 'visible';
 
         const opt = {
             margin: 0.5,
@@ -303,16 +314,24 @@
                 quality: 0.98
             },
             html2canvas: {
-                scale: 2
+                scale: 2,
+                useCORS: true,
+                scrollY: 0
             },
             jsPDF: {
                 unit: 'in',
                 format: 'a4',
                 orientation: 'portrait'
-            }
+            },
+            pagebreak: {
+                mode: ['css', 'legacy']
+            } // auto page break
         };
 
-        html2pdf().set(opt).from(element).save();
+        html2pdf()
+            .set(opt)
+            .from(exportContainer)
+            .save();
     });
 </script>
 
