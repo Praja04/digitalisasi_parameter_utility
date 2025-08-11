@@ -118,6 +118,17 @@
                                         <input type="text" class="form-control" id="departemen" name="departemen" value="warehouse" readonly />
                                         <div class="invalid-feedback">Please select a Departemen.</div>
                                     </div>
+                                    <div class="mb-3">
+                                        <label for="bagian" class="form-label">Bagian</label>
+                                        <select class="form-control" id="bagian" name="bagian" required>
+                                            <option value="" disabled selected>Pilih Departemen</option>
+                                            <option value="Warehouse">Warehouse</option>
+                                            <option value="Warehouse Co Product">Warehouse Co Product</option>
+                                            <option value="Warehouse Finish Good">Warehouse Finish Good</option>
+                                            <option value="Warehouse Raw Material">Warehouse Raw Material</option>
+                                            <option value="Warehouse Sparepart">Warehouse Sparepart</option>
+                                        </select>
+                                    </div>
                                     <div class="hstack gap-2 justify-content-end">
                                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                                         <button type="submit" class="btn btn-success">Add Member</button>

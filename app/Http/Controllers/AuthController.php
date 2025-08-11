@@ -63,6 +63,7 @@ class AuthController extends Controller
             Session::put('user_id', $user->id);
             Session::put('jabatan', $user->jabatan);
             Session::put('departemen', $user->departemen);
+            Session::put('bagian', $user->bagian);
             Cookie::queue('username', $user->username, 60);
 
             Log::info('Username saved in session: ' . Session::get('username'));

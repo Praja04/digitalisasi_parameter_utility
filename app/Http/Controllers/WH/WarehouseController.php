@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\WH;
 
+use App\Http\Controllers\Controller;
 use App\Models\Warehouse\P2HForklfitModel;
 use App\Models\Warehouse\P2HPalletMoverModel;
 use App\Models\Warehouse\ForkliftModel;
 use App\Models\Warehouse\PalletMoverModel;
-use App\Models\User;
 use App\Models\Warehouse\UserForkliftAssignmentModel;
 use App\Models\Warehouse\PalletAssignmentModel;
-use App\Models\Warehouse\UserPalletAssignmentModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
