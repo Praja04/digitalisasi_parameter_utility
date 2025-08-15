@@ -122,8 +122,8 @@ class EngineeringController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'tanggal' => 'required|date',
-            'pemakaian_liter_awal' => 'required|numeric',
-            'pemakaian_liter_akhir' => 'required|numeric',
+            'pemakaian_liter_awal' => 'required',
+            'pemakaian_liter_akhir' => 'required',
             'jenis_pemakaian' => 'required',
             'notes' => 'nullable|string|max:255',
         ]);
