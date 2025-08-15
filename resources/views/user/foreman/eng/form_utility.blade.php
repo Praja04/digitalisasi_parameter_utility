@@ -114,11 +114,11 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="pemakaian_liter_awal" class="form-label">Awal (m³)</label>
-                                    <input type="number" name="pemakaian_liter_awal" class="form-control" required>
+                                    <input type="number" name="pemakaian_liter_awal" class="form-control" step="any" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="pemakaian_liter_akhir" class="form-label">Akhir (m³)</label>
-                                    <input type="number" name="pemakaian_liter_akhir" class="form-control" required>
+                                    <input type="number" name="pemakaian_liter_akhir" class="form-control" step="any" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="area" class="form-label">Pilih Area</label>
