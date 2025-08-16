@@ -55,7 +55,8 @@ class EngineeringController extends Controller
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
-    public function DataUtilitySupervisor(){
+    public function DataUtilitySupervisor()
+    {
         if (Session::get('jabatan') == 'supervisor') {
             return view('user.supervisor.eng.data_utility');
         }
@@ -96,8 +97,8 @@ class EngineeringController extends Controller
 
     //operator
     // 🔹 Form untuk Operator
-    
-   
+
+
     public function formUtility()
     {
         if (Session::get('jabatan') !== 'operator' && Session::get('departemen') !== 'engineering') {
@@ -117,7 +118,7 @@ class EngineeringController extends Controller
 
 
     // Api crud operator
-   
+
     public function storeAir(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -188,8 +189,8 @@ class EngineeringController extends Controller
         $operator = Session::get('username');
         try {
             $exists = PemakaianListrikModel::whereDate('waktu', $validated['waktu'])
-            ->where('panel_type', $validated['panel_type'])
-            ->exists();
+                ->where('panel_type', $validated['panel_type'])
+                ->exists();
 
             if ($exists) {
                 return response()->json([
@@ -369,8 +370,8 @@ class EngineeringController extends Controller
 
     public function getPemakaianAirData(Request $request)
     {
-        
-        $data = PemakaianAirModel::orderBy('tanggal','desc')->get();
+
+        $data = PemakaianAirModel::orderBy('tanggal', 'desc')->get();
 
         // Kelompokkan berdasarkan tanggal
         $grouped = $data->groupBy(function ($item) {
@@ -706,7 +707,6 @@ class EngineeringController extends Controller
         $writer->save($tempPath);
 
         return response()->download($tempPath, $fileName)->deleteFileAfterSend(true);
-    
     }
 
     public function exportPemakaianAirSpreadsheet(Request $request)
@@ -769,8 +769,8 @@ class EngineeringController extends Controller
         }
 
         $data = PemakaianChemicalModel::where('tanggal', 'like', "$month%")
-        ->orderBy('tanggal')
-        ->get();
+            ->orderBy('tanggal')
+            ->get();
 
         // Kelompokkan data berdasarkan tanggal, shift, dan area
         $grouped = $data->groupBy(fn ($item) => $item->tanggal . '|' . $item->shift . '|' . $item->chemical_area);
@@ -881,9 +881,9 @@ class EngineeringController extends Controller
 
         // Ambil data per panel_type dan tanggal, lalu hitung delta mwh antar hari berikutnya
         $data = $query->select('panel_type', 'waktu', 'mwh')
-        ->orderBy('panel_type')
-        ->orderBy('waktu')
-        ->get()
+            ->orderBy('panel_type')
+            ->orderBy('waktu')
+            ->get()
             ->groupBy('panel_type');
 
         $result = [];
@@ -985,7 +985,6 @@ class EngineeringController extends Controller
             ->get();
 
         return response()->json($data);
-
     }
     public function getTopJenisPemakaianAirRaw(Request $request)
     {
@@ -1239,8 +1238,7 @@ class EngineeringController extends Controller
             'notes' => 'nullable|string'
         ]);
 
-        $air = PemakaianAirModel::whereDate('tanggal', $request->tanggal)
-            ->where('jenis_pemakaian', $request->jenis_pemakaian)
+        $air = PemakaianAirModel::where('id', $request->id)
             ->first();
 
         if (!$air) {
@@ -1285,7 +1283,4 @@ class EngineeringController extends Controller
 
         return response()->json(['message' => 'Data Chemical berhasil diperbarui.']);
     }
-
-
-
 }

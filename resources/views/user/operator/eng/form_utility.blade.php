@@ -109,7 +109,7 @@
                             <form id="form-pemakaian-air">
                                 @csrf
                                 <div class="mb-3">
-                                    <label for="tanggal" class="form-label">Tanggal</label>
+                                    <label for="tanggal" class="form-label">Tanggal (Pemakaian Tanggal Sebelumnya)</label>
                                     <input type="date" name="tanggal" id="tanggal_air" class="form-control" readonly>
                                 </div>
                                 <div class="mb-3">
@@ -276,7 +276,11 @@
 
         const today = new Date().toISOString().split('T')[0];
         $('#waktu_listrik').val(today);
-        $('#tanggal_air').val(today);
+        //buat tanggal air dikurang 1 hari
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        $('#tanggal_air').val(yesterday.toISOString().split('T')[0]);
+
 
 
 
