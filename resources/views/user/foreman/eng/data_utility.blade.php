@@ -455,7 +455,7 @@
 
             const formHtml = `
         <input type="hidden" name="id" value="${data.id ?? ''}">
-        <input type="hidden" name="tanggal" value="${tanggal}">
+        <div class="mb-2"><label>Tanggal</label><input type="date" class="form-control" name="tanggal" value="${tanggal}"></div>
         <div class="mb-2"><label>Jenis Pemakaian</label><input class="form-control" name="jenis_pemakaian" value="${data.jenis_pemakaian}" readonly></div>
         <div class="mb-2"><label>Pemakaian Awal</label><input class="form-control" name="pemakaian_awal" value="${data.pemakaian_awal}"></div>
         <div class="mb-2"><label>Pemakaian Akhir</label><input class="form-control" name="pemakaian_akhir" value="${data.pemakaian_akhir}"></div>
