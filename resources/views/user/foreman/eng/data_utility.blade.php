@@ -494,11 +494,11 @@
             let url = '';
 
             if (currentUnit === 'Listrik') {
-                url = '/eng/update-panel-listrik';
+                url = "{{url('/eng/update-panel-listrik')}}";
             } else if (currentUnit === 'Air') {
-                url = '/eng/update-pemakaian-air';
+                url = "{{url('/eng/update-pemakaian-air')}}";
             } else if (currentUnit === 'Chemical') {
-                url = '/eng/update-pemakaian-chemical';
+                url = "{{url('/eng/update-pemakaian-chemical')}}";
             }
 
             $.post(url, formData, function(res) {
