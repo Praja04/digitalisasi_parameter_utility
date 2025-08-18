@@ -977,7 +977,7 @@ class EngineeringController extends Controller
         }
         $excludedSources = ['PDAM', 'Sumur 1', 'Sumur 2', 'Sumur 4', 'Sumur 5'];
         $data = PemakaianAirModel::query()
-            ->select('jenis_pemakaian', DB::raw('SUM(pemakaian_awal - pemakaian_akhir) AS total_pemakaian'))
+            ->select('jenis_pemakaian', DB::raw('SUM(pemakaian_akhir - pemakaian_awal) AS total_pemakaian'))
             ->whereBetween('tanggal', [$start, $end])
             ->whereNotIn('jenis_pemakaian', $excludedSources)
             ->groupBy('jenis_pemakaian')
@@ -998,7 +998,7 @@ class EngineeringController extends Controller
         }
         $excludedSources = ['PDAM', 'Sumur 1', 'Sumur 2', 'Sumur 4', 'Sumur 5'];
         $data = PemakaianAirModel::query()
-            ->select('jenis_pemakaian', DB::raw('SUM(pemakaian_awal - pemakaian_akhir) AS total_pemakaian'))
+            ->select('jenis_pemakaian', DB::raw('SUM(pemakaian_akhir - pemakaian_awal) AS total_pemakaian'))
             ->whereBetween('tanggal', [$start, $end])
             ->whereIn('jenis_pemakaian', $excludedSources)
             ->groupBy('jenis_pemakaian')
