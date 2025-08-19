@@ -447,15 +447,17 @@
             .done(function(data) {
                 const labels = data.map(d => d.jenis_pemakaian);
                 const values = data.map(d => parseFloat(d.total_pemakaian));
-                renderBarChart(labels, values, "#pemakaian-air-chart", 'pemakaianAir', 'm³');
+                const meta = data.map(d => ({
+                    start_date: d.start_date,
+                    end_date: d.end_date
+                }));
+
+                renderBarChart(labels, values, "#pemakaian-air-chart", 'pemakaianAir', 'm³', meta);
             })
-            .fail(function() {
-                console.error("Gagal memuat data pemakaian air.");
-            })
-            .always(function() {
-                hideLoading('loading-air');
-            });
+            .fail(() => console.error("Gagal memuat data pemakaian air."))
+            .always(() => hideLoading('loading-air'));
     }
+
 
     function fetchPemakaianAirRaw(start, end) {
         showLoading('loading-air-raw');
@@ -465,14 +467,15 @@
             .done(function(data) {
                 const labels = data.map(d => d.jenis_pemakaian);
                 const values = data.map(d => parseFloat(d.total_pemakaian));
-                renderBarChart(labels, values, "#pemakaian-air-chart-raw", 'pemakaianAirRaw', 'm³');
+                const meta = data.map(d => ({
+                    start_date: d.start_date,
+                    end_date: d.end_date
+                }));
+
+                renderBarChart(labels, values, "#pemakaian-air-chart-raw", 'pemakaianAirRaw', 'm³', meta);
             })
-            .fail(function() {
-                console.error("Gagal memuat data pemakaian air raw.");
-            })
-            .always(function() {
-                hideLoading('loading-air-raw');
-            });
+            .fail(() => console.error("Gagal memuat data pemakaian air raw."))
+            .always(() => hideLoading('loading-air-raw'));
     }
 
     function loadPemakaianListrik(start, end) {
@@ -488,7 +491,11 @@
             success: function(data) {
                 const labels = data.map(item => item.panel_type);
                 const usage = data.map(item => item.total_usage);
-                renderBarChart(labels, usage, "#pemakaian-listrik-chart", 'pemakaianListrik', 'mWh');
+                const meta = data.map(d => ({
+                    start_date: d.start_date,
+                    end_date: d.end_date
+                }));
+                renderBarChart(labels, usage, "#pemakaian-listrik-chart", 'pemakaianListrik', 'mWh', meta);
             },
             error: function() {
                 console.error("Gagal memuat data pemakaian listrik.");
@@ -513,32 +520,22 @@
                 const labels = data.map(item => item.jenis_pemakaian);
                 const usage = data.map(item => item.total_pemakaian);
                 const satuan = data.map(item => item.satuan);
+                const meta = data.map(d => ({
+                    start_date: d.start_date,
+                    end_date: d.end_date
+                }));
 
-                const options = createChartOptions('bar');
-                options.series = [{
-                    name: 'Pemakaian Chemical',
-                    data: usage
-                }];
-                options.xaxis.categories = labels;
-                options.colors = ['#FEB019'];
-                options.tooltip.y = {
-                    formatter: function(val, {
-                        dataPointIndex
-                    }) {
-                        const unit = satuan[dataPointIndex] || '';
-                        return `${val} ${unit}`;
-                    }
-                };
+                // ambil satuan pertama sebagai default
+                const unit = satuan.length > 0 ? satuan[0] : '';
 
-                if (chartInstances.pemakaianChemical) {
-                    chartInstances.pemakaianChemical.updateOptions(options, true, true);
-                } else {
-                    chartInstances.pemakaianChemical = new ApexCharts(
-                        document.querySelector("#pemakaian-chemical-chart"),
-                        options
-                    );
-                    chartInstances.pemakaianChemical.render();
-                }
+                renderBarChart(
+                    labels,
+                    usage,
+                    "#pemakaian-chemical-chart",
+                    "pemakaianChemical",
+                    unit,
+                    meta // kirim supaya tooltip bisa render periode
+                );
             },
             error: function() {
                 console.error("Gagal memuat data pemakaian chemical.");
@@ -549,7 +546,8 @@
         });
     }
 
-    function renderBarChart(labels, values, selector, instanceKey, unit) {
+
+    function renderBarChart(labels, values, selector, instanceKey, unit, meta = null) {
         const options = createChartOptions('bar');
         options.series = [{
             name: `Total Pemakaian (${unit})`,
@@ -557,8 +555,34 @@
         }];
         options.xaxis.categories = labels;
         options.colors = ['#008FFB'];
-        options.tooltip.y = {
-            formatter: val => `${val} ${unit}`
+
+        // Tooltip custom
+        options.tooltip = {
+            custom: function({
+                series,
+                seriesIndex,
+                dataPointIndex,
+                w
+            }) {
+                const value = series[seriesIndex][dataPointIndex];
+                let html = `<div class="px-2 py-1">
+                          <b>${labels[dataPointIndex]}</b><br/>
+                          Total: ${value} ${unit}`;
+
+                // kalau meta (start_date & end_date) ada, render periode
+                if (meta && meta[dataPointIndex]) {
+                    const {
+                        start_date,
+                        end_date
+                    } = meta[dataPointIndex];
+                    if (start_date && end_date) {
+                        html += `<br/>Periode: ${start_date} s/d ${end_date}`;
+                    }
+                }
+
+                html += "</div>";
+                return html;
+            }
         };
 
         if (chartInstances[instanceKey]) {
