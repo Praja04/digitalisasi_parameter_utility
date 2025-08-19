@@ -975,6 +975,7 @@ class EngineeringController extends Controller
             $start = now()->startOfMonth()->format('Y-m-d');
             $end = now()->endOfMonth()->format('Y-m-d');
         }
+
         $excludedSources = ['PDAM', 'Sumur 1', 'Sumur 2', 'Sumur 4', 'Sumur 5'];
         $data = PemakaianAirModel::query()
             ->select('jenis_pemakaian', DB::raw('SUM(pemakaian_akhir - pemakaian_awal) AS total_pemakaian'))
@@ -982,7 +983,15 @@ class EngineeringController extends Controller
             ->whereNotIn('jenis_pemakaian', $excludedSources)
             ->groupBy('jenis_pemakaian')
             ->orderByDesc('total_pemakaian')
-            ->get();
+            ->get()
+            ->map(function ($item) use ($start, $end) {
+                return [
+                    'jenis_pemakaian' => $item->jenis_pemakaian,
+                    'total_pemakaian' => $item->total_pemakaian,
+                    'start_date'      => $start,
+                    'end_date'        => $end,
+                ];
+            });
 
         return response()->json($data);
     }
@@ -1003,7 +1012,15 @@ class EngineeringController extends Controller
             ->whereIn('jenis_pemakaian', $excludedSources)
             ->groupBy('jenis_pemakaian')
             ->orderByDesc('total_pemakaian')
-            ->get();
+            ->get()
+            ->map(function ($item) use ($start, $end) {
+                return [
+                    'jenis_pemakaian' => $item->jenis_pemakaian,
+                    'total_pemakaian' => $item->total_pemakaian,
+                    'start_date'      => $start,
+                    'end_date'        => $end,
+                ];
+            });
 
         return response()->json($data);
     }
@@ -1038,8 +1055,10 @@ class EngineeringController extends Controller
             }
 
             $usages[] = [
-                'panel_type' => $panel,
-                'total_usage' => round($totalUsage, 2)
+                'panel_type'   => $panel,
+                'total_usage'  => round($totalUsage, 2),
+                'start_date'   => $start,
+                'end_date'     => $end
             ];
         }
 
@@ -1119,10 +1138,13 @@ class EngineeringController extends Controller
                 }
             }
 
+
             $result[] = [
                 'jenis_pemakaian' => $jenis,
                 'total_pemakaian' => round($totalPemakaian, 3),
-                'satuan' => $hasCustomRumus ? 'kg/hari' : ($satuanAsli ?? '-')
+                'satuan'          => $hasCustomRumus ? 'kg/hari' : ($satuanAsli ?? '-'),
+                'start_date'      => $start,
+                'end_date'        => $end
             ];
         }
 

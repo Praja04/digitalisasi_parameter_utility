@@ -101,7 +101,11 @@
                                     <label for="cos" class="form-label">Cos</label>
                                     <input type="number" name="cos" class="form-control" step="0.01">
                                 </div>
-                                <button type="submit" class="btn btn-danger">Simpan Listrik</button>
+                                <button type="submit" class="btn btn-success">Simpan Listrik</button>
+                                <button type="button" id="clearDraftListrik" class="btn btn-danger">
+                                    Hapus Draft
+                                </button>
+
                             </form>
                         </div>
 
@@ -490,7 +494,128 @@
         });
     });
 </script>
+<script>
+    $(document).ready(function() {
+        const STORAGE_KEY = "draft_listrik";
 
+        // Simpan draft untuk panel tertentu
+        function saveDraft(panel) {
+            if (!panel) return;
+            let draft = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+
+            // Ambil semua data form KECUALI panel_type
+            draft[panel] = $("#form-pemakaian-listrik").serializeArray().reduce((obj, item) => {
+                if (item.name !== "panel_type") {
+                    obj[item.name] = item.value;
+                }
+                return obj;
+            }, {});
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
+            console.log("💾 Save draft:", panel, draft[panel]);
+        }
+
+        // Load draft saat buka panel tertentu
+        function loadDraft(panel) {
+            let draft = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+            console.log("🔄 Load draft:", draft);
+
+            // Reset semua input (kecuali panel_type)
+            $("#form-pemakaian-listrik input[type=number]").val("");
+            $("#form-pemakaian-listrik input[name=cos]").val("");
+            $("#form-pemakaian-listrik input[name=mwh]").val("");
+
+            if (panel && draft[panel]) {
+                console.log("📥 Prefill panel:", panel, draft[panel]);
+                Object.entries(draft[panel]).forEach(([key, val]) => {
+                    $(`[name="${key}"]`).val(val);
+                });
+            }
+        }
+        // Tombol Hapus Draft
+        $("#clearDraftListrik").on("click", function() {
+            const panel = $("#panel_type").val();
+            if (!panel) {
+                Swal.fire("Info", "Silakan pilih panel dulu untuk menghapus draft.", "info");
+                return;
+            }
+
+            Swal.fire({
+                title: "Yakin hapus draft?",
+                text: "Data sementara untuk panel " + panel + " akan dihapus.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Ya, hapus",
+                cancelButtonText: "Batal"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let draft = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+                    delete draft[panel]; // hapus hanya panel aktif
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
+
+                    // reset form listrik
+                    $("#form-pemakaian-listrik")[0].reset();
+
+                    Swal.fire("Berhasil", "Draft untuk panel " + panel + " dihapus.", "success");
+                }
+            });
+        });
+
+
+        // Saat ganti panel
+        $("#panel_type").on("change", function() {
+            const newPanel = $(this).val();
+            console.log("🔀 Ganti ke panel:", newPanel);
+            loadDraft(newPanel);
+        });
+
+        // Simpan realtime saat user isi (hanya data panel aktif)
+        $("#form-pemakaian-listrik input, #form-pemakaian-listrik select").on("change keyup", function() {
+            const panel = $("#panel_type").val();
+            if (panel) {
+                saveDraft(panel);
+            }
+        });
+
+        $("#form-pemakaian-listrik").on("submit", function(e) {
+            e.preventDefault();
+            let formData = $(this).serialize();
+            const panel = $("#panel_type").val();
+
+            console.log("📤 Submit data:", panel, formData);
+
+            $.ajax({
+                url: "{{url('/eng/data/listrik/store')}}",
+                method: "POST",
+                data: formData,
+                success: function(res) {
+                    Swal.fire("Berhasil", res.message, "success");
+
+                    // Hapus hanya panel yg berhasil submit
+                    let draft = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+                    delete draft[panel];
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
+                    console.log("🗑️ Draft setelah submit:", draft);
+
+                    setTimeout(() => location.reload(), 2000);
+                },
+                error: function(xhr) {
+                    let msg = "Gagal menyimpan data listrik.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    Swal.fire("Error", msg, "error");
+                }
+            });
+        });
+
+        // Prefill saat pertama kali load
+        const firstPanel = $("#panel_type").val();
+        if (firstPanel) {
+            loadDraft(firstPanel);
+        }
+    });
+</script>
 <style>
     .clickable {
         cursor: pointer;
