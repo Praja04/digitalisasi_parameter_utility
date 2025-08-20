@@ -365,17 +365,17 @@ class retail_d5 extends Model
     {
         $besok = Carbon::parse($tanggal)->addDay()->toDateString();
 
-        $shift1 = DB::table('retail_d4')
+        $shift1 = DB::table('retail_d5')
             ->whereBetween('ts', ["$tanggal 06:00:00", "$tanggal 14:00:00"])
             ->where('start_mesin', 1)
             ->count();
 
-        $shift2 = DB::table('retail_d4')
+        $shift2 = DB::table('retail_d5')
             ->whereBetween('ts', ["$tanggal 14:00:01", "$tanggal 22:00:00"])
             ->where('start_mesin', 1)
             ->count();
 
-        $shift3 = DB::table('retail_d4')
+        $shift3 = DB::table('retail_d5')
             ->whereBetween('ts', ["$tanggal 22:00:01", "$besok 05:59:59"])
             ->where('start_mesin', 1)
             ->count();
