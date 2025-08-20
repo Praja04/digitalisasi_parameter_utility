@@ -355,50 +355,54 @@ class retail_d5 extends Model
 
     public static function getStartMesinDurasiPerShift($tanggal)
     {
-        $timezone = 'Asia/Jakarta';
-        $carbonDate = Carbon::parse($tanggal, $timezone);
-        $shifts = self::getShiftSchedule($carbonDate);
+        $besok = Carbon::parse($tanggal)->addDay()->toDateString();
 
-        $results = [];
+        $shift1 = DB::table('retail_d4')
+            ->whereBetween('ts', ["$tanggal 06:00:00", "$tanggal 14:00:00"])
+            ->where('start_mesin', 1)
+            ->count();
 
-        foreach ($shifts as $shift) {
-            $count = DB::table('retail_d5')
-                ->whereBetween('ts', [
-                    $shift['start']->toDateTimeString(),
-                    $shift['end']->toDateTimeString()
-                ])
-                ->where('start_mesin', 1)
-                ->count();
+        $shift2 = DB::table('retail_d4')
+            ->whereBetween('ts', ["$tanggal 14:00:01", "$tanggal 22:00:00"])
+            ->where('start_mesin', 1)
+            ->count();
 
-            $results[$shift['name'] . '_detik'] = $count;
-        }
+        $shift3 = DB::table('retail_d4')
+            ->whereBetween('ts', ["$tanggal 22:00:01", "$besok 05:59:59"])
+            ->where('start_mesin', 1)
+            ->count();
 
-        return $results;
+        return [
+            'shift1_detik' => $shift1,
+            'shift2_detik' => $shift2,
+            'shift3_detik' => $shift3,
+        ];
     }
-
-
 
     public static function getOffMesinDurasiPerShift($tanggal)
     {
-        $timezone = 'Asia/Jakarta';
-        $carbonDate = Carbon::parse($tanggal, $timezone);
-        $shifts = self::getShiftSchedule($carbonDate);
+        $besok = Carbon::parse($tanggal)->addDay()->toDateString();
 
-        $results = [];
+        $shift1 = DB::table('retail_d4')
+            ->whereBetween('ts', ["$tanggal 06:00:00", "$tanggal 14:00:00"])
+            ->where('start_mesin', 0)
+            ->count();
 
-        foreach ($shifts as $shift) {
-            $count = DB::table('retail_d5')
-                ->whereBetween('ts', [
-                    $shift['start']->toDateTimeString(),
-                    $shift['end']->toDateTimeString()
-                ])
-                ->where('start_mesin', 0)
-                ->count();
+        $shift2 = DB::table('retail_d4')
+            ->whereBetween('ts', ["$tanggal 14:00:01", "$tanggal 22:00:00"])
+            ->where('start_mesin', 0)
+            ->count();
 
-            $results[$shift['name'] . '_detik'] = $count;
-        }
+        $shift3 = DB::table('retail_d4')
+            ->whereBetween('ts', ["$tanggal 22:00:01", "$besok 05:59:59"])
+            ->where('start_mesin', 0)
+            ->count();
 
-        return $results;
+        return [
+            'shift1_detik' => $shift1,
+            'shift2_detik' => $shift2,
+            'shift3_detik' => $shift3,
+        ];
     }
 
 }
