@@ -118,9 +118,17 @@ class retail_d5 extends Model
             $actualTs = $data ? $data->ts : null;
 
             $durasiMenit = 0;
-            if ($actualTs && strtotime($actualTs) >= $shift['start']->getTimestamp()) {
-                $actualCarbon = Carbon::parse($actualTs, $timezone); // Pastikan timezone sesuai
-                $durasiMenit = $shift['start']->diffInMinutes($actualCarbon);
+            $isToday = $carbonDate->isSameDay($now);
+
+            if ($isToday) {
+                // Jika tanggal shift adalah hari ini
+                if ($actualTs && strtotime($actualTs) >= $shift['start']->getTimestamp()) {
+                    $actualCarbon = Carbon::parse($actualTs, $timezone);
+                    $durasiMenit = $shift['start']->diffInMinutes($actualCarbon);
+                }
+            } else {
+                // Jika tanggal shift adalah hari sebelumnya
+                $durasiMenit = 420;
             }
 
             $performance = $durasiMenit > 0
