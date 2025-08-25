@@ -363,22 +363,40 @@ class retail_d5 extends Model
 
     public static function getStartMesinDurasiPerShift($tanggal)
     {
-        $timezone = 'Asia/Jakarta';
-        $carbonDate = Carbon::parse($tanggal, $timezone);
-        $shifts = self::getShiftSchedule($carbonDate);
+        $carbonDate = Carbon::parse($tanggal, 'Asia/Jakarta');
+        $dayOfWeek = $carbonDate->dayOfWeek;
 
+        // Minggu libur
+        if ($dayOfWeek === Carbon::SUNDAY) {
+            return [
+                'shift1' => ['menit' => 0, 'hasil' => 0],
+                'shift2' => ['menit' => 0, 'hasil' => 0],
+                'shift3' => ['menit' => 0, 'hasil' => 0],
+            ];
+        }
+
+        // Durasi shift dalam menit
+        $durasiShift = ($dayOfWeek === Carbon::SATURDAY) ? 240 : 420;
+
+        $shifts = self::getShiftSchedule($carbonDate);
         $results = [];
 
-        foreach ($shifts as $shift) {
+        foreach ($shifts as $index => $shift) {
             $count = DB::table('retail_d5')
-                ->whereBetween('ts', [
-                    $shift['start']->toDateTimeString(),
-                    $shift['end']->toDateTimeString()
-                ])
+            ->whereBetween('ts', [
+                $shift['start']->toDateTimeString(),
+                $shift['end']->toDateTimeString()
+            ])
                 ->where('start_mesin', 1)
                 ->count();
 
-            $results[$shift['name'] . '_detik'] = $count;
+            $menit = $count / 60;
+            $hasil = $menit / $durasiShift;
+
+            $results["shift" . ($index + 1)] = [
+                'menit' => round($menit, 2),
+                'hasil' => round($hasil, 4),
+            ];
         }
 
         return $results;
@@ -386,22 +404,40 @@ class retail_d5 extends Model
 
     public static function getOffMesinDurasiPerShift($tanggal)
     {
-        $timezone = 'Asia/Jakarta';
-        $carbonDate = Carbon::parse($tanggal, $timezone);
-        $shifts = self::getShiftSchedule($carbonDate);
+        $carbonDate = Carbon::parse($tanggal, 'Asia/Jakarta');
+        $dayOfWeek = $carbonDate->dayOfWeek;
 
+        // Minggu libur
+        if ($dayOfWeek === Carbon::SUNDAY) {
+            return [
+                'shift1' => ['menit' => 0, 'hasil' => 0],
+                'shift2' => ['menit' => 0, 'hasil' => 0],
+                'shift3' => ['menit' => 0, 'hasil' => 0],
+            ];
+        }
+
+        // Durasi shift dalam menit
+        $durasiShift = ($dayOfWeek === Carbon::SATURDAY) ? 240 : 420;
+
+        $shifts = self::getShiftSchedule($carbonDate);
         $results = [];
 
-        foreach ($shifts as $shift) {
+        foreach ($shifts as $index => $shift) {
             $count = DB::table('retail_d5')
-                ->whereBetween('ts', [
-                    $shift['start']->toDateTimeString(),
-                    $shift['end']->toDateTimeString()
-                ])
+            ->whereBetween('ts', [
+                $shift['start']->toDateTimeString(),
+                $shift['end']->toDateTimeString()
+            ])
                 ->where('start_mesin', 0)
                 ->count();
 
-            $results[$shift['name'] . '_detik'] = $count;
+            $menit = $count / 60;
+            $hasil = $menit / $durasiShift;
+
+            $results["shift" . ($index + 1)] = [
+                'menit' => round($menit, 2),
+                'hasil' => round($hasil, 4),
+            ];
         }
 
         return $results;
