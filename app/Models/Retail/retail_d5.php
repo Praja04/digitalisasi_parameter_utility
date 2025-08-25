@@ -154,7 +154,7 @@ class retail_d5 extends Model
         $timezone = 'Asia/Jakarta';
         $now = Carbon::now($timezone);
         $carbonDate = $tanggal
-        ? Carbon::parse($tanggal, $timezone)
+            ? Carbon::parse($tanggal, $timezone)
             : $now->copy();
 
         // Ambil shift schedule dinamis sesuai hari (termasuk Sabtu)
@@ -270,14 +270,14 @@ class retail_d5 extends Model
         $durasiMenit = $start->diffInMinutes($carbonDate);
 
         $awalCounter = DB::table('retail_d5')
-        ->where('ts', '<=', $start)
-        ->where('total_counter', '!=', 0)
-        ->orderByDesc('ts')
+            ->where('ts', '<=', $start)
+            ->where('total_counter', '!=', 0)
+            ->orderByDesc('ts')
             ->limit(1)
             ->value('total_counter');
 
         $akhirCounter = DB::table('retail_d5')
-        ->where('ts', '<=', $carbonDate)
+            ->where('ts', '<=', $carbonDate)
             ->where('total_counter', '!=', 0)
             ->orderByDesc('ts')
             ->limit(1)
@@ -383,10 +383,10 @@ class retail_d5 extends Model
 
         foreach ($shifts as $index => $shift) {
             $count = DB::table('retail_d5')
-            ->whereBetween('ts', [
-                $shift['start']->toDateTimeString(),
-                $shift['end']->toDateTimeString()
-            ])
+                ->whereBetween('ts', [
+                    $shift['start']->toDateTimeString(),
+                    $shift['end']->toDateTimeString()
+                ])
                 ->where('start_mesin', 1)
                 ->count();
 
@@ -424,10 +424,10 @@ class retail_d5 extends Model
 
         foreach ($shifts as $index => $shift) {
             $count = DB::table('retail_d5')
-            ->whereBetween('ts', [
-                $shift['start']->toDateTimeString(),
-                $shift['end']->toDateTimeString()
-            ])
+                ->whereBetween('ts', [
+                    $shift['start']->toDateTimeString(),
+                    $shift['end']->toDateTimeString()
+                ])
                 ->where('start_mesin', 0)
                 ->count();
 
@@ -443,6 +443,47 @@ class retail_d5 extends Model
         return $results;
     }
 
+    public static function getStartMesinDurasiRealtime($tanggal)
+    {
+        $timezone = 'Asia/Jakarta';
+        $carbonDate = Carbon::parse($tanggal, $timezone);
+        $shifts = self::getShiftSchedule($carbonDate);
 
+        $results = [];
 
+        foreach ($shifts as $shift) {
+            $count = DB::table('retail_d5')
+                ->whereBetween('ts', [
+                    $shift['start']->toDateTimeString(),
+                    $shift['end']->toDateTimeString()
+                ])
+                ->where('start_mesin', 1)
+                ->count();
+
+            $results[$shift['name'] . '_detik'] = $count;
+        }
+    }
+
+    public static function getOffMesinDurasiRealtime($tanggal)
+    {
+        $timezone = 'Asia/Jakarta';
+        $carbonDate = Carbon::parse($tanggal, $timezone);
+        $shifts = self::getShiftSchedule($carbonDate);
+
+        $results = [];
+
+        foreach ($shifts as $shift) {
+            $count = DB::table('retail_d5')
+                ->whereBetween('ts', [
+                    $shift['start']->toDateTimeString(),
+                    $shift['end']->toDateTimeString()
+                ])
+                ->where('start_mesin', 0)
+                ->count();
+
+            $results[$shift['name'] . '_detik'] = $count;
+        }
+
+        return $results;
+    }
 }
