@@ -171,7 +171,7 @@ class RetailD5Controller extends Controller
             $tanggalStr = $carbonDate->toDateString();
 
             $shifts = retail_d5::getShiftSchedule($carbonDate);
-            $durasi = retail_d5::getStartMesinDurasiPerShift($tanggalStr);
+            $durasi = retail_d5::getStartMesinDurasiRealtime($tanggalStr);
 
             foreach ($shifts as $shift) {
                 $shiftStart = $shift['start'];
@@ -219,7 +219,7 @@ class RetailD5Controller extends Controller
             $tanggalStr = $carbonDate->toDateString();
 
             $shifts = retail_d5::getShiftSchedule($carbonDate);
-            $durasi = retail_d5::getOffMesinDurasiPerShift($tanggalStr);
+            $durasi = retail_d5::getOffMesinDurasiRealtime($tanggalStr);
 
             foreach ($shifts as $shift) {
                 $shiftStart = $shift['start'];
@@ -246,6 +246,8 @@ class RetailD5Controller extends Controller
 
         return response()->json(["result" => $hasil]);
     }
+
+
     public function durasiOffMesinPerShift(Request $request)
     {
         $request->validate([
