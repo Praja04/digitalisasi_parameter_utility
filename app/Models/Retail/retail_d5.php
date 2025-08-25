@@ -462,7 +462,11 @@ class retail_d5 extends Model
 
             $results[$shift['name'] . '_detik'] = $count;
         }
+
+        return $results; // ✅ Tambahkan ini
     }
+
+
 
     public static function getOffMesinDurasiRealtime($tanggal)
     {
