@@ -733,7 +733,7 @@ class EngineeringController extends Controller
             'PDAM',
             'CT RO',
             'CT WS',
-            'Greenbelt',
+            'Green Belt',
         ];
 
         // Load template
