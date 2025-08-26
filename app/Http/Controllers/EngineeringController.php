@@ -723,17 +723,17 @@ class EngineeringController extends Controller
         // Kategori sesuai template Excel
         $kategori = [
             'Outlet Storage WS',
-            'CT RO',
             'Outlet Storage RO Reject',
-            'CT WS',
             'Outlet Fresh Water 1',
-            'Greenbelt',
             'Outlet Fresh Water 2',
             'Sumur 1',
             'Sumur 2',
             'Sumur 4',
             'Sumur 5',
-            'PDAM'
+            'PDAM',
+            'CT RO',
+            'CT WS',
+            'Greenbelt',
         ];
 
         // Load template
