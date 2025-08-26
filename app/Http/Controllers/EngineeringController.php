@@ -16,6 +16,7 @@ use App\Models\eng\ChemicalType;
 use App\Models\eng\ChemicalArea;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Facades\DB;
 
 class EngineeringController extends Controller
@@ -716,49 +717,64 @@ class EngineeringController extends Controller
             return response()->json(['message' => 'Parameter bulan diperlukan (format: YYYY-MM)'], 400);
         }
 
-        $data = PemakaianAirModel::where('tanggal', 'like', "$month%")->orderBy('tanggal')->get();
-        $grouped = $data->groupBy(fn ($item) => date('Y-m-d', strtotime($item->tanggal)));
+        $startDate = Carbon::create($month, 1);
+        $endDate = $startDate->copy()->endOfMonth();
 
-        $spreadsheet = new Spreadsheet();
+        // Kategori sesuai template Excel
+        $kategori = [
+            'Outlet Storage WS',
+            'CT RO',
+            'Outlet Storage RO Reject',
+            'CT WS',
+            'Outlet Fresh Water 1',
+            'Greenbelt',
+            'Outlet Fresh Water 2',
+            'Sumur 1',
+            'Sumur 2',
+            'Sumur 4',
+            'Sumur 5',
+            'PDAM'
+        ];
+
+        // Load template
+        $templatePath = storage_path('app/templates/laporan_air_utility.xlsx');
+        $spreadsheet = IOFactory::load($templatePath);
         $sheet = $spreadsheet->getActiveSheet();
-        $rowIndex = 1;
 
-        foreach ($grouped as $tanggal => $items) {
-            $jenisList = $items->pluck('jenis_pemakaian')->unique()->values()->all();
+        foreach ($kategori as $index => $jenis) {
+            $data = PemakaianAirModel::where('jenis_pemakaian', $jenis)
+                ->whereBetween('tanggal', [$startDate, $endDate])
+                ->orderBy('tanggal')
+                ->get()
+                ->keyBy(function ($item) {
+                    return Carbon::parse($item->tanggal)->day;
+                });
 
-            $sheet->setCellValue("A{$rowIndex}", 'Tanggal');
-            $sheet->setCellValue("B{$rowIndex}", 'Parameter');
-            $col = 'C';
-            foreach ($jenisList as $jenis) {
-                $sheet->setCellValue("{$col}{$rowIndex}", $jenis);
-                $col++;
-            }
-            $rowIndex++;
+            $startColumn = 2 + ($index * 3); // C = 2, F = 5, dst...
+            $row = 5;
 
-            $params = ['pemakaian_awal' => 'Awal', 'pemakaian_akhir' => 'Akhir', 'created_by' => 'Created By'];
+            for ($day = 1; $day <= $endDate->day; $day++) {
+                $entry = $data->get($day);
+                if ($entry) {
+                    $colAwal = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn);
+                    $colAkhir = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 1);
+                    $colSelisih = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 2);
 
-            foreach ($params as $field => $label) {
-                $sheet->setCellValue("A{$rowIndex}", $tanggal);
-                $sheet->setCellValue("B{$rowIndex}", $label);
-                $col = 'C';
-                foreach ($jenisList as $jenis) {
-                    $item = $items->firstWhere('jenis_pemakaian', $jenis);
-                    $sheet->setCellValue("{$col}{$rowIndex}", $item?->$field ?? '');
-                    $col++;
+                    $sheet->setCellValue("{$colAwal}{$row}", $entry->pemakaian_awal);
+                    $sheet->setCellValue("{$colAkhir}{$row}", $entry->pemakaian_akhir);
+                    $sheet->setCellValue("{$colSelisih}{$row}", $entry->pemakaian_akhir - $entry->pemakaian_awal);
                 }
-                $tanggal = '';
-                $rowIndex++;
+                $row++;
             }
-
-            $rowIndex++;
         }
 
-        $fileName = "Pemakaian-Air-{$month}.xlsx";
+        // Simpan hasil export
+        $filename = "Laporan_Air_Utility_{$month}.xlsx";
+        $outputPath = storage_path("app/exports/{$filename}");
         $writer = new Xlsx($spreadsheet);
-        $tempPath = tempnam(sys_get_temp_dir(), 'export-air-');
-        $writer->save($tempPath);
+        $writer->save($outputPath);
 
-        return response()->download($tempPath, $fileName)->deleteFileAfterSend(true);
+        return response()->download($outputPath)->deleteFileAfterSend(true);
     }
 
     public function exportPemakaianChemicalSpreadsheet(Request $request)
@@ -1305,4 +1321,72 @@ class EngineeringController extends Controller
 
         return response()->json(['message' => 'Data Chemical berhasil diperbarui.']);
     }
+
+
+    //export data ke template excel
+
+    // public function export_template(Request $request)
+    // {
+    //     $bulan = $request->input('bulan', date('m'));
+    //     $tahun = $request->input('tahun', date('Y'));
+
+    //     $startDate = Carbon::create($tahun, $bulan, 1);
+    //     $endDate = $startDate->copy()->endOfMonth();
+
+    //     // Kategori sesuai template Excel
+    //     $kategori = [
+    //         'Outlet Storage WS',
+    //         'CT RO',
+    //         'Outlet Storage RO Reject',
+    //         'CT WS',
+    //         'Outlet Fresh Water 1',
+    //         'Greenbelt',
+    //         'Outlet Fresh Water 2',
+    //         'Sumur 1',
+    //         'Sumur 2',
+    //         'Sumur 4',
+    //         'Sumur 5',
+    //         'PDAM'
+    //     ];
+
+    //     // Load template
+    //     $templatePath = storage_path('app/templates/laporan_air_utility.xlsx');
+    //     $spreadsheet = IOFactory::load($templatePath);
+    //     $sheet = $spreadsheet->getActiveSheet();
+
+    //     foreach ($kategori as $index => $jenis) {
+    //         $data = PemakaianAirModel::where('jenis_pemakaian', $jenis)
+    //         ->whereBetween('tanggal', [$startDate, $endDate])
+    //         ->orderBy('tanggal')
+    //             ->get()
+    //             ->keyBy(function ($item) {
+    //                 return Carbon::parse($item->tanggal)->day;
+    //             });
+
+    //         $startColumn = 2 + ($index * 3); // C = 2, F = 5, dst...
+    //         $row = 5;
+
+    //         for ($day = 1; $day <= $endDate->day; $day++) {
+    //             $entry = $data->get($day);
+    //             if ($entry) {
+    //                 $colAwal = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn);
+    //                 $colAkhir = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 1);
+    //                 $colSelisih = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 2);
+
+    //                 $sheet->setCellValue("{$colAwal}{$row}", $entry->pemakaian_awal);
+    //                 $sheet->setCellValue("{$colAkhir}{$row}", $entry->pemakaian_akhir);
+    //                 $sheet->setCellValue("{$colSelisih}{$row}", $entry->pemakaian_akhir - $entry->pemakaian_awal);
+    //             }
+    //             $row++;
+    //         }
+    //     }
+
+    //     // Simpan hasil export
+    //     $filename = "Laporan_Air_Utility_{$bulan}_{$tahun}.xlsx";
+    //     $outputPath = storage_path("app/exports/{$filename}");
+    //     $writer = new Xlsx($spreadsheet);
+    //     $writer->save($outputPath);
+
+    //     return response()->download($outputPath)->deleteFileAfterSend(true);
+    // }
 }
