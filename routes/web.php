@@ -235,8 +235,8 @@ Route::prefix('wh')->group(function () {
 
     //pallet
     Route::post('/p2h/store/pallet', [WarehouseController::class, 'storeP2hPalletMover']);
-    Route::put('/p2h/update-detail/{id}', [WarehouseController::class, 'updateDetailPalletMover']);
-    Route::delete('/p2h/delete/{id}', [WarehouseController::class, 'destroyP2hPalletMover']);
+    Route::put('/p2h/update-detail/pallet/{id}', [WarehouseController::class, 'updateDetailPalletMover']);
+    Route::delete('/p2h/delete/pallet/{id}', [WarehouseController::class, 'destroyP2hPalletMover']);
 
     //api
     Route::get('/p2h/summary', [WarehouseController::class, 'summary']);

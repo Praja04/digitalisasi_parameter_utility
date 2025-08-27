@@ -301,9 +301,8 @@
             const shift = $(this).data('shift');
 
             const detail = Object.values(currentData).flatMap(p2h => Object.values(p2h.shifts)).find(d => d.id == id);
-
             if (!detail) return;
-
+            console.log(detail);
             let formHtml = '';
 
             for (const [key, value] of Object.entries(detail)) {
@@ -311,31 +310,35 @@
 
                 const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
-                // Display as text only
                 if (['tanggal', 'jenis_p2h', 'nomor_unit', 'dept'].includes(key)) {
                     formHtml += `
                 <div class="mb-3">
+                      <input type="hidden" name="${key}" value="${value}">
                     <label class="form-label"><strong>${label}</strong></label>
                     <p class="form-control-plaintext">${value}</p>
                 </div>
             `;
                 } else if (key === 'id') {
-                    formHtml += `
-              
-                    <input type="hidden" class="form-control" id="${key}" name="${key}" value="${value}">
-            `;
+                    formHtml += `<input type="hidden" class="form-control" id="${key}" name="${key}" value="${value}">`;
                 } else if (key === 'jam_operasional') {
                     formHtml += `
                 <div class="mb-3">
                     <label class="form-label"><strong>Hours Meter</strong></label>
-                    <input type="text" class="form-control" name="${key}" value="${value}">
+                    <input type="text" class="form-control" name="${key}" value="${value}" >
                 </div>
             `;
                 } else if (key === 'catatan') {
                     formHtml += `
                 <div class="mb-3">
                     <label class="form-label"><strong>${label}</strong></label>
-                    <input type="text" class="form-control" name="${key}">
+                    <input type="text" class="form-control" name="${key}" value="${value}">
+                </div>
+            `;
+                } else if (key === 'persentase') {
+                    formHtml += `
+                <div class="mb-3">
+                    <label class="form-label"><strong>${label}</strong></label>
+                    <input type="text" class="form-control" name="${key}" readonly value="${value}">
                 </div>
             `;
                 } else {
@@ -355,24 +358,33 @@
             $('#editShiftBody').html(formHtml);
             $('#modalEditShift').modal('show');
         });
+        const baseUrl = "{{ url('/') }}";
 
-
+        // Submit edit form
         $('#editShiftForm').on('submit', function(e) {
             e.preventDefault();
 
             const id = $('#id').val();
             const formData = $(this).serialize();
 
+            const jenisUnit = $(this).find('[name="jenis_p2h"]').val();
+            console.log(jenisUnit);
+            const isPallet = jenisUnit === 'Pallet Mover';
+
+            const updateUrl = isPallet ?
+                `${baseUrl}/wh/p2h/update-detail/pallet/${id}` :
+                `${baseUrl}/wh/p2h/update-detail/${id}`;
+
             $.ajax({
-                url: "{{url('wh/p2h/update-detail')}}/" + id,
+                url: updateUrl,
                 method: 'PUT',
                 data: formData,
                 success: function(res) {
                     Swal.fire('Berhasil', 'Data berhasil diperbarui', 'success');
                     $('#modalEditShift').modal('hide');
                     $('#modalDetailP2H').modal('hide');
-                    setInterval(() => {
-                        location.reload(); // Reload halaman untuk melihat perubahan
+                    setTimeout(() => {
+                        location.reload();
                     }, 1000);
                 },
                 error: function(err) {

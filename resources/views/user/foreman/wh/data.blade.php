@@ -360,7 +360,7 @@
 
         const detail = Object.values(currentData).flatMap(p2h => Object.values(p2h.shifts)).find(d => d.id == id);
         if (!detail) return;
-
+        console.log(detail);
         let formHtml = '';
 
         for (const [key, value] of Object.entries(detail)) {
@@ -371,6 +371,7 @@
             if (['tanggal', 'jenis_p2h', 'nomor_unit', 'dept'].includes(key)) {
                 formHtml += `
                 <div class="mb-3">
+                      <input type="hidden" name="${key}" value="${value}">
                     <label class="form-label"><strong>${label}</strong></label>
                     <p class="form-control-plaintext">${value}</p>
                 </div>
@@ -388,7 +389,14 @@
                 formHtml += `
                 <div class="mb-3">
                     <label class="form-label"><strong>${label}</strong></label>
-                    <input type="text" class="form-control" name="${key}">
+                    <input type="text" class="form-control" name="${key}" value="${value}">
+                </div>
+            `;
+            } else if (key === 'persentase') {
+                formHtml += `
+                <div class="mb-3">
+                    <label class="form-label"><strong>${label}</strong></label>
+                    <input type="text" class="form-control" name="${key}" readonly value="${value}">
                 </div>
             `;
             } else {
@@ -408,6 +416,7 @@
         $('#editShiftBody').html(formHtml);
         $('#modalEditShift').modal('show');
     });
+    const baseUrl = "{{ url('/') }}";
 
     // Submit edit form
     $('#editShiftForm').on('submit', function(e) {
@@ -416,8 +425,16 @@
         const id = $('#id').val();
         const formData = $(this).serialize();
 
+        const jenisUnit = $(this).find('[name="jenis_p2h"]').val();
+        console.log(jenisUnit);
+        const isPallet = jenisUnit === 'Pallet Mover';
+
+        const updateUrl = isPallet ?
+            `${baseUrl}/wh/p2h/update-detail/pallet/${id}` :
+            `${baseUrl}/wh/p2h/update-detail/${id}`;
+
         $.ajax({
-            url: "{{url('wh/p2h/update-detail')}}/" + id,
+            url: updateUrl,
             method: 'PUT',
             data: formData,
             success: function(res) {
@@ -425,7 +442,7 @@
                 $('#modalEditShift').modal('hide');
                 $('#modalDetailP2H').modal('hide');
                 setTimeout(() => {
-                    location.reload(); // Reload halaman untuk melihat perubahan
+                    location.reload();
                 }, 1000);
             },
             error: function(err) {
