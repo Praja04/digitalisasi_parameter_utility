@@ -328,7 +328,7 @@
                     formHtml += `
                 <div class="mb-3">
                     <label class="form-label"><strong>Hours Meter</strong></label>
-                    <input type="text" class="form-control" name="${key}" value="${value}" readonly>
+                    <input type="text" class="form-control" name="${key}" value="${value}">
                 </div>
             `;
                 } else if (key === 'catatan') {
