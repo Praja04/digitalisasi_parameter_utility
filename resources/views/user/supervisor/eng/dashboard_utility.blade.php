@@ -445,7 +445,7 @@
 
         $.getJSON(url)
             .done(function(data) {
-                const filtered = data.filter(item => item.panel_type !== "Outlet Fresh Water 2");
+                const filtered = data.filter(item => item.jenis_pemakaian !== "Outlet Fresh Water 2");
                 const labels = filtered.map(d => d.jenis_pemakaian);
                 const values = filtered.map(d => parseFloat(d.total_pemakaian));
                 const meta = filtered.map(d => ({
@@ -553,39 +553,29 @@
 
     function renderBarChart(labels, values, selector, instanceKey, unit, meta = null) {
         const options = createChartOptions('bar');
-        options.series = [{
-            name: `Total Pemakaian (${unit})`,
-            data: values
-        }];
-        options.xaxis.categories = labels;
-        options.colors = ['#008FFB'];
+
+        // Buat tiap label jadi 1 series
+        options.series = labels.map((label, i) => ({
+            name: label,
+            data: [values[i]]
+        }));
+
+        // X-axis cuma dummy, karena data dipisah ke series
+        options.xaxis.categories = [''];
+
+        options.colors = ["#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0"];
+        options.legend = {
+            show: true,
+            position: 'top',
+            horizontalAlign: 'center'
+        };
 
         // Tooltip custom
         options.tooltip = {
-            custom: function({
-                series,
-                seriesIndex,
-                dataPointIndex,
-                w
-            }) {
-                const value = series[seriesIndex][dataPointIndex];
-                let html = `<div class="px-2 py-1">
-                          <b>${labels[dataPointIndex]}</b><br/>
-                          Total: ${value} ${unit}`;
-
-                // kalau meta (start_date & end_date) ada, render periode
-                if (meta && meta[dataPointIndex]) {
-                    const {
-                        start_date,
-                        end_date
-                    } = meta[dataPointIndex];
-                    if (start_date && end_date) {
-                        html += `<br/>Periode: ${start_date} s/d ${end_date}`;
-                    }
-                }
-
-                html += "</div>";
-                return html;
+            shared: true,
+            intersect: false,
+            y: {
+                formatter: (val) => `${val} ${unit}`
             }
         };
 
@@ -596,6 +586,7 @@
             chartInstances[instanceKey].render();
         }
     }
+
 
     function loadTopOperator(utility, containerId, bulan = null) {
         const url = `{{ url('eng/top5/operator') }}/${utility}` + (bulan ? `?bulan=${bulan}` : '');
