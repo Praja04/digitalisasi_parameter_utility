@@ -655,45 +655,116 @@
         $('#shift').val(shift);
     }
 
-    function fetchdataFilter() {
-        let filter = $('#filter').val() || 'today'; // default ke 'today'
-        let data = {};
-        let today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
-        let useRealtimeUrl = false;
+    // Base URL untuk API Golang - sesuaikan dengan server Anda
+    const GOLANG_API_BASE = 'http://10.11.11.200:8080/api/retail/d5'; // Ganti dengan URL server Golang Anda
 
+    function fetchdataFilter() {
+        let filter = $('#filter').val() || 'today';
+        let params = {};
+        let today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
+
+        // Prepare date parameter untuk API Golang
         if (filter === 'today') {
-            data.filter = 'realtime';
-            useRealtimeUrl = true;
+            // Untuk today, tidak perlu parameter date (akan menggunakan default hari ini)
         } else if (filter === 'date') {
             let selectedDate = $('#start-date').val();
-            data.filter = 'tanggal';
-            data.tanggal = selectedDate;
-
-            if (selectedDate === today) {
-                useRealtimeUrl = true;
+            if (selectedDate) {
+                params.date = selectedDate;
             }
         } else if (filter === 'range') {
-            data.filter = 'range';
-            data.start_date = $('#start-date').val();
-            data.end_date = $('#end-date').val();
+            // Untuk range, kita gunakan start_date sebagai parameter date
+            let startDate = $('#start-date').val();
+            if (startDate) {
+                params.date = startDate;
+            }
         }
 
-        let startUrl = useRealtimeUrl ? "{{ url('retail/d5/mesin/start/realtime') }}" : "{{ url('retail/d5/mesin/start') }}";
-        let stopUrl = useRealtimeUrl ? "{{ url('retail/d5/mesin/stop/realtime') }}" : "{{ url('retail/d5/mesin/stop') }}";
-
+        // 1. Fetch Uptime Data (Durasi Start Mesin)
         $.ajax({
-            url: "{{ url('retail/d5/output/performance') }}",
-            type: "GET",
-            dataType: "json",
-            success: function(data) {
-                $('#performance_output_realtime').text(data.performance_output_percent + ' %');
-                $('#shift_performance').text(data.shift);
+            url: `${GOLANG_API_BASE}/durasi/start`,
+            method: 'GET',
+            data: params,
+            success: function(response) {
+                if (response.shifts && response.shifts.length > 0) {
+                    response.shifts.forEach((shift, index) => {
+                        const shiftNum = shift.shift;
+                        const uptimePercent = parseFloat(shift.uptime).toFixed(2);
+                        $(`#uptime_shift${shiftNum}`).text(uptimePercent + ' %');
+                    });
+                }
             },
-            error: function(xhr, status, error) {
-                console.error("Error fetching data:", error);
+            error: function(xhr) {
+                console.error('Uptime Error:', xhr.responseJSON);
             }
         });
 
+        // 2. Fetch Downtime Data (Durasi Stop Mesin)
+        $.ajax({
+            url: `${GOLANG_API_BASE}/durasi/stop`,
+            method: 'GET',
+            data: params,
+            success: function(response) {
+                if (response.shifts && response.shifts.length > 0) {
+                    response.shifts.forEach((shift, index) => {
+                        const shiftNum = shift.shift;
+                        const downtimePercent = parseFloat(shift.downtime).toFixed(2);
+                        $(`#downtime_shift${shiftNum}`).text(downtimePercent + ' %');
+                    });
+                }
+            },
+            error: function(xhr) {
+                console.error('Downtime Error:', xhr.responseJSON);
+            }
+        });
+
+        // 3. Fetch Performance Output Data
+        $.ajax({
+            url: `${GOLANG_API_BASE}/performance-output`,
+            method: 'GET',
+            data: params,
+            success: function(response) {
+                if (response.shifts && response.shifts.length > 0) {
+                    // Update performance untuk semua shift
+                    response.shifts.forEach((shift, index) => {
+                        const shiftNum = shift.shift;
+                        const performancePercent = parseFloat(shift.performance_output).toFixed(2);
+                        $(`#performance_shift${shiftNum}`).text(performancePercent + ' %');
+                    });
+
+                    // Update performance untuk shift saat ini
+                    const currentShift = response.current_shift;
+                    const currentShiftData = response.shifts.find(s => s.shift === currentShift);
+                    if (currentShiftData) {
+                        $('#performance_output_realtime').text(parseFloat(currentShiftData.performance_output).toFixed(2) + ' %');
+                        $('#shift_performance').text(`Shift ${currentShift}`);
+                    }
+                }
+            },
+            error: function(xhr) {
+                console.error('Performance Output Error:', xhr.responseJSON);
+            }
+        });
+
+        // 4. Fetch Output Gagal Filling Data
+        $.ajax({
+            url: `${GOLANG_API_BASE}/output-gagal-filling`,
+            method: 'GET',
+            data: params,
+            success: function(response) {
+                if (response.shifts && response.shifts.length > 0) {
+                    response.shifts.forEach((shift, index) => {
+                        const shiftNum = shift.shift;
+                        const gagalFillingPercent = parseFloat(shift.gagal_filling).toFixed(2);
+                        $(`#gagal_filling_shift${shiftNum}`).text(gagalFillingPercent + ' %');
+                    });
+                }
+            },
+            error: function(xhr) {
+                console.error('Output Gagal Filling Error:', xhr.responseJSON);
+            }
+        });
+
+        // API yang belum ada di Golang - tetap menggunakan Laravel untuk sementara
         $.ajax({
             url: "{{url('retail/d5/mesin-stop-periods')}}",
             method: 'GET',
@@ -719,77 +790,12 @@
             }
         });
 
-        $.ajax({
-            url: startUrl,
-            method: 'GET',
-            data: useRealtimeUrl ? {} : data,
-            success: function(response) {
-                const result = response.result;
-                Object.keys(result).forEach(shiftKey => {
-                    const shiftData = result[shiftKey];
-                    const hasil = (shiftData.hasil * 100).toFixed(2);
-                    $(`#uptime_${shiftKey}`).text(hasil + ' %');
-                });
-            },
-            error: function(xhr) {
-                console.error('Start Mesin Error:', xhr.responseJSON);
-            }
-        });
-
-        $.ajax({
-            url: stopUrl,
-            method: 'GET',
-            data: useRealtimeUrl ? {} : data,
-            success: function(response) {
-                const result = response.result;
-                Object.keys(result).forEach(shiftKey => {
-                    const shiftData = result[shiftKey];
-                    const hasil = (shiftData.hasil * 100).toFixed(2);
-                    $(`#downtime_${shiftKey}`).text(hasil + ' %');
-                });
-            },
-            error: function(xhr) {
-                console.error('Stop Mesin Error:', xhr.responseJSON);
-            }
-        });
-
-        $.ajax({
-            url: "{{url('retail/d5/output/performance/all_shift')}}",
-            method: 'GET',
-            data: data,
-            success: function(response) {
-                response.forEach(item => {
-                    const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
-                    const text = item.performance_output_percent + ' %';
-                    $(`#performance_${shiftId}`).text(text);
-                });
-            },
-            error: function(xhr) {
-                console.error('Error:', xhr.responseJSON);
-            }
-        });
-
-        $.ajax({
-            url: "{{url('retail/d5/output/gagal/filling')}}",
-            method: 'GET',
-            data: data,
-            success: function(response) {
-                response.forEach(item => {
-                    const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
-                    const text = item.performance_gagal_filling_percent + ' %';
-                    $(`#gagal_filling_${shiftId}`).text(text);
-                });
-            },
-            error: function(xhr) {
-                console.error('Error:', xhr.responseJSON);
-            }
-        });
-
         // Start the interval for fetching data every 10 seconds after the initial fetch
         setInterval(get_data, 10000);
     }
 
     function get_data() {
+        // API untuk get last data - masih menggunakan Laravel
         $.ajax({
             url: "{{ url('retail/d5/last') }}",
             type: "GET",
@@ -884,6 +890,5 @@
         requestAnimationFrame(step);
     }
 </script>
-
 
 @endsection

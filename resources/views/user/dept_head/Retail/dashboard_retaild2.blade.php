@@ -549,301 +549,355 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- 🔹 Include ApexCharts & jQuery -->
+<script src="{{ asset('material/assets/libs/apexcharts/apexcharts.min.js') }}"></script>
 
 
-    <!-- 🔹 Include ApexCharts & jQuery -->
-    <script src="{{ asset('material/assets/libs/apexcharts/apexcharts.min.js') }}"></script>
+<!-- Dashboard init -->
 
-
-    <!-- Dashboard init -->
-
-    <script>
-        $(document).ready(function() {
-            let gaugeChart = null;
-
-            initEventListeners();
-            fetchdataFilter();
-        });
-
-        function initEventListeners() {
-            $('#filter').on('change', handleFilterChange);
-            $('#apply-filter').on('click', fetchdataFilter);
-            $(document).on('click', '.total_stop_mesin', showStopPeriodsDetail);
-        }
-
-        function handleFilterChange() {
-            let selected = $(this).val();
-            $('#start-date-group, #end-date-group').addClass('d-none');
-            if (selected === 'date') {
-                $('#start-date-group').removeClass('d-none');
-            } else if (selected === 'range') {
-                $('#start-date-group, #end-date-group').removeClass('d-none');
-            }
-        }
-
+<script>
+    $(document).ready(function() {
         let gaugeChart = null;
 
-        function initGaugeChart(value) {
-            let options = {
-                chart: {
-                    type: 'radialBar',
-                    height: 200,
-                },
-                series: [value],
-                labels: ['Main Speed'],
-                plotOptions: {
-                    radialBar: {
-                        hollow: {
-                            size: '60%',
+        initEventListeners();
+        fetchdataFilter();
+    });
+
+    function initEventListeners() {
+        $('#filter').on('change', handleFilterChange);
+        $('#apply-filter').on('click', fetchdataFilter);
+        $(document).on('click', '.total_stop_mesin', showStopPeriodsDetail);
+    }
+
+    function handleFilterChange() {
+        let selected = $(this).val();
+        $('#start-date-group, #end-date-group').addClass('d-none');
+        if (selected === 'date') {
+            $('#start-date-group').removeClass('d-none');
+        } else if (selected === 'range') {
+            $('#start-date-group, #end-date-group').removeClass('d-none');
+        }
+    }
+
+    let gaugeChart = null;
+
+    function initGaugeChart(value) {
+        let options = {
+            chart: {
+                type: 'radialBar',
+                height: 200,
+            },
+            series: [value],
+            labels: ['Main Speed'],
+            plotOptions: {
+                radialBar: {
+                    hollow: {
+                        size: '60%',
+                    },
+                    dataLabels: {
+                        name: {
+                            show: true,
+                            fontSize: '18px',
                         },
-                        dataLabels: {
-                            name: {
-                                show: true,
-                                fontSize: '18px',
-                            },
-                            value: {
-                                show: true,
-                                fontSize: '22px',
-                                formatter: function(val) {
-                                    return parseFloat(val).toFixed(1) + ' Spm';
-                                }
+                        value: {
+                            show: true,
+                            fontSize: '22px',
+                            formatter: function(val) {
+                                return parseFloat(val).toFixed(1) + ' Spm';
                             }
                         }
                     }
-                },
-                fill: {
-                    colors: ['#008FFB']
                 }
-            };
+            },
+            fill: {
+                colors: ['#008FFB']
+            }
+        };
 
-            gaugeChart = new ApexCharts($("#gauge_main_speed")[0], options);
-            gaugeChart.render();
+        gaugeChart = new ApexCharts($("#gauge_main_speed")[0], options);
+        gaugeChart.render();
+    }
+
+    function updateGaugeChart(value) {
+        if (gaugeChart) {
+            gaugeChart.updateSeries([value]);
         }
+    }
 
-        function updateGaugeChart(value) {
-            if (gaugeChart) {
-                gaugeChart.updateSeries([value]);
+    function getShift(now) {
+        let hours = now.getHours();
+        let minutes = now.getMinutes();
+
+        if ((hours === 6 && minutes >= 1) || (hours > 6 && hours < 14) || (hours === 14 && minutes === 0)) {
+            return "Shift 1";
+        } else if ((hours === 14 && minutes >= 1) || (hours > 14 && hours < 22) || (hours === 22 && minutes === 0)) {
+            return "Shift 2";
+        } else {
+            return "Shift 3"; // Dari jam 22:01 sampai 06:00 keesokan harinya
+        }
+    }
+
+    function updateDateTime() {
+        let now = new Date();
+        let formattedDate = now.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+
+        let shift = getShift(now);
+
+        // Set nilai tanggal dan shift ke elemen yang sesuai
+        $('#date-picker').val(formattedDate);
+        $('#shift').val(shift);
+    }
+
+    // Base URL untuk API Golang - sesuaikan dengan server Anda
+    const GOLANG_API_BASE = 'http://10.11.11.200:8080/api/retail/d2'; // Update untuk D2
+
+    function fetchdataFilter() {
+        let filter = $('#filter').val() || 'today';
+        let params = {};
+        let today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
+
+        // Prepare date parameter untuk API Golang
+        if (filter === 'today') {
+            // Untuk today, tidak perlu parameter date (akan menggunakan default hari ini)
+        } else if (filter === 'date') {
+            let selectedDate = $('#start-date').val();
+            if (selectedDate) {
+                params.date = selectedDate;
+            }
+        } else if (filter === 'range') {
+            // Untuk range, kita gunakan start_date sebagai parameter date
+            let startDate = $('#start-date').val();
+            if (startDate) {
+                params.date = startDate;
             }
         }
 
-        function getShift(now) {
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
+        console.log('Fetching D2 data with params:', params); // Debug log
 
-            if ((hours === 6 && minutes >= 1) || (hours > 6 && hours < 14) || (hours === 14 && minutes === 0)) {
-                return "Shift 1";
-            } else if ((hours === 14 && minutes >= 1) || (hours > 14 && hours < 22) || (hours === 22 && minutes === 0)) {
-                return "Shift 2";
-            } else {
-                return "Shift 3"; // Dari jam 22:01 sampai 06:00 keesokan harinya
+        // 1. Fetch Uptime Data (Durasi Start Mesin)
+        $.ajax({
+            url: `${GOLANG_API_BASE}/durasi/start`,
+            method: 'GET',
+            data: params,
+            timeout: 10000,
+            dataType: 'json',
+            crossDomain: true,
+            success: function(response) {
+                console.log('D2 Uptime response:', response); // Debug log
+                if (response.shifts && response.shifts.length > 0) {
+                    response.shifts.forEach((shift, index) => {
+                        const shiftNum = shift.shift;
+                        const uptimePercent = parseFloat(shift.uptime).toFixed(2);
+                        $(`#uptime_shift${shiftNum}`).text(uptimePercent + ' %');
+
+                        // Alternative selectors
+                        $(`#uptime_${shiftNum}`).text(uptimePercent + ' %');
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('D2 Uptime Error:', {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    responseText: xhr.responseText,
+                    error: error,
+                    url: `${GOLANG_API_BASE}/durasi/start`
+                });
             }
-        }
+        });
 
-        function updateDateTime() {
-            let now = new Date();
-            let formattedDate = now.toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit"
-            });
+        // 2. Fetch Downtime Data (Durasi Stop Mesin)
+        $.ajax({
+            url: `${GOLANG_API_BASE}/durasi/stop`,
+            method: 'GET',
+            data: params,
+            timeout: 10000,
+            dataType: 'json',
+            crossDomain: true,
+            success: function(response) {
+                console.log('D2 Downtime response:', response); // Debug log
+                if (response.shifts && response.shifts.length > 0) {
+                    response.shifts.forEach((shift, index) => {
+                        const shiftNum = shift.shift;
+                        const downtimePercent = parseFloat(shift.downtime).toFixed(2);
+                        $(`#downtime_shift${shiftNum}`).text(downtimePercent + ' %');
 
-            let shift = getShift(now);
-
-            // Set nilai tanggal dan shift ke elemen yang sesuai
-            $('#date-picker').val(formattedDate);
-            $('#shift').val(shift);
-        }
-
-        function fetchdataFilter() {
-            let filter = $('#filter').val() || 'today'; // default ke 'today'
-            let data = {};
-            let today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
-            let useRealtimeUrl = false;
-
-            if (filter === 'today') {
-                data.filter = 'realtime';
-                useRealtimeUrl = true;
-            } else if (filter === 'date') {
-                let selectedDate = $('#start-date').val();
-                data.filter = 'tanggal';
-                data.tanggal = selectedDate;
-
-                if (selectedDate === today) {
-                    useRealtimeUrl = true;
+                        // Alternative selectors
+                        $(`#downtime_${shiftNum}`).text(downtimePercent + ' %');
+                    });
                 }
-            } else if (filter === 'range') {
-                data.filter = 'range';
-                data.start_date = $('#start-date').val();
-                data.end_date = $('#end-date').val();
+            },
+            error: function(xhr, status, error) {
+                console.error('D2 Downtime Error:', {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    error: error
+                });
             }
+        });
 
-            let startUrl = useRealtimeUrl ? "{{ url('retail/d2/mesin/start/realtime') }}" : "{{ url('retail/d2/mesin/start') }}";
-            let stopUrl = useRealtimeUrl ? "{{ url('retail/d2/mesin/stop/realtime') }}" : "{{ url('retail/d2/mesin/stop') }}";
+        // 3. Fetch Performance Output Data
+        $.ajax({
+            url: `${GOLANG_API_BASE}/performance-output`,
+            method: 'GET',
+            data: params,
+            timeout: 10000,
+            dataType: 'json',
+            crossDomain: true,
+            success: function(response) {
+                console.log('D2 Performance response:', response); // Debug log
+                if (response.shifts && response.shifts.length > 0) {
+                    // Update performance untuk semua shift
+                    response.shifts.forEach((shift, index) => {
+                        const shiftNum = shift.shift;
+                        const performancePercent = parseFloat(shift.performance_output).toFixed(2);
+                        $(`#performance_shift${shiftNum}`).text(performancePercent + ' %');
 
-            $.ajax({
-                url: "{{ url('retail/d2/output/performance') }}",
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    $('#performance_output_realtime').text(data.performance_output_percent + ' %');
-                    $('#shift_performance').text(data.shift);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching data:", error);
-                }
-            });
-
-            $.ajax({
-                url: "{{url('retail/d2/mesin-stop-periods')}}",
-                method: 'GET',
-                dataType: "json",
-                success: function(response) {
-                    $('#total_stop_mesin').text(response.total);
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseJSON);
-                }
-            });
-
-            $.ajax({
-                url: "{{url('retail/d2/average-main-speed')}}",
-                method: 'GET',
-                dataType: "json",
-                success: function(response) {
-                    const avg = parseFloat(response.average_main_speed).toFixed(2) || 0;
-                    $('#average_main_speed').text(avg);
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseJSON);
-                }
-            });
-
-            $.ajax({
-                url: startUrl,
-                method: 'GET',
-                data: useRealtimeUrl ? {} : data,
-                success: function(response) {
-                    const result = response.result;
-                    Object.keys(result).forEach(shiftKey => {
-                        const shiftData = result[shiftKey];
-                        const hasil = (shiftData.hasil * 100).toFixed(2);
-                        $(`#uptime_${shiftKey}`).text(hasil + ' %');
+                        // Alternative selectors
+                        $(`#performance_${shiftNum}`).text(performancePercent + ' %');
                     });
-                },
-                error: function(xhr) {
-                    console.error('Start Mesin Error:', xhr.responseJSON);
-                }
-            });
 
-            $.ajax({
-                url: stopUrl,
-                method: 'GET',
-                data: useRealtimeUrl ? {} : data,
-                success: function(response) {
-                    const result = response.result;
-                    Object.keys(result).forEach(shiftKey => {
-                        const shiftData = result[shiftKey];
-                        const hasil = (shiftData.hasil * 100).toFixed(2);
-                        $(`#downtime_${shiftKey}`).text(hasil + ' %');
-                    });
-                },
-                error: function(xhr) {
-                    console.error('Stop Mesin Error:', xhr.responseJSON);
-                }
-            });
-
-            $.ajax({
-                url: "{{url('retail/d2/output/performance/all_shift')}}",
-                method: 'GET',
-                data: data,
-                success: function(response) {
-                    response.forEach(item => {
-                        const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
-                        const text = item.performance_output_percent + ' %';
-                        $(`#performance_${shiftId}`).text(text);
-                    });
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseJSON);
-                }
-            });
-
-            $.ajax({
-                url: "{{url('retail/d2/output/gagal/filling')}}",
-                method: 'GET',
-                data: data,
-                success: function(response) {
-                    response.forEach(item => {
-                        const shiftId = item.shift.toLowerCase().replace(' ', ''); // 'Shift 1' → 'shift1'
-                        const text = item.performance_gagal_filling_percent + ' %';
-                        $(`#gagal_filling_${shiftId}`).text(text);
-                    });
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseJSON);
-                }
-            });
-
-            // Start the interval for fetching data every 10 seconds after the initial fetch
-            setInterval(get_data, 10000);
-        }
-
-        function get_data() {
-            $.ajax({
-                url: "{{ url('retail/d2/last') }}",
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    $('#total_counter').text(data.total_counter);
-                    let startMesin = data.start_mesin;
-                    let imagePath = startMesin == 1 ? '{{ asset("assets/images/hijau.png") }}' : '{{ asset("assets/images/merah.png") }}';
-                    $('#start_mesin').html(`<img src="${imagePath}" alt="Status Mesin" style="height: 100px;">`);
-
-                    let speed = parseFloat(data.main_speed) || 0;
-
-                    if (!gaugeChart) {
-                        initGaugeChart(speed);
-                    } else {
-                        updateGaugeChart(speed);
+                    // Update performance untuk shift saat ini
+                    const currentShift = response.current_shift;
+                    const currentShiftData = response.shifts.find(s => s.shift === currentShift);
+                    if (currentShiftData) {
+                        $('#performance_output_realtime').text(parseFloat(currentShiftData.performance_output).toFixed(2) + ' %');
+                        $('#shift_performance').text(`Shift ${currentShift}`);
                     }
-
-                    updateDateTime();
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching data:", error);
                 }
-            });
+            },
+            error: function(xhr, status, error) {
+                console.error('D2 Performance Output Error:', {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    error: error
+                });
+            }
+        });
+
+        // 4. Fetch Output Gagal Filling Data
+        $.ajax({
+            url: `${GOLANG_API_BASE}/output-gagal-filling`,
+            method: 'GET',
+            data: params,
+            timeout: 10000,
+            dataType: 'json',
+            crossDomain: true,
+            success: function(response) {
+                console.log('D2 Gagal Filling response:', response); // Debug log
+                if (response.shifts && response.shifts.length > 0) {
+                    response.shifts.forEach((shift, index) => {
+                        const shiftNum = shift.shift;
+                        const gagalFillingPercent = parseFloat(shift.gagal_filling).toFixed(2);
+                        $(`#gagal_filling_shift${shiftNum}`).text(gagalFillingPercent + ' %');
+
+                        // Alternative selectors
+                        $(`#gagal_filling_${shiftNum}`).text(gagalFillingPercent + ' %');
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('D2 Output Gagal Filling Error:', {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    error: error
+                });
+            }
+        });
+
+        // API yang belum ada di Golang - tetap menggunakan Laravel untuk sementara
+        $.ajax({
+            url: "{{url('retail/d2/mesin-stop-periods')}}",
+            method: 'GET',
+            dataType: "json",
+            success: function(response) {
+                $('#total_stop_mesin').text(response.total);
+            },
+            error: function(xhr) {
+                console.error('D2 Stop Periods Error:', xhr.responseJSON);
+            }
+        });
+
+        $.ajax({
+            url: "{{url('retail/d2/average-main-speed')}}",
+            method: 'GET',
+            dataType: "json",
+            success: function(response) {
+                const avg = parseFloat(response.average_main_speed).toFixed(2) || 0;
+                $('#average_main_speed').text(avg);
+            },
+            error: function(xhr) {
+                console.error('D2 Average Main Speed Error:', xhr.responseJSON);
+            }
+        });
+
+        // Start the interval for fetching data every 10 seconds after the initial fetch
+        setInterval(get_data, 10000);
+    }
+
+    function get_data() {
+        // API untuk get last data - masih menggunakan Laravel
+        $.ajax({
+            url: "{{ url('retail/d2/last') }}", // Update untuk D2
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                $('#total_counter').text(data.total_counter);
+                let startMesin = data.start_mesin;
+                let imagePath = startMesin == 1 ? '{{ asset("assets/images/hijau.png") }}' : '{{ asset("assets/images/merah.png") }}';
+                $('#start_mesin').html(`<img src="${imagePath}" alt="Status Mesin" style="height: 100px;">`);
+
+                let speed = parseFloat(data.main_speed) || 0;
+
+                if (!gaugeChart) {
+                    initGaugeChart(speed);
+                } else {
+                    updateGaugeChart(speed);
+                }
+
+                updateDateTime();
+            },
+            error: function(xhr, status, error) {
+                console.error("D2 get_data Error:", error);
+            }
+        });
+    }
+
+    function showStopPeriodsDetail() {
+        let filter = $('#filter').val() || 'today';
+        let data = {};
+
+        if (filter === 'today') {
+            data.filter = 'realtime';
+        } else if (filter === 'date') {
+            data.filter = 'tanggal';
+            data.tanggal = $('#start-date').val();
+        } else if (filter === 'range') {
+            data.filter = 'range';
+            data.start_date = $('#start-date').val();
+            data.end_date = $('#end-date').val();
         }
 
-        function showStopPeriodsDetail() {
-            let filter = $('#filter').val() || 'today';
-            let data = {};
+        $.ajax({
+            url: "{{url('retail/d2/mesin-stop-periods')}}", // Update untuk D2
+            method: 'GET',
+            data: data,
+            success: function(response) {
+                const detailList = response.data;
+                let html = '';
 
-            if (filter === 'today') {
-                data.filter = 'realtime';
-            } else if (filter === 'date') {
-                data.filter = 'tanggal';
-                data.tanggal = $('#start-date').val();
-            } else if (filter === 'range') {
-                data.filter = 'range';
-                data.start_date = $('#start-date').val();
-                data.end_date = $('#end-date').val();
-            }
-
-            $.ajax({
-                url: "{{url('retail/d2/mesin-stop-periods')}}",
-                method: 'GET',
-                data: data,
-                success: function(response) {
-                    const detailList = response.data;
-                    let html = '';
-
-                    if (detailList.length > 0) {
-                        html += '<ul class="list-group">';
-                        detailList.forEach(function(item, index) {
-                            html += `
+                if (detailList.length > 0) {
+                    html += '<ul class="list-group">';
+                    detailList.forEach(function(item, index) {
+                        html += `
                         <li class="list-group-item">
                             <strong>${index + 1}.</strong>
                             <br>Mesin: Retail D2
@@ -851,40 +905,40 @@
                             <br>End Downtime: ${item.ts_akhir ?? '-'}
                         </li>
                     `;
-                        });
-                        html += '</ul>';
-                    } else {
-                        html = '<p class="text-muted">Tidak ada data stop periods untuk periode ini.</p>';
-                    }
-
-                    $('#abnormalModalLabel').text('Detail Stop Periods Mesin');
-                    $('#abnormalModalBody').html(html);
-                    $('#abnormalModal').modal('show');
-                },
-                error: function(xhr) {
-                    $('#abnormalModalBody').html('<p class="text-danger">Gagal memuat data</p>');
-                    $('#abnormalModal').modal('show');
+                    });
+                    html += '</ul>';
+                } else {
+                    html = '<p class="text-muted">Tidak ada data stop periods untuk periode ini.</p>';
                 }
-            });
-        }
 
-        function animateCounter($element, endValue, duration = 1000) {
-            let startValue = 0;
-            let startTime = null;
-
-            function step(currentTime) {
-                if (!startTime) startTime = currentTime;
-                const progress = Math.min((currentTime - startTime) / duration, 1);
-                const currentValue = Math.floor(progress * (endValue - startValue) + startValue);
-                $element.text(currentValue);
-                if (progress < 1) {
-                    requestAnimationFrame(step);
-                }
+                $('#abnormalModalLabel').text('Detail Stop Periods Mesin');
+                $('#abnormalModalBody').html(html);
+                $('#abnormalModal').modal('show');
+            },
+            error: function(xhr) {
+                $('#abnormalModalBody').html('<p class="text-danger">Gagal memuat data</p>');
+                $('#abnormalModal').modal('show');
             }
+        });
+    }
 
-            requestAnimationFrame(step);
+    function animateCounter($element, endValue, duration = 1000) {
+        let startValue = 0;
+        let startTime = null;
+
+        function step(currentTime) {
+            if (!startTime) startTime = currentTime;
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            const currentValue = Math.floor(progress * (endValue - startValue) + startValue);
+            $element.text(currentValue);
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            }
         }
-    </script>
+
+        requestAnimationFrame(step);
+    }
+</script>
 
 
-    @endsection
+@endsection
