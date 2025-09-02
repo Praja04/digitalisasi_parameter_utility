@@ -445,9 +445,10 @@
 
         $.getJSON(url)
             .done(function(data) {
-                const labels = data.map(d => d.jenis_pemakaian);
-                const values = data.map(d => parseFloat(d.total_pemakaian));
-                const meta = data.map(d => ({
+                const filtered = data.filter(item => item.panel_type !== "Outlet Fresh Water 2");
+                const labels = filtered.map(d => d.jenis_pemakaian);
+                const values = filtered.map(d => parseFloat(d.total_pemakaian));
+                const meta = filtered.map(d => ({
                     start_date: d.start_date,
                     end_date: d.end_date
                 }));
@@ -489,12 +490,15 @@
                 end_date: end
             },
             success: function(data) {
-                const labels = data.map(item => item.panel_type);
-                const usage = data.map(item => item.total_usage);
-                const meta = data.map(d => ({
+                const filtered = data.filter(item => item.panel_type !== "MDP");
+
+                const labels = filtered.map(item => item.panel_type);
+                const usage = filtered.map(item => item.total_usage);
+                const meta = filtered.map(d => ({
                     start_date: d.start_date,
                     end_date: d.end_date
                 }));
+
                 renderBarChart(labels, usage, "#pemakaian-listrik-chart", 'pemakaianListrik', 'mWh', meta);
             },
             error: function() {
