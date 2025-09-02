@@ -684,17 +684,33 @@
             }
         }
 
-        // 1. Fetch Uptime Data (Durasi Start Mesin)
+        function setLoading(selector, color = "primary") {
+            $(selector).html(`
+        <div class="spinner-border spinner-border-sm text-${color}" role="status"></div>
+         `);
+        }
+
+        // Inisialisasi semua shift (anggap 3 shift, bisa disesuaikan)
+        [1, 2, 3].forEach(shiftNum => {
+            setLoading(`#uptime_shift${shiftNum}`, "success");
+            setLoading(`#downtime_shift${shiftNum}`, "danger");
+            setLoading(`#performance_shift${shiftNum}`, "warning");
+            setLoading(`#gagal_filling_shift${shiftNum}`, "primary");
+        });
+
+        // 1. Fetch Uptime
         $.ajax({
             url: `${GOLANG_API_BASE}/durasi/start`,
             method: 'GET',
             data: params,
             success: function(response) {
                 if (response.shifts && response.shifts.length > 0) {
-                    response.shifts.forEach((shift, index) => {
+                    response.shifts.forEach((shift) => {
                         const shiftNum = shift.shift;
-                        const uptimePercent = parseFloat(shift.uptime).toFixed(2);
-                        $(`#uptime_shift${shiftNum}`).text(uptimePercent + ' %');
+                        if (shift.uptime !== null && shift.uptime !== undefined) {
+                            const uptimePercent = parseFloat(shift.uptime).toFixed(2);
+                            $(`#uptime_shift${shiftNum}`).text(uptimePercent + ' %');
+                        }
                     });
                 }
             },
@@ -703,17 +719,19 @@
             }
         });
 
-        // 2. Fetch Downtime Data (Durasi Stop Mesin)
+        // 2. Fetch Downtime
         $.ajax({
             url: `${GOLANG_API_BASE}/durasi/stop`,
             method: 'GET',
             data: params,
             success: function(response) {
                 if (response.shifts && response.shifts.length > 0) {
-                    response.shifts.forEach((shift, index) => {
+                    response.shifts.forEach((shift) => {
                         const shiftNum = shift.shift;
-                        const downtimePercent = parseFloat(shift.downtime).toFixed(2);
-                        $(`#downtime_shift${shiftNum}`).text(downtimePercent + ' %');
+                        if (shift.downtime !== null && shift.downtime !== undefined) {
+                            const downtimePercent = parseFloat(shift.downtime).toFixed(2);
+                            $(`#downtime_shift${shiftNum}`).text(downtimePercent + ' %');
+                        }
                     });
                 }
             },
@@ -722,25 +740,27 @@
             }
         });
 
-        // 3. Fetch Performance Output Data
+        // 3. Fetch Performance Output
         $.ajax({
             url: `${GOLANG_API_BASE}/performance-output`,
             method: 'GET',
             data: params,
             success: function(response) {
                 if (response.shifts && response.shifts.length > 0) {
-                    // Update performance untuk semua shift
-                    response.shifts.forEach((shift, index) => {
+                    response.shifts.forEach((shift) => {
                         const shiftNum = shift.shift;
-                        const performancePercent = parseFloat(shift.performance_output).toFixed(2);
-                        $(`#performance_shift${shiftNum}`).text(performancePercent + ' %');
+                        if (shift.performance_output !== null && shift.performance_output !== undefined) {
+                            const performancePercent = parseFloat(shift.performance_output).toFixed(2);
+                            $(`#performance_shift${shiftNum}`).text(performancePercent + ' %');
+                        }
                     });
 
-                    // Update performance untuk shift saat ini
+                    // Realtime untuk shift aktif
                     const currentShift = response.current_shift;
                     const currentShiftData = response.shifts.find(s => s.shift === currentShift);
                     if (currentShiftData) {
-                        $('#performance_output_realtime').text(parseFloat(currentShiftData.performance_output).toFixed(2) + ' %');
+                        $('#performance_output_realtime')
+                            .text(parseFloat(currentShiftData.performance_output).toFixed(2) + ' %');
                         $('#shift_performance').text(`Shift ${currentShift}`);
                     }
                 }
@@ -750,17 +770,19 @@
             }
         });
 
-        // 4. Fetch Output Gagal Filling Data
+        // 4. Fetch Gagal Filling
         $.ajax({
             url: `${GOLANG_API_BASE}/output-gagal-filling`,
             method: 'GET',
             data: params,
             success: function(response) {
                 if (response.shifts && response.shifts.length > 0) {
-                    response.shifts.forEach((shift, index) => {
+                    response.shifts.forEach((shift) => {
                         const shiftNum = shift.shift;
-                        const gagalFillingPercent = parseFloat(shift.gagal_filling).toFixed(2);
-                        $(`#gagal_filling_shift${shiftNum}`).text(gagalFillingPercent + ' %');
+                        if (shift.gagal_filling !== null && shift.gagal_filling !== undefined) {
+                            const gagalFillingPercent = parseFloat(shift.gagal_filling).toFixed(2);
+                            $(`#gagal_filling_shift${shiftNum}`).text(gagalFillingPercent + ' %');
+                        }
                     });
                 }
             },
@@ -768,6 +790,7 @@
                 console.error('Output Gagal Filling Error:', xhr.responseJSON);
             }
         });
+
 
         // API yang belum ada di Golang - tetap menggunakan Laravel untuk sementara
         $.ajax({
