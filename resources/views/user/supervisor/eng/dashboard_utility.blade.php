@@ -550,6 +550,7 @@
         });
     }
 
+    
 
     function renderBarChart(labels, values, selector, instanceKey, unit, meta = null) {
         const options = createChartOptions('bar');
@@ -563,7 +564,11 @@
         // X-axis cuma dummy, karena data dipisah ke series
         options.xaxis.categories = [''];
 
-        options.colors = ["#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0"];
+        options.colors = ["#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0",
+            "#546E7A", "#26a69a", "#d10ce8", "#ff6f61", "#2b908f",
+            "#f9a3a4", "#90ee7e", "#f48024", "#69d2e7", "#e83e8c",
+            "#6f42c1", "#20c997", "#fc7d14ff", "#6610f2", "#198754"
+        ];
         options.legend = {
             show: true,
             position: 'top',
