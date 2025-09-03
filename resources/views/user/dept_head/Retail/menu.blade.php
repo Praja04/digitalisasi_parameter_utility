@@ -585,21 +585,24 @@
                 }
 
                 // Ambil performance mesin
-                const perfData = await fetchJSON(`{{ url('retail/${mesin}/output/performance/all_shift?filter=realtime') }}`.replace('${mesin}', mesin));
-                if (perfData && Array.isArray(perfData)) {
-                    perfData.forEach(item => {
+                const perfData = await fetchJSON(`http://10.11.11.200:8080/api/retail/${mesin}/performance-output`);
+                if (perfData && perfData.shifts && Array.isArray(perfData.shifts)) {
+                    perfData.shifts.forEach(item => {
                         let shiftNum = '';
-                        if (item.shift.includes('1')) shiftNum = 'shift1';
-                        else if (item.shift.includes('2')) shiftNum = 'shift2';
-                        else if (item.shift.includes('3')) shiftNum = 'shift3';
+                        if (item.shift === 1) shiftNum = 'shift1';
+                        else if (item.shift === 2) shiftNum = 'shift2';
+                        else if (item.shift === 3) shiftNum = 'shift3';
                         else return;
 
                         // Total Counter
                         $(`#total_counter_${mesin}_${shiftNum}`).text(item.total_counter ?? '-');
 
-                        // Nama Mesin (jika tersedia di item)
-                        $(`#retail_${mesin}_mesin_${shiftNum}`).text((item.performance_output_percent + '%') ?? '');
-                        const progress = item.performance_output_percent ?? 0;
+                        // Performance Output Percent (dibulatkan ke 2 desimal)
+                        const performancePercent = item.performance_output ? item.performance_output.toFixed(2) : '0.00';
+                        $(`#retail_${mesin}_mesin_${shiftNum}`).text(performancePercent + '%');
+
+                        // Progress Bar
+                        const progress = item.performance_output ?? 0;
                         $(`#progress_${mesin}_${shiftNum}`)
                             .css('width', `${progress}%`)
                             .attr('aria-valuenow', progress)
