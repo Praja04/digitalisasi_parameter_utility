@@ -360,44 +360,29 @@
 
 
         <div class="row">
-
-
-            <div class="col-xxl-12 order-xxl-0 order-first">
-
-                <div class="d-flex flex-column h-900">
-                    <div class="row">
-                        <div class="col-xl-12">
-                            <div class="card">
-                                <div class="card-header border-0 align-items-center d-flex">
-                                    <h4 class="card-title mb-0 flex-grow-1">Sensor Boiler Chart</h4>
-                                    <div class="d-flex gap-2">
-                                        <select id="filterData" class="form-select form-select-sm w-auto">
-                                            <option value="latest">Terbaru</option>
-                                            <option value="daily">Per Hari</option>
-                                            <option value="weekly">Per Minggu</option>
-                                        </select>
-                                        <input type="date" id="datePicker" class="form-control form-control-sm w-auto d-none">
-                                        <input type="date" id="startDate" class="form-control form-control-sm w-auto d-none">
-                                        <input type="date" id="endDate" class="form-control form-control-sm w-auto d-none">
-                                        <button id="applyFilter" class="btn btn-primary btn-sm">Terapkan</button>
-                                    </div>
-                                </div>
-                                <!-- end card header -->
-                                <div class="card-body p-0 pb-3">
-                                    <div id="boiler_chart" class="apex-charts" dir="ltr"></div>
-                                </div>
-                                <!-- end card body -->
-                            </div>
-                            <!-- end card -->
+            <div class="col-xl-12 mt-3">
+                <div class="card">
+                    <div class="card-header border-0 align-items-center d-flex">
+                        <h4 class="card-title mb-0 flex-grow-1">Sensor Boiler Chart</h4>
+                        <div class="d-flex gap-2">
+                            <select id="filterData" class="form-select form-select-sm w-auto">
+                                <option value="latest">Terbaru</option>
+                                <option value="daily">Per Hari</option>
+                                <option value="weekly">Per Minggu</option>
+                            </select>
+                            <input type="date" id="datePicker" class="form-control form-control-sm w-auto d-none">
+                            <input type="date" id="startDate" class="form-control form-control-sm w-auto d-none">
+                            <input type="date" id="endDate" class="form-control form-control-sm w-auto d-none">
+                            <button id="applyFilter" class="btn btn-primary btn-sm">Terapkan</button>
                         </div>
-                        <!-- end col -->
                     </div>
-                    <!-- end row -->
+                    <!-- end card header -->
+                    <div class="card-body p-0 pb-3">
+                        <div id="boiler_chart" class="apex-charts" dir="ltr"></div>
+                    </div>
+                    <!-- end card body -->
                 </div>
             </div>
-
-
-
             <!-- end col -->
         </div>
         <!-- end row -->
@@ -405,42 +390,22 @@
 
 
         <div class="row">
-            <div class="col-xl-12">
-                <div class="d-flex flex-column h-100">
-                    <div class="row">
-                        <div class="col-xl-12">
-                            <div class="card">
-                                <div class="card-header border-0 align-items-center d-flex">
-                                    <h4 class="card-title mb-0 flex-grow-1">Sensor CondensatChart</h4>
-                                    <div class="d-flex gap-2">
-                                        <select id="filterKondensat" class="form-select form-select-sm w-auto">
-                                            <input type="date" id="startDate" class="form-control form-control-sm w-auto" />
-                                            <input type="date" id="endDate" class="form-control form-control-sm w-auto" />
-                                            <button id="loadChart" class="btn btn-sm btn-primary">Tampilkan</button>
-                                        </select>
-
-                                    </div>
-                                    <!-- end card header -->
-                                    <div class="card-body p-0 pb-3">
-                                        <div id="condensat_chart" class="apex-charts" dir="ltr"></div>
-                                    </div>
-                                    <!-- end card body -->
-                                </div>
-                                <!-- end card -->
-                            </div>
-                            <!-- end col -->
+            <div class="col-xl-12 mt-3">
+                <div class="card">
+                    <div class="card-header border-0 align-items-center d-flex">
+                        <h4 class="card-title mb-0 flex-grow-1">Kondensat Chart</h4>
+                        <div class="d-flex gap-2">
+                            <input type="date" id="kondensatStart" class="form-control form-control-sm w-auto">
+                            <input type="date" id="kondensatEnd" class="form-control form-control-sm w-auto">
+                            <button id="applyKondensat" class="btn btn-primary btn-sm">Terapkan</button>
                         </div>
-                        <!-- end row -->
                     </div>
-                    <!-- end card -->
+                    <div class="card-body p-0 pb-3">
+                        <div id="kondensat_chart" class="apex-charts" dir="ltr"></div>
+                    </div>
                 </div>
-                <!-- end col -->
-
-
-
-                <!-- end col -->
             </div>
-            <!-- end row -->
+
 
         </div>
 
@@ -457,409 +422,526 @@
                 </div>
             </div>
         </div>
-
-        <!-- container-fluid -->
     </div>
-    <!-- 🔹 Include ApexCharts & jQuery -->
-    <script src="{{ asset('material/assets/libs/apexcharts/apexcharts.min.js') }}"></script>
-    <script>
-        $(document).ready(function() {
-            let chart, chart_compresor;
-            let gaugeCharts = {
-                levelfeedwater: null,
-                feedpressure: null,
-                suhufeedtank: null,
-                lhtemp: null,
-                rhtemp: null,
-                idfan: null,
-                lhguiloutine: null,
-                rhguiloutine: null,
-                lhfdfan: null,
-                lhstoker: null,
-                rhstoker: null,
-                inletwaterflow: null,
-            };
 
-            const gaugeOptions = (value) => ({
-                chart: {
-                    height: 150,
-                    type: "radialBar"
-                },
-                series: [parseFloat(value)],
-                labels: [""],
-                plotOptions: {
-                    radialBar: {
-                        hollow: {
-                            size: "50%"
+    <!-- container-fluid -->
+</div>
+<!-- 🔹 Include ApexCharts & jQuery -->
+<script src="{{ asset('material/assets/libs/apexcharts/apexcharts.min.js') }}"></script>
+<script>
+    $(document).ready(function() {
+        let chart, chart_compresor;
+        let gaugeCharts = {
+            levelfeedwater: null,
+            feedpressure: null,
+            suhufeedtank: null,
+            lhtemp: null,
+            rhtemp: null,
+            idfan: null,
+            lhguiloutine: null,
+            rhguiloutine: null,
+            lhfdfan: null,
+            lhstoker: null,
+            rhstoker: null,
+            inletwaterflow: null,
+        };
+
+        const gaugeOptions = (value) => ({
+            chart: {
+                height: 150,
+                type: "radialBar"
+            },
+            series: [parseFloat(value)],
+            labels: [""],
+            plotOptions: {
+                radialBar: {
+                    hollow: {
+                        size: "50%"
+                    },
+                    dataLabels: {
+                        name: {
+                            show: false
                         },
-                        dataLabels: {
-                            name: {
-                                show: false
-                            },
-                            value: {
-                                show: true,
-                                fontSize: "16px",
-                                formatter: function(val) {
-                                    return parseFloat(val).toFixed(2); // misal tampilkan 1 angka desimal
-                                }
+                        value: {
+                            show: true,
+                            fontSize: "16px",
+                            formatter: function(val) {
+                                return parseFloat(val).toFixed(2); // misal tampilkan 1 angka desimal
                             }
                         }
                     }
-                },
-                colors: ["#00E396"]
+                }
+            },
+            colors: ["#00E396"]
+        });
+
+        const fetchData = (url, params = {}) =>
+            $.ajax({
+                url,
+                type: "GET",
+                data: params,
+                dataType: "json"
             });
 
-            const fetchData = (url, params = {}) =>
-                $.ajax({
-                    url,
-                    type: "GET",
-                    data: params,
-                    dataType: "json"
+        const UpdateChartSensor = (data) => {
+            if (!data.length) {
+                chart?.updateSeries([{
+                    data: []
+                }]);
+                Swal.fire({
+                    icon: "warning",
+                    title: "Data Tidak Ditemukan",
+                    text: "Tidak ada data untuk rentang waktu yang dipilih."
                 });
+                return;
+            }
 
-            const UpdateChartSensor = (data) => {
-                if (!data.length) {
-                    chart?.updateSeries([{
-                        data: []
-                    }]);
+            const categories = data.map(i => i.waktu);
+            const series = [{
+                    name: "Level Feed Water",
+                    data: data.map(i => i.LevelFeedWater)
+                },
+                {
+                    name: "PV Steam",
+                    data: data.map(i => i.PVSteam)
+                },
+                {
+                    name: "Batu Bara",
+                    data: data.map(i => i.Batubara_FK)
+                }
+            ];
+
+            const options = {
+                chart: {
+                    type: "line",
+                    height: 350
+                },
+                stroke: {
+                    width: 2,
+                    curve: "smooth"
+                },
+                series,
+                colors: ["#0acf97", "#fa5c7c", "#ffbc00"],
+                xaxis: {
+                    categories,
+                    title: {
+                        text: "Waktu"
+                    },
+                    labels: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: "Sensor Value"
+                    }
+                },
+                tooltip: {
+                    x: {
+                        format: "dd MMM HH:mm"
+                    }
+                }
+            };
+
+            if (chart) {
+                chart.updateOptions(options);
+                chart_compresor.updateOptions(options);
+            } else {
+                chart = new ApexCharts(document.querySelector("#boiler_chart"), options);
+                chart_compresor = new ApexCharts(document.querySelector("#compresor_chart"), options);
+                chart.render();
+                chart_compresor.render();
+            }
+        };
+
+        const updateChart = (selector, config, instanceKey) => {
+            if (gaugeCharts[instanceKey]) {
+                gaugeCharts[instanceKey].updateOptions(config);
+            } else {
+                gaugeCharts[instanceKey] = new ApexCharts(document.querySelector(selector), config);
+                gaugeCharts[instanceKey].render();
+            }
+        };
+
+        const updateGaugeChart = (data) => {
+            const chartData = {
+                levelfeedwater: data.LevelFeedWater,
+                feedpressure: data.FeedPressure,
+                suhufeedtank: data.SuhuFeedTank,
+                lhtemp: data.LHTemp,
+                rhtemp: data.RHTemp,
+                idfan: data.IDFan,
+                lhguiloutine: data.LHGuiloutine,
+                rhguiloutine: data.RHGuiloutine,
+                lhfdfan: data.LHFDFan,
+                lhstoker: data.LHStoker,
+                rhstoker: data.RHStoker,
+                inletwaterflow: data.InletWaterFlow,
+            };
+
+            for (const [key, val] of Object.entries(chartData)) {
+                updateChart(`#gauge_chart_${key}`, gaugeOptions(val), key);
+            }
+        };
+
+        const updatePVSteam = () => {
+            $.getJSON("{{ url('sensor/boiler-realtime') }}", (response) => {
+                if (response) {
+                    console.log(response);
+                    $('#PV-bar').val(`${response.PVSteam} Bar`);
+                    const $pvInput = $('#PV-bar');
+                    const pvValue = parseFloat(response.PVSteam);
+                    $pvInput.removeClass('bg-danger bg-warning bg-success text-white text-dark');
+                    if (pvValue > 7) {
+                        $pvInput.addClass('bg-danger text-white'); // merah
+                    } else if (pvValue > 6) {
+                        $pvInput.addClass('bg-warning text-dark'); // kuning
+                    } else {
+                        $pvInput.addClass('bg-success text-white'); // hijau
+                    }
+                    updateGaugeChart(response);
+
+                    if (response.PVSteam > 6) {
+                        $.ajax({
+                            url: "{{ url('eng/send/tele') }}",
+                            type: "GET",
+                            dataType: "json"
+                        }).done((response) => {
+                            console.log(response);
+                        }).fail((xhr, status, error) => console.error(`AJAX Error: ${status} ${error}`));
+                    }
+                }
+            }).fail((xhr, status, error) => console.error(`AJAX Error: ${status} ${error}`));
+        };
+
+        const updateInputFields = () => {
+            const filter = $("#filterData").val();
+            $("#datePicker, #startDate, #endDate").addClass("d-none");
+            if (filter === "daily") $("#datePicker").removeClass("d-none");
+            else if (filter === "weekly") $("#startDate, #endDate").removeClass("d-none");
+        };
+
+        $("#filterData").on("change", updateInputFields);
+
+        $("#applyFilter").on("click", () => {
+            const filter = $("#filterData").val();
+            let url = "",
+                params = {};
+
+            if (filter === "latest") {
+                url = "{{ url('sensor/boiler-data') }}";
+            } else if (filter === "daily") {
+                const tanggal = $("#datePicker").val();
+                if (!tanggal) return Swal.fire({
+                    icon: "warning",
+                    title: "Pilih Tanggal!",
+                    text: "Harap pilih tanggal terlebih dahulu."
+                });
+                url = "{{ url('sensor/boiler/data-harian') }}";
+                params = {
+                    tanggal
+                };
+            } else if (filter === "weekly") {
+                const start = $("#startDate").val(),
+                    end = $("#endDate").val();
+                if (!start || !end) return Swal.fire({
+                    icon: "warning",
+                    title: "Pilih Rentang Tanggal!",
+                    text: "Harap pilih tanggal mulai dan selesai."
+                });
+                url = "{{ url('sensor/boiler/data-mingguan') }}";
+                params = {
+                    tanggal_mulai: start,
+                    tanggal_selesai: end
+                };
+            }
+
+            fetchData(url, params).done(response => {
+                response.success ? UpdateChartSensor(response.data) :
                     Swal.fire({
                         icon: "warning",
                         title: "Data Tidak Ditemukan",
                         text: "Tidak ada data untuk rentang waktu yang dipilih."
                     });
-                    return;
-                }
+            });
+        });
 
-                const categories = data.map(i => i.waktu);
-                const series = [{
-                        name: "Level Feed Water",
-                        data: data.map(i => i.LevelFeedWater)
-                    },
-                    {
-                        name: "PV Steam",
-                        data: data.map(i => i.PVSteam)
-                    },
-                    {
-                        name: "Batu Bara",
-                        data: data.map(i => i.Batubara_FK)
-                    }
-                ];
+        updateInputFields();
+        $("#applyFilter").trigger("click");
+        updatePVSteam();
+        setInterval(updatePVSteam, 3000);
 
-                const options = {
-                    chart: {
-                        type: "line",
-                        height: 350
-                    },
-                    stroke: {
-                        width: 2,
-                        curve: "smooth"
-                    },
-                    series,
-                    colors: ["#0acf97", "#fa5c7c", "#ffbc00"],
-                    xaxis: {
-                        categories,
-                        title: {
-                            text: "Waktu"
-                        },
-                        labels: {
-                            show: false
-                        }
-                    },
-                    yaxis: {
-                        title: {
-                            text: "Sensor Value"
-                        }
-                    },
-                    tooltip: {
-                        x: {
-                            format: "dd MMM HH:mm"
-                        }
-                    }
-                };
 
-                if (chart) {
-                    chart.updateOptions(options);
-                    chart_compresor.updateOptions(options);
-                } else {
-                    chart = new ApexCharts(document.querySelector("#boiler_chart"), options);
-                    chart_compresor = new ApexCharts(document.querySelector("#compresor_chart"), options);
-                    chart.render();
-                    chart_compresor.render();
-                }
-            };
 
-            const updateChart = (selector, config, instanceKey) => {
-                if (gaugeCharts[instanceKey]) {
-                    gaugeCharts[instanceKey].updateOptions(config);
-                } else {
-                    gaugeCharts[instanceKey] = new ApexCharts(document.querySelector(selector), config);
-                    gaugeCharts[instanceKey].render();
-                }
-            };
 
-            const updateGaugeChart = (data) => {
-                const chartData = {
-                    levelfeedwater: data.LevelFeedWater,
-                    feedpressure: data.FeedPressure,
-                    suhufeedtank: data.SuhuFeedTank,
-                    lhtemp: data.LHTemp,
-                    rhtemp: data.RHTemp,
-                    idfan: data.IDFan,
-                    lhguiloutine: data.LHGuiloutine,
-                    rhguiloutine: data.RHGuiloutine,
-                    lhfdfan: data.LHFDFan,
-                    lhstoker: data.LHStoker,
-                    rhstoker: data.RHStoker,
-                    inletwaterflow: data.InletWaterFlow,
-                };
+        function fetchData_abnormal(filter = 'today', start = '', end = '') {
 
-                for (const [key, val] of Object.entries(chartData)) {
-                    updateChart(`#gauge_chart_${key}`, gaugeOptions(val), key);
-                }
-            };
 
-            const updatePVSteam = () => {
-                $.getJSON("{{ url('sensor/boiler-realtime') }}", (response) => {
-                    if (response) {
-                        console.log(response);
-                        $('#PV-bar').val(`${response.PVSteam} Bar`);
-                        const $pvInput = $('#PV-bar');
-                        const pvValue = parseFloat(response.PVSteam);
-                        $pvInput.removeClass('bg-danger bg-warning bg-success text-white text-dark');
-                        if (pvValue > 7) {
-                            $pvInput.addClass('bg-danger text-white'); // merah
-                        } else if (pvValue > 6) {
-                            $pvInput.addClass('bg-warning text-dark'); // kuning
-                        } else {
-                            $pvInput.addClass('bg-success text-white'); // hijau
-                        }
-                        updateGaugeChart(response);
-
-                        if (response.PVSteam > 6) {
-                            $.ajax({
-                                url: "{{ url('eng/send/tele') }}",
-                                type: "GET",
-                                dataType: "json"
-                            }).done((response) => {
-                                console.log(response);
-                            }).fail((xhr, status, error) => console.error(`AJAX Error: ${status} ${error}`));
-                        }
-                    }
-                }).fail((xhr, status, error) => console.error(`AJAX Error: ${status} ${error}`));
-            };
-
-            const updateInputFields = () => {
-                const filter = $("#filterData").val();
-                $("#datePicker, #startDate, #endDate").addClass("d-none");
-                if (filter === "daily") $("#datePicker").removeClass("d-none");
-                else if (filter === "weekly") $("#startDate, #endDate").removeClass("d-none");
-            };
-
-            $("#filterData").on("change", updateInputFields);
-
-            $("#applyFilter").on("click", () => {
-                const filter = $("#filterData").val();
-                let url = "",
-                    params = {};
-
-                if (filter === "latest") {
-                    url = "{{ url('sensor/boiler-data') }}";
-                } else if (filter === "daily") {
-                    const tanggal = $("#datePicker").val();
-                    if (!tanggal) return Swal.fire({
-                        icon: "warning",
-                        title: "Pilih Tanggal!",
-                        text: "Harap pilih tanggal terlebih dahulu."
+            $.ajax({
+                url: '{{ url("sensor/rhtemp") }}',
+                method: 'GET',
+                data: {
+                    filter: filter,
+                    start: start,
+                    end: end
+                },
+                success: function(res) {
+                    // Swal.close();
+                    $('#rhtemp_abnormal').text(res.total).attr('data-target', res.total);
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: 'Gagal mengambil data. Coba lagi nanti.',
                     });
-                    url = "{{ url('sensor/boiler/data-harian') }}";
-                    params = {
-                        tanggal
-                    };
-                } else if (filter === "weekly") {
-                    const start = $("#startDate").val(),
-                        end = $("#endDate").val();
-                    if (!start || !end) return Swal.fire({
-                        icon: "warning",
-                        title: "Pilih Rentang Tanggal!",
-                        text: "Harap pilih tanggal mulai dan selesai."
-                    });
-                    url = "{{ url('sensor/boiler/data-mingguan') }}";
-                    params = {
-                        tanggal_mulai: start,
-                        tanggal_selesai: end
-                    };
                 }
-
-                fetchData(url, params).done(response => {
-                    response.success ? UpdateChartSensor(response.data) :
-                        Swal.fire({
-                            icon: "warning",
-                            title: "Data Tidak Ditemukan",
-                            text: "Tidak ada data untuk rentang waktu yang dipilih."
-                        });
-                });
             });
 
-            updateInputFields();
-            $("#applyFilter").trigger("click");
-            updatePVSteam();
-            setInterval(updatePVSteam, 3000);
+            $.ajax({
+                url: '{{ url("sensor/lhtemp") }}',
+                method: 'GET',
+                data: {
+                    filter,
+                    start,
+                    end
+                },
+                success: function(res) {
+                    Swal.close();
+                    $('#lhtemp_abnormal').text(res.total).attr('data-target', res.total);
+                },
+                error: function() {
+                    alert("Gagal mengambil data LH Temp.");
+                }
+            });
 
+            $.ajax({
+                url: '{{ url("sensor/pvsteam") }}',
+                method: 'GET',
+                data: {
+                    filter,
+                    start,
+                    end
+                },
+                success: function(res) {
+                    Swal.close();
+                    $('#pvsteam_abnormal').text(res.total).attr('data-target', res.total);
+                },
+                error: function() {
+                    alert("Gagal mengambil data PV Steam.");
+                }
+            });
 
+            $.ajax({
+                url: '{{ url("sensor/levelfeedwater") }}',
+                method: 'GET',
+                data: {
+                    filter,
+                    start,
+                    end
+                },
+                success: function(res) {
+                    Swal.close();
+                    $('#levelfeed_abnormal').text(res.total).attr('data-target', res.total);
+                },
+                error: function() {
+                    alert("Gagal mengambil data Level Feed Water.");
+                }
+            });
+        }
 
+        // Load data awal (today)
+        fetchData_abnormal();
 
-            function fetchData_abnormal(filter = 'today', start = '', end = '') {
-
-
-                $.ajax({
-                    url: '{{ url("sensor/rhtemp") }}',
-                    method: 'GET',
-                    data: {
-                        filter: filter,
-                        start: start,
-                        end: end
-                    },
-                    success: function(res) {
-                        // Swal.close();
-                        $('#rhtemp_abnormal').text(res.total).attr('data-target', res.total);
-                    },
-                    error: function() {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Gagal!',
-                            text: 'Gagal mengambil data. Coba lagi nanti.',
-                        });
-                    }
-                });
-
-                $.ajax({
-                    url: '{{ url("sensor/lhtemp") }}',
-                    method: 'GET',
-                    data: {
-                        filter,
-                        start,
-                        end
-                    },
-                    success: function(res) {
-                        Swal.close();
-                        $('#lhtemp_abnormal').text(res.total).attr('data-target', res.total);
-                    },
-                    error: function() {
-                        alert("Gagal mengambil data LH Temp.");
-                    }
-                });
-
-                $.ajax({
-                    url: '{{ url("sensor/pvsteam") }}',
-                    method: 'GET',
-                    data: {
-                        filter,
-                        start,
-                        end
-                    },
-                    success: function(res) {
-                        Swal.close();
-                        $('#pvsteam_abnormal').text(res.total).attr('data-target', res.total);
-                    },
-                    error: function() {
-                        alert("Gagal mengambil data PV Steam.");
-                    }
-                });
-
-                $.ajax({
-                    url: '{{ url("sensor/levelfeedwater") }}',
-                    method: 'GET',
-                    data: {
-                        filter,
-                        start,
-                        end
-                    },
-                    success: function(res) {
-                        Swal.close();
-                        $('#levelfeed_abnormal').text(res.total).attr('data-target', res.total);
-                    },
-                    error: function() {
-                        alert("Gagal mengambil data Level Feed Water.");
-                    }
-                });
+        $('#filter_abnormal').change(function() {
+            const val = $(this).val();
+            if (val === 'date') {
+                $('#start-date-group').removeClass('d-none');
+                $('#end-date-group').addClass('d-none');
+            } else if (val === 'range') {
+                $('#start-date-group').removeClass('d-none');
+                $('#end-date-group').removeClass('d-none');
+            } else {
+                $('#start-date-group, #end-date-group').addClass('d-none');
             }
+        });
 
-            // Load data awal (today)
-            fetchData_abnormal();
+        $('#apply-filter-abnormal').click(function() {
+            const filter = $('#filter_abnormal').val();
+            const start = $('#start-date').val();
+            const end = $('#end-date').val();
+            fetchData_abnormal(filter, start, end);
+        });
 
-            $('#filter_abnormal').change(function() {
-                const val = $(this).val();
-                if (val === 'date') {
-                    $('#start-date-group').removeClass('d-none');
-                    $('#end-date-group').addClass('d-none');
-                } else if (val === 'range') {
-                    $('#start-date-group').removeClass('d-none');
-                    $('#end-date-group').removeClass('d-none');
-                } else {
-                    $('#start-date-group, #end-date-group').addClass('d-none');
-                }
-            });
+        $('.abnormal-card').on('click', function() {
+            const type = $(this).data('type');
+            $.ajax({
+                url: '{{ url("sensor") }}/' + type, // asumsi endpoint sama
+                method: 'GET',
+                data: {
+                    filter: $('#filter_abnormal').val(),
+                    start: $('#start-date').val(),
+                    end: $('#end-date').val()
+                },
+                success: function(res) {
+                    let html = '<p>Total: <strong>' + res.total + '</strong></p>';
 
-            $('#apply-filter-abnormal').click(function() {
-                const filter = $('#filter_abnormal').val();
-                const start = $('#start-date').val();
-                const end = $('#end-date').val();
-                fetchData_abnormal(filter, start, end);
-            });
-
-            $('.abnormal-card').on('click', function() {
-                const type = $(this).data('type');
-                $.ajax({
-                    url: '{{ url("sensor") }}/' + type, // asumsi endpoint sama
-                    method: 'GET',
-                    data: {
-                        filter: $('#filter_abnormal').val(),
-                        start: $('#start-date').val(),
-                        end: $('#end-date').val()
-                    },
-                    success: function(res) {
-                        let html = '<p>Total: <strong>' + res.total + '</strong></p>';
-
-                        // Tambahkan detail jika ada
-                        if (res.data && Array.isArray(res.data)) {
-                            html += '<ul class="list-group">';
-                            res.data.forEach(item => {
-                                html += `
+                    // Tambahkan detail jika ada
+                    if (res.data && Array.isArray(res.data)) {
+                        html += '<ul class="list-group">';
+                        res.data.forEach(item => {
+                            html += `
                 <li class="list-group-item">
                     <strong>Waktu Mulai:</strong> ${item.waktu_mulai}<br>
                     <strong>Waktu Akhir:</strong> ${item.waktu_akhir}
                 </li>
             `;
-                            });
-                            html += '</ul>';
-                        }
-
-                        $('#abnormalModalBody').html(html);
-                        $('#abnormalModal').modal('show');
-                    },
-                    error: function() {
-                        alert('Gagal mengambil detail data!');
+                        });
+                        html += '</ul>';
                     }
-                });
+
+                    $('#abnormalModalBody').html(html);
+                    $('#abnormalModal').modal('show');
+                },
+                error: function() {
+                    alert('Gagal mengambil detail data!');
+                }
             });
-
-
         });
 
 
 
-        function getChartColorsArray(chartId) {
-            const colors = document.querySelector(chartId).getAttribute("data-colors");
-            return JSON.parse(colors).map(value => {
-                const newValue = value.replace(" ", "");
-                if (newValue.indexOf("--") !== -1) {
-                    const style = getComputedStyle(document.documentElement);
-                    return style.getPropertyValue(newValue) || undefined;
-                } else {
-                    return newValue;
+
+        let chartKondensat;
+
+        const UpdateChartKondensat = (data) => {
+            if (!data.length) {
+                chartKondensat?.updateSeries([{
+                    data: []
+                }]);
+                Swal.fire({
+                    icon: "warning",
+                    title: "Data Tidak Ditemukan",
+                    text: "Tidak ada data kondensat untuk rentang waktu yang dipilih."
+                });
+                return;
+            }
+
+            const categories = data.map(i => i.waktu); // pastikan field `waktu` ada di query model
+            const series = [{
+                    name: "Kondensat Flow",
+                    data: data.map(i => i.flow) // sesuaikan field di tabel Kondensat
+                },
+                {
+                    name: "Kondensat Temp",
+                    data: data.map(i => i.temp) // contoh kalau ada suhu
+                }
+            ];
+
+            const options = {
+                chart: {
+                    type: "line",
+                    height: 350
+                },
+                stroke: {
+                    width: 2,
+                    curve: "smooth"
+                },
+                series,
+                colors: ["#008FFB", "#FEB019"],
+                xaxis: {
+                    categories,
+                    title: {
+                        text: "Waktu"
+                    },
+                    labels: {
+                        show: true
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: "Kondensat Value"
+                    }
+                },
+                tooltip: {
+                    x: {
+                        format: "dd MMM HH:mm"
+                    }
+                }
+            };
+
+            if (chartKondensat) {
+                chartKondensat.updateOptions(options);
+            } else {
+                chartKondensat = new ApexCharts(document.querySelector("#kondensat_chart"), options);
+                chartKondensat.render();
+            }
+        };
+
+        $("#applyKondensat").on("click", () => {
+            const start = $("#kondensatStart").val();
+            const end = $("#kondensatEnd").val();
+
+            if (!start || !end) {
+                return Swal.fire({
+                    icon: "warning",
+                    title: "Pilih Rentang Tanggal!",
+                    text: "Harap pilih tanggal mulai dan selesai."
+                });
+            }
+
+            $.ajax({
+                url: "{{ url('boiler/kondensat/data') }}",
+                method: "GET",
+                data: {
+                    start_date: start,
+                    end_date: end
+                },
+                success: function(response) {
+                    if (response.data && response.data.length > 0) {
+                        UpdateChartKondensat(response.data);
+                    } else {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Data Tidak Ditemukan",
+                            text: "Tidak ada data untuk rentang waktu yang dipilih."
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(`AJAX Error: ${status} ${error}`);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Gagal!",
+                        text: "Tidak bisa mengambil data kondensat."
+                    });
                 }
             });
-        }
-    </script>
+        });
 
-    @endsection
+        // Load awal hari ini
+        const today = new Date().toISOString().split("T")[0];
+        $("#kondensatStart").val(today);
+        $("#kondensatEnd").val(today);
+        $("#applyKondensat").trigger("click");
+
+
+    });
+
+
+
+    function getChartColorsArray(chartId) {
+        const colors = document.querySelector(chartId).getAttribute("data-colors");
+        return JSON.parse(colors).map(value => {
+            const newValue = value.replace(" ", "");
+            if (newValue.indexOf("--") !== -1) {
+                const style = getComputedStyle(document.documentElement);
+                return style.getPropertyValue(newValue) || undefined;
+            } else {
+                return newValue;
+            }
+        });
+    }
+</script>
+
+@endsection
