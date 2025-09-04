@@ -360,72 +360,29 @@
 
 
       <div class="row">
-         <div class="col-xxl-3">
-            <div class="card card-height-70">
+         <div class="col-xl-12 mt-3">
+            <div class="card">
                <div class="card-header border-0 align-items-center d-flex">
-                  <h4 class="card-title mb-0 flex-grow-1">
-                     Pemakaian Chemical
-                  </h4>
+                  <h4 class="card-title mb-0 flex-grow-1">Sensor Boiler Chart</h4>
+                  <div class="d-flex gap-2">
+                     <select id="filterData" class="form-select form-select-sm w-auto">
+                        <option value="latest">Terbaru</option>
+                        <option value="daily">Per Hari</option>
+                        <option value="weekly">Per Minggu</option>
+                     </select>
+                     <input type="date" id="datePicker" class="form-control form-control-sm w-auto d-none">
+                     <input type="date" id="startDate" class="form-control form-control-sm w-auto d-none">
+                     <input type="date" id="endDate" class="form-control form-control-sm w-auto d-none">
+                     <button id="applyFilter" class="btn btn-primary btn-sm">Terapkan</button>
+                  </div>
                </div>
-               <div class="d-flex mb-3">
-                  <select id="modeSelector" class="form-select w-auto">
-                     <option value="harian" selected>Harian</option>
-                     <option value="mingguan">Mingguan</option>
-                     <option value="bulanan">Bulanan</option>
-                  </select>
-               </div>
-               <!-- end cardheader -->
-               <div class="card-body">
-                  <div id="portfolio_donut_charts" data-colors='["--vz-primary", "--vz-info", "--vz-warning", "--vz-success"]' class="apex-charts" dir="ltr"></div>
-
-                  <ul id="chemical-list" class="list-group list-group-flush border-dashed mb-0 mt-3 pt-2">
-                     {{-- Dynamic content here --}}
-                  </ul>
-
-                  <!-- end -->
+               <!-- end card header -->
+               <div class="card-body p-0 pb-3">
+                  <div id="boiler_chart" class="apex-charts" dir="ltr"></div>
                </div>
                <!-- end card body -->
             </div>
-            <!-- end card -->
          </div>
-         <!-- end col -->
-
-         <div class="col-xxl-9 order-xxl-0 order-first">
-
-            <div class="d-flex flex-column h-900">
-               <div class="row">
-                  <div class="col-xl-12">
-                     <div class="card">
-                        <div class="card-header border-0 align-items-center d-flex">
-                           <h4 class="card-title mb-0 flex-grow-1">Sensor Boiler Chart</h4>
-                           <div class="d-flex gap-2">
-                              <select id="filterData" class="form-select form-select-sm w-auto">
-                                 <option value="latest">Terbaru</option>
-                                 <option value="daily">Per Hari</option>
-                                 <option value="weekly">Per Minggu</option>
-                              </select>
-                              <input type="date" id="datePicker" class="form-control form-control-sm w-auto d-none">
-                              <input type="date" id="startDate" class="form-control form-control-sm w-auto d-none">
-                              <input type="date" id="endDate" class="form-control form-control-sm w-auto d-none">
-                              <button id="applyFilter" class="btn btn-primary btn-sm">Terapkan</button>
-                           </div>
-                        </div>
-                        <!-- end card header -->
-                        <div class="card-body p-0 pb-3">
-                           <div id="boiler_chart" class="apex-charts" dir="ltr"></div>
-                        </div>
-                        <!-- end card body -->
-                     </div>
-                     <!-- end card -->
-                  </div>
-                  <!-- end col -->
-               </div>
-               <!-- end row -->
-            </div>
-         </div>
-
-
-
          <!-- end col -->
       </div>
       <!-- end row -->
@@ -433,111 +390,35 @@
 
 
       <div class="row">
-         <div class="col-xl-6">
-            <div class="d-flex flex-column h-100">
-               <div class="row">
-                  <div class="col-xl-12">
-                     <div class="card">
-                        <div class="card-header border-0 align-items-center d-flex">
-                           <h4 class="card-title mb-0 flex-grow-1">Sensor Compressor Chart</h4>
-                           <div class="d-flex gap-2">
-                              <select id="filterData2" class="form-select form-select-sm w-auto">
-                                 <option value="latest">Terbaru</option>
-                                 <option value="daily">Per Hari</option>
-                                 <option value="weekly">Per Minggu</option>
-                              </select>
-                              <input type="date" id="datePicker" class="form-control form-control-sm w-auto d-none">
-                              <input type="date" id="startDate" class="form-control form-control-sm w-auto d-none">
-                              <input type="date" id="endDate" class="form-control form-control-sm w-auto d-none">
-                              <button id="applyFilter" class="btn btn-primary btn-sm">Terapkan</button>
-                           </div>
-                        </div>
-                        <!-- end card header -->
-                        <div class="card-body p-0 pb-3">
-                           <div id="compresor_chart" class="apex-charts" dir="ltr"></div>
-                        </div>
-                        <!-- end card body -->
-                     </div>
-                     <!-- end card -->
-                  </div>
-                  <!-- end col -->
-               </div>
-               <!-- end row -->
-            </div>
-            <!-- end card -->
-         </div>
-         <!-- end col -->
-
-         <div class="col-xl-3">
-            <div class="card card-height-100">
-               <div class="card-header align-items-center d-flex">
-                  <h4 class="card-title mb-0 flex-grow-1">
-                     Pemakaian Air
-                  </h4>
-                  <div class="d-flex mb-3">
-                     <select id="modeAirSelector" class="form-select w-auto">
-                        <option value="terakhir" selected>7 Terakhir</option>
-                        <option value="harian">Harian</option>
-                        <option value="mingguan">Mingguan</option>
-                        <option value="bulanan">Bulanan</option>
-                     </select>
+         <div class="col-xl-12 mt-3">
+            <div class="card">
+               <div class="card-header border-0 align-items-center d-flex">
+                  <h4 class="card-title mb-0 flex-grow-1">Kondensat Chart</h4>
+                  <div class="d-flex gap-2">
+                     <input type="date" id="kondensatStart" class="form-control form-control-sm w-auto">
+                     <input type="date" id="kondensatEnd" class="form-control form-control-sm w-auto">
+                     <button id="applyKondensat" class="btn btn-primary btn-sm">Terapkan</button>
                   </div>
                </div>
-               <!-- end card-header -->
-               <div class="card-body p-0">
-                  <ul id="list-air-pemakaian" class="list-group list-group-flush border-dashed mb-0">
-                     <!-- Data will be inserted here -->
-                  </ul>
-                  <!-- end ul -->
+               <div class="card-body p-0 pb-3">
+                  <div id="kondensat_chart" class="apex-charts" dir="ltr"></div>
                </div>
-               <!-- end card body -->
             </div>
-            <!-- end card -->
-         </div>
-
-         <div class="col-xl-3">
-            <div class="card card-height-100">
-               <div class="card-header align-items-center d-flex">
-                  <h4 class="card-title mb-0 flex-grow-1">
-                     Pemakaian Listrik
-                  </h4>
-                  <div class="d-flex mb-3">
-                     <select id="modeListrikSelector" class="form-select w-auto">
-                        <option value="terakhir" selected>7 Terakhir</option>
-                        <option value="harian">Harian</option>
-                        <option value="mingguan">Mingguan</option>
-                        <option value="bulanan">Bulanan</option>
-                     </select>
-                  </div>
-               </div>
-               <!-- end card-header -->
-               <div class="card-body p-0">
-                  <ul id="list-listrik-pemakaian" class="list-group list-group-flush border-dashed mb-0">
-                     <!-- Data will be inserted here -->
-                  </ul>
-                  <!-- end ul -->
-               </div>
-               <!-- end card body -->
-            </div>
-            <!-- end card -->
          </div>
 
 
-         <!-- end col -->
       </div>
-      <!-- end row -->
 
-   </div>
-
-   <div class="modal fade" id="abnormalModal" tabindex="-1" aria-labelledby="abnormalModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-         <div class="modal-content">
-            <div class="modal-header">
-               <h5 class="modal-title" id="abnormalModalLabel">Detail Abnormal</h5>
-               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-            </div>
-            <div class="modal-body" id="abnormalModalBody">
-               <!-- Data detail akan ditampilkan di sini -->
+      <div class="modal fade" id="abnormalModal" tabindex="-1" aria-labelledby="abnormalModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="abnormalModalLabel">Detail Abnormal</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+               </div>
+               <div class="modal-body" id="abnormalModalBody">
+                  <!-- Data detail akan ditampilkan di sini -->
+               </div>
             </div>
          </div>
       </div>
@@ -790,197 +671,11 @@
       updatePVSteam();
       setInterval(updatePVSteam, 3000);
 
-      ////////////////////chemical////////////////////////
-      function fetchChemicalData(mode = 'harian') {
-         let apiUrl = "{{url('/eng/api/chemical')}}" + '/' + mode;
-
-         $.ajax({
-            url: apiUrl,
-            dataType: "json",
-            success: function(res) {
-               console.log(res);
-
-               // Render Chart
-               renderChemicalChart(res.data || []);
-
-               // Render Top 3 List
-               renderTop3List(res.top3 || []);
-            },
-            error: function(_xhr, status, error) {
-               console.error('AJAX Error:', status, error);
-            }
-         });
-      }
-
-      function renderTop3List(top3) {
-         const listContainer = $("#chemical-list");
-         listContainer.empty();
-
-         if (top3.length === 0) {
-            listContainer.append(`<li class="list-group-item px-0 text-center text-muted">Tidak ada data.</li>`);
-            return;
-         }
-
-         const colorClass = ["text-primary", "text-warning", "text-info", "text-success"];
-         const icons = ["btc.svg", "ltc.svg", "eth.svg", "usdt.svg"];
-
-         top3.forEach((item, index) => {
-            let color = colorClass[index % colorClass.length];
-            let icon = icons[index % icons.length];
-
-            listContainer.append(`
-                    <li class="list-group-item px-0">
-                        <div class="d-flex">
-                            <div class="flex-shrink-0 avatar-xs">
-                                <span class="avatar-title bg-light p-1 rounded-circle shadow">
-                                    <img src="assets/images/svg/crypto-icons/${icon}" class="img-fluid" alt="" />
-                                </span>
-                            </div>
-                            <div class="flex-grow-1 ms-2">
-                                <h6 class="mb-1">${item.nama_chemical}</h6>
-                                <p class="fs-12 mb-0 text-muted">
-                                    <i class="mdi mdi-circle fs-10 align-middle ${color} me-1"></i>
-                                </p>
-                            </div>
-                            <div class="flex-shrink-0 text-end">
-                                <h6 class="mb-1">${item.total.toLocaleString()}</h6>
-                                <p class="text-danger fs-12 mb-0">
-                                Kilogram</p>
-                            </div>
-                        </div>
-                    </li>
-                `);
-         });
-      }
-
-      // Dropdown filter handler
-      $('#modeSelector').on('change', function() {
-         const mode = $(this).val();
-         fetchChemicalData(mode);
-      });
-
-      // Initial fetch
-      fetchChemicalData();
-
-      //api pemakaian air
-      function loadAirData(mode = 'terakhir') {
-         let apiUrl = mode === 'terakhir' ?
-            "{{url('eng/api/air/terakhir')}}" :
-            "{{url('eng/api/air/')}}" + $mode;
-
-         $.ajax({
-            url: apiUrl,
-            dataType: 'json',
-            success: function(data) {
-               renderAirList(data);
-            },
-            error: function(_xhr, status, error) {
-               console.error('Gagal load data air:', status, error);
-            }
-         });
-      }
-
-      function renderAirList(data) {
-         let list = $('#list-air-pemakaian');
-         list.empty();
-
-         if (data.length === 0) {
-            list.append(`<li class="list-group-item text-center text-muted">Tidak ada data.</li>`);
-            return;
-         }
-
-         data.forEach((item, i) => {
-            const iconList = ['btc', 'eth', 'ltc', 'aave', 'bnb', 'doge', 'usdt'];
-            const icon = iconList[i % iconList.length];
-            let total_pemakaian = item.pemakaian_awal - item.pemakaian_akhir;
-            list.append(`
-                    <li class="list-group-item d-flex align-items-center">
-                       
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="fs-14 mb-1">Pemakaian Air</h6>
-                            <p class="text-muted mb-0">${item.tanggal}</p>
-                        </div>
-                        <div class="flex-shrink-0 text-end">
-                            <h6 class="fs-14 mb-1">${total_pemakaian} L</h6>
-                            
-                        </div>
-                    </li>
-                `);
-         });
-      }
-
-      $('#modeAirSelector').on('change', function() {
-         let mode = $(this).val();
-         loadAirData(mode);
-      });
-
-      loadAirData(); // Load default
-
-
-      // api pemakaian listrik
-      function loadListrikData(mode = 'terakhir') {
-         let apiUrl = mode === 'terakhir' ?
-            "{{url('eng/api/listrik/terakhir')}}" :
-            "{{url('eng/api/listrik/')}}" + $mode;
-
-         $.ajax({
-            url: apiUrl,
-            dataType: 'json',
-            success: function(data) {
-               renderListrikList(data);
-            },
-            error: function(_xhr, status, error) {
-               console.error('Gagal load data listrik:', status, error);
-            }
-         });
-      }
-
-      function renderListrikList(data) {
-         let list = $('#list-listrik-pemakaian');
-         list.empty();
-
-         if (data.length === 0) {
-            list.append(`<li class="list-group-item text-center text-muted">Tidak ada data.</li>`);
-            return;
-         }
-
-         data.forEach((item, i) => {
-
-
-            list.append(`
-                    <li class="list-group-item d-flex align-items-center">
-                       
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="fs-14 mb-1">Pemakaian Lsitrik</h6>
-                            <p class="text-muted mb-0">${item.tanggal}</p>
-                        </div>
-                        <div class="flex-shrink-0 text-end">
-                            <h6 class="fs-14 mb-1">${parseFloat(item.pemakaian_kwh).toLocaleString()} Kwh</h6>
-                            <p class="text-success fs-12 mb-0">${item.notes ?? ''}</p>
-                        </div>
-                    </li>
-                `);
-         });
-      }
-
-      $('#modeListrikSelector').on('change', function() {
-         let mode = $(this).val();
-         loadListrikData(mode);
-      });
-
-      loadListrikData(); // Load default
 
 
 
       function fetchData_abnormal(filter = 'today', start = '', end = '') {
-         // Swal.fire({
-         //     title: 'Loading data...',
-         //     text: 'Harap tunggu',
-         //     allowOutsideClick: false,
-         //     didOpen: () => {
-         //         Swal.showLoading();
-         //     }
-         // });
+
 
          $.ajax({
             url: '{{ url("sensor/rhtemp") }}',
@@ -1115,43 +810,127 @@
       });
 
 
-   });
 
-   let chartChemical;
 
-   function renderChemicalChart(data) {
-      const colors = getChartColorsArray("#portfolio_donut_charts");
+      let chartKondensat;
 
-      const labels = data.map(item => item.nama_chemical);
-      const totals = data.map(item => item.total);
+      const UpdateChartKondensat = (response) => {
+         const data = response.data || [];
+         if (!data.length) {
+            chartKondensat?.updateSeries([{
+               data: []
+            }]);
+            Swal.fire({
+               icon: "warning",
+               title: "Data Tidak Ditemukan",
+               text: "Tidak ada data kondensat untuk rentang waktu yang dipilih."
+            });
+            return;
+         }
 
-      const options = {
-         chart: {
-            type: 'donut',
-            height: 250
-         },
-         labels: labels,
-         series: totals,
-         colors: colors,
-         legend: {
-            position: 'bottom'
-         },
-         plotOptions: {
-            pie: {
-               donut: {
-                  size: '70%'
-               }
+         const categories = data.map(i => i.waktu);
+
+         // Buat series berdasarkan field Suhu1 - Suhu5
+         const series = [];
+         for (let i = 1; i <= 5; i++) {
+            const key = `Suhu${i}`;
+            if (data.some(d => d[key] !== null)) { // hanya tambahkan kalau ada datanya
+               series.push({
+                  name: key,
+                  data: data.map(d => d[key] !== null ? parseFloat(d[key]) : null)
+               });
             }
+         }
+
+         const options = {
+            chart: {
+               type: "line",
+               height: 350
+            },
+            stroke: {
+               width: 2,
+               curve: "smooth"
+            },
+            series,
+            colors: ["#008FFB", "#FEB019", "#00E396", "#FF4560", "#775DD0"], // 5 warna untuk Suhu1-5
+            xaxis: {
+               categories,
+               title: {
+                  text: "Waktu"
+               },
+               labels: {
+                  rotate: -45,
+                  show: true
+               }
+            },
+            yaxis: {
+               title: {
+                  text: "Suhu (°C)"
+               }
+            },
+            tooltip: {
+               x: {
+                  format: "dd MMM HH:mm"
+               }
+            },
+            legend: {
+               position: "top"
+            }
+         };
+
+         if (chartKondensat) {
+            chartKondensat.updateOptions(options);
+         } else {
+            chartKondensat = new ApexCharts(document.querySelector("#kondensat_chart"), options);
+            chartKondensat.render();
          }
       };
 
-      if (chartChemical) {
-         chartChemical.updateOptions(options);
-      } else {
-         chartChemical = new ApexCharts(document.querySelector("#portfolio_donut_charts"), options);
-         chartChemical.render();
-      }
-   }
+
+      $("#applyKondensat").on("click", () => {
+         const start = $("#kondensatStart").val();
+         const end = $("#kondensatEnd").val();
+
+         if (!start || !end) {
+            return Swal.fire({
+               icon: "warning",
+               title: "Pilih Rentang Tanggal!",
+               text: "Harap pilih tanggal mulai dan selesai."
+            });
+         }
+
+         $.ajax({
+            url: "{{ url('boiler/kondensat/data') }}",
+            method: "GET",
+            data: {
+               start_date: start,
+               end_date: end
+            },
+            success: function(response) {
+               UpdateChartKondensat(response);
+            },
+            error: function(xhr, status, error) {
+               console.error(`AJAX Error: ${status} ${error}`);
+               Swal.fire({
+                  icon: "error",
+                  title: "Gagal!",
+                  text: "Tidak bisa mengambil data kondensat."
+               });
+            }
+         });
+
+      });
+
+      // Load awal hari ini
+      const today = new Date().toISOString().split("T")[0];
+      $("#kondensatStart").val(today);
+      $("#kondensatEnd").val(today);
+      $("#applyKondensat").trigger("click");
+
+
+   });
+
+
 
    function getChartColorsArray(chartId) {
       const colors = document.querySelector(chartId).getAttribute("data-colors");

@@ -814,7 +814,8 @@
 
         let chartKondensat;
 
-        const UpdateChartKondensat = (data) => {
+        const UpdateChartKondensat = (response) => {
+            const data = response.data || [];
             if (!data.length) {
                 chartKondensat?.updateSeries([{
                     data: []
@@ -827,16 +828,19 @@
                 return;
             }
 
-            const categories = data.map(i => i.waktu); // pastikan field `waktu` ada di query model
-            const series = [{
-                    name: "Kondensat Flow",
-                    data: data.map(i => i.flow) // sesuaikan field di tabel Kondensat
-                },
-                {
-                    name: "Kondensat Temp",
-                    data: data.map(i => i.temp) // contoh kalau ada suhu
+            const categories = data.map(i => i.waktu);
+
+            // Buat series berdasarkan field Suhu1 - Suhu5
+            const series = [];
+            for (let i = 1; i <= 5; i++) {
+                const key = `Suhu${i}`;
+                if (data.some(d => d[key] !== null)) { // hanya tambahkan kalau ada datanya
+                    series.push({
+                        name: key,
+                        data: data.map(d => d[key] !== null ? parseFloat(d[key]) : null)
+                    });
                 }
-            ];
+            }
 
             const options = {
                 chart: {
@@ -848,25 +852,29 @@
                     curve: "smooth"
                 },
                 series,
-                colors: ["#008FFB", "#FEB019"],
+                colors: ["#008FFB", "#FEB019", "#00E396", "#FF4560", "#775DD0"], // 5 warna untuk Suhu1-5
                 xaxis: {
                     categories,
                     title: {
                         text: "Waktu"
                     },
                     labels: {
+                        rotate: -45,
                         show: true
                     }
                 },
                 yaxis: {
                     title: {
-                        text: "Kondensat Value"
+                        text: "Suhu (°C)"
                     }
                 },
                 tooltip: {
                     x: {
                         format: "dd MMM HH:mm"
                     }
+                },
+                legend: {
+                    position: "top"
                 }
             };
 
@@ -877,6 +885,7 @@
                 chartKondensat.render();
             }
         };
+
 
         $("#applyKondensat").on("click", () => {
             const start = $("#kondensatStart").val();
@@ -898,15 +907,7 @@
                     end_date: end
                 },
                 success: function(response) {
-                    if (response.data && response.data.length > 0) {
-                        UpdateChartKondensat(response.data);
-                    } else {
-                        Swal.fire({
-                            icon: "warning",
-                            title: "Data Tidak Ditemukan",
-                            text: "Tidak ada data untuk rentang waktu yang dipilih."
-                        });
-                    }
+                    UpdateChartKondensat(response);
                 },
                 error: function(xhr, status, error) {
                     console.error(`AJAX Error: ${status} ${error}`);
@@ -917,6 +918,7 @@
                     });
                 }
             });
+
         });
 
         // Load awal hari ini
