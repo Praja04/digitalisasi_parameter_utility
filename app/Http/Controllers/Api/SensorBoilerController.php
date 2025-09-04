@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Boiler\BbSteam_Boiler;
 use App\Models\Boiler\ReadSensors_Boiler;
 use App\Models\Boiler\Sensors_Boiler;
+use App\Models\Boiler\KondensatModel;
 use Carbon\Carbon;
 
 class SensorBoilerController extends Controller
@@ -296,5 +297,31 @@ class SensorBoilerController extends Controller
             'total' => count($data),
             'data' => $data
         ]);
+    }
+
+
+
+    ///Kondensat
+    public function getKondensatData(Request $request)
+    {
+        // Ambil start dan end date dari request, atau default ke hari ini
+        $startDate = $request->input('start_date')
+        ? Carbon::parse($request->input('start_date'))->startOfDay()
+            : Carbon::now()->startOfDay();
+
+        $endDate = $request->input('end_date')
+        ? Carbon::parse($request->input('end_date'))->endOfDay()
+            : Carbon::now()->endOfDay();
+
+        // Ambil data per menit (detik = 00)
+        $data = KondensatModel::getDataPerMenit($startDate, $endDate);
+
+        // Kirim ke view atau response JSON
+        return response()->json([
+            'start_date' => $startDate->toDateTimeString(),
+            'end_date' => $endDate->toDateTimeString(),
+            'data' => $data,
+        ]);
+
     }
 }

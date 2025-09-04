@@ -363,6 +363,7 @@ Route::prefix('users')->as('users.')->group(function () {
 Route::prefix('boiler')->group(function () {
     Route::view('/realtime', 'boiler.realtime');
     Route::view('/datatren', 'boiler.datatren');
+    Route::get('/kondensat/data', [SensorBoilerController::class, 'getKondensatData']);
 });
 
 Route::middleware('web')->group(function () {
