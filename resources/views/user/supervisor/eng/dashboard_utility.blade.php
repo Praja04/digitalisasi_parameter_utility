@@ -3,18 +3,20 @@
 
 <div class="page-content">
     <div class="container-fluid">
-        <!-- start page title -->
+        <!-- Page Header with Gradient Background -->
         <div class="row">
             <div class="col-12">
-                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                    <h4 class="mb-sm-0">Engineering</h4>
-
+                <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-gradient-primary p-4 rounded-3 mb-4 text-white shadow-lg">
+                    <div>
+                        <h4 class="mb-1 text-white fw-bold">Engineering Dashboard</h4>
+                        <p class="mb-0 opacity-75">Monitor utilitas air, listrik, dan chemical secara real-time</p>
+                    </div>
                     <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
+                        <ol class="breadcrumb m-0 bg-transparent">
                             <li class="breadcrumb-item">
-                                <a href="javascript: void(0);">Dashboards</a>
+                                <a href="javascript: void(0);" class="text-white-50">Dashboards</a>
                             </li>
-                            <li class="breadcrumb-item active">
+                            <li class="breadcrumb-item active text-white">
                                 Utility
                             </li>
                         </ol>
@@ -23,269 +25,333 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-xxl-6 col-md-12">
-                <div class="card">
-                    <div class="card-header align-items-center d-flex">
-                        <h4 class="card-title mb-0 flex-grow-1">Pemakaian Air Proses & Support Utility</h4>
-                        <div class="flex-shrink-0">
-                            <div class="dropdown card-header-dropdown">
-                                <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-expanded="false" id="dropdownPemakaianAir">
-                                    <span class="fw-semibold text-uppercase fs-12">Filter:</span>
-                                    <span class="text-muted" id="selectedBulanAir">Pilih Tanggal<i class="mdi mdi-chevron-down ms-1"></i></span>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end p-3" style="min-width: 280px;">
-                                    <div class="mb-2">
-                                        <label for="startDateAir" class="form-label mb-0">Dari:</label>
+        <!-- Stats Cards Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-xl-4">
+                <div class="card stat-card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <div class="avatar-sm rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center">
+                                    <i class="ri-drop-line fs-4 text-primary"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1 text-muted fw-semibold text-uppercase tracking-wide">Total Air</h6>
+                                <h4 class="mb-0" id="total-air-usage">- m³</h4>
+                                <p class="text-muted mb-0 small">Bulan ini</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4">
+                <div class="card stat-card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <div class="avatar-sm rounded-circle bg-warning-subtle d-flex align-items-center justify-content-center">
+                                    <i class="ri-flashlight-line fs-4 text-warning"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1 text-muted fw-semibold text-uppercase tracking-wide">Total Listrik</h6>
+                                <h4 class="mb-0" id="total-electricity-usage">- mWh</h4>
+                                <p class="text-muted mb-0 small">Bulan ini</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4">
+                <div class="card stat-card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <div class="avatar-sm rounded-circle bg-success-subtle d-flex align-items-center justify-content-center">
+                                    <i class="ri-test-tube-line fs-4 text-success"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1 text-muted fw-semibold text-uppercase tracking-wide">Total Chemical</h6>
+                                <h4 class="mb-0" id="total-chemical-usage">- kg</h4>
+                                <p class="text-muted mb-0 small">Bulan ini</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="row g-4">
+            <!-- Water Usage Process & Support -->
+            <div class="col-xxl-6 col-lg-6">
+                <div class="card chart-card border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent border-bottom-0 pb-0">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h5 class="card-title mb-1 fw-semibold">Air Proses & Support</h5>
+                                <p class="text-muted mb-0 small">Pemakaian air untuk utilitas</p>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-light btn-sm dropdown-toggle border-0" type="button" data-bs-toggle="dropdown">
+                                    <i class="ri-calendar-line me-1"></i>
+                                    <span id="selectedBulanAir">Pilih Periode</span>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end p-3 border-0 shadow-lg" style="min-width: 300px;">
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold text-muted">Dari Tanggal</label>
                                         <input type="date" id="startDateAir" class="form-control form-control-sm">
                                     </div>
-                                    <div class="mb-2">
-                                        <label for="endDateAir" class="form-label mb-0">Sampai:</label>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold text-muted">Sampai Tanggal</label>
                                         <input type="date" id="endDateAir" class="form-control form-control-sm">
                                     </div>
-                                    <button class="btn btn-sm btn-primary w-100" id="applyAirRange">Terapkan</button>
+                                    <button class="btn btn-primary btn-sm w-100" id="applyAirRange">
+                                        <i class="ri-refresh-line me-1"></i>Terapkan Filter
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body pb-0">
-                        <div class="chart-loading" id="loading-air" style="display: none;">
-                            <div class="text-center p-4">
-                                <div class="spinner-border text-primary" role="status">
+                    <div class="card-body pt-2">
+                        <div class="chart-loading" id="loading-air">
+                            <div class="text-center p-5">
+                                <div class="spinner-grow text-primary" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
-                                <p class="mt-2 text-muted">Memuat data...</p>
+                                <p class="mt-3 text-muted mb-0">Memuat data pemakaian air...</p>
                             </div>
                         </div>
-                        <div id="pemakaian-air-chart" class="apex-charts" dir="ltr"></div>
+                        <div id="pemakaian-air-chart" class="apex-charts"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-xxl-6 col-md-12">
-                <div class="card">
-                    <div class="card-header align-items-center d-flex">
-                        <h4 class="card-title mb-0 flex-grow-1">
-                            Pemakaian Air Raw
-                        </h4>
-                        <div class="flex-shrink-0">
-                            <div class="dropdown card-header-dropdown">
-                                <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-expanded="false" id="dropdownPemakaianAirRaw">
-                                    <span class="fw-semibold text-uppercase fs-12">Filter:</span>
-                                    <span class="text-muted" id="selectedBulanAirRaw">Pilih Tanggal<i class="mdi mdi-chevron-down ms-1"></i></span>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end p-3" style="min-width: 280px;">
-                                    <div class="mb-2">
-                                        <label for="startDateAirRaw" class="form-label mb-0">Dari:</label>
+            <!-- Raw Water Usage -->
+            <div class="col-xxl-6 col-lg-6">
+                <div class="card chart-card border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent border-bottom-0 pb-0">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h5 class="card-title mb-1 fw-semibold">Air Raw</h5>
+                                <p class="text-muted mb-0 small">Pemakaian air mentah</p>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-light btn-sm dropdown-toggle border-0" type="button" data-bs-toggle="dropdown">
+                                    <i class="ri-calendar-line me-1"></i>
+                                    <span id="selectedBulanAirRaw">Pilih Periode</span>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end p-3 border-0 shadow-lg" style="min-width: 300px;">
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold text-muted">Dari Tanggal</label>
                                         <input type="date" id="startDateAirRaw" class="form-control form-control-sm">
                                     </div>
-                                    <div class="mb-2">
-                                        <label for="endDateAirRaw" class="form-label mb-0">Sampai:</label>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold text-muted">Sampai Tanggal</label>
                                         <input type="date" id="endDateAirRaw" class="form-control form-control-sm">
                                     </div>
-                                    <button class="btn btn-sm btn-primary w-100" id="applyAirRawRange">Terapkan</button>
+                                    <button class="btn btn-primary btn-sm w-100" id="applyAirRawRange">
+                                        <i class="ri-refresh-line me-1"></i>Terapkan Filter
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body pb-0">
-                        <div class="chart-loading" id="loading-air-raw" style="display: none;">
-                            <div class="text-center p-4">
-                                <div class="spinner-border text-primary" role="status">
+                    <div class="card-body pt-2">
+                        <div class="chart-loading" id="loading-air-raw">
+                            <div class="text-center p-5">
+                                <div class="spinner-grow text-info" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
-                                <p class="mt-2 text-muted">Memuat data...</p>
+                                <p class="mt-3 text-muted mb-0">Memuat data air raw...</p>
                             </div>
                         </div>
-                        <div id="pemakaian-air-chart-raw" data-colors='["--vz-primary", "--vz-success", "--vz-warning"]' class="apex-charts" dir="ltr"></div>
+                        <div id="pemakaian-air-chart-raw" class="apex-charts"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-xxl-6 col-md-12">
-                <div class="card">
-                    <div class="card-header align-items-center d-flex">
-                        <h4 class="card-title mb-0 flex-grow-1">Pemakaian Listrik</h4>
-                        <div class="flex-shrink-0">
-                            <div class="dropdown card-header-dropdown">
-                                <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-expanded="false" id="dropdownPemakaianListrik">
-                                    <span class="fw-semibold text-uppercase fs-12">Filter:</span>
-                                    <span class="text-muted" id="selectedBulanListrik">Pilih Tanggal<i class="mdi mdi-chevron-down ms-1"></i></span>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end p-3" style="min-width: 280px;">
-                                    <div class="mb-2">
-                                        <label for="startDateListrik" class="form-label mb-0">Dari:</label>
+            <!-- Electricity Usage -->
+            <div class="col-xxl-6 col-lg-6">
+                <div class="card chart-card border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent border-bottom-0 pb-0">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h5 class="card-title mb-1 fw-semibold">Pemakaian Listrik</h5>
+                                <p class="text-muted mb-0 small">Konsumsi energi listrik</p>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-light btn-sm dropdown-toggle border-0" type="button" data-bs-toggle="dropdown">
+                                    <i class="ri-calendar-line me-1"></i>
+                                    <span id="selectedBulanListrik">Pilih Periode</span>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end p-3 border-0 shadow-lg" style="min-width: 300px;">
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold text-muted">Dari Tanggal</label>
                                         <input type="date" id="startDateListrik" class="form-control form-control-sm">
                                     </div>
-                                    <div class="mb-2">
-                                        <label for="endDateListrik" class="form-label mb-0">Sampai:</label>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold text-muted">Sampai Tanggal</label>
                                         <input type="date" id="endDateListrik" class="form-control form-control-sm">
                                     </div>
-                                    <button class="btn btn-sm btn-primary w-100" id="applyListrikRange">Terapkan</button>
+                                    <button class="btn btn-primary btn-sm w-100" id="applyListrikRange">
+                                        <i class="ri-refresh-line me-1"></i>Terapkan Filter
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body pb-0">
-                        <div class="chart-loading" id="loading-listrik" style="display: none;">
-                            <div class="text-center p-4">
-                                <div class="spinner-border text-primary" role="status">
+                    <div class="card-body pt-2">
+                        <div class="chart-loading" id="loading-listrik">
+                            <div class="text-center p-5">
+                                <div class="spinner-grow text-warning" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
-                                <p class="mt-2 text-muted">Memuat data...</p>
+                                <p class="mt-3 text-muted mb-0">Memuat data listrik...</p>
                             </div>
                         </div>
-                        <div id="pemakaian-listrik-chart" class="apex-charts" dir="ltr"></div>
+                        <div id="pemakaian-listrik-chart" class="apex-charts"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-xxl-6 col-md-12">
-                <div class="card">
-                    <div class="card-header align-items-center d-flex">
-                        <h4 class="card-title mb-0 flex-grow-1">
-                            Pemakaian Chemical
-                        </h4>
-                        <div class="flex-shrink-0">
-                            <div class="dropdown card-header-dropdown">
-                                <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-expanded="false" id="dropdownPemakaianChemical">
-                                    <span class="fw-semibold text-uppercase fs-12">Filter:</span>
-                                    <span class="text-muted" id="selectedBulanChemical">Pilih Tanggal<i class="mdi mdi-chevron-down ms-1"></i></span>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end p-3" style="min-width: 280px;">
-                                    <div class="mb-2">
-                                        <label for="startDateChemical" class="form-label mb-0">Dari:</label>
+            <!-- Chemical Usage -->
+            <div class="col-xxl-6 col-lg-6">
+                <div class="card chart-card border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent border-bottom-0 pb-0">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h5 class="card-title mb-1 fw-semibold">Pemakaian Chemical</h5>
+                                <p class="text-muted mb-0 small">Konsumsi bahan kimia</p>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-light btn-sm dropdown-toggle border-0" type="button" data-bs-toggle="dropdown">
+                                    <i class="ri-calendar-line me-1"></i>
+                                    <span id="selectedBulanChemical">Pilih Periode</span>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end p-3 border-0 shadow-lg" style="min-width: 300px;">
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold text-muted">Dari Tanggal</label>
                                         <input type="date" id="startDateChemical" class="form-control form-control-sm">
                                     </div>
-                                    <div class="mb-2">
-                                        <label for="endDateChemical" class="form-label mb-0">Sampai:</label>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold text-muted">Sampai Tanggal</label>
                                         <input type="date" id="endDateChemical" class="form-control form-control-sm">
                                     </div>
-                                    <button class="btn btn-sm btn-primary w-100" id="applyChemicalRange">Terapkan</button>
+                                    <button class="btn btn-primary btn-sm w-100" id="applyChemicalRange">
+                                        <i class="ri-refresh-line me-1"></i>Terapkan Filter
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body pb-0">
-                        <div class="chart-loading" id="loading-chemical" style="display: none;">
-                            <div class="text-center p-4">
-                                <div class="spinner-border text-primary" role="status">
+                    <div class="card-body pt-2">
+                        <div class="chart-loading" id="loading-chemical">
+                            <div class="text-center p-5">
+                                <div class="spinner-grow text-success" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
-                                <p class="mt-2 text-muted">Memuat data...</p>
+                                <p class="mt-3 text-muted mb-0">Memuat data chemical...</p>
                             </div>
                         </div>
-                        <div id="pemakaian-chemical-chart" data-colors='["--vz-primary", "--vz-success", "--vz-warning"]' class="apex-charts" dir="ltr"></div>
+                        <div id="pemakaian-chemical-chart" class="apex-charts"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Trend Charts Section -->
-        <div class="row">
-            <div class="col-xl-10">
-                <div class="card">
-                    <div class="card-header border-0 align-items-center d-flex">
-                        <h4 class="card-title mb-0 flex-grow-1">Trend Pemakaian Air</h4>
-                        <div class="d-flex align-items-center gap-1">
-                            <button type="button" class="btn btn-soft-secondary btn-sm shadow-none filter-btn" data-range="1M">1M</button>
-                            <input type="month" id="filter_bulan" class="form-control form-control-sm ms-2" style="width: auto;">
-                        </div>
-                    </div>
-                    <div class="card-body p-0 pb-2">
-                        <div class="chart-loading" id="loading-trend-air" style="display: none;">
-                            <div class="text-center p-4">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <p class="mt-2 text-muted">Memuat data trend...</p>
+        <!-- Trend Analysis Section -->
+        <div class="row g-4 mt-2">
+            <!-- Water Trend -->
+            <div class="col-xl-12">
+                <div class="card trend-card border-0 shadow-sm">
+                    <div class="card-header bg-gradient-primary text-white border-0">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h5 class="card-title mb-1 text-white fw-semibold">Trend Pemakaian Air</h5>
+                                <p class="mb-0 opacity-75 small">Analisis pola konsumsi air harian</p>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                
+                                <input type="month" id="filter_bulan" class="form-control form-control-sm bg-white" style="width: 140px;">
                             </div>
                         </div>
-                        <div style="width: 100%;">
-                            <div id="pemakaian_air_chart" class="apex-charts" dir="ltr"></div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="chart-loading" id="loading-trend-air">
+                            <div class="text-center p-5">
+                                <div class="spinner-grow text-primary" role="status"></div>
+                                <p class="mt-3 text-muted mb-0">Memuat trend data air...</p>
+                            </div>
                         </div>
+                        <div id="pemakaian_air_chart" class="apex-charts"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-xl-2">
-                <div class="card card-height-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Top 5 Operator Air</h5>
-                        <div id="top-operator-list" class="px-2 py-2 mt-2"></div>
+           
+        </div>
+
+        <div class="row g-4 mt-2">
+            <!-- Electricity Trend -->
+            <div class="col-xl-12">
+                <div class="card trend-card border-0 shadow-sm">
+                    <div class="card-header bg-gradient-warning text-white border-0">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h5 class="card-title mb-1 text-white fw-semibold">Trend Pemakaian Listrik</h5>
+                                <p class="mb-0 opacity-75 small">Analisis pola konsumsi listrik harian</p>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                              
+                                <input type="month" id="filter_bulan_listrik" class="form-control form-control-sm bg-white" style="width: 140px;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="chart-loading" id="loading-trend-listrik">
+                            <div class="text-center p-5">
+                                <div class="spinner-grow text-warning" role="status"></div>
+                                <p class="mt-3 text-muted mb-0">Memuat trend data listrik...</p>
+                            </div>
+                        </div>
+                        <div id="pemakaian_listrik_chart" class="apex-charts"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-xl-2">
-                <div class="card card-height-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Top 5 Operator Listrik</h5>
-                        <div id="top-operator-listrik" class="px-2 py-2 mt-2"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-10">
-                <div class="card">
-                    <div class="card-header border-0 align-items-center d-flex">
-                        <h4 class="card-title mb-0 flex-grow-1">Trend Pemakaian Listrik</h4>
-                        <div class="d-flex align-items-center gap-1">
-                            <button type="button" class="btn btn-soft-secondary btn-sm shadow-none filter-btn-listrik" data-range="1M">1M</button>
-                            <input type="month" id="filter_bulan_listrik" class="form-control form-control-sm ms-2" style="width: auto;">
-                        </div>
-                    </div>
-                    <div class="card-body p-0 pb-2">
-                        <div class="chart-loading" id="loading-trend-listrik" style="display: none;">
-                            <div class="text-center p-4">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <p class="mt-2 text-muted">Memuat data trend...</p>
+        <div class="row g-4 mt-2">
+            <!-- Chemical Trend -->
+            <div class="col-xl-12">
+                <div class="card trend-card border-0 shadow-sm">
+                    <div class="card-header bg-gradient-success text-white border-0">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h5 class="card-title mb-1 text-white fw-semibold">Trend Pemakaian Chemical</h5>
+                                <p class="mb-0 opacity-75 small">Analisis pola konsumsi chemical harian</p>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                              
+                                <input type="month" id="filter_bulan_chemical" class="form-control form-control-sm bg-white" style="width: 140px;">
                             </div>
                         </div>
-                        <div class="w-100">
-                            <div id="pemakaian_listrik_chart" class="apex-charts" dir="ltr"></div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="chart-loading" id="loading-trend-chemical">
+                            <div class="text-center p-5">
+                                <div class="spinner-grow text-success" role="status"></div>
+                                <p class="mt-3 text-muted mb-0">Memuat trend data chemical...</p>
+                            </div>
                         </div>
+                        <div id="pemakaian_chemical_chart" class="apex-charts"></div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-xl-10">
-                <div class="card">
-                    <div class="card-header border-0 align-items-center d-flex">
-                        <h4 class="card-title mb-0 flex-grow-1">Trend Pemakaian Chemical</h4>
-                        <div class="d-flex align-items-center gap-1">
-                            <button type="button" class="btn btn-soft-secondary btn-sm shadow-none filter-btn-chemical" data-range="1M">1M</button>
-                            <input type="month" id="filter_bulan_chemical" class="form-control form-control-sm ms-2" style="width: auto;">
-                        </div>
-                    </div>
-                    <div class="card-body p-0 pb-2">
-                        <div class="chart-loading" id="loading-trend-chemical" style="display: none;">
-                            <div class="text-center p-4">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <p class="mt-2 text-muted">Memuat data trend...</p>
-                            </div>
-                        </div>
-                        <div class="w-100">
-                            <div id="pemakaian_chemical_chart" class="apex-charts" dir="ltr"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-2">
-                <div class="card card-height-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Top 5 Operator Chemical</h5>
-                        <div id="top-operator-chemical" class="px-2 py-2 mt-2"></div>
-                    </div>
-                </div>
-            </div>
+          
         </div>
     </div>
 </div>
@@ -293,94 +359,37 @@
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
-    // Global chart variables
-    let chartInstances = {
-        pemakaianAir: null,
-        pemakaianAirRaw: null,
-        pemakaianListrik: null,
-        pemakaianChemical: null,
-        trendAir: null,
-        trendListrik: null,
-        trendChemical: null
-    };
+    // Simpan instance chart biar bisa update
+    const chartInstances = {};
 
-    // Utility functions for smooth loading
-    function showLoading(loaderId) {
-        $(`#${loaderId}`).fadeIn(200);
+    function showLoading(id) {
+        $(`#${id}`).fadeIn(200);
     }
 
-    function hideLoading(loaderId) {
-        $(`#${loaderId}`).fadeOut(300);
+    function hideLoading(id) {
+        $(`#${id}`).fadeOut(300);
     }
 
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    // Enhanced chart rendering with smooth animations
-    function createChartOptions(type = 'bar') {
-        const baseOptions = {
+    // Base options
+    function baseOptions(type = 'bar') {
+        return {
             chart: {
-                type: type,
+                type,
                 height: 300,
                 toolbar: {
                     show: false
-                },
-                animations: {
-                    enabled: true,
-                    easing: 'easeinout',
-                    speed: 800,
-                    animateGradually: {
-                        enabled: true,
-                        delay: 100
-                    },
-                    dynamicAnimation: {
-                        enabled: true,
-                        speed: 400
-                    }
-                },
-                dropShadow: {
-                    enabled: true,
-                    color: '#000',
-                    top: 3,
-                    left: 2,
-                    blur: 4,
-                    opacity: 0.1,
-                }
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '60%',
-                    endingShape: 'rounded',
-                    borderRadius: 4
                 }
             },
             dataLabels: {
                 enabled: false
             },
             stroke: {
-                show: true,
-                width: type === 'line' ? 3 : 2,
-                colors: type === 'line' ? undefined : ['transparent'],
-                curve: type === 'line' ? 'smooth' : undefined
+                curve: type === 'line' ? 'smooth' : 'straight',
+                width: 2
             },
             grid: {
                 borderColor: '#f1f1f1',
-                strokeDashArray: 3,
-                yaxis: {
-                    lines: {
-                        show: true
-                    }
-                }
+                strokeDashArray: 3
             },
             xaxis: {
                 labels: {
@@ -398,545 +407,446 @@
                     }
                 }
             },
-            fill: {
-                opacity: 0.9,
-                gradient: {
-                    shade: 'light',
-                    type: 'vertical',
-                    shadeIntensity: 0.5,
-                    gradientToColors: undefined,
-                    inverseColors: false,
-                    opacityFrom: 0.85,
-                    opacityTo: 0.55,
-                    stops: [0, 100]
-                }
-            },
-            tooltip: {
-                theme: 'light',
-                style: {
-                    fontSize: '12px'
-                },
-                marker: {
-                    show: true
-                }
-            },
-            responsive: [{
-                breakpoint: 768,
-                options: {
-                    chart: {
-                        height: 250
-                    },
-                    plotOptions: {
-                        bar: {
-                            columnWidth: '70%'
-                        }
-                    }
-                }
-            }]
-        };
-
-        return baseOptions;
-    }
-
-    // Enhanced fetch functions with loading states
-    function fetchPemakaianAir(start, end) {
-        showLoading('loading-air');
-        const url = `{{ url('eng/top5/air') }}?start_date=${start}&end_date=${end}`;
-
-        $.getJSON(url)
-            .done(function(data) {
-                const filtered = data.filter(item => item.jenis_pemakaian !== "Outlet Fresh Water 2");
-                const labels = filtered.map(d => d.jenis_pemakaian);
-                const values = filtered.map(d => parseFloat(d.total_pemakaian));
-                const meta = filtered.map(d => ({
-                    start_date: d.start_date,
-                    end_date: d.end_date
-                }));
-
-                renderBarChart(labels, values, "#pemakaian-air-chart", 'pemakaianAir', 'm³', meta);
-            })
-            .fail(() => console.error("Gagal memuat data pemakaian air."))
-            .always(() => hideLoading('loading-air'));
-    }
-
-
-    function fetchPemakaianAirRaw(start, end) {
-        showLoading('loading-air-raw');
-        const url = `{{ url('eng/top5/air/raw') }}?start_date=${start}&end_date=${end}`;
-
-        $.getJSON(url)
-            .done(function(data) {
-                const labels = data.map(d => d.jenis_pemakaian);
-                const values = data.map(d => parseFloat(d.total_pemakaian));
-                const meta = data.map(d => ({
-                    start_date: d.start_date,
-                    end_date: d.end_date
-                }));
-
-                renderBarChart(labels, values, "#pemakaian-air-chart-raw", 'pemakaianAirRaw', 'm³', meta);
-            })
-            .fail(() => console.error("Gagal memuat data pemakaian air raw."))
-            .always(() => hideLoading('loading-air-raw'));
-    }
-
-    function loadPemakaianListrik(start, end) {
-        showLoading('loading-listrik');
-
-        $.ajax({
-            url: "{{url('/eng/top5/listrik')}}",
-            type: 'GET',
-            data: {
-                start_date: start,
-                end_date: end
-            },
-            success: function(data) {
-                const filtered = data.filter(item => item.panel_type !== "MDP");
-
-                const labels = filtered.map(item => item.panel_type);
-                const usage = filtered.map(item => item.total_usage);
-                const meta = filtered.map(d => ({
-                    start_date: d.start_date,
-                    end_date: d.end_date
-                }));
-
-                renderBarChart(labels, usage, "#pemakaian-listrik-chart", 'pemakaianListrik', 'mWh', meta);
-            },
-            error: function() {
-                console.error("Gagal memuat data pemakaian listrik.");
-            },
-            complete: function() {
-                hideLoading('loading-listrik');
+            noData: {
+                text: 'Memuat data...'
             }
-        });
-    }
-
-    function loadPemakaianChemical(start, end) {
-        showLoading('loading-chemical');
-
-        $.ajax({
-            url: "{{url('/eng/top5/chemical')}}",
-            type: 'GET',
-            data: {
-                start_date: start,
-                end_date: end
-            },
-            success: function(data) {
-                const labels = data.map(item => item.jenis_pemakaian);
-                const usage = data.map(item => item.total_pemakaian);
-                const satuan = data.map(item => item.satuan);
-                const meta = data.map(d => ({
-                    start_date: d.start_date,
-                    end_date: d.end_date
-                }));
-
-                // ambil satuan pertama sebagai default
-                const unit = satuan.length > 0 ? satuan[0] : '';
-
-                renderBarChart(
-                    labels,
-                    usage,
-                    "#pemakaian-chemical-chart",
-                    "pemakaianChemical",
-                    unit,
-                    meta // kirim supaya tooltip bisa render periode
-                );
-            },
-            error: function() {
-                console.error("Gagal memuat data pemakaian chemical.");
-            },
-            complete: function() {
-                hideLoading('loading-chemical');
-            }
-        });
-    }
-
-    
-
-    function renderBarChart(labels, values, selector, instanceKey, unit, meta = null) {
-        const options = createChartOptions('bar');
-
-        // Buat tiap label jadi 1 series
-        options.series = labels.map((label, i) => ({
-            name: label,
-            data: [values[i]]
-        }));
-
-        // X-axis cuma dummy, karena data dipisah ke series
-        options.xaxis.categories = [''];
-
-        options.colors = ["#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0",
-            "#546E7A", "#26a69a", "#d10ce8", "#ff6f61", "#2b908f",
-            "#f9a3a4", "#90ee7e", "#f48024", "#69d2e7", "#e83e8c",
-            "#6f42c1", "#20c997", "#fc7d14ff", "#6610f2", "#198754"
-        ];
-        options.legend = {
-            show: true,
-            position: 'top',
-            horizontalAlign: 'center'
         };
+    }
 
-        // Tooltip custom
+    // Render bar chart
+    function renderBar(labels, values, selector, key, unit, color) {
+        const options = baseOptions('bar');
+        options.series = [{
+            name: `Total (${unit})`,
+            data: values
+        }];
+        options.xaxis.categories = labels;
+        options.colors = [color];
         options.tooltip = {
-            shared: true,
-            intersect: false,
             y: {
-                formatter: (val) => `${val} ${unit}`
+                formatter: val => `${val} ${unit}`
             }
         };
 
-        if (chartInstances[instanceKey]) {
-            chartInstances[instanceKey].updateOptions(options, true, true);
+        if (chartInstances[key]) {
+            chartInstances[key].updateOptions(options, true, true);
         } else {
-            chartInstances[instanceKey] = new ApexCharts(document.querySelector(selector), options);
-            chartInstances[instanceKey].render();
+            chartInstances[key] = new ApexCharts(document.querySelector(selector), options);
+            chartInstances[key].render();
         }
     }
 
-
-    function loadTopOperator(utility, containerId, bulan = null) {
-        const url = `{{ url('eng/top5/operator') }}/${utility}` + (bulan ? `?bulan=${bulan}` : '');
-
-        $.getJSON(url)
-            .done(function(data) {
-                const container = $(containerId);
-                container.fadeOut(200, function() {
-                    container.empty();
-                    if (!data.length) {
-                        container.append('<p class="text-muted">Tidak ada data.</p>');
-                    } else {
-                        data.forEach(item => {
-                            const nama = item.created_by || item.operator || '-';
-                            container.append(`
-                                <div class="d-flex align-items-center mb-2 small operator-item" style="opacity: 0;">
-                                    <i class="mdi mdi-account fs-4 text-primary me-3"></i>
-                                    <div class="flex-grow-1 d-flex justify-content-between">
-                                        <span>${nama}</span>
-                                        <span class="fw-bold">${item.jumlah_pengisian}x</span>
-                                    </div>
-                                </div>
-                            `);
-                        });
-
-                        // Animate operator items
-                        container.find('.operator-item').each(function(index) {
-                            $(this).delay(index * 100).animate({
-                                opacity: 1
-                            }, 300);
-                        });
-                    }
-                    container.fadeIn(300);
-                });
-            })
-            .fail(function() {
-                console.error(`Gagal memuat data operator ${utility}.`);
-            });
+    // Fetch data untuk bar chart
+    function fetchAir(start, end) {
+        showLoading('loading-air');
+        $.getJSON(`{{ url('eng/top5/air') }}?start_date=${start}&end_date=${end}`, data => {
+            renderBar(data.map(d => d.jenis_pemakaian), data.map(d => +d.total_pemakaian),
+                "#pemakaian-air-chart", 'air', 'm³', '#3B82F6');
+        }).always(() => hideLoading('loading-air'));
     }
 
-    function setupTrendChart({
-        selector,
-        url,
-        ySuffix,
-        filterBtnClass,
-        inputBulanId,
-        instanceKey,
-        loadingId
-    }) {
-        const el = document.querySelector(selector);
-        const options = createChartOptions('line');
+    function fetchAirRaw(start, end) {
+        showLoading('loading-air-raw');
+        $.getJSON(`{{ url('eng/top5/air/raw') }}?start_date=${start}&end_date=${end}`, data => {
+            renderBar(data.map(d => d.jenis_pemakaian), data.map(d => +d.total_pemakaian),
+                "#pemakaian-air-chart-raw", 'airRaw', 'm³', '#06B6D4');
+        }).always(() => hideLoading('loading-air-raw'));
+    }
 
+    function fetchListrik(start, end) {
+        showLoading('loading-listrik');
+        $.getJSON(`{{ url('eng/top5/listrik') }}?start_date=${start}&end_date=${end}`, data => {
+            renderBar(data.map(d => d.panel_type), data.map(d => +d.total_usage),
+                "#pemakaian-listrik-chart", 'listrik', 'mWh', '#F59E0B');
+        }).always(() => hideLoading('loading-listrik'));
+    }
+
+    function fetchChemical(start, end) {
+        showLoading('loading-chemical');
+        $.getJSON(`{{ url('eng/top5/chemical') }}?start_date=${start}&end_date=${end}`, data => {
+            renderBar(data.map(d => d.jenis_pemakaian), data.map(d => +d.total_pemakaian),
+                "#pemakaian-chemical-chart", 'chemical', 'kg', '#10B981');
+        }).always(() => hideLoading('loading-chemical'));
+    }
+
+    // Top Operator
+    function fetchTopOperator(url, containerId) {
+        $.getJSON(url, data => {
+            const container = $(containerId).empty();
+            if (!data.length) {
+                container.html("<p class='text-muted'>Tidak ada data.</p>");
+                return;
+            }
+            data.forEach(d => {
+                const nama = d.created_by || d.operator || '-';
+                container.append(`
+                    <div class="d-flex align-items-center mb-2 small">
+                        <i class="mdi mdi-account fs-4 text-primary me-3"></i>
+                        <div class="flex-grow-1 d-flex justify-content-between">
+                            <span>${nama}</span>
+                            <span class="fw-bold">${d.jumlah_pengisian}x</span>
+                        </div>
+                    </div>
+                `);
+            });
+        });
+    }
+
+    // Trend chart setup
+    function setupTrend(selector, url, ySuffix, key, loadingId) {
+        const options = baseOptions('line');
         options.chart.height = 350;
         options.series = [];
-        options.xaxis = {
-            type: 'datetime',
-            title: {
-                text: 'Tanggal'
-            },
-            labels: {
-                style: {
-                    fontSize: '12px',
-                    colors: '#8c9097'
-                }
-            }
-        };
-        options.yaxis = {
-            title: {
-                text: `Total Pemakaian (${ySuffix})`
-            },
-            labels: {
-                style: {
-                    fontSize: '12px',
-                    colors: '#8c9097'
-                }
-            }
+        options.xaxis.type = 'datetime';
+        options.yaxis.title = {
+            text: `Pemakaian (${ySuffix})`
         };
         options.tooltip = {
-            shared: true,
             x: {
                 format: 'dd MMM yyyy'
             },
             y: {
-                formatter: val => `${val} ${ySuffix}`
-            }
-        };
-        options.colors = ["#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0"];
-        options.legend = {
-            position: 'top',
-            horizontalAlign: 'center'
-        };
-        options.noData = {
-            text: 'Memuat data...',
-            style: {
-                fontSize: '14px'
+                formatter: v => `${v} ${ySuffix}`
             }
         };
 
-        const chart = new ApexCharts(el, options);
+        const chart = new ApexCharts(document.querySelector(selector), options);
         chart.render();
-        chartInstances[instanceKey] = chart;
+        chartInstances[key] = chart;
 
-        const debouncedFetch = debounce((params = {}) => {
-            if (loadingId) showLoading(loadingId);
+        function fetchTrend(params = {}) {
+            showLoading(loadingId);
+            $.getJSON(url, params, data => {
+                chart.updateSeries(data);
+            }).always(() => hideLoading(loadingId));
+        }
 
-            const query = $.param(params);
-            $.get(`${url}${query ? '?' + query : ''}`)
-                .done(data => {
-                    chart.updateSeries(data, true);
-                })
-                .fail(err => console.error("Gagal load:", err.responseText))
-                .always(() => {
-                    if (loadingId) hideLoading(loadingId);
-                });
-        }, 300);
-
-        // Initial load
-        debouncedFetch();
-
-        // Event handlers
-        $(filterBtnClass).on('click', function() {
-            const range = $(this).data('range');
-            const date = new Date();
-
-            if (range === '1M') date.setMonth(date.getMonth() - 1);
-            else if (range === '6M') date.setMonth(date.getMonth() - 6);
-            else if (range === '1Y') date.setFullYear(date.getFullYear() - 1);
-            else return debouncedFetch();
-
-            debouncedFetch({
-                bulan: date.toISOString().slice(0, 7)
-            });
-        });
-
-        $(inputBulanId).on("change", function() {
-            const bulan = $(this).val();
-            if (bulan) debouncedFetch({
-                bulan
-            });
-        });
+        fetchTrend(); // initial load
+        return fetchTrend;
     }
 
-    // Document ready
-    $(document).ready(function() {
-        // Set default dates
+    // Init
+    $(function() {
         const today = new Date();
-        const startDefault = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().slice(0, 10);
-        const endDefault = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().slice(0, 10);
+        const start = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().slice(0, 10);
+        const end = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().slice(0, 10);
 
-        // Set input values
-        $('#startDateAir, #startDateAirRaw, #startDateListrik, #startDateChemical').val(startDefault);
-        $('#endDateAir, #endDateAirRaw, #endDateListrik, #endDateChemical').val(endDefault);
+        // Load bar chart
+        fetchAir(start, end);
+        fetchAirRaw(start, end);
+        fetchListrik(start, end);
+        fetchChemical(start, end);
 
-        // Load initial data with staggered timing for smooth loading
-        setTimeout(() => fetchPemakaianAir(startDefault, endDefault), 100);
-        setTimeout(() => fetchPemakaianAirRaw(startDefault, endDefault), 200);
-        setTimeout(() => loadPemakaianListrik(startDefault, endDefault), 300);
-        setTimeout(() => loadPemakaianChemical(startDefault, endDefault), 400);
+        // Load operator
+        fetchTopOperator("{{ url('eng/top5/operator/air') }}", '#top-operator-list');
+        fetchTopOperator("{{ url('eng/top5/operator/listrik') }}", '#top-operator-listrik');
+        fetchTopOperator("{{ url('eng/top5/operator/chemical') }}", '#top-operator-chemical');
 
-        // Load operators
-        setTimeout(() => loadTopOperator('air', '#top-operator-list'), 500);
-        setTimeout(() => loadTopOperator('listrik', '#top-operator-listrik'), 600);
-        setTimeout(() => loadTopOperator('chemical', '#top-operator-chemical'), 700);
+        // Trend chart
+        const fetchTrendAir = setupTrend("#pemakaian_air_chart", "{{ url('eng/trend-pemakaian-air') }}", "m³", "trendAir", "loading-trend-air");
+        const fetchTrendListrik = setupTrend("#pemakaian_listrik_chart", "{{ url('eng/trend-pemakaian-listrik') }}", "mWh", "trendListrik", "loading-trend-listrik");
+        const fetchTrendChemical = setupTrend("#pemakaian_chemical_chart", "{{ url('eng/trend-pemakaian-chemical') }}", "kg", "trendChemical", "loading-trend-chemical");
 
-        // Filter event handlers with debouncing
-        const debouncedAirFilter = debounce(function() {
-            const start = $('#startDateAir').val();
-            const end = $('#endDateAir').val();
-            if (!start || !end) return alert("Isi rentang tanggal Air.");
-
-            $('#selectedBulanAir').html(`Dari ${start} s/d ${end}<i class="mdi mdi-chevron-down ms-1"></i>`);
-            fetchPemakaianAir(start, end);
-        }, 300);
-
-        const debouncedAirRawFilter = debounce(function() {
-            const start = $('#startDateAirRaw').val();
-            const end = $('#endDateAirRaw').val();
-            if (!start || !end) return alert("Isi rentang tanggal Air Raw.");
-
-            $('#selectedBulanAirRaw').html(`Dari ${start} s/d ${end}<i class="mdi mdi-chevron-down ms-1"></i>`);
-            fetchPemakaianAirRaw(start, end);
-        }, 300);
-
-        const debouncedListrikFilter = debounce(function() {
-            const start = $('#startDateListrik').val();
-            const end = $('#endDateListrik').val();
-            if (!start || !end) return alert("Isi rentang tanggal Listrik.");
-
-            $('#selectedBulanListrik').html(`Dari ${start} s/d ${end}<i class="mdi mdi-chevron-down ms-1"></i>`);
-            loadPemakaianListrik(start, end);
-        }, 300);
-
-        const debouncedChemicalFilter = debounce(function() {
-            const start = $('#startDateChemical').val();
-            const end = $('#endDateChemical').val();
-            if (!start || !end) return alert("Isi rentang tanggal Chemical.");
-
-            $('#selectedBulanChemical').html(`Dari ${start} s/d ${end}<i class="mdi mdi-chevron-down ms-1"></i>`);
-            loadPemakaianChemical(start, end);
-        }, 300);
-
-        // Bind events
-        $('#applyAirRange').on('click', debouncedAirFilter);
-        $('#applyAirRawRange').on('click', debouncedAirRawFilter);
-        $('#applyListrikRange').on('click', debouncedListrikFilter);
-        $('#applyChemicalRange').on('click', debouncedChemicalFilter);
-
-        // Filter operator air
-        $('#filterBulanOperator').on('change', function() {
-            loadTopOperator('air', '#top-operator-list', $(this).val());
+        // Optional: pasang event listener ke filter bulan kalau ada <select>
+        $('#filter_bulan').on('change', function() {
+            fetchTrendAir({
+                bulan: this.value
+            });
+        });
+        $('#filter_bulan_listrik').on('change', function() {
+            fetchTrendListrik({
+                bulan: this.value
+            });
+        });
+        $('#filter_bulan_chemical').on('change', function() {
+            fetchTrendChemical({
+                bulan: this.value
+            });
         });
 
-        // Setup trend charts with staggered initialization
-        setTimeout(() => {
-            setupTrendChart({
-                selector: "#pemakaian_air_chart",
-                url: "{{ url('/eng/trend-pemakaian-air') }}",
-                ySuffix: "m³",
-                filterBtnClass: ".filter-btn",
-                inputBulanId: "#filter_bulan",
-                instanceKey: "trendAir",
-                loadingId: "loading-trend-air"
-            });
-        }, 800);
+        // === Tambahin event listener filter date-range ===
 
-        setTimeout(() => {
-            setupTrendChart({
-                selector: "#pemakaian_listrik_chart",
-                url: "{{ url('/eng/trend-pemakaian-listrik') }}",
-                ySuffix: "mWh",
-                filterBtnClass: ".filter-btn-listrik",
-                inputBulanId: "#filter_bulan_listrik",
-                instanceKey: "trendListrik",
-                loadingId: "loading-trend-listrik"
-            });
-        }, 1000);
-
-        setTimeout(() => {
-            setupTrendChart({
-                selector: "#pemakaian_chemical_chart",
-                url: "{{ url('/eng/trend-pemakaian-chemical') }}",
-                ySuffix: "kg",
-                filterBtnClass: ".filter-btn-chemical",
-                inputBulanId: "#filter_bulan_chemical",
-                instanceKey: "trendChemical",
-                loadingId: "loading-trend-chemical"
-            });
-        }, 1200);
-
-        // Handle window resize for responsive charts
-        $(window).on('resize', debounce(function() {
-            Object.values(chartInstances).forEach(chart => {
-                if (chart && chart.resize) {
-                    chart.resize();
-                }
-            });
-        }, 250));
-
-        // Add smooth scroll behavior for better UX
-        $('html').css('scroll-behavior', 'smooth');
-
-        // Enhance dropdown animations
-        $('.dropdown').on('show.bs.dropdown', function() {
-            $(this).find('.dropdown-menu').addClass('animate__animated animate__fadeIn animate__faster');
-        });
-
-        $('.dropdown').on('hide.bs.dropdown', function() {
-            $(this).find('.dropdown-menu').removeClass('animate__animated animate__fadeIn animate__faster');
-        });
-    });
-
-    // Cleanup function when page unloads
-    $(window).on('beforeunload', function() {
-        Object.values(chartInstances).forEach(chart => {
-            if (chart && chart.destroy) {
-                chart.destroy();
+        // Air Proses & Support
+        $("#applyAirRange").on("click", function() {
+            const start = $("#startDateAir").val();
+            const end = $("#endDateAir").val();
+            if (!start || !end) {
+                alert("Pilih tanggal awal & akhir!");
+                return;
             }
+            $("#selectedBulanAir").text(`${start} s/d ${end}`);
+            fetchAir(start, end);
         });
+
+        // Air Raw
+        $("#applyAirRawRange").on("click", function() {
+            const start = $("#startDateAirRaw").val();
+            const end = $("#endDateAirRaw").val();
+            if (!start || !end) {
+                alert("Pilih tanggal awal & akhir!");
+                return;
+            }
+            $("#selectedBulanAirRaw").text(`${start} s/d ${end}`);
+            fetchAirRaw(start, end);
+        });
+
+        // Listrik
+        $("#applyListrikRange").on("click", function() {
+            const start = $("#startDateListrik").val();
+            const end = $("#endDateListrik").val();
+            if (!start || !end) {
+                alert("Pilih tanggal awal & akhir!");
+                return;
+            }
+            $("#selectedBulanListrik").text(`${start} s/d ${end}`);
+            fetchListrik(start, end);
+        });
+
+        // Chemical
+        $("#applyChemicalRange").on("click", function() {
+            const start = $("#startDateChemical").val();
+            const end = $("#endDateChemical").val();
+            if (!start || !end) {
+                alert("Pilih tanggal awal & akhir!");
+                return;
+            }
+            $("#selectedBulanChemical").text(`${start} s/d ${end}`);
+            fetchChemical(start, end);
+        });
+       
     });
 </script>
 
+
+
+<!-- Enhanced CSS Styles -->
 <style>
-    /* Enhanced styling for smooth animations */
-    .apex-charts {
-        max-width: 100%;
-        transition: all 0.3s ease-in-out;
+    :root {
+        --primary-gradient: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+        --success-gradient: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        --warning-gradient: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+        --danger-gradient: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        --info-gradient: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%);
     }
 
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background-color: #F8FAFC;
+    }
+
+    .page-content {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .bg-gradient-primary {
+        background: var(--primary-gradient);
+    }
+
+    .bg-gradient-success {
+        background: var(--success-gradient);
+    }
+
+    .bg-gradient-warning {
+        background: var(--warning-gradient);
+    }
+
+    /* Enhanced Card Styles */
+    .card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+        background: #FFFFFF;
+    }
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);
+        border-left: 4px solid #3B82F6;
+    }
+
+    .chart-card {
+        background: #FFFFFF;
+    }
+
+    .trend-card .card-header {
+        border-radius: 16px 16px 0 0;
+        padding: 1.5rem;
+    }
+
+    .operator-card {
+        background: linear-gradient(135deg, #FFFFFF 0%, #F9FAFB 100%);
+    }
+
+    /* Enhanced Loading States */
     .chart-loading {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(4px);
         z-index: 10;
-        border-radius: 8px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    .spinner-grow {
+        animation-duration: 1.5s;
     }
 
-    .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    /* Enhanced Operator Lists */
+    .operator-list {
+        max-height: 400px;
+        overflow-y: auto;
     }
 
     .operator-item {
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(226, 232, 240, 0.8);
         transition: all 0.3s ease;
-        border-radius: 6px;
-        padding: 8px;
-        margin: 4px 0;
+        cursor: pointer;
     }
 
     .operator-item:hover {
-        background-color: #f8f9fa;
-        transform: translateX(5px);
+        background: rgba(59, 130, 246, 0.05);
+        border-color: rgba(59, 130, 246, 0.2);
+        transform: translateX(4px);
     }
 
-    .dropdown-menu {
-        border: none;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        overflow: hidden;
-        transition: all 0.2s ease;
-    }
-
+    /* Enhanced Buttons */
     .btn {
+        border-radius: 8px;
+        font-weight: 500;
         transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
     }
 
     .btn:hover {
-        transform: translateY(-1px);
+        transform: translateY(-2px);
     }
 
-    .spinner-border {
-        animation-duration: 0.8s;
+    .btn-group .btn.active {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: scale(0.95);
     }
 
-    /* Loading animation keyframes */
+    /* Enhanced Dropdowns */
+    .dropdown-menu {
+        border: none;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border-radius: 12px;
+        padding: 1rem;
+        backdrop-filter: blur(16px);
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    .dropdown-toggle::after {
+        transition: transform 0.2s ease;
+    }
+
+    .dropdown[aria-expanded="true"] .dropdown-toggle::after {
+        transform: rotate(180deg);
+    }
+
+    /* Enhanced Form Controls */
+    .form-control {
+        border-radius: 8px;
+        border: 2px solid #E2E8F0;
+        transition: all 0.2s ease;
+        font-size: 0.875rem;
+    }
+
+    .form-control:focus {
+        border-color: #3B82F6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        transform: scale(1.02);
+    }
+
+    /* Enhanced Breadcrumbs */
+    .breadcrumb {
+        background: transparent;
+        margin: 0;
+    }
+
+    .breadcrumb-item a {
+        text-decoration: none;
+        transition: opacity 0.2s ease;
+    }
+
+    .breadcrumb-item a:hover {
+        opacity: 0.8;
+    }
+
+    /* Enhanced Avatar */
+    .avatar-xs {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+    }
+
+    .avatar-sm {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+
+    /* Custom Tooltip */
+    .custom-tooltip {
+        background: #1F2937;
+        color: white;
+        padding: 12px 16px;
+        border-radius: 8px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        font-size: 13px;
+    }
+
+    .tooltip-header {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .tooltip-value {
+        font-weight: 700;
+        color: #60A5FA;
+    }
+
+    /* Enhanced Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #F1F5F9;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #CBD5E1;
+        border-radius: 4px;
+        transition: background 0.2s ease;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #94A3B8;
+    }
+
+    /* Enhanced Animations */
     @keyframes fadeInUp {
         from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px);
         }
 
         to {
@@ -945,55 +855,65 @@
         }
     }
 
-    .card-body {
-        animation: fadeInUp 0.6s ease-out;
-    }
-
-    /* Responsive improvements */
-    @media (max-width: 768px) {
-        .apex-charts {
-            height: 250px !important;
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
         }
 
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Responsive Enhancements */
+    @media (max-width: 768px) {
         .card {
+            border-radius: 12px;
             margin-bottom: 1rem;
         }
 
+        .page-title-box {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 1rem;
+        }
+
         .dropdown-menu {
-            min-width: 250px !important;
+            min-width: 280px !important;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .apex-charts {
+            height: 300px !important;
         }
     }
 
-    /* Custom scrollbar for better UX */
-    ::-webkit-scrollbar {
-        width: 6px;
+    /* Dark mode support (if needed) */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --bg-color: #0F172A;
+            --card-bg: #1E293B;
+            --text-color: #F1F5F9;
+        }
     }
 
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 3px;
+    /* Utility Classes */
+    .tracking-wide {
+        letter-spacing: 0.05em;
     }
 
-    ::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
-        border-radius: 3px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #a8a8a8;
-    }
-
-    /* Smooth focus styles */
-    .form-control:focus {
-        border-color: #86b7fe;
-        outline: 0;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
-        transition: all 0.2s ease;
-    }
-
-    /* Page transition */
-    .page-content {
-        animation: fadeInUp 0.8s ease-out;
+    .text-gradient {
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 </style>
 
