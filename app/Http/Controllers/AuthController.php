@@ -15,7 +15,7 @@ class AuthController extends Controller
     private $redirects = [
         'engineering' => [
             'dept_head' => '/eng/dept_head/dashboard',
-            'supervisor' => '/eng/supervisor/dashboard',
+            'supervisor' => '/eng/supervisor/dashboard/',
             'foreman' => '/eng/foreman/dashboard', // <-- sesuaikan
             'operator' => '/eng/operator/form',
         ],
@@ -27,7 +27,7 @@ class AuthController extends Controller
         ],
         'produksi' => [
             'dept_head' => '/prd/dept_head/dashboard',
-            'supervisor' => '/prd/supervisor/dashboard',
+            'supervisor' => '/prd/supervisor/dashboard/pasteurisasi1',
             'foreman' => '/prd/foreman/dashboard',
             'operator' => '/prd/operator/dashboard',
         ],
