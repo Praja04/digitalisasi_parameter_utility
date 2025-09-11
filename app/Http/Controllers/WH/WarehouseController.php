@@ -24,6 +24,14 @@ class WarehouseController extends Controller
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
+
+    public function DashboardDeptHeadTKBM()
+    {
+        if (Session::get('jabatan') == 'dept_head') {
+            return view('user.dept_head.wh.analytics_tkbm');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
     ///////////End View Dept Head///////////////////
 
     ///////////Start View Supervisor///////////////////
@@ -58,7 +66,7 @@ class WarehouseController extends Controller
                 ->where('is_active', true)
                 ->get();
 
-            $forklifts = $assignments->filter(fn ($a) => $a->forklift)->map(function ($a) {
+            $forklifts = $assignments->filter(fn($a) => $a->forklift)->map(function ($a) {
                 return [
                     'nomor_unit' => $a->forklift->nomor_unit,
                     'departemen' => $a->forklift->departemen,
@@ -70,7 +78,7 @@ class WarehouseController extends Controller
                 ->where('user_id', $userId)
                 ->get();
 
-            $pallets = $palletAssignments->filter(fn ($a) => $a->palletMover)->map(function ($a) {
+            $pallets = $palletAssignments->filter(fn($a) => $a->palletMover)->map(function ($a) {
                 return [
                     'nomor_unit' => $a->palletMover->nomor_unit,
                     'departemen' => $a->palletMover->departemen,
@@ -118,6 +126,7 @@ class WarehouseController extends Controller
             'Anda tidak memiliki akses ke halaman ini.'
         );
     }
+
     public function FormP2HForeman()
     {
         if (Session::get('jabatan') == 'foreman') {
@@ -225,7 +234,7 @@ class WarehouseController extends Controller
 
         // Deteksi rusak berat
         $criticalNok = ['cek_baterai', 'kipas_belakang', 'rantai_lift', 'sistem_hidrolik', 'kondisi_axle', 'sistem_kemudi', 'panel_display', 'air_aki', 'fungsi_rem'];
-        $isRusakBerat = collect($criticalNok)->contains(fn ($f) => $request->$f == 0);
+        $isRusakBerat = collect($criticalNok)->contains(fn($f) => $request->$f == 0);
         $statusUnit = $isRusakBerat ? 'Rusak Berat' : 'Normal';
         if ($isRusakBerat) {
             $persentase = 50.00; // Tetapkan nilai default jika rusak berat
@@ -372,7 +381,14 @@ class WarehouseController extends Controller
         $detail = P2HPalletMoverModel::findOrFail($id);
 
         $exclude = [
-            'id', 'created_at', 'updated_at', 'shift', 'jenis_p2h', 'tanggal', 'nomor_unit', 'dept'
+            'id',
+            'created_at',
+            'updated_at',
+            'shift',
+            'jenis_p2h',
+            'tanggal',
+            'nomor_unit',
+            'dept'
         ];
         $fillable = collect($request->all())->except($exclude)->toArray();
 
@@ -453,10 +469,25 @@ class WarehouseController extends Controller
     public function topMasalah()
     {
         $komponen = [
-            'cek_baterai', 'cek_fork', 'kondisi_body_kebersihan', 'lampu_kiri', 'lampu_kanan',
-            'lampu_sorot', 'lampu_sign_depan_kanan', 'lampu_sign_depan_kiri', 'kipas_belakang',
-            'rantai_lift', 'sistem_hidrolik', 'kondisi_axle', 'sistem_kemudi', 'panel_display',
-            'air_aki', 'klakson', 'buzzer_mundur', 'kaca_spion', 'kondisi_ban',
+            'cek_baterai',
+            'cek_fork',
+            'kondisi_body_kebersihan',
+            'lampu_kiri',
+            'lampu_kanan',
+            'lampu_sorot',
+            'lampu_sign_depan_kanan',
+            'lampu_sign_depan_kiri',
+            'kipas_belakang',
+            'rantai_lift',
+            'sistem_hidrolik',
+            'kondisi_axle',
+            'sistem_kemudi',
+            'panel_display',
+            'air_aki',
+            'klakson',
+            'buzzer_mundur',
+            'kaca_spion',
+            'kondisi_ban',
             'fungsi_rem'
         ];
 
@@ -483,7 +514,7 @@ class WarehouseController extends Controller
 
         $hasil = $data->map(function ($item) {
             $records = P2HForklfitModel::where('operator_name', $item->operator_name)->get();
-            $avg = $records->avg(fn ($r) => $r->calculateKelayakan()['persentase']);
+            $avg = $records->avg(fn($r) => $r->calculateKelayakan()['persentase']);
 
             return [
                 'operator' => $item->operator_name,
@@ -516,7 +547,7 @@ class WarehouseController extends Controller
 
         $data = $units->map(function ($unit) {
             $records = P2HForklfitModel::where('nomor_unit', $unit)->get();
-            $avg = $records->count() ? round($records->avg(fn ($r) => $r->calculateKelayakan()['persentase'])) : 0;
+            $avg = $records->count() ? round($records->avg(fn($r) => $r->calculateKelayakan()['persentase'])) : 0;
             return [
                 'unit' => $unit,
                 'count' => $records->count(),
@@ -568,7 +599,7 @@ class WarehouseController extends Controller
     {
 
         $data = P2HForklfitModel::orderBy('tanggal', 'desc')->get()
-            ->groupBy(fn ($item) => $item->jenis_p2h . '|' . $item->tanggal . '|' . $item->nomor_unit);
+            ->groupBy(fn($item) => $item->jenis_p2h . '|' . $item->tanggal . '|' . $item->nomor_unit);
 
         $result = [];
 
@@ -594,7 +625,7 @@ class WarehouseController extends Controller
     public function getP2HGroupedDetailPalletMover()
     {
         $data = P2HPalletMoverModel::orderBy('tanggal', 'desc')->get()
-            ->groupBy(fn ($item) => $item->jenis_p2h . '|' . $item->tanggal . '|' . $item->nomor_unit);
+            ->groupBy(fn($item) => $item->jenis_p2h . '|' . $item->tanggal . '|' . $item->nomor_unit);
 
         $result = [];
 
