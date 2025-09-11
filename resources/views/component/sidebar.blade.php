@@ -116,6 +116,11 @@
                             <li class="nav-item">
                                 <a href="{{ url('prd/dept_head/menu_retail') }}" class="nav-link" data-key="t-analytics"> Analytics Retail</a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ url('prd/dashboard/separator') }}" class="nav-link" data-key="t-analytics">
+                                     Separator
+                                </a>
+                            </li>
 
                         </ul>
                     </div>
@@ -630,30 +635,48 @@
                 </li>
                 @elseif(Session::get('jabatan') === 'supervisor' && Session::get('departemen') === 'produksi')
                 <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+
+                <!-- Dashboard Pasteurisasi -->
+                <!-- Dashboard Pasteurisasi -->
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarDashboardsPrd" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboardsPrd">
-                        <i class="mdi mdi-check-circle"></i> <span data-key="t-dashboards">Dashboard PRD</span>
+                    <a class="nav-link menu-link" href="#sidebarPasteurisasi" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarPasteurisasi">
+                        <i class="mdi mdi-factory"></i> <!-- Ikon pabrik -->
+                        <span data-key="t-pasteurisasi">Dashboard Pasteurisasi</span>
                     </a>
-                    <div class="collapse menu-dropdown" id="sidebarDashboardsPrd">
+                    <div class="collapse menu-dropdown" id="sidebarPasteurisasi">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ url('qc/supervisor/dashboard') }}" class="nav-link" data-key="t-analytics"> Analytics Pasteurisasi 1</a>
+                                <a href="{{ url('prd/supervisor/dashboard/pasteurisasi1') }}" class="nav-link" data-key="t-analytics">
+                                    <i class="mdi mdi-chart-line"></i> Pasteurisasi 1
+                                </a>
                             </li>
-
+                            <li class="nav-item">
+                                <a href="{{ url('prd/supervisor/dashboard/pasteurisasi2') }}" class="nav-link" data-key="t-analytics">
+                                    <i class="mdi mdi-chart-line"></i> Pasteurisasi 2
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ url('prd/dashboard/separator') }}" class="nav-link" data-key="t-analytics">
+                                    <i class="mdi mdi-chart-line"></i> Separator
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </li>
 
+                <!-- Dashboard Retail -->
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarDashboardsPRD" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboardsPRD">
-                        <i class="mdi mdi-package-variant"></i> <span data-key="t-dashboards">Dashboard PRD</span>
+                    <a class="nav-link menu-link" href="#sidebarRetail" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarRetail">
+                        <i class="mdi mdi-storefront"></i> <!-- Ikon toko -->
+                        <span data-key="t-retail">Dashboard Retail</span>
                     </a>
-                    <div class="collapse menu-dropdown" id="sidebarDashboardsPRD">
+                    <div class="collapse menu-dropdown" id="sidebarRetail">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ url('prd/supervisor/dashboard') }}" class="nav-link" data-key="t-analytics"> Analytics Pasteurisasi 1</a>
+                                <a href="{{ route('prd.menu_retail') }}" class="nav-link" data-key="t-analytics">
+                                    <i class="mdi mdi-chart-bar"></i> Analytics Retail
+                                </a>
                             </li>
-
                         </ul>
                     </div>
                 </li>

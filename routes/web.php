@@ -30,6 +30,7 @@ use App\Http\Controllers\Api\SensorPasteurisasi2Controller;
 use App\Http\Controllers\Api\SensorDissolverController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\SeparatorController;
 use App\Models\Pasteurisasi2\Pasteurisasi2Model;
 
 // Route::get('/export-air-utility', [EngineeringController::class, 'export_template']);
@@ -61,10 +62,12 @@ Route::prefix('prd')->middleware('auth')->group(function () {
     Route::get('/dept_head/dashboard_retaild9', [ProduksiController::class, 'dashboardProduksi_retaild9']);
     Route::get('/dept_head/dashboard_retaild10', [ProduksiController::class, 'dashboardProduksi_retaild10']);
     Route::get('/dept_head/dashboard_retaild14', [ProduksiController::class, 'dashboardProduksi_retaild14']);
-    Route::get('/dept_head/menu_retail', [ProduksiController::class, 'Menu_retail']);
+    Route::get('/dept_head/menu_retail', [ProduksiController::class, 'Menu_retail'])->name('prd.menu_retail');
     Route::get('/dept_head/menu_variant', [ProduksiController::class, 'Menu_all_variant']);
     Route::get('/dept_head/all/retail', [ProduksiController::class, 'Dashboard_all_retail']);
-    Route::get('/supervisor/dashboard', [ProduksiController::class, 'dashboardSupervisorProduksi']);
+    Route::get('/dashboard/separator', [ProduksiController::class, 'dashboardSeparator']);
+    Route::get('/supervisor/dashboard/pasteurisasi1', [ProduksiController::class, 'dashboardPasteurisasi1']);
+    Route::get('/supervisor/dashboard/pasteurisasi2', [ProduksiController::class, 'dashboardPasteurisasi2']);
     Route::get('/foreman/dashboard', [ProduksiController::class, 'dashboardForemanProduksi']);
     Route::get('/operator/dashboard', [ProduksiController::class, 'dashboardOperatorProduksi']);
 
@@ -615,4 +618,31 @@ Route::prefix('retail')->group(function () {
 
     //
     Route::get('/data/all/retail', [AllRetailController::class, 'data_retail_all_varian']);
+});
+
+// Separator
+Route::prefix('separator')->group(function () {
+    Route::get('/current-status', [SeparatorController::class, 'getCurrentStatus'])->name('api.current-status');
+
+    // Get summary statistics
+    Route::get('/summary-stats', [SeparatorController::class, 'getSummaryStats'])->name('api.summary-stats');
+
+    // Get timeline data for chart
+    Route::get('/timeline-data', [SeparatorController::class, 'getTimelineData'])->name('api.timeline-data');
+
+    // Get activity log
+    Route::get('/activity-log', [SeparatorController::class, 'getActivityLog'])->name('api.activity-log');
+
+    // Export activity log to CSV
+    Route::get('/export-activity-log', [SeparatorController::class, 'exportActivityLog'])->name('api.export-activity-log');
+
+    // Get all dashboard data in one call (for refresh)
+    Route::get('/dashboard-data', [SeparatorController::class, 'getDashboardData'])->name('api.dashboard-data');
+
+    // System health check
+    Route::get('/health-check', [SeparatorController::class, 'healthCheck'])->name('api.health-check');
+
+    // Store new separator data (for testing or external systems)
+    Route::post('/store', [SeparatorController::class, 'store'])->name('api.store');
+    
 });

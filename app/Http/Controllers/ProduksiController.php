@@ -31,7 +31,7 @@ class ProduksiController extends Controller
     }
     public function dashboardProduksi_retaild1()
     {
-        if (Session::get('jabatan') == 'dept_head') {
+        if (Session::get('jabatan') == 'dept_head' || Session::get('jabatan') == 'supervisor') {
             return view('user.dept_head.Retail.dashboard_retaild1');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
@@ -39,7 +39,7 @@ class ProduksiController extends Controller
 
     public function dashboardProduksi_retaild2()
     {
-        if (Session::get('jabatan') == 'dept_head') {
+        if (Session::get('jabatan') == 'dept_head' || Session::get('jabatan') == 'supervisor') {
             return view('user.dept_head.Retail.dashboard_retaild2');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
@@ -47,28 +47,28 @@ class ProduksiController extends Controller
 
     public function dashboardProduksi_retaild4()
     {
-        if (Session::get('jabatan') == 'dept_head') {
+        if (Session::get('jabatan') == 'dept_head' || Session::get('jabatan') == 'supervisor') {
             return view('user.dept_head.Retail.dashboard_retaild4');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
     public function dashboardProduksi_retaild3()
     {
-        if (Session::get('jabatan') == 'dept_head') {
+        if (Session::get('jabatan') == 'dept_head' || Session::get('jabatan') == 'supervisor') {
             return view('user.dept_head.Retail.dashboard_retaild3');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
     public function dashboardProduksi_retaild5()
     {
-        if (Session::get('jabatan') == 'dept_head') {
+        if (Session::get('jabatan') == 'dept_head' || Session::get('jabatan') == 'supervisor') {
             return view('user.dept_head.Retail.dashboard_retaild5');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
     public function dashboardProduksi_retaild6()
     {
-        if (Session::get('jabatan') == 'dept_head') {
+        if (Session::get('jabatan') == 'dept_head' || Session::get('jabatan') == 'supervisor') {
             return view('user.dept_head.Retail.dashboard_retaild6');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
@@ -76,14 +76,14 @@ class ProduksiController extends Controller
 
     public function dashboardProduksi_retaild7()
     {
-        if (Session::get('jabatan') == 'dept_head') {
+        if (Session::get('jabatan') == 'dept_head' || Session::get('jabatan') == 'supervisor') {
             return view('user.dept_head.Retail.dashboard_retaild7');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
     public function dashboardProduksi_retaild8()
     {
-        if (Session::get('jabatan') == 'dept_head') {
+        if (Session::get('jabatan') == 'dept_head' || Session::get('jabatan') == 'supervisor') {
             return view('user.dept_head.Retail.dashboard_retaild8');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
@@ -91,7 +91,7 @@ class ProduksiController extends Controller
 
     public function dashboardProduksi_retaild9()
     {
-        if (Session::get('jabatan') == 'dept_head') {
+        if (Session::get('jabatan') == 'dept_head' || Session::get('jabatan') == 'supervisor') {
             return view('user.dept_head.Retail.dashboard_retaild9');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
@@ -99,7 +99,7 @@ class ProduksiController extends Controller
 
     public function dashboardProduksi_retaild10()
     {
-        if (Session::get('jabatan') == 'dept_head') {
+        if (Session::get('jabatan') == 'dept_head' || Session::get('jabatan') == 'supervisor') {
             return view('user.dept_head.Retail.dashboard_retaild10');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
@@ -107,14 +107,14 @@ class ProduksiController extends Controller
 
     public function dashboardProduksi_retaild14()
     {
-        if (Session::get('jabatan') == 'dept_head') {
+        if (Session::get('jabatan') == 'dept_head' || Session::get('jabatan') == 'supervisor') {
             return view('user.dept_head.Retail.dashboard_retaild14');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
     public function Menu_retail()
     {
-        if (Session::get('jabatan') == 'dept_head') {
+        if (Session::get('jabatan') == 'dept_head'|| Session::get('jabatan') == 'supervisor') {
             return view('user.dept_head.Retail.menu');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
@@ -136,10 +136,25 @@ class ProduksiController extends Controller
     ///////////End View Dept Head ///////////////////
 
     // 🔹 Dashboard untuk Supervisor
-    public function dashboardSupervisorProduksi()
+    public function dashboardPasteurisasi1()
     {
         if (Session::get('jabatan') == 'supervisor') {
-            return view('user.supervisor.prd.dashboard_produksi');
+            return view('user.supervisor.prd.dashboard_produksi_pasteurisasi1');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+
+    public function dashboardPasteurisasi2()
+    {
+        if (Session::get('jabatan') == 'supervisor') {
+            return view('user.supervisor.prd.dashboard_produksi_pasteurisasi2');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+    public function dashboardSeparator()
+    {
+        if (Session::get('jabatan') == 'supervisor' || Session::get('jabatan') == 'dept_head') {
+            return view('user.supervisor.prd.dashboard_separator');
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
