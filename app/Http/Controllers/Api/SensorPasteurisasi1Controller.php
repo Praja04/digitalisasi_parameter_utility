@@ -197,6 +197,8 @@ class SensorPasteurisasi1Controller extends Controller
                 'waktu' => $waktu,
                 'reason' => $reason,
                 'telegram_sent' => true,
+                'suhuHeating' => $suhuHeating,
+                'suhuHolding' => $suhuHolding,
             ]);
         }
 
