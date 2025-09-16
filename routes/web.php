@@ -428,6 +428,7 @@ Route::prefix('pasteurisasi1')->group(function () {
     Route::get('/suhuheating', [SensorPasteurisasi1Controller::class, 'getAbnormalPeriodsSuhuHeating']);
     Route::get('/suhuholding', [SensorPasteurisasi1Controller::class, 'getAbnormalPeriodsSuhuHolding']);
     Route::get('/flowrate', [SensorPasteurisasi1Controller::class, 'getAbnormalPeriodsFlowRate']);
+    Route::get('/status/divert', [SensorPasteurisasi1Controller::class, 'checkDivertStatus']);
 });
 
 Route::prefix('pasteurisasi2')->group(function () {
