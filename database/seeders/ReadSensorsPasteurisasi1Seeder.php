@@ -15,9 +15,12 @@ class ReadSensorsPasteurisasi1Seeder extends Seeder
     public function run(): void
     {
         $faker = Faker::create();
-        $startTime = Carbon::now()->subDay(); // Mulai dari 1 hari yang lalu
-        $batchSize = 1000; // Batasi batch insert untuk mencegah error
+        $startTime = Carbon::now()->subDay();
+        $batchSize = 1000;
         $data = [];
+
+        // Nilai tetap untuk suhu
+        $suhuValues = [102.00, 105.00, 120.00];
 
         for ($i = 0; $i < 86400; $i++) {
             $data[] = [
@@ -30,8 +33,8 @@ class ReadSensorsPasteurisasi1Seeder extends Seeder
                 'LevelVD' => $faker->randomFloat(2, 0, 100),
                 'SpeedPumpVD' => $faker->randomFloat(2, 10, 50),
                 'Flowrate' => $faker->randomFloat(2, 10, 100),
-                'SuhuHeating' => $faker->randomFloat(2, 50, 120),
-                'SuhuHolding' => $faker->randomFloat(2, 50, 120),
+                'SuhuHeating' => $faker->randomElement($suhuValues),
+                'SuhuHolding' => $faker->randomElement($suhuValues),
                 'SuhuPrecooling' => $faker->randomFloat(2, 0, 50),
                 'LevelBT2' => $faker->randomFloat(2, 0, 100),
                 'SpeedPumpBT2' => $faker->randomFloat(2, 10, 50),
@@ -51,16 +54,15 @@ class ReadSensorsPasteurisasi1Seeder extends Seeder
                 'Storage' => 'Storage-' . rand(1, 5),
             ];
 
-            // Insert data setiap batch
             if (count($data) >= $batchSize) {
                 DB::table('readsensors_pasteurisasi1')->insert($data);
-                $data = []; // Reset array setelah insert
+                $data = [];
             }
         }
 
-        // Insert sisa data yang belum masuk batch
         if (!empty($data)) {
             DB::table('readsensors_pasteurisasi1')->insert($data);
         }
     }
+
 }
