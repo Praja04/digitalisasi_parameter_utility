@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use App\Models\Pasteurisasi1\Sensor_Pasteurisasi1;
 
 class SensorPasteurisasi1Controller extends Controller
@@ -149,4 +150,61 @@ class SensorPasteurisasi1Controller extends Controller
             'data' => $data
         ]);
     }
+
+    public function checkDivertStatus()
+    {
+        $latestData = Sensor_Pasteurisasi1::orderByDesc('Waktu')->first();
+
+        if (!$latestData) {
+            return response()->json(['message' => 'Data sensor tidak ditemukan'], 404);
+        }
+
+        $suhuHeating = $latestData->SuhuHeating;
+        $suhuHolding = $latestData->SuhuHolding;
+        $waktu = $latestData->Waktu;
+
+        $divert = false;
+        $reason = '';
+
+        if ($suhuHeating < 105 || $suhuHeating > 120) {
+            $divert = true;
+            $reason = 'Suhu Heating di luar batas normal';
+        } elseif ($suhuHolding < 105 || $suhuHolding > 120) {
+            $divert = true;
+            $reason = 'Suhu Holding di luar batas normal';
+        }
+
+        if ($divert) {
+            // Kirim notifikasi ke Telegram channel
+            $botToken = env('TELEGRAM_BOT_TOKEN');
+            $channelId = env('TELEGRAM_CHANNEL_ID');
+
+            $message = "🚨 *DIVERT TERDETEKSI - Pasteurisasi Line 1*\n"
+            . "📅 *Waktu:* {$waktu}\n"
+            . "📌 *Status:* {$reason}\n"
+            . "🌡️ *Suhu Heating:* {$suhuHeating}°C\n"
+            . "🌡️ *Suhu Holding:* {$suhuHolding}°C\n"
+            . "🔍 *Tindakan:* Periksa parameter pasteurisasi dan pastikan suhu kembali ke rentang aman (105–120°C)";
+
+            Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
+                'chat_id' => $channelId,
+                'text' => $message,
+                'parse_mode' => 'Markdown'
+            ]);
+
+            return response()->json([
+                'divert' => true,
+                'waktu' => $waktu,
+                'reason' => $reason,
+                'telegram_sent' => true,
+            ]);
+        }
+
+        return response()->json([
+            'divert' => false,
+            'waktu' => $waktu,
+            'message' => 'Semua suhu dalam batas normal',
+        ]);
+    }
+
 }
