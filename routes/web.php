@@ -70,7 +70,8 @@ Route::prefix('prd')->middleware('auth')->group(function () {
     Route::get('/supervisor/dashboard/pasteurisasi2', [ProduksiController::class, 'dashboardPasteurisasi2']);
     Route::get('/foreman/dashboard', [ProduksiController::class, 'dashboardForemanProduksi']);
     Route::get('/operator/dashboard', [ProduksiController::class, 'dashboardOperatorProduksi']);
-
+    
+    Route::get('pasteurisasi1/dashboard', [ProduksiController::class, 'dashboardPasteurisasi1_All']);
 
     Route::get('/operator/detailbatch', [ProduksiController::class, 'showOperatorProduksi']);
     Route::get('/operator/form_retail', [ProduksiController::class, 'Form_Retail']);
@@ -429,6 +430,7 @@ Route::prefix('pasteurisasi1')->group(function () {
     Route::get('/suhuholding', [SensorPasteurisasi1Controller::class, 'getAbnormalPeriodsSuhuHolding']);
     Route::get('/flowrate', [SensorPasteurisasi1Controller::class, 'getAbnormalPeriodsFlowRate']);
     Route::get('/status/divert', [SensorPasteurisasi1Controller::class, 'checkDivertStatus']);
+    Route::post('/report/daily', [SensorPasteurisasi1Controller::class, 'generateDailyReport'])->name('report.pasteurisasi.daily');
 });
 
 Route::prefix('pasteurisasi2')->group(function () {
