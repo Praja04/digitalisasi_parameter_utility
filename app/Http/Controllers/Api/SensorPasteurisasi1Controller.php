@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\Pasteurisasi1\Sensor_Pasteurisasi1;
+use Barryvdh\DomPDF\Facade\PDF;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SensorPasteurisasi1Controller extends Controller
 {
@@ -186,11 +190,11 @@ class SensorPasteurisasi1Controller extends Controller
             . "🌡️ *Suhu Holding:* {$suhuHolding}°C\n"
             . "🔍 *Tindakan:* Periksa parameter pasteurisasi dan pastikan suhu kembali ke rentang aman (105–120°C)";
 
-            Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
-                'chat_id' => $channelId,
-                'text' => $message,
-                'parse_mode' => 'Markdown'
-            ]);
+            // Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
+            //     'chat_id' => $channelId,
+            //     'text' => $message,
+            //     'parse_mode' => 'Markdown'
+            // ]);
 
             return response()->json([
                 'divert' => true,
@@ -208,5 +212,88 @@ class SensorPasteurisasi1Controller extends Controller
             'message' => 'Semua suhu dalam batas normal',
         ]);
     }
+
+    //report
+
+    public function generateDailyReport(Request $request)
+    {
+        try {
+            set_time_limit(300);
+            ini_set('memory_limit', '512M');
+
+            $request->validate([
+                'tanggal' => 'required|date|date_format:Y-m-d'
+            ]);
+
+            $tanggal = $request->tanggal;
+
+            // 🔹 Ambil data hourly dari Golang
+            $hourlyRes = Http::timeout(30)->get("http://localhost:8080/api/pasteur/by-hour", [
+                'tanggal' => $tanggal
+            ]);
+
+            // 🔹 Ambil data abnormal dari Golang
+            $abnormalRes = Http::timeout(30)->get("http://localhost:8080/api/pasteur/abnormal", [
+                'tanggal' => $tanggal
+            ]);
+
+            // Cek response dan parse JSON
+            $hourly = $hourlyRes->successful() ? $hourlyRes->json() : ['data' => []];
+            $abnormal = $abnormalRes->successful() ? $abnormalRes->json() : ['data' => []];
+
+            // Validasi minimal ada salah satu data
+            if (empty($hourly['data']) && empty($abnormal['data'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak ada data untuk tanggal ' . Carbon::parse($tanggal)->format('d F Y')
+                ], 404);
+            }
+
+            // 🔹 Generate PDF dengan Blade
+            $pdf = Pdf::loadView('reports.pasteurisasi-daily', [
+                'tanggal'      => $tanggal,
+                'hourlyData'   => $hourly['data'] ?? [],
+                'abnormalData' => $abnormal['data'] ?? []
+            ]);
+
+            $pdf->setPaper('A3', 'landscape')->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isPhpEnabled' => true,
+                'defaultFont' => 'DejaVu Sans',
+                'dpi' => 150,
+                'defaultPaperSize' => 'A3',
+                'isRemoteEnabled' => false
+            ]);
+
+            $fileName = 'Laporan_Pasteurisasi_' . Carbon::parse($tanggal)->format('Y-m-d') . '.pdf';
+
+            return $pdf->download($fileName);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Format tanggal tidak valid. Gunakan format Y-m-d',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Illuminate\Http\Client\RequestException $e) {
+            Log::error("Error connecting to Golang API: " . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil data dari server',
+                'error' => 'Connection timeout atau server tidak tersedia'
+            ], 503);
+        } catch (\Exception $e) {
+            Log::error("Error generateDailyReport: " . $e->getMessage());
+            Log::error("Stack trace: " . $e->getTraceAsString());
+
+            return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal generate PDF',
+                    'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+                ], 500);
+        }
+    }
+
+
 
 }
