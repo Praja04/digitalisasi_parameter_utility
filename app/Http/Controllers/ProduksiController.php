@@ -134,6 +134,13 @@ class ProduksiController extends Controller
     }
 
     ///////////End View Dept Head ///////////////////
+    public function dashboardPasteurisasi1_All()
+    {
+        if (Session::get('jabatan') == true) {
+            return view('pasteurisasi1.dashboard_pasteurisasi1');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
 
     // 🔹 Dashboard untuk Supervisor
     public function dashboardPasteurisasi1()
