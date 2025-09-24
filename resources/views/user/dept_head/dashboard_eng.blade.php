@@ -882,26 +882,13 @@
                 series,
                 colors: ["#008FFB", "#FEB019", "#00E396", "#FF4560", "#775DD0"],
                 xaxis: {
-                    type: "datetime",
-                    categories: categories, // tetap pakai waktu asli dari data
+                    categories,
                     title: {
                         text: "Waktu"
                     },
                     labels: {
                         rotate: -45,
-                        show: true,
-                        formatter: function(value, timestamp) {
-                            const date = new Date(value);
-                            const hours = date.getHours();
-                            // hanya tampilkan jam 08, 14, 22
-                            if ([8, 14, 22].includes(hours)) {
-                                return date.toLocaleTimeString("id-ID", {
-                                    hour: "2-digit",
-                                    minute: "2-digit"
-                                });
-                            }
-                            return "";
-                        }
+                        show: true
                     }
                 },
                 yaxis: {
@@ -967,6 +954,7 @@
                     end_date: end
                 },
                 success: function(response) {
+                console.log(response);
                     UpdateChartKondensat(response);
                 },
                 error: function(xhr, status, error) {
