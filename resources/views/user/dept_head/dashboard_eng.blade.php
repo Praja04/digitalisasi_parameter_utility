@@ -842,6 +842,34 @@
                 }
             }
 
+            const descriptions = {
+                Suhu1: [
+                    "Jalur kondensat dari utility - Storage 53"
+                ],
+                Suhu2: [
+                    "Jalur kondensat dari :",
+                    "- Olahsari",
+                    "- Dissolver Line 1",
+                    "- Dissolver Line 2",
+                    "- Pit Garam",
+                    "- HW glukosa WRH",
+                    "- CIP Mini"
+                ],
+                Suhu3: [
+                    "Jalur kondensat dari :",
+                    "- Pasteur Line 1",
+                    "- Pasteur Line 2"
+                ],
+                Suhu4: [
+                    "Jalur kondensat dari :",
+                    "- CIP Kitchen",
+                    "- HW 10 ton"
+                ],
+                Suhu5: [
+                    "Jalur kondensat dari header steam area Pasteur."
+                ]
+            };
+
             const options = {
                 chart: {
                     type: "line",
@@ -852,15 +880,28 @@
                     curve: "smooth"
                 },
                 series,
-                colors: ["#008FFB", "#FEB019", "#00E396", "#FF4560", "#775DD0"], // 5 warna untuk Suhu1-5
+                colors: ["#008FFB", "#FEB019", "#00E396", "#FF4560", "#775DD0"],
                 xaxis: {
-                    categories,
+                    type: "datetime",
+                    categories: categories, // tetap pakai waktu asli dari data
                     title: {
                         text: "Waktu"
                     },
                     labels: {
                         rotate: -45,
-                        show: true
+                        show: true,
+                        formatter: function(value, timestamp) {
+                            const date = new Date(value);
+                            const hours = date.getHours();
+                            // hanya tampilkan jam 08, 14, 22
+                            if ([8, 14, 22].includes(hours)) {
+                                return date.toLocaleTimeString("id-ID", {
+                                    hour: "2-digit",
+                                    minute: "2-digit"
+                                });
+                            }
+                            return "";
+                        }
                     }
                 },
                 yaxis: {
@@ -869,14 +910,33 @@
                     }
                 },
                 tooltip: {
-                    x: {
-                        format: "dd MMM HH:mm"
+                    custom: function({
+                        series,
+                        seriesIndex,
+                        dataPointIndex,
+                        w
+                    }) {
+                        const seriesName = w.config.series[seriesIndex].name; // ex: Suhu1
+                        const value = series[seriesIndex][dataPointIndex];
+                        const waktu = w.globals.categoryLabels[dataPointIndex];
+
+                        const desc = descriptions[seriesName] || [];
+
+                        return `
+                <div style="padding:8px; max-width:250px">
+                    <div><strong>${seriesName}:</strong> ${value} °C</div>
+                    <div><em>${waktu}</em></div>
+                    <hr style="margin:5px 0"/>
+                    <div>${desc.join("<br>")}</div>
+                </div>
+            `;
                     }
                 },
                 legend: {
                     position: "top"
                 }
             };
+
 
             if (chartKondensat) {
                 chartKondensat.updateOptions(options);
@@ -907,6 +967,7 @@
                     end_date: end
                 },
                 success: function(response) {
+                    console.log(response);
                     UpdateChartKondensat(response);
                 },
                 error: function(xhr, status, error) {
