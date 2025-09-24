@@ -967,7 +967,6 @@
                     end_date: end
                 },
                 success: function(response) {
-                    console.log(response);
                     UpdateChartKondensat(response);
                 },
                 error: function(xhr, status, error) {
