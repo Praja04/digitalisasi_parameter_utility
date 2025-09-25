@@ -797,8 +797,12 @@ class EngineeringController extends Controller
             'Chlorin', 'SMBS', 'PT100', 'B4', 'SRF'
         ];
 
-        // Ambil satuan dari database
-        $types = ChemicalType::all()->keyBy('nama_chemical');
+        // Normalisasi satuan dari chemical_types
+        $satuanMap = ChemicalType::all()
+            ->mapWithKeys(function ($item) {
+                $key = strtolower(preg_replace('/[^a-z0-9]/', '', trim($item->nama_chemical)));
+                return [$key => trim($item->satuan)];
+            });
 
         // Load template
         $templatePath = storage_path('app/templates/template_chemical.xlsx');
@@ -808,30 +812,67 @@ class EngineeringController extends Controller
         // Tulis bulan ke cell R1
         $sheet->setCellValue('R1', $bulan);
 
-        // Loop kategori chemical → kolom B (2) sampai R (18)
         foreach ($kategori as $index => $chemicalName) {
-            $data = PemakaianChemicalModel::whereRaw('LOWER(jenis_pemakaian) = ?', [strtolower($chemicalName)])
+            // Ambil semua data per chemical untuk bulan tsb
+            $entries = PemakaianChemicalModel::whereRaw('TRIM(LOWER(jenis_pemakaian)) = ?', [strtolower(trim($chemicalName))])
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->get()
-                ->keyBy(function ($item) {
-                    return Carbon::parse($item->created_at)->day;
-                });
+                ->get();
 
+            // Kelompokkan per hari
+            $byDay = $entries->groupBy(function ($item) {
+                return Carbon::parse($item->created_at)->day;
+            });
 
-            $colIndex = 2 + $index; // B = 2, C = 3, ..., R = 18
+            $colIndex = 2 + $index; // B=2, C=3, dst
 
             for ($day = 1; $day <= $endDate->day; $day++) {
-                $rowIndex = 5 + $day; // tanggal 1 = baris 6
-                $entry = $data->get($day);
+                $rowIndex = 5 + $day;
+                $dayEntries = $byDay->get($day, collect());
 
-               
-                $value = $entry ? "{$entry->nilai_pemakaian}" : '';
+                $totalPemakaian = 0;
+                foreach ($dayEntries as $entry) {
+                    $nilai = is_numeric($entry->nilai_pemakaian)
+                        ? floatval($entry->nilai_pemakaian)
+                        : floatval(preg_replace('/[^\d.]+/', '', $entry->nilai_pemakaian));
+
+                    $rh = $entry->running_hour ?? 1;
+                    $jenisAsli = trim($entry->jenis_pemakaian);
+
+                    switch ($jenisAsli) {
+                        case 'PAC powder 1':
+                            $totalPemakaian += $rh * ($nilai * 60 * 7.6 / 100) / 1000;
+                            break;
+                        case 'PAC powder 2':
+                            $totalPemakaian += $rh * ($nilai * 60 * 12.5 / 100) / 1000;
+                            break;
+                        case 'BE-100':
+                            $totalPemakaian += $rh * ($nilai * 60 * 12.5 / 100) / 1000;
+                            break;
+                        case 'C-204':
+                            $totalPemakaian += $rh * ($nilai * 60 * 1 / 100) / 1000;
+                            break;
+                        case 'C-9040 step 1':
+                            $totalPemakaian += $rh * ($nilai * 60 * 0.11 / 100) / 1000;
+                            break;
+                        case 'C-9040 step 2':
+                            $totalPemakaian += $rh * ($nilai * 60 * 0.35 / 100) / 1000;
+                            break;
+                        case 'Denfloc 260 PA':
+                            $totalPemakaian += ($rh * ($nilai / 1000 * 60) * 480) / 1000 / 1000 / 1000;
+                            break;
+                        case 'NaOH':
+                            $totalPemakaian += $rh * ($nilai / 1000 * 60) * 1.5;
+                            break;
+                        default:
+                            $totalPemakaian += $nilai;
+                            break;
+                    }
+                }
 
                 $colLetter = Coordinate::stringFromColumnIndex($colIndex);
-                $sheet->setCellValue("{$colLetter}{$rowIndex}", $value);
+                $sheet->setCellValue("{$colLetter}{$rowIndex}", $dayEntries->isNotEmpty() ? round($totalPemakaian, 3) : '');
             }
         }
-       
 
         // Simpan hasil export
         $filename = "Laporan_Chemical_Utility_{$bulan}.xlsx";
