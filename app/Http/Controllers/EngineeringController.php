@@ -17,7 +17,9 @@ use App\Models\eng\ChemicalArea;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class EngineeringController extends Controller
 {
@@ -779,61 +781,65 @@ class EngineeringController extends Controller
 
     public function exportPemakaianChemicalSpreadsheet(Request $request)
     {
-        $month = $request->input('bulan');
-        if (!$month) {
+        $bulan = $request->input('bulan'); // contoh: '2025-06'
+        if (!$bulan) {
             return response()->json(['message' => 'Parameter bulan diperlukan (format: YYYY-MM)'], 400);
         }
 
-        $data = PemakaianChemicalModel::where('tanggal', 'like', "$month%")
-            ->orderBy('tanggal')
-            ->get();
+        $startDate = Carbon::createFromFormat('Y-m', $bulan)->startOfMonth();
+        $endDate = $startDate->copy()->endOfMonth();
 
-        // Kelompokkan data berdasarkan tanggal, shift, dan area
-        $grouped = $data->groupBy(fn ($item) => $item->tanggal . '|' . $item->shift . '|' . $item->chemical_area);
+        // Urutan chemical sesuai template (kolom B–R)
+        $kategori = [
+            'SCF', 'SRTF', 'PAC powder 1', 'PAC powder 2',
+            'C-9040 step 1', 'C-9040 step 2', 'BE-100', 'C-204',
+            'Denfloc 945', 'Defoamer', 'NaOH', 'NPK',
+            'Chlorin', 'SMBS', 'PT100', 'B4', 'SRF'
+        ];
 
-        $spreadsheet = new Spreadsheet();
+        // Ambil satuan dari database
+        $types = ChemicalType::all()->keyBy('nama_chemical');
+
+        // Load template
+        $templatePath = storage_path('app/templates/template_chemical.xlsx');
+        $spreadsheet = IOFactory::load($templatePath);
         $sheet = $spreadsheet->getActiveSheet();
-        $rowIndex = 1;
 
-        // Header
-        $headers = ['Tanggal', 'Jenis Pemakaian', 'Shift', 'Nilai Pemakaian', 'Area', 'Operator', 'Notes', 'Running Hour'];
-        foreach ($headers as $col => $label) {
-            $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col + 1);
-            $sheet->setCellValue("{$columnLetter}{$rowIndex}", $label);
-        }
-        $rowIndex++;
+        // Tulis bulan ke cell R1
+        $sheet->setCellValue('R1', $bulan);
 
-        foreach ($grouped as $key => $entries) {
-            [$tanggal, $shift, $area] = explode('|', $key);
-            $startMergeRow = $rowIndex;
-            $mergeLength = count($entries);
+        // Loop kategori chemical → kolom B (2) sampai R (18)
+        foreach ($kategori as $index => $chemicalName) {
+            $data = PemakaianChemicalModel::whereRaw('LOWER(jenis_pemakaian) = ?', [strtolower($chemicalName)])
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->get()
+                ->keyBy(function ($item) {
+                    return Carbon::parse($item->created_at)->day;
+                });
 
-            foreach ($entries as $entry) {
-                $sheet->setCellValue("A{$rowIndex}", $tanggal);
-                $sheet->setCellValue("B{$rowIndex}", $entry->jenis_pemakaian);
-                $sheet->setCellValue("C{$rowIndex}", $shift);
-                $sheet->setCellValue("D{$rowIndex}", $entry->nilai_pemakaian);
-                $sheet->setCellValue("E{$rowIndex}", $area);
-                $sheet->setCellValue("F{$rowIndex}", $entry->operator);
-                $sheet->setCellValue("G{$rowIndex}", $entry->notes);
-                $sheet->setCellValue("H{$rowIndex}", $entry->running_hour);
-                $rowIndex++;
-            }
 
-            // Merge cells hanya jika lebih dari satu baris
-            if ($mergeLength > 1) {
-                $sheet->mergeCells("A{$startMergeRow}:A" . ($rowIndex - 1)); // Tanggal
-                $sheet->mergeCells("C{$startMergeRow}:C" . ($rowIndex - 1)); // Shift
-                $sheet->mergeCells("E{$startMergeRow}:E" . ($rowIndex - 1)); // Area
+            $colIndex = 2 + $index; // B = 2, C = 3, ..., R = 18
+
+            for ($day = 1; $day <= $endDate->day; $day++) {
+                $rowIndex = 5 + $day; // tanggal 1 = baris 6
+                $entry = $data->get($day);
+
+               
+                $value = $entry ? "{$entry->nilai_pemakaian}" : '';
+
+                $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+                $sheet->setCellValue("{$colLetter}{$rowIndex}", $value);
             }
         }
+       
 
-        $fileName = "Pemakaian-Chemical-{$month}.xlsx";
-        $writer = new Xlsx($spreadsheet);
-        $tempPath = tempnam(sys_get_temp_dir(), 'export-chemical-');
-        $writer->save($tempPath);
+        // Simpan hasil export
+        $filename = "Laporan_Chemical_Utility_{$bulan}.xlsx";
+        $outputPath = storage_path("app/exports/{$filename}");
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save($outputPath);
 
-        return response()->download($tempPath, $fileName)->deleteFileAfterSend(true);
+        return response()->download($outputPath)->deleteFileAfterSend(true);
     }
 
 
@@ -1325,68 +1331,5 @@ class EngineeringController extends Controller
 
     //export data ke template excel
 
-    // public function export_template(Request $request)
-    // {
-    //     $bulan = $request->input('bulan', date('m'));
-    //     $tahun = $request->input('tahun', date('Y'));
 
-    //     $startDate = Carbon::create($tahun, $bulan, 1);
-    //     $endDate = $startDate->copy()->endOfMonth();
-
-    //     // Kategori sesuai template Excel
-    //     $kategori = [
-    //         'Outlet Storage WS',
-    //         'CT RO',
-    //         'Outlet Storage RO Reject',
-    //         'CT WS',
-    //         'Outlet Fresh Water 1',
-    //         'Greenbelt',
-    //         'Outlet Fresh Water 2',
-    //         'Sumur 1',
-    //         'Sumur 2',
-    //         'Sumur 4',
-    //         'Sumur 5',
-    //         'PDAM'
-    //     ];
-
-    //     // Load template
-    //     $templatePath = storage_path('app/templates/laporan_air_utility.xlsx');
-    //     $spreadsheet = IOFactory::load($templatePath);
-    //     $sheet = $spreadsheet->getActiveSheet();
-
-    //     foreach ($kategori as $index => $jenis) {
-    //         $data = PemakaianAirModel::where('jenis_pemakaian', $jenis)
-    //         ->whereBetween('tanggal', [$startDate, $endDate])
-    //         ->orderBy('tanggal')
-    //             ->get()
-    //             ->keyBy(function ($item) {
-    //                 return Carbon::parse($item->tanggal)->day;
-    //             });
-
-    //         $startColumn = 2 + ($index * 3); // C = 2, F = 5, dst...
-    //         $row = 5;
-
-    //         for ($day = 1; $day <= $endDate->day; $day++) {
-    //             $entry = $data->get($day);
-    //             if ($entry) {
-    //                 $colAwal = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn);
-    //                 $colAkhir = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 1);
-    //                 $colSelisih = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 2);
-
-    //                 $sheet->setCellValue("{$colAwal}{$row}", $entry->pemakaian_awal);
-    //                 $sheet->setCellValue("{$colAkhir}{$row}", $entry->pemakaian_akhir);
-    //                 $sheet->setCellValue("{$colSelisih}{$row}", $entry->pemakaian_akhir - $entry->pemakaian_awal);
-    //             }
-    //             $row++;
-    //         }
-    //     }
-
-    //     // Simpan hasil export
-    //     $filename = "Laporan_Air_Utility_{$bulan}_{$tahun}.xlsx";
-    //     $outputPath = storage_path("app/exports/{$filename}");
-    //     $writer = new Xlsx($spreadsheet);
-    //     $writer->save($outputPath);
-
-    //     return response()->download($outputPath)->deleteFileAfterSend(true);
-    // }
 }
