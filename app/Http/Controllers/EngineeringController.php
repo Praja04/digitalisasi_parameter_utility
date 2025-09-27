@@ -601,115 +601,215 @@ class EngineeringController extends Controller
 
 
     //export excel
+    // public function exportPemakaianListrikSpreadsheet(Request $request)
+    // {
+    //     $month = $request->input('bulan'); // format: 2025-06
+    //     if (!$month) {
+    //         return response()->json(['message' => 'Parameter bulan diperlukan (format: YYYY-MM)'], 400);
+    //     }
+
+    //     $defaultPanelOrder = ['MDP', 'SDP1', 'SDP2', 'SDP3', 'SDP4', 'SDP5', 'SDP6', 'SDP7', 'SDP8', 'SDP9', 'SDP10', 'SDP11', 'SDP12', 'SDP13', 'SDP14'];
+
+    //     $data = PemakaianListrikModel::where('waktu', 'like', "$month%")->orderBy('waktu')->get();
+
+    //     $grouped = $data->groupBy(fn ($item) => date('Y-m-d', strtotime($item->waktu)));
+    //     $sortedDates = $grouped->keys()->sort()->values();
+    //     $result = [];
+
+    //     foreach ($sortedDates as $index => $tanggal) {
+    //         $items = $grouped[$tanggal];
+    //         $pivot = [];
+    //         $usage = [];
+    //         $operators = [];
+
+    //         $availablePanels = $items->pluck('panel_type')->unique()->values()->all();
+    //         $panels = array_values(array_intersect($defaultPanelOrder, $availablePanels));
+
+    //         foreach ($panels as $panel) {
+    //             $panelItem = $items->firstWhere('panel_type', $panel);
+    //             $operators[$panel] = $panelItem?->operator;
+    //         }
+
+    //         $parameters = ['volt', 'a', 'kw', 'mwh', 'cos'];
+    //         foreach ($parameters as $param) {
+    //             $pivot[$param] = [];
+    //             foreach ($panels as $panel) {
+    //                 $panelItem = $items->firstWhere('panel_type', $panel);
+    //                 $pivot[$param][$panel] = $panelItem?->$param ?? null;
+    //             }
+    //         }
+
+    //         if ($index < count($sortedDates) - 1) {
+    //             $nextItems = $grouped[$sortedDates[$index + 1]];
+    //             foreach ($panels as $panel) {
+    //                 $curr = $items->firstWhere('panel_type', $panel)?->mwh;
+    //                 $next = $nextItems->firstWhere('panel_type', $panel)?->mwh;
+    //                 $usage[$panel] = (!is_null($curr) && !is_null($next)) ? $next - $curr : null;
+    //             }
+    //         } else {
+    //             foreach ($panels as $panel) {
+    //                 $usage[$panel] = null;
+    //             }
+    //         }
+
+    //         $result[] = [
+    //             'tanggal' => $tanggal,
+    //             'operator' => $operators,
+    //             'panels' => $panels,
+    //             'rows' => $pivot,
+    //             'usage' => $usage,
+    //         ];
+    //     }
+
+    //     // Generate Excel
+    //     $spreadsheet = new Spreadsheet();
+    //     $sheet = $spreadsheet->getActiveSheet();
+    //     $rowIndex = 1;
+
+    //     foreach ($result as $day) {
+    //         $panels = $day['panels'];
+    //         $tanggal = $day['tanggal'];
+
+    //         $sheet->setCellValue("A{$rowIndex}", 'Tanggal');
+    //         $sheet->setCellValue("B{$rowIndex}", 'Parameter');
+    //         $col = 'C';
+    //         foreach ($panels as $panel) {
+    //             $sheet->setCellValue("{$col}{$rowIndex}", $panel);
+    //             $col++;
+    //         }
+    //         $rowIndex++;
+
+    //         $params = [
+    //             'Operator' => $day['operator'],
+    //             'Volt'     => $day['rows']['volt'],
+    //             'A'        => $day['rows']['a'],
+    //             'kW'       => $day['rows']['kw'],
+    //             'MWh'      => $day['rows']['mwh'],
+    //             'Cos'      => $day['rows']['cos'],
+    //             'Usage'    => $day['usage'],
+    //         ];
+
+    //         foreach ($params as $label => $dataRow) {
+    //             $sheet->setCellValue("A{$rowIndex}", $tanggal);
+    //             $sheet->setCellValue("B{$rowIndex}", $label);
+    //             $col = 'C';
+    //             foreach ($panels as $panel) {
+    //                 $sheet->setCellValue("{$col}{$rowIndex}", $dataRow[$panel] ?? '');
+    //                 $col++;
+    //             }
+    //             $tanggal = ''; // hanya tampil di baris pertama
+    //             $rowIndex++;
+    //         }
+
+    //         $rowIndex++; // spasi antar tanggal
+    //     }
+
+    //     $fileName = 'Pemakaian-Listrik-' . $month . '.xlsx';
+    //     $writer = new Xlsx($spreadsheet);
+    //     $tempPath = tempnam(sys_get_temp_dir(), 'export-');
+    //     $writer->save($tempPath);
+
+    //     return response()->download($tempPath, $fileName)->deleteFileAfterSend(true);
+    // }
+
     public function exportPemakaianListrikSpreadsheet(Request $request)
     {
-        $month = $request->input('bulan'); // format: 2025-06
+        $month = $request->input('bulan');
         if (!$month) {
             return response()->json(['message' => 'Parameter bulan diperlukan (format: YYYY-MM)'], 400);
         }
 
-        $defaultPanelOrder = ['MDP', 'SDP1', 'SDP2', 'SDP3', 'SDP4', 'SDP5', 'SDP6', 'SDP7', 'SDP8', 'SDP9', 'SDP10', 'SDP11', 'SDP12', 'SDP13', 'SDP14'];
+        $startDate = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+        $endDate = $startDate->copy()->endOfMonth();
 
-        $data = PemakaianListrikModel::where('waktu', 'like', "$month%")->orderBy('waktu')->get();
+        $panels = array_merge(['MDP'], array_map(fn ($i) => "SDP$i", range(1, 14)));
 
-        $grouped = $data->groupBy(fn ($item) => date('Y-m-d', strtotime($item->waktu)));
-        $sortedDates = $grouped->keys()->sort()->values();
-        $result = [];
+        $templatePath = storage_path('app/templates/template_listrik.xlsx');
+        $spreadsheet = IOFactory::load($templatePath);
 
-        foreach ($sortedDates as $index => $tanggal) {
-            $items = $grouped[$tanggal];
-            $pivot = [];
-            $usage = [];
-            $operators = [];
+        $rowBase = 4;
+        $rowStep = 4;
 
-            $availablePanels = $items->pluck('panel_type')->unique()->values()->all();
-            $panels = array_values(array_intersect($defaultPanelOrder, $availablePanels));
+        $deskripsiMap = [
+            'volt' => 0,
+            'a'    => 1,
+            'kw'   => 2,
+            'mwh'  => 3,
+        ];
 
-            foreach ($panels as $panel) {
-                $panelItem = $items->firstWhere('panel_type', $panel);
-                $operators[$panel] = $panelItem?->operator;
+        $sheetNames = ['minggu 1', 'minggu 2', 'minggu 3', 'minggu 4', 'minggu 5'
+        ];
+
+        foreach ($sheetNames as $weekIndex => $sheetName) {
+            $sheet = $spreadsheet->getSheetByName($sheetName);
+            if (!$sheet) continue;
+
+            // Tambahkan info Bulan dan Tahun di S1 dan S2
+            $sheet->setCellValue('S1', 'Bulan : ' . $startDate->translatedFormat('F')); // contoh: September
+            $sheet->setCellValue('S2', 'Tahun : ' . $startDate->year);
+
+            $weekStart = $startDate->copy()->addDays($weekIndex * 7);
+            $weekEnd = $weekStart->copy()->addDays(6);
+            if ($weekEnd->gt($endDate)) {
+                $weekEnd = $endDate;
             }
 
-            $parameters = ['volt', 'a', 'kw', 'mwh', 'cos'];
-            foreach ($parameters as $param) {
-                $pivot[$param] = [];
-                foreach ($panels as $panel) {
-                    $panelItem = $items->firstWhere('panel_type', $panel);
-                    $pivot[$param][$panel] = $panelItem?->$param ?? null;
+            foreach ($panels as $panelIndex => $panel) {
+                $data = PemakaianListrikModel::where('panel_type', $panel)
+                ->whereBetween('waktu', [$weekStart, $weekEnd])
+                ->orderBy('waktu')
+                ->get()
+                ->groupBy(function ($item) {
+                    return Carbon::parse($item->waktu)->day;
+                });
+
+                $col = 7 + $panelIndex;
+
+                for ($dayOffset = 0; $dayOffset < 7; $dayOffset++) {
+                    $tanggal = $weekStart->copy()->addDays($dayOffset);
+                    if ($tanggal->gt($weekEnd)) break;
+
+                    $rowStart = $rowBase + ($dayOffset * $rowStep);
+
+                    if ($panelIndex === 0) {
+                        $sheet->setCellValue("B{$rowStart}", $tanggal->format('d-m-Y'));
+
+                        $jamEntry = PemakaianListrikModel::where('panel_type', 'SDP14')
+                            ->whereDate('waktu', $tanggal->toDateString())
+                            ->orderBy('created_at')
+                            ->first();
+
+                        if ($jamEntry) {
+                            $jam = Carbon::parse($jamEntry->created_at)->format('H:i:s');
+                            $sheet->setCellValue("C{$rowStart}", $jam);
+                        }
+                    }
+
+                    $entries = $data->get($tanggal->day);
+                    if ($entries && $entries->isNotEmpty()) {
+                        $entry = $entries->first();
+
+                        foreach ($deskripsiMap as $field => $offset) {
+                            $row = $rowStart + $offset;
+                            $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
+                            $sheet->setCellValue("{$colLetter}{$row}", $entry->$field);
+                        }
+
+                        if ($panel === 'MDP' && $entry->cos !== null
+                        ) {
+                            $sheet->setCellValue("F{$rowStart}", $entry->cos);
+                        }
+                    }
                 }
             }
-
-            if ($index < count($sortedDates) - 1) {
-                $nextItems = $grouped[$sortedDates[$index + 1]];
-                foreach ($panels as $panel) {
-                    $curr = $items->firstWhere('panel_type', $panel)?->mwh;
-                    $next = $nextItems->firstWhere('panel_type', $panel)?->mwh;
-                    $usage[$panel] = (!is_null($curr) && !is_null($next)) ? $next - $curr : null;
-                }
-            } else {
-                foreach ($panels as $panel) {
-                    $usage[$panel] = null;
-                }
-            }
-
-            $result[] = [
-                'tanggal' => $tanggal,
-                'operator' => $operators,
-                'panels' => $panels,
-                'rows' => $pivot,
-                'usage' => $usage,
-            ];
         }
 
-        // Generate Excel
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $rowIndex = 1;
-
-        foreach ($result as $day) {
-            $panels = $day['panels'];
-            $tanggal = $day['tanggal'];
-
-            $sheet->setCellValue("A{$rowIndex}", 'Tanggal');
-            $sheet->setCellValue("B{$rowIndex}", 'Parameter');
-            $col = 'C';
-            foreach ($panels as $panel) {
-                $sheet->setCellValue("{$col}{$rowIndex}", $panel);
-                $col++;
-            }
-            $rowIndex++;
-
-            $params = [
-                'Operator' => $day['operator'],
-                'Volt'     => $day['rows']['volt'],
-                'A'        => $day['rows']['a'],
-                'kW'       => $day['rows']['kw'],
-                'MWh'      => $day['rows']['mwh'],
-                'Cos'      => $day['rows']['cos'],
-                'Usage'    => $day['usage'],
-            ];
-
-            foreach ($params as $label => $dataRow) {
-                $sheet->setCellValue("A{$rowIndex}", $tanggal);
-                $sheet->setCellValue("B{$rowIndex}", $label);
-                $col = 'C';
-                foreach ($panels as $panel) {
-                    $sheet->setCellValue("{$col}{$rowIndex}", $dataRow[$panel] ?? '');
-                    $col++;
-                }
-                $tanggal = ''; // hanya tampil di baris pertama
-                $rowIndex++;
-            }
-
-            $rowIndex++; // spasi antar tanggal
-        }
-
-        $fileName = 'Pemakaian-Listrik-' . $month . '.xlsx';
+        $filename = "Laporan_Listrik_{$month}.xlsx";
+        $outputPath = storage_path("app/exports/{$filename}");
         $writer = new Xlsx($spreadsheet);
-        $tempPath = tempnam(sys_get_temp_dir(), 'export-');
-        $writer->save($tempPath);
+        $writer->save($outputPath);
 
-        return response()->download($tempPath, $fileName)->deleteFileAfterSend(true);
+        return response()->download($outputPath)->deleteFileAfterSend(true);
     }
 
     public function exportPemakaianAirSpreadsheet(Request $request)
