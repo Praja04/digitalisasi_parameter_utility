@@ -113,24 +113,12 @@
                             <form id="form-pemakaian-air">
                                 @csrf
                                 <div class="mb-3">
-                                    <label for="tanggal" class="form-label">Tanggal</label>
-                                    <input type="date" name="tanggal" id="tanggal_air" class="form-control">
+                                    <label for="tanggal" class="form-label">Tanggal (Pemakaian Tanggal Sebelumnya)</label>
+                                    <input type="date" name="tanggal" id="tanggal_air" class="form-control" readonly>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="pemakaian_liter_awal" class="form-label">Awal (m³)</label>
-                                    <input type="number" name="pemakaian_liter_awal" class="form-control" step="any" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="pemakaian_liter_akhir" class="form-label">Akhir (m³)</label>
-                                    <input type="number" name="pemakaian_liter_akhir" class="form-control" step="any" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="area" class="form-label">Pilih Area</label>
-                                    <select id="air_area" name="jenis_pemakaian" class="form-select" required>
 
+                                <div id="area-input-container"></div> <!-- Tempat input dinamis -->
 
-                                    </select>
-                                </div>
                                 <div class="mb-3">
                                     <label for="notes" class="form-label">Catatan</label>
                                     <textarea name="notes" class="form-control"></textarea>
@@ -185,6 +173,12 @@
 
 <!-- Script -->
 <script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
     $(document).ready(function() {
 
         function toggleCosInput() {
@@ -229,29 +223,31 @@
         });
 
         $.get("{{url('eng/air-area')}}", function(data) {
-            const $select = $('#air_area');
-            $select.empty(); // Kosongkan option terlebih dahulu
+            const $container = $('#area-input-container');
+            $container.empty();
 
-            // Tambahkan option default
-            $select.append($('<option>', {
-                value: '',
-                text: 'Pilih Area',
-                disabled: true,
-                selected: true
-            }));
-
-            // Tambahkan option untuk setiap area
             data.forEach(function(area) {
-                const $option = $('<option>', {
-                    value: area.nama_area,
-                    text: area.nama_area,
-                });
-                $select.append($option);
+                const html = `
+            <div class="card mb-3 shadow-sm" style="background-color:#f4f6f9; border-left: 5px solid #007bff;">
+                <div class="card-header fw-bold text-white" style="background-color:#007bff;">
+                    ${area.nama_area}
+                </div>
+                <div class="card-body">
+                    <input type="hidden" name="areas[]" value="${area.nama_area}">
+                    <div class="mb-2">
+                        <label class="form-label">Awal (m³)</label>
+                        <input type="number" name="awal[${area.nama_area}]" class="form-control" step="any" required style="background-color:#ffffff;">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Akhir (m³)</label>
+                        <input type="number" name="akhir[${area.nama_area}]" class="form-control" step="any" required style="background-color:#ffffff;">
+                    </div>
+                </div>
+            </div>
+        `;
+                $container.append(html);
             });
         });
-
-
-
 
         $('.card-unit').click(function() {
             const unit = $(this).data('unit');
@@ -391,21 +387,51 @@
         $('#form-pemakaian-air').on('submit', function(e) {
             e.preventDefault();
 
-            let formData = $(this).serialize();
+            const tanggal = $('#tanggal_air').val();
+            const notes = $('textarea[name="notes"]').val();
+            const payload = [];
+
+            $('input[name="areas[]"]').each(function() {
+                const area = $(this).val();
+                const awal = $(`input[name="awal[${area}]"]`).val();
+                const akhir = $(`input[name="akhir[${area}]"]`).val();
+
+                // Pastikan nilai tidak kosong
+                if (awal !== '' && akhir !== '') {
+                    payload.push({
+                        area: area,
+                        pemakaian_liter_awal: parseFloat(awal),
+                        pemakaian_liter_akhir: parseFloat(akhir)
+                    });
+                }
+            });
+
+            const finalData = {
+                tanggal: tanggal,
+                notes: notes,
+                data: payload
+            };
 
             $.ajax({
                 url: "{{url('/eng/data/air/store')}}",
                 method: 'POST',
-                data: formData,
+                contentType: 'application/json',
+                data: JSON.stringify(finalData),
                 success: function(response) {
+                    let message = response.message;
+
+                    if (response.conflict && response.conflict.length > 0) {
+                        message += `\nArea berikut sudah tercatat dan dilewati: ${response.conflict.join(', ')}`;
+                    }
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil!',
-                        text: response.message,
+                        text: message,
                     });
 
-                    setInterval(() => {
-                        location.reload(); // Reload halaman untuk update data
+                    setTimeout(() => {
+                        location.reload();
                     }, 3000);
                 },
                 error: function(xhr) {
@@ -432,6 +458,7 @@
                 }
             });
         });
+
 
         $('#form-pemakaian-listrik').on('submit', function(e) {
             e.preventDefault();

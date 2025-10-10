@@ -832,7 +832,7 @@
 
          // Buat series berdasarkan field Suhu1 - Suhu5
          const series = [];
-         for (let i = 1; i <= 5; i++) {
+         for (let i = 1; i <= 4; i++) {
             const key = `Suhu${i}`;
             if (data.some(d => d[key] !== null)) { // hanya tambahkan kalau ada datanya
                series.push({
@@ -865,9 +865,9 @@
                "- CIP Kitchen",
                "- HW 10 ton"
             ],
-            Suhu5: [
-               "Jalur kondensat dari header steam area Pasteur."
-            ]
+            // Suhu5: [
+            //    "Jalur kondensat dari header steam area Pasteur."
+            // ]
          };
 
          const options = {
