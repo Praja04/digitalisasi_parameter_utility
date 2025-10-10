@@ -126,9 +126,26 @@ class EngineeringController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'tanggal' => 'required|date',
-            'pemakaian_liter_awal' => 'required',
-            'pemakaian_liter_akhir' => 'required',
-            'jenis_pemakaian' => 'required',
+            'data' => 'required|array|min:1',
+            'data.*.area' => 'required|string',
+            'data.*.pemakaian_liter_awal' => 'required|numeric|min:0',
+            'data.*.pemakaian_liter_akhir' => [
+                'required',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    // Ambil index dari data.*.pemakaian_liter_akhir
+                    preg_match('/data\.(\d+)\.pemakaian_liter_akhir/', $attribute, $matches);
+                    $index = $matches[1] ?? null;
+
+                    if ($index !== null) {
+                        $awal = $request->input("data.$index.pemakaian_liter_awal");
+                        if ($value < $awal) {
+                            $fail("Pemakaian akhir harus lebih besar atau sama dengan awal untuk area ke-$index.");
+                        }
+                    }
+                }
+            ],
             'notes' => 'nullable|string|max:255',
         ]);
 
@@ -137,39 +154,45 @@ class EngineeringController extends Controller
                 'message' => 'Validasi gagal.',
                 'errors' => $validator->errors(),
             ], 422);
-        } // Cek apakah data dengan tanggal + jenis_pemakaian sudah ada
-        $exists = PemakaianAirModel::whereDate('tanggal', $request->input('tanggal'))
-            ->where('jenis_pemakaian', $request->input('jenis_pemakaian'))
+        }
+
+        $tanggal = $request->input('tanggal');
+        $createdBy = Session::get('username') ?? 'system';
+        $notes = $request->input('notes');
+        $data = $request->input('data');
+
+        $conflicts = [];
+        $inserted = [];
+
+        foreach ($data as $entry) {
+            $area = $entry['area'];
+
+            $exists = PemakaianAirModel::whereDate('tanggal', $tanggal)
+            ->where('jenis_pemakaian', $area)
             ->exists();
 
-        if ($exists) {
-            return response()->json([
-                'message' => 'Data dengan tanggal dan jenis pemakaian yang sama sudah ada.',
-            ], 409); // 409 Conflict
-        }
+            if ($exists) {
+                $conflicts[] = $area;
+                continue;
+            }
 
-
-
-        try {
             $air = new PemakaianAirModel();
-            $air->tanggal = $request->input('tanggal');
-            $air->pemakaian_awal = $request->input('pemakaian_liter_awal');
-            $air->pemakaian_akhir = $request->input('pemakaian_liter_akhir');
-            $air->jenis_pemakaian = $request->input('jenis_pemakaian');
-            $air->created_by = Session::get('username');
-            $air->notes = $request->input('notes');
+            $air->tanggal = $tanggal;
+            $air->pemakaian_awal = $entry['pemakaian_liter_awal'];
+            $air->pemakaian_akhir = $entry['pemakaian_liter_akhir'];
+            $air->jenis_pemakaian = $area;
+            $air->created_by = $createdBy;
+            $air->notes = $notes;
             $air->save();
 
-            return response()->json([
-                'message' => 'Data pemakaian air berhasil ditambahkan.',
-                'data' => $air,
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Gagal menyimpan data.',
-                'error' => $e->getMessage(),
-            ], 500);
+            $inserted[] = $area;
         }
+
+        return response()->json([
+            'message' => 'Data pemakaian air berhasil diproses.',
+            'inserted' => $inserted,
+            'conflict' => $conflicts,
+        ], count($conflicts) ? 207 : 201);
     }
 
 
