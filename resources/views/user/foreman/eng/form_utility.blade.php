@@ -114,7 +114,7 @@
                                 @csrf
                                 <div class="mb-3">
                                     <label for="tanggal" class="form-label">Tanggal (Pemakaian Tanggal Sebelumnya)</label>
-                                    <input type="date" name="tanggal" id="tanggal_air" class="form-control" readonly>
+                                    <input type="date" name="tanggal" id="tanggal_air" class="form-control" >
                                 </div>
 
                                 <div id="area-input-container"></div> <!-- Tempat input dinamis -->

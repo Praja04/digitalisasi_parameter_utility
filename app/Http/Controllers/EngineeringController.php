@@ -39,6 +39,13 @@ class EngineeringController extends Controller
         }
         return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
+    public function dashboardScoringRetail()
+    {
+        if (Session::get('jabatan') == 'dept_head') {
+            return view('user.dept_head.dashboard_scoring_retail');
+        }
+        return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
 
     public function todoListEng()
     {

@@ -44,6 +44,10 @@ Route::get('menu', function () {
 Route::get('form', function () {
     return view('pemakaian_air');
 });
+Route::get('dashboard/mesin/retail', function () {
+    return view('user/dept_head/Retail/dashboard_all_mesin');
+});
+
 
 
 //PRD
@@ -162,6 +166,7 @@ Route::prefix('qc')->middleware('auth')->group(function () {
 //Eng
 Route::prefix('eng')->middleware('auth')->group(function () {
 
+    Route::get('dashboard/scoring/retail', [EngineeringController::class, 'dashboardScoringRetail']);
     Route::get('/dept_head/dashboard', [EngineeringController::class, 'dashboardEng']);
     Route::get('/dept_head/todo', [EngineeringController::class, 'todoListEng']);
     Route::get('/supervisor/dashboard', [EngineeringController::class, 'dashboardSupervisorEng']);
