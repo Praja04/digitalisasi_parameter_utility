@@ -423,6 +423,7 @@
 
             return renderTable(shifts, rows, 'Parameter');
         }
+        
         $(document).on('click', '.btn-edit-panel', function() {
             const panel = $(this).data('panel');
             const data = $(this).data('entry');
@@ -454,13 +455,13 @@
             const tanggal = $(this).data('tanggal');
 
             const formHtml = `
-        <input type="hidden" name="id" value="${data.id ?? ''}">
-        <div class="mb-2"><label>Tanggal</label><input type="date" class="form-control" name="tanggal" value="${tanggal}"></div>
-        <div class="mb-2"><label>Jenis Pemakaian</label><input class="form-control" name="jenis_pemakaian" value="${data.jenis_pemakaian}" readonly></div>
-        <div class="mb-2"><label>Pemakaian Awal</label><input class="form-control" name="pemakaian_awal" value="${data.pemakaian_awal}"></div>
-        <div class="mb-2"><label>Pemakaian Akhir</label><input class="form-control" name="pemakaian_akhir" value="${data.pemakaian_akhir}"></div>
-        <div class="mb-2"><label>Catatan</label><textarea class="form-control" name="notes">${data.notes ?? ''}</textarea></div>
-    `;
+            <input type="hidden" name="id" value="${data.id ?? ''}">
+            <div class="mb-2"><label>Tanggal</label><input type="date" class="form-control" name="tanggal" value="${tanggal}"></div>
+            <div class="mb-2"><label>Jenis Pemakaian</label><input class="form-control" name="jenis_pemakaian" value="${data.jenis_pemakaian}" readonly></div>
+            <div class="mb-2"><label>Pemakaian Awal</label><input class="form-control" name="pemakaian_awal" value="${data.pemakaian_awal}"></div>
+            <div class="mb-2"><label>Pemakaian Akhir</label><input class="form-control" name="pemakaian_akhir" value="${data.pemakaian_akhir}"></div>
+            <div class="mb-2"><label>Catatan</label><textarea class="form-control" name="notes">${data.notes ?? ''}</textarea></div>
+          `;
 
             $('#editPanelFormBody').html(formHtml);
             $('#editPanelModal').modal('show');
@@ -475,13 +476,13 @@
             const angkaNilai = typeof rawNilai === 'string' ? rawNilai.match(/\d+(\.\d+)?/)?.[0] ?? '' : rawNilai;
 
             const formHtml = `
-        <input type="hidden" name="tanggal" value="${tanggal}">
-        <input type="hidden" name="shift" value="${shift}">
-        <input type="hidden" name="chemical_area" value="${data.area ?? ''}">
-        <div class="mb-2"><label>Jenis Pemakaian</label><input class="form-control" name="jenis_pemakaian" value="${jenis}" readonly></div>
-        <div class="mb-2"><label>Nilai Pemakaian</label><input class="form-control" name="nilai_pemakaian" value="${angkaNilai}"></div>
-        <div class="mb-2"><label>Catatan</label><textarea class="form-control" name="notes">${data.notes ?? ''}</textarea></div>
-    `;
+                <input type="hidden" name="tanggal" value="${tanggal}">
+                <input type="hidden" name="shift" value="${shift}">
+                <input type="hidden" name="chemical_area" value="${data.area ?? ''}">
+                <div class="mb-2"><label>Jenis Pemakaian</label><input class="form-control" name="jenis_pemakaian" value="${jenis}" readonly></div>
+                <div class="mb-2"><label>Nilai Pemakaian</label><input class="form-control" name="nilai_pemakaian" value="${angkaNilai}"></div>
+                <div class="mb-2"><label>Catatan</label><textarea class="form-control" name="notes">${data.notes ?? ''}</textarea></div>
+            `;
 
             $('#editPanelFormBody').html(formHtml);
             $('#editPanelModal').modal('show');
