@@ -21,3 +21,4 @@ Route::prefix('sensor')->group(function () {
     Route::get('/pvsteam', [SensorBoilerController::class, 'getAbnormalPeriodsPVSteam']);
     Route::get('/levelfeedwater', [SensorBoilerController::class, 'getAbnormalPeriodsLevelFeedWater']);
 });
+Route::get('/kondensat/data', [SensorBoilerController::class, 'getKondensatData']);
