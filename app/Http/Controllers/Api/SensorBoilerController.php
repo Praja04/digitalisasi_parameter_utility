@@ -329,32 +329,29 @@ class SensorBoilerController extends Controller
 
 
     public function getdataPVsteam_prd_boiler(Request $request)
-
     {
-        // Jika ada filter tanggal
         if ($request->has('date')) {
             $date = Carbon::parse($request->get('date'))->format('Y-m-d');
 
             $data = DB::table('readsensors_boiler')
-                ->select(
-                    DB::raw("DATE_FORMAT(waktu, '%Y-%m-%d %H:%i') as minute"),
-                    DB::raw("AVG(Press_Pasteur) as press_pasteur"),
-                    DB::raw("AVG(PVSteam) as pvsteam")
-                )
+            ->select(
+                DB::raw("DATE_FORMAT(waktu, '%Y-%m-%d %H:%i') as minute"),
+                DB::raw("IFNULL(AVG(Press_Pasteur),0) as press_pasteur"),
+                DB::raw("IFNULL(AVG(PVSteam),0) as pvsteam")
+            )
                 ->whereDate('waktu', $date)
                 ->groupBy('minute')
                 ->orderBy('minute')
                 ->get();
         } else {
-            // Default ambil 5 jam ke belakang
             $startTime = Carbon::now()->subHours(5);
 
             $data = DB::table('readsensors_boiler')
-                ->select(
-                    DB::raw("DATE_FORMAT(waktu, '%Y-%m-%d %H:%i') as minute"),
-                    DB::raw("AVG(Press_Pasteur) as press_pasteur"),
-                    DB::raw("AVG(PVSteam) as pvsteam")
-                )
+            ->select(
+                DB::raw("DATE_FORMAT(waktu, '%Y-%m-%d %H:%i') as minute"),
+                DB::raw("IFNULL(AVG(Press_Pasteur),0) as press_pasteur"),
+                DB::raw("IFNULL(AVG(PVSteam),0) as pvsteam")
+            )
                 ->where('waktu', '>=', $startTime)
                 ->groupBy('minute')
                 ->orderBy('minute')
