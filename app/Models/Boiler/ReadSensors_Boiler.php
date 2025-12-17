@@ -36,7 +36,8 @@ class ReadSensors_Boiler extends Model
         'O2',
         'CO2',
         'Batubara_FK',
-        'Steam_FK'
+        'Steam_FK',
+        'Press_Pasteur'
     ];
 
 
