@@ -9,10 +9,13 @@ use App\Models\Boiler\ReadSensors_Boiler;
 use App\Models\Boiler\Sensors_Boiler;
 use App\Models\Boiler\KondensatModel;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class SensorBoilerController extends Controller
 {
-    public function dashboardDeptHead() {}
+    public function dashboardDeptHead()
+    {
+    }
     public function getSensorData()
     {
         // Ambil data terbaru dari masing-masing tabel berdasarkan waktu terbaru
@@ -120,14 +123,14 @@ class SensorBoilerController extends Controller
             ->latest('waktu')
             ->take(120)
             ->get();
-    
+
         return response()->json([
             'success' => true,
             'message' => 'Data sensor boiler berhasil diambil',
             'data' => $data
         ]);
     }
-    
+
     //data trend end
 
 
@@ -213,7 +216,7 @@ class SensorBoilerController extends Controller
 
     public function getAbnormalPeriodsRHTemp(Request $request)
     {
-       
+
         $filter = $request->input('filter'); // 'today', 'date', 'range'
         $start = $request->input('start');   // jika date/range
         $end   = $request->input('end');     // jika range
@@ -306,11 +309,11 @@ class SensorBoilerController extends Controller
     {
         // Ambil start dan end date dari request, atau default ke hari ini
         $startDate = $request->input('start_date')
-        ? Carbon::parse($request->input('start_date'))->startOfDay()
+            ? Carbon::parse($request->input('start_date'))->startOfDay()
             : Carbon::now()->startOfDay();
 
         $endDate = $request->input('end_date')
-        ? Carbon::parse($request->input('end_date'))->endOfDay()
+            ? Carbon::parse($request->input('end_date'))->endOfDay()
             : Carbon::now()->endOfDay();
 
         // Ambil data per menit (detik = 00)
@@ -322,6 +325,42 @@ class SensorBoilerController extends Controller
             'end_date' => $endDate->toDateTimeString(),
             'data' => $data,
         ]);
+    }
 
+
+    public function getdataPVsteam_prd_boiler(Request $request)
+
+    {
+        // Jika ada filter tanggal
+        if ($request->has('date')) {
+            $date = Carbon::parse($request->get('date'))->format('Y-m-d');
+
+            $data = DB::table('readsensors_boiler')
+                ->select(
+                    DB::raw("DATE_FORMAT(waktu, '%Y-%m-%d %H:%i') as minute"),
+                    DB::raw("AVG(Press_Pasteur) as press_pasteur"),
+                    DB::raw("AVG(PVSteam) as pvsteam")
+                )
+                ->whereDate('waktu', $date)
+                ->groupBy('minute')
+                ->orderBy('minute')
+                ->get();
+        } else {
+            // Default ambil 5 jam ke belakang
+            $startTime = Carbon::now()->subHours(5);
+
+            $data = DB::table('readsensors_boiler')
+                ->select(
+                    DB::raw("DATE_FORMAT(waktu, '%Y-%m-%d %H:%i') as minute"),
+                    DB::raw("AVG(Press_Pasteur) as press_pasteur"),
+                    DB::raw("AVG(PVSteam) as pvsteam")
+                )
+                ->where('waktu', '>=', $startTime)
+                ->groupBy('minute')
+                ->orderBy('minute')
+                ->get();
+        }
+
+        return response()->json($data);
     }
 }
