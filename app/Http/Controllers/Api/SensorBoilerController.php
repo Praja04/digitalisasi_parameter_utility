@@ -330,7 +330,21 @@ class SensorBoilerController extends Controller
 
     public function getdataPVsteam_prd_boiler(Request $request)
     {
-        if ($request->has('date')) {
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $startDate = Carbon::parse($request->get('start_date'))->startOfDay();
+            $endDate   = Carbon::parse($request->get('end_date'))->endOfDay();
+
+            $data = DB::table('readsensors_boiler')
+            ->select(
+                DB::raw("DATE_FORMAT(waktu, '%Y-%m-%d %H:%i') as minute"),
+                DB::raw("IFNULL(AVG(Press_Pasteur),0) as press_pasteur"),
+                DB::raw("IFNULL(AVG(PVSteam),0) as pvsteam")
+            )
+                ->whereBetween('waktu', [$startDate, $endDate])
+                ->groupBy('minute')
+                ->orderBy('minute')
+                ->get();
+        } elseif ($request->has('date')) {
             $date = Carbon::parse($request->get('date'))->format('Y-m-d');
 
             $data = DB::table('readsensors_boiler')
