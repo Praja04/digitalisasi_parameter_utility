@@ -1,7 +1,9 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SensorPasteurisasi1Controller;
 use App\Http\Controllers\Api\SensorBoilerController;
+use App\Http\Controllers\Api\PresstestQCController;
 
 use App\Http\Controllers\Api\RetailD1Controller;
 use App\Http\Controllers\Api\RetailD2Controller;
@@ -22,10 +24,13 @@ use App\Http\Controllers\Api\SensorST53Controller;
 use App\Http\Controllers\Api\SensorSTk400Controller;
 use App\Http\Controllers\Api\SensorPasteurisasi2Controller;
 use App\Http\Controllers\Api\SensorDissolverController;
+
+Route::post('/presstest/store', [PresstestQCController::class, 'store_data']);
+
 Route::prefix('pasteurisasi1')->group(function () {
 
-// Daily report PDF
-Route::post('/report/daily', [SensorPasteurisasi1Controller::class, 'generateDailyReport']);
+    // Daily report PDF
+    Route::post('/report/daily', [SensorPasteurisasi1Controller::class, 'generateDailyReport']);
 });
 
 
