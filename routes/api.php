@@ -37,6 +37,7 @@ Route::prefix('pasteurisasi1')->group(function () {
 //// Mesin ///////
 Route::prefix('sensor')->group(function () {
 
+    Route::get('/boiler/generate', [SensorBoilerController::class, 'generate']);
     Route::get('/pvsteamprd/data', [SensorBoilerController::class, 'getdataPVsteam_prd_boiler']);
     Route::get('/boiler/data-filter', [SensorBoilerController::class, 'getFilteredBoilerData']);
     Route::get('/boiler-data', [SensorBoilerController::class, 'getBoilerData']);
