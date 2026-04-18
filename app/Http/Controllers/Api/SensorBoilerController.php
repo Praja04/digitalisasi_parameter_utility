@@ -13,6 +13,56 @@ use Illuminate\Support\Facades\DB;
 
 class SensorBoilerController extends Controller
 {
+    public function generate(Request $request)
+    {
+        $request->validate([
+            'tanggal' => 'required|date'
+        ]);
+
+        // 🔥 06:00 hari ini
+        $start = Carbon::parse($request->tanggal)->setTime(6, 0, 0);
+
+        // 🔥 06:00 besok
+        $end = $start->copy()->addDay();
+
+        // 🚀 QUERY SUPER OPTIMAL (AMBIL PER JAM)
+        $data = DB::table('readsensors_boiler')
+            ->selectRaw("
+                DATE_FORMAT(waktu, '%Y-%m-%d %H:00:00') as waktu,
+                ANY_VALUE(LevelFeedWater) as LevelFeedWater,
+                ANY_VALUE(PVSteam) as PVSteam,
+                ANY_VALUE(FeedPressure) as FeedPressure,
+                ANY_VALUE(LHGuiloutine) as LHGuiloutine,
+                ANY_VALUE(RHGuiloutine) as RHGuiloutine,
+                ANY_VALUE(LHTemp) as LHTemp,
+                ANY_VALUE(RHTemp) as RHTemp,
+                ANY_VALUE(IDFan) as IDFan,
+                ANY_VALUE(LHFDFan) as LHFDFan,
+                ANY_VALUE(RHFDFan) as RHFDFan,
+                ANY_VALUE(LHStoker) as LHStoker,
+                ANY_VALUE(RHStoker) as RHStoker,
+                ANY_VALUE(WaterPump1) as WaterPump1,
+                ANY_VALUE(WaterPump2) as WaterPump2,
+                ANY_VALUE(InletWaterFlow) as InletWaterFlow,
+                ANY_VALUE(OutletSteamFlow) as OutletSteamFlow,
+                ANY_VALUE(SuhuFeedTank) as SuhuFeedTank,
+                ANY_VALUE(O2) as O2,
+                ANY_VALUE(CO2) as CO2,
+                ANY_VALUE(Batubara_FK) as Batubara_FK,
+                ANY_VALUE(Steam_FK) as Steam_FK,
+                ANY_VALUE(Press_Pasteur) as Press_Pasteur
+            ")
+            ->whereBetween('waktu', [$start, $end])
+            ->groupByRaw("DATE_FORMAT(waktu, '%Y-%m-%d %H')")
+            ->orderBy('waktu')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Data boiler per jam berhasil diambil',
+            'data' => $data
+        ]);
+    }
     public function dashboardDeptHead()
     {
     }
